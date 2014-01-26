@@ -1,0 +1,49 @@
+{
+  "name": "keigai",
+  "description": "Lightweight data structure library",
+  "version": "0.1.0",
+  "homepage": "http://keigai.io",
+  "author": {
+    "name": "Jason Mulligan",
+    "email": "jason.mulligan@avoidwork.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/avoidwork/keigai.git"
+  },
+  "bugs": {
+    "url": "https://github.com/avoidwork/keigai/issues"
+  },
+  "licenses": [
+    {
+      "type": "BSD-3",
+      "url": "https://raw.github.com/avoidwork/keigai/master/LICENSE"
+    }
+  ],
+  "main": "lib/keigai",
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "dependencies": {
+    "localStorage": ">=1.0.0",
+    "mongodb": "~1.3.11"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-cli": "~0.1.6",
+    "grunt-exec": "~0.4",
+    "grunt-sed": "~0.1",
+    "grunt-contrib-concat": "~0.1.3",
+    "grunt-contrib-jshint": "~0.1",
+    "grunt-contrib-nodeunit": "~0.1.2",
+    "grunt-contrib-watch": "~0.2",
+    "grunt-jsdoc": "~0.4.0"
+  },
+  "keywords": [
+    "data",
+    "structure"
+  ]
+}

@@ -1,0 +1,12 @@
+/benchmarks/
+/doc/
+/node_modules/
+/lib/abaaso.map
+/lib/abaaso.min.js
+/src/
+/test/
+.git
+.gitignore
+.jshintrc
+.travis.yml
+Gruntfile.js
