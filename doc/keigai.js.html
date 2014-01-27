@@ -82,6 +82,7 @@ var regex = {
 	and                  : /^&/,
 	args                 : /\((.*)\)/,
 	auth                 : /\/\/(.*)\@/,
+	bool                 : /^(true|false)?$/,
 	cdata                : /\&|&lt;|>|\"|\'|\t|\r|\n|\@|\$/,
 	checked_disabled     : /checked|disabled/i,
 	complete_loaded      : /^(complete|loaded)$/i,
@@ -108,6 +109,7 @@ var regex = {
 	klass                : /^\./,
 	no                   : /no-store|no-cache/i,
 	not_endpoint         : /.*\//,
+	number               : /(^-?\d\d*\.\d*$)|(^-?\d\d*$)|(^-?\.\d\d*$)|number/,
 	number_format_1      : /.*\./,
 	number_format_2      : /\..*/,
 	number_present       : /\d{1,}/,
@@ -2258,14 +2260,10 @@ DataStore.prototype.set = function ( key, data, batch ) {
 			}
 			else if ( data[this.key] ) {
 				key = data[this.key];
-				delete data[this.key];
 			}
 			else {
 				key = utility.uuid();
 			}
-		}
-		else {
-			delete data[this.key];
 		}
 
 		if ( !batch && events ) {
@@ -2322,6 +2320,11 @@ DataStore.prototype.set = function ( key, data, batch ) {
 DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 	var self      = this,
 	    deferreds = [];
+
+	// Removing primary key from data
+	if ( this.key ) {
+		delete data[this.key];
+	}
 
 	// Create
 	if ( record === null ) {
@@ -2497,7 +2500,7 @@ DataStore.prototype.setUri = function ( arg ) {
 DataStore.prototype.sort = function ( query, create, where ) {
 	create      = ( create === true || ( where instanceof Object ) );
 	var self    = this,
-	    view    = string.explode( query ).join( " " ).toCamelCase(),
+	    view    = string.toCamelCase( string.explode( query ).join( " " ) ),
 	    defer   = deferred(),
 	    blob, next, worker;
 
@@ -5861,6 +5864,17 @@ var string = {
 	},
 
 	/**
+	 * Tests if a string is a boolean
+	 *
+	 * @method isBoolean
+	 * @param  {String}  obj String to test
+	 * @return {Boolean}     Result of test
+	 */
+	isBoolean : function ( obj ) {
+		return regex.bool.test( obj );
+	},
+
+	/**
 	 * Tests if a string is empty
 	 *
 	 * @method isEmpty
@@ -5873,6 +5887,17 @@ var string = {
 	},
 
 	/**
+	 * Tests if a string is a number
+	 *
+	 * @method isNumber
+	 * @param  {String}  obj String to test
+	 * @return {Boolean}     Result of test
+	 */
+	isNumber : function ( obj ) {
+		return regex.number.test( obj );
+	},
+
+	/**
 	 * Tests if a string is a URL
 	 *
 	 * @method isUrl
@@ -5881,7 +5906,25 @@ var string = {
 	 * @return {Boolean}     Result of test
 	 */
 	isUrl : function ( obj ) {
-		return regex.url( obj );
+		return regex.url.test( obj );
+	},
+
+	/**
+	 * Transforms the case of a String into CamelCase
+	 *
+	 * @method toCamelCase
+	 * @param  {String} obj String to capitalize
+	 * @return {String}     Camel case String
+	 */
+	toCamelCase : function ( obj ) {
+		var s = string.trim( obj ).replace( /\.|_|-|\@|\[|\]|\(|\)|\#|\$|\%|\^|\&|\*|\s+/g, " " ).toLowerCase().split( regex.space_hyphen ),
+		    r = [];
+
+		array.each( s, function ( i, idx ) {
+			r.push( idx === 0 ? i : string.capitalize( i ) );
+		});
+
+		return r.join( "" );
 	},
 
 	/**
@@ -7481,8 +7524,15 @@ bootstrap();
 // DataStore Worker "script"
 WORKER = "var " + string.fromObject( array, "array" ) + ", " + string.fromObject( regex, "regex" ) + ", " + string.fromObject( string, "string" ) + ", " + string.fromObject( utility, "utility" ) + "; onmessage = " + datastore.worker.toString() + ";";
 
-// Returning factory
-return datastore;
+// Interface
+return {
+	data    : datastore.decorator,
+	list    : datalist.factory,
+	filter  : datafilter,
+	grid    : datagrid,
+	version : "0.1.1"
+};
+
 } )();
 
 // Node, AMD & window supported
@@ -7508,13 +7558,13 @@ else {
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="datalist.html">datalist</a></li><li><a href="datastore.html">datastore</a></li><li><a href="element.html">element</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="number.html">number</a></li><li><a href="observer.html">observer</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#datafilter">datafilter</a></li><li><a href="global.html#datagrid">datagrid</a></li><li><a href="global.html#deferred">deferred</a></li><li><a href="global.html#lru">lru</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="datalist.html">datalist</a></li><li><a href="datastore.html">datastore</a></li><li><a href="element.html">element</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="number.html">number</a></li><li><a href="observer.html">observer</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#datafilter">datafilter</a></li><li><a href="global.html#datagrid">datagrid</a></li><li><a href="global.html#deferred">deferred</a></li><li><a href="global.html#isBoolean">isBoolean</a></li><li><a href="global.html#isNumber">isNumber</a></li><li><a href="global.html#lru">lru</a></li><li><a href="global.html#toCamelCase">toCamelCase</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Jan 26 2014 21:58:28 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Mon Jan 27 2014 07:33:10 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

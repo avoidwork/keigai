@@ -978,14 +978,10 @@ DataStore.prototype.set = function ( key, data, batch ) {
 			}
 			else if ( data[this.key] ) {
 				key = data[this.key];
-				delete data[this.key];
 			}
 			else {
 				key = utility.uuid();
 			}
-		}
-		else {
-			delete data[this.key];
 		}
 
 		if ( !batch && events ) {
@@ -1042,6 +1038,11 @@ DataStore.prototype.set = function ( key, data, batch ) {
 DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 	var self      = this,
 	    deferreds = [];
+
+	// Removing primary key from data
+	if ( this.key ) {
+		delete data[this.key];
+	}
 
 	// Create
 	if ( record === null ) {
@@ -1217,7 +1218,7 @@ DataStore.prototype.setUri = function ( arg ) {
 DataStore.prototype.sort = function ( query, create, where ) {
 	create      = ( create === true || ( where instanceof Object ) );
 	var self    = this,
-	    view    = string.explode( query ).join( " " ).toCamelCase(),
+	    view    = string.toCamelCase( string.explode( query ).join( " " ) ),
 	    defer   = deferred(),
 	    blob, next, worker;
 

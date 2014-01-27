@@ -80,6 +80,17 @@ var string = {
 	},
 
 	/**
+	 * Tests if a string is a boolean
+	 *
+	 * @method isBoolean
+	 * @param  {String}  obj String to test
+	 * @return {Boolean}     Result of test
+	 */
+	isBoolean : function ( obj ) {
+		return regex.bool.test( obj );
+	},
+
+	/**
 	 * Tests if a string is empty
 	 *
 	 * @method isEmpty
@@ -92,6 +103,17 @@ var string = {
 	},
 
 	/**
+	 * Tests if a string is a number
+	 *
+	 * @method isNumber
+	 * @param  {String}  obj String to test
+	 * @return {Boolean}     Result of test
+	 */
+	isNumber : function ( obj ) {
+		return regex.number.test( obj );
+	},
+
+	/**
 	 * Tests if a string is a URL
 	 *
 	 * @method isUrl
@@ -100,7 +122,25 @@ var string = {
 	 * @return {Boolean}     Result of test
 	 */
 	isUrl : function ( obj ) {
-		return regex.url( obj );
+		return regex.url.test( obj );
+	},
+
+	/**
+	 * Transforms the case of a String into CamelCase
+	 *
+	 * @method toCamelCase
+	 * @param  {String} obj String to capitalize
+	 * @return {String}     Camel case String
+	 */
+	toCamelCase : function ( obj ) {
+		var s = string.trim( obj ).replace( /\.|_|-|\@|\[|\]|\(|\)|\#|\$|\%|\^|\&|\*|\s+/g, " " ).toLowerCase().split( regex.space_hyphen ),
+		    r = [];
+
+		array.each( s, function ( i, idx ) {
+			r.push( idx === 0 ? i : string.capitalize( i ) );
+		});
+
+		return r.join( "" );
 	},
 
 	/**

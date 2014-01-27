@@ -4,8 +4,15 @@ bootstrap();
 // DataStore Worker "script"
 WORKER = "var " + string.fromObject( array, "array" ) + ", " + string.fromObject( regex, "regex" ) + ", " + string.fromObject( string, "string" ) + ", " + string.fromObject( utility, "utility" ) + "; onmessage = " + datastore.worker.toString() + ";";
 
-// Returning factory
-return datastore;
+// Interface
+return {
+	data    : datastore.decorator,
+	list    : datalist.factory,
+	filter  : datafilter,
+	grid    : datagrid,
+	version : "{{VERSION}}"
+};
+
 } )();
 
 // Node, AMD & window supported
