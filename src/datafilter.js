@@ -2,29 +2,30 @@
  * DataListFilter factory
  *
  * @method datafilter
- * @memberOf keigai
+ * @private
  * @param  {Object} obj      Element to receive the filter
  * @param  {Object} datalist Data list linked to the data store
  * @param  {String} filters  Comma delimited string of fields to filter by
  * @param  {Number} debounce [Optional] Milliseconds to debounce
  * @return {Object} {@link DataListFilter}
  */
-var datafilter = function ( obj, datalist, filters, debounce ) {
+function datafilter ( obj, datalist, filters, debounce ) {
+	var ref = [datalist];
+
 	debounce = debounce || 250;
-	var ref  = [datalist];
 
 	if ( !( obj instanceof Element ) || ( datalist && !datalist.store ) || ( typeof filters != "string" || string.isEmpty( filters ) ) ) {
-		throw new Error( label.error.invalidArguments );
+		throw new Error( label.invalidArguments );
 	}
 
 	return new DataListFilter( obj, ref[0], debounce ).set( filters ).init();
-};
+}
 
 /**
  * Creates a new DataListFilter
  *
  * @constructor
- * @memberOf keigai
+ * @private
  * @param  {Object} obj      Element to receive the filter
  * @param  {Object} datalist Data list linked to the data store
  * @param  {Number} debounce [Optional] Milliseconds to debounce

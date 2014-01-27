@@ -1,7 +1,6 @@
 /**
- * Client properties & methods
- *
  * @namespace client
+ * @private
  */
 var client = {
 	/**
@@ -42,7 +41,7 @@ var client = {
 	 */
 	allows : function ( uri, verb ) {
 		if ( string.isEmpty( uri ) || string.isEmpty( verb ) ) {
-			throw new Error( label.error.invalidArguments );
+			throw new Error( label.invalidArguments );
 		}
 
 		uri        = utility.parse( uri ).href;
@@ -182,7 +181,7 @@ var client = {
 	 * @method parse
 	 * @memberOf client
 	 * @param  {Object} xhr  XHR Object
-	 * @param  {String} type [Optional] Content-Type header value
+	 * @param  {String} type [Optional] content-type header value
 	 * @return {Mixed}       Array, Boolean, Document, Number, Object or String
 	 */
 	parse : function ( xhr, type ) {
@@ -259,7 +258,7 @@ var client = {
 
 		if ( external === undefined ) {
 			if ( !global.keigai ) {
-				utility.define( "callback", {}, global );
+				utility.define( "keigai.callback", {}, global );
 			}
 
 			external = "keigai";
@@ -332,7 +331,7 @@ var client = {
 		var cors, xhr, payload, cached, typed, contentType, doc, ab, blob, defer;
 
 		if ( ( regex.put_post.test( type ) || regex.patch.test( type ) ) && args === undefined ) {
-			throw new Error( label.error.invalidArguments );
+			throw new Error( label.invalidArguments );
 		}
 
 		uri         = utility.parse( uri ).href;
@@ -343,7 +342,7 @@ var client = {
 		xhr         = !client.ie || ( !cors || client.version > 9 ) ? new XMLHttpRequest() : new XDomainRequest();
 		payload     = ( regex.put_post.test( type ) || regex.patch.test( type ) ) && args ? args : null;
 		cached      = type === "get" ? cache.get( uri ) : false;
-		typed       = type.capitalize();
+		typed       = string.capitalize( type );
 		contentType = null;
 		doc         = typeof Document != "undefined";
 		ab          = typeof ArrayBuffer != "undefined";
@@ -352,7 +351,7 @@ var client = {
 
 		// Only GET & POST is supported by XDomainRequest (so useless!)
 		if ( cors && client.ie && client.version === 9 && !regex.xdomainrequest.test( type ) ) {
-			throw new Error( label.error.notAvailable );
+			throw new Error( label.notAvailable );
 		}
 
 		// Using a deferred to resolve request
@@ -428,9 +427,9 @@ var client = {
 
 			xhr.open( type.toUpperCase(), uri, true );
 
-			// Setting Content-Type value
-			if ( headers !== null && headers.hasOwnProperty( "Content-Type" ) ) {
-				contentType = headers["Content-Type"];
+			// Setting content-type value
+			if ( headers !== null && headers.hasOwnProperty( "content-type" ) ) {
+				contentType = headers["content-type"];
 			}
 
 			if ( cors && contentType === null ) {
@@ -471,12 +470,12 @@ var client = {
 					headers = {};
 				}
 
-				if ( typeof cached == "object" && cached.headers.hasOwnProperty( "ETag" ) ) {
-					headers.Etag = cached.headers.Etag;
+				if ( typeof cached == "object" && cached.headers.hasOwnProperty( "etag" ) ) {
+					headers.etag = cached.headers.etag;
 				}
 
 				if ( contentType !== null ) {
-					headers["Content-Type"] = contentType;
+					headers["content-type"] = contentType;
 				}
 
 				if ( headers.hasOwnProperty( "callback" ) ) {
@@ -564,16 +563,16 @@ var client = {
 						return observer.fire( uri, "afterOptions", o.headers );
 					}
 					else if ( type !== "delete" ) {
-						if ( server && regex.priv.test( o.headers["Cache-Control"] ) ) {
+						if ( server && regex.priv.test( o.headers["cache-control"] ) ) {
 							shared = false;
 						}
 
 						if ( regex.http_body.test( xhr.status ) ) {
-							t = o.headers["Content-Type"] || "";
+							t = o.headers["content-type"] || "";
 							r = client.parse( xhr, t );
 
 							if ( r === undefined ) {
-								exception( new Error( label.error.serverError ), xhr );
+								exception( new Error( label.serverError ), xhr );
 							}
 						}
 
@@ -598,7 +597,7 @@ var client = {
 							break;
 						case 201:
 							if ( ( o.headers.Location === undefined || string.isEmpty ( o.headers.Location ) ) && !string.isUrl ( r ) ) {
-								exception( new Error( label.error.invalidArguments ), xhr );
+								exception( new Error( label.invalidArguments ), xhr );
 							}
 							else {
 								redirect = string.trim ( o.headers.Location || r );
@@ -626,18 +625,18 @@ var client = {
 					observer.fire( uri, "after" + typed, r, xhr );
 					break;
 				case 401:
-					exception( new Error( label.error.serverUnauthorized ), xhr );
+					exception( new Error( label.serverUnauthorized ), xhr );
 					break;
 				case 403:
 					cache.set( uri, "!permission", client.bit( [type] ) );
-					exception( new Error( label.error.serverForbidden ), xhr );
+					exception( new Error( label.serverForbidden ), xhr );
 					break;
 				case 405:
 					cache.set( uri, "!permission", client.bit( [type] ) );
-					exception( new Error( label.error.serverInvalidMethod ), xhr );
+					exception( new Error( label.serverInvalidMethod ), xhr );
 					break;
 				default:
-					exception( new Error( label.error.serverError ), xhr );
+					exception( new Error( label.serverError ), xhr );
 			}
 
 			try {

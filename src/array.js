@@ -1,7 +1,6 @@
 /**
- * Array methods
- *
  * @namespace array
+ * @private
  */
 var array = {
 	/**

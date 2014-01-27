@@ -1,4 +1,7 @@
-/** @namespace string */
+/**
+ * @namespace string
+ * @private
+ */
 var string = {
 	/**
 	 * Capitalizes the String
@@ -77,25 +80,6 @@ var string = {
 	},
 
 	/**
-	 * Replaces all spaces in a string with dashes
-	 *
-	 * @method hyphenate
-	 * @memberOf string
-	 * @param  {String} obj   String to hyphenate
-	 * @param {Boolean} camel [Optional] Hyphenate camelCase
-	 * @return {String}       String with dashes instead of spaces
-	 */
-	hyphenate : function ( obj, camel ) {
-		var result = string.trim( obj ).replace( /\s+/g, "-" );
-
-		if ( camel === true ) {
-			result = result.replace( /([A-Z])/g, "-$1" ).toLowerCase();
-		}
-
-		return result;
-	},
-
-	/**
 	 * Tests if a string is empty
 	 *
 	 * @method isEmpty
@@ -104,53 +88,19 @@ var string = {
 	 * @return {Boolean}     Result of test
 	 */
 	isEmpty : function ( obj ) {
-		return ( string.trim( obj ) === "" );
+		return string.trim( obj ) === "";
 	},
 
 	/**
-	 * Returns singular form of the string
+	 * Tests if a string is a URL
 	 *
-	 * @method singular
-	 * @memberOf string
-	 * @param  {String} obj String to transform
-	 * @return {String}     Transformed string
+	 * @method isUrl
+	 * @memberOf abaaso.string
+	 * @param  {String}  obj String to test
+	 * @return {Boolean}     Result of test
 	 */
-	singular : function ( obj ) {
-		return obj.replace( /oe?s$/, "o" ).replace( /ies$/, "y" ).replace( /ses$/, "se" ).replace( /s$/, "" );
-	},
-
-	/**
-	 * Transforms the case of a String into CamelCase
-	 *
-	 * @method toCamelCase
-	 * @memberOf string
-	 * @param  {String} obj String to capitalize
-	 * @return {String}     Camel case String
-	 */
-	toCamelCase : function ( obj ) {
-		var s = string.trim( obj ).replace( /\.|_|-|\@|\[|\]|\(|\)|\#|\$|\%|\^|\&|\*|\s+/g, " " ).toLowerCase().split( regex.space_hyphen ),
-		    r = [];
-
-		array.each( s, function ( i, idx ) {
-			r.push( idx === 0 ? i : string.capitalize( i ) );
-		} );
-
-		return r.join( "" );
-	},
-
-	/**
-	 * Casts a String to a Function
-	 *
-	 * @method toFunction
-	 * @memberOf string
-	 * @param  {String} obj String to cast
-	 * @return {Function}   Function
-	 */
-	toFunction : function ( obj ) {
-		var args = string.trim( obj.replace( /^.*\(/, "" ).replace(/[\t|\r|\n|\"|\']+/g, "").replace(/\).*/, "") ),
-		    body = string.trim( obj.replace( /^.*\{/, "" ).replace( /\}$/, "" ) );
-
-		return Function.apply( Function, string.explode( args ).concat( [body] ) );
+	isUrl : function ( obj ) {
+		return regex.url( obj );
 	},
 
 	/**
@@ -175,20 +125,6 @@ var string = {
 	 */
 	unCamelCase : function ( obj ) {
 		return string.trim( obj.replace( /([A-Z])/g, " $1" ).toLowerCase() );
-	},
-
-	/**
-	 * Uncapitalizes the String
-	 *
-	 * @method uncapitalize
-	 * @memberOf string
-	 * @param  {String} obj String to uncapitalize
-	 * @return {String}     Uncapitalized String
-	 */
-	uncapitalize : function ( obj ) {
-		obj = string.trim( obj );
-
-		return obj.charAt( 0 ).toLowerCase() + obj.slice( 1 );
 	},
 
 	/**

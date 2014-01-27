@@ -1,4 +1,7 @@
-/** @namespace xml */
+/**
+ * @namespace xml
+ * @private
+ */
 var xml = {
 	/**
 	 * Returns XML (Document) Object from a String
@@ -10,7 +13,7 @@ var xml = {
 	 */
 	decode : function ( arg ) {
 		if ( typeof arg != "string" || string.isEmpty( arg ) ) {
-			throw new Error( label.error.invalidArguments );
+			throw new Error( label.invalidArguments );
 		}
 
 		return new DOMParser().parseFromString( arg, "text/xml" );
@@ -27,7 +30,7 @@ var xml = {
 	encode : function ( arg, wrap ) {
 		try {
 			if ( arg === undefined ) {
-				throw new Error( label.error.invalidArguments );
+				throw new Error( label.invalidArguments );
 			}
 
 			wrap    = ( wrap !== false );

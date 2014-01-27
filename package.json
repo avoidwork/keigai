@@ -1,7 +1,7 @@
 {
   "name": "keigai",
-  "description": "Lightweight data structure library",
-  "version": "0.1.0",
+  "description": "Lightweight data store library",
+  "version": "0.1.1",
   "homepage": "http://keigai.io",
   "author": {
     "name": "Jason Mulligan",

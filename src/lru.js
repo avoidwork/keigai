@@ -2,19 +2,19 @@
  * LRU cache factory
  *
  * @method lru
- * @memberOf keigai
+ * @private
  * @param  {Number} max [Optional] Max size of cache, default is 1000
  * @return {Object} {@link LRU}
  */
-var lru = function ( max ) {
+function lru ( max ) {
 	return new LRU( max );
-};
+}
 
 /**
  * Creates a new Least Recently Used cache
  *
  * @constructor
- * @memberOf keigai
+ * @private
  * @param  {Number} max [Optional] Max size of cache, default is 1000
  */
 function LRU ( max ) {
@@ -150,7 +150,7 @@ LRU.prototype.set = function ( key, value ) {
  * Creates a new LRUItem
  *
  * @constructor
- * @memberOf keigai
+ * @private
  * @param {Mixed} value Item value
  */
 function LRUItem ( value ) {

@@ -19,7 +19,7 @@ var datalist = {
 		    obj, instance;
 
 		if ( !( target instanceof Element ) || typeof store != "object" || !regex.string_object.test( typeof template ) ) {
-			throw new Error( label.error.invalidArguments );
+			throw new Error( label.invalidArguments );
 		}
 
 		obj = element.create( "ul", {"class": "list", id: store.parentNode.id + "-datalist"}, target );
@@ -50,7 +50,7 @@ var datalist = {
 	 */
 	pages : function () {
 		if ( isNaN( this.pageSize ) ) {
-			throw new Error( label.error.invalidArguments );
+			throw new Error( label.invalidArguments );
 		}
 
 		return number.round( ( !this.filter ? this.total : this.filtered.length ) / this.pageSize, "up" );
@@ -154,7 +154,7 @@ DataList.prototype.pages = function () {
 	    diff;
 
 	if ( !regex.top_bottom.test( pos ) ) {
-		throw new Error( label.error.invalidArguments );
+		throw new Error( label.invalidArguments );
 	}
 
 	// Removing the existing controls

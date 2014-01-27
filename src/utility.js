@@ -1,4 +1,7 @@
-/** @namespace utility */
+/**
+ * @namespace utility
+ * @private
+ */
 var utility = {
 	/**
 	 * MutationObserver instances
@@ -82,48 +85,6 @@ var utility = {
 	},
 
 	/**
-	 * Aliases origin onto obj
-	 *
-	 * @method alias
-	 * @memberOf utility
-	 * @param  {Object} obj    Object receiving aliasing
-	 * @param  {Object} origin Object providing structure to obj
-	 * @return {Object}        Object receiving aliasing
-	 */
-	alias : function ( obj, origin ) {
-		var o = obj,
-		    s = origin;
-
-		utility.iterate( s, function ( v, k ) {
-			var getter, setter;
-
-			if ( !( v instanceof RegExp ) && typeof v == "function" ) {
-				o[k] = v.bind( o[k] );
-			}
-			else if ( !( v instanceof RegExp ) && !( v instanceof Array ) && ( v instanceof Object ) ) {
-				if ( o[k] === undefined ) {
-					o[k] = {};
-				}
-
-				utility.alias( o[k], s[k] );
-			}
-			else {
-				getter = function () {
-					return s[k];
-				};
-
-				setter = function ( arg ) {
-					s[k] = arg;
-				};
-
-				utility.property( o, k, {enumerable: true, get: getter, set: setter, value: s[k]} );
-			}
-		} );
-
-		return obj;
-	},
-
-	/**
 	 * Clears deferred & repeating functions
 	 *
 	 * @method clearTimers
@@ -133,7 +94,7 @@ var utility = {
 	 */
 	clearTimers : function ( id ) {
 		if ( id === undefined || string.isEmpty( id ) ) {
-			throw new Error( label.error.invalidArguments );
+			throw new Error( label.invalidArguments );
 		}
 
 		// deferred
@@ -257,52 +218,6 @@ var utility = {
 		reg.compile( pattern, modifiers );
 
 		return true;
-	},
-
-	/**
-	 * Creates a CSS stylesheet in the View
-	 *
-	 * @method css
-	 * @memberOf utility
-	 * @param  {String} content CSS to put in a style tag
-	 * @param  {String} media   [Optional] Medias the stylesheet applies to
-	 * @return {Object}         Element created or undefined
-	 */
-	css : function ( content, media ) {
-		var ss, css;
-
-		ss = element.create( "style", {type: "text/css", media: media || "print, screen"}, utility.dom( "head" )[0] );
-
-		if ( ss.styleSheet ) {
-			ss.styleSheet.cssText = content;
-		}
-		else {
-			css = document.createTextNode( content );
-			ss.appendChild( css );
-		}
-
-		return ss;
-	},
-
-	/**
-	 * Debounces a function
-	 *
-	 * @method debounce
-	 * @memberOf utility
-	 * @param  {Function} fn    Function to execute
-	 * @param  {Number}   ms    Time to wait to execute in milliseconds, default is 1000
-	 * @param  {Mixed}    scope `this` context during execution, default is `global`
-	 * @return {Undefined}      undefined
-	 */
-	debounce : function ( fn, ms, scope ) {
-		ms    = ms    || 1000;
-		scope = scope || global;
-
-		return function debounced () {
-			setTimeout( function () {
-				fn.apply( scope, arguments );
-			}, ms );
-		};
 	},
 
 	/**
@@ -482,7 +397,7 @@ var utility = {
 		var o;
 
 		if ( obj === undefined ) {
-			throw new Error( label.error.invalidArguments );
+			throw new Error( label.invalidArguments );
 		}
 
 		o = Object.create( obj );
@@ -543,7 +458,7 @@ var utility = {
 	 */
 	iterate : function ( obj, fn ) {
 		if ( typeof fn != "function" ) {
-			throw new Error( label.error.invalidArguments );
+			throw new Error( label.invalidArguments );
 		}
 
 		array.each( Object.keys( obj ), function ( i ) {
@@ -685,30 +600,6 @@ var utility = {
 		}
 
 		return e;
-	},
-
-	/**
-	 * Sets a property on an Object
-	 *
-	 * @method property
-	 * @memberOf utility
-	 * @param  {Object} obj        Object to decorate
-	 * @param  {String} prop       Name of property to set
-	 * @param  {Object} descriptor Descriptor of the property
-	 * @return {Object}            Object receiving the property
-	 */
-	property : function ( obj, prop, descriptor ) {
-		if ( !( descriptor instanceof Object ) ) {
-			throw new Error( label.error.invalidArguments );
-		}
-
-		if ( descriptor.value && descriptor.get ) {
-			delete descriptor.value;
-		}
-
-		Object.defineProperty( obj, prop, descriptor );
-
-		return obj;
 	},
 
 	/**

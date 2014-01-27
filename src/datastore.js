@@ -116,7 +116,6 @@ function DataStore ( obj ) {
 	this.maxDepth    = 0;
 	this.mongodb     = "";
 	this.pointer     = null;
-	this.observer    = observer();
 	this.records     = [];
 	this.retrieve    = false;
 	this.source      = null;
@@ -153,7 +152,7 @@ DataStore.prototype.constructor = DataStore;
  */
 DataStore.prototype.batch = function ( type, data, sync ) {
 	if ( !regex.set_del.test( type ) || ( sync && regex.del.test( type ) ) || typeof data != "object" ) {
-		throw new Error( label.error.invalidArguments );
+		throw new Error( label.invalidArguments );
 	}
 
 	sync          = ( sync === true );
@@ -324,7 +323,7 @@ DataStore.prototype.crawl = function ( arg ) {
 	    parsed    = utility.parse( this.uri || "" );
 
 	if ( this.uri === null || record === undefined ) {
-		throw new Error( label.error.invalidArguments );
+		throw new Error( label.invalidArguments );
 	}
 
 	if ( events ) {
@@ -415,7 +414,7 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
 	    defer = deferred();
 
 	if ( record === undefined ) {
-		defer.reject( new Error( label.error.invalidArguments ) );
+		defer.reject( new Error( label.invalidArguments ) );
 	}
 	else {
 		if ( this.events ) {
@@ -539,7 +538,7 @@ DataStore.prototype.dump = function ( args, fields ) {
  * @return {Object} {@link DataStore}
  */
 DataStore.prototype.fire = function () {
-	return this.observer.fire.apply( this.observer, [this].concat( array.cast( arguments ) ) );
+	return observer.fire.apply( observer, [this].concat( array.cast( arguments ) ) );
 };
 
 /**
@@ -550,7 +549,7 @@ DataStore.prototype.fire = function () {
  * @return {Object} {@link DataStore}
  */
 DataStore.prototype.listeners = function ( e ) {
-	return this.observer.list( e );
+	return observer.list( this, e );
 };
 
 /**
@@ -561,7 +560,7 @@ DataStore.prototype.listeners = function ( e ) {
  * @return {Object} {@link DataStore}
  */
 DataStore.prototype.off = function ( e, id ) {
-	return this.observer.remove( e, id );
+	return observer.remove( this, e, id );
 };
 
 /**
@@ -572,7 +571,7 @@ DataStore.prototype.off = function ( e, id ) {
  * @return {Object} {@link DataStore}
  */
 DataStore.prototype.on = function ( e, listener, id, scope, standby ) {
-	return this.observer.add( e, listener, id, scope, standby );
+	return observer.add( this, e, listener, id, scope, standby );
 };
 
 /**
@@ -583,7 +582,7 @@ DataStore.prototype.on = function ( e, listener, id, scope, standby ) {
  * @return {Object} {@link DataStore}
  */
 DataStore.prototype.once = function ( e, listener, id, scope, standby ) {
-	return this.observer.once( this, e, listener, id, scope, standby );
+	return observer.once( this, e, listener, id, scope, standby );
 };
 
 /**
@@ -663,7 +662,7 @@ DataStore.prototype.join = function ( arg, field, join ) {
 			
 			arg.select( where ).then( function ( match ) {
 				if ( match.length > 2 ) {
-					defer.reject( new Error( label.error.databaseMoreThanOne ) );
+					defer.reject( new Error( label.databaseMoreThanOne ) );
 				}
 				else if ( match.length === 1 ) {
 					results.push( utility.merge( record, match[0].data ) );
@@ -687,7 +686,7 @@ DataStore.prototype.join = function ( arg, field, join ) {
 
 			arg.select( where ).then( function ( match ) {
 				if ( match.length > 2 ) {
-					defer.reject( new Error( label.error.databaseMoreThanOne ) );
+					defer.reject( new Error( label.databaseMoreThanOne ) );
 				}
 				else if ( match.length === 1 ) {
 					results.push( utility.merge( record, match[0].data ) );
@@ -718,7 +717,7 @@ DataStore.prototype.join = function ( arg, field, join ) {
 			
 			self.select( where ).then( function ( match ) {
 				if ( match.length > 2 ) {
-					defer.reject( new Error( label.error.databaseMoreThanOne ) );
+					defer.reject( new Error( label.databaseMoreThanOne ) );
 				}
 				else if ( match.length === 1 ) {
 					results.push( utility.merge( record, match[0].data ) );
@@ -846,7 +845,7 @@ DataStore.prototype.select = function ( where ) {
 	    blob, clauses, cond, functions, worker;
 
 	if ( !( where instanceof Object ) ) {
-		throw new Error( label.error.invalidArguments );
+		throw new Error( label.invalidArguments );
 	}
 
 	if ( webWorker ) {
@@ -957,7 +956,7 @@ DataStore.prototype.set = function ( key, data, batch ) {
 		key = uri.replace( regex.not_endpoint, "" );
 
 		if ( string.isEmpty( key ) ) {
-			defer.reject( new Error( label.error.invalidArguments ) );
+			defer.reject( new Error( label.invalidArguments ) );
 		}
 		else {
 			if ( !batch && events ) {
@@ -1111,7 +1110,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 DataStore.prototype.setExpires = function ( arg ) {
 	// Expiry cannot be less than a second, and must be a valid scenario for consumption; null will disable repetitive expiration
 	if ( ( arg !== null && this.uri === null ) || ( arg !== null && ( isNaN( arg ) || arg < 1000 ) ) ) {
-		throw new Error( label.error.invalidArguments );
+		throw new Error( label.invalidArguments );
 	}
 
 	if ( this.expires === arg ) {
@@ -1147,6 +1146,7 @@ DataStore.prototype.setExpires = function ( arg ) {
  * Sets the RESTful API end point
  *
  * @method setUri
+ * @memberOf DataStore
  * @param  {String} arg API collection end point
  * @return {Object}     Deferred
  */
@@ -1155,7 +1155,7 @@ DataStore.prototype.setUri = function ( arg ) {
 	    parsed, uri;
 
 	if ( arg !== null && string.isEmpty( arg ) ) {
-		throw new Error( label.error.invalidArguments );
+		throw new Error( label.invalidArguments );
 	}
 
 	parsed = utility.parse( arg );
@@ -1277,7 +1277,7 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 	    data, deferreds, key, result;
 
 	if ( !regex.number_string_object.test( typeof obj ) || !regex.get_remove_set.test( op ) ) {
-		throw new Error( label.error.invalidArguments );
+		throw new Error( label.invalidArguments );
 	}
 
 	record = ( regex.number_string.test( typeof obj ) || ( obj.hasOwnProperty( "key" ) && !obj.hasOwnProperty( "parentNode" ) ) );
@@ -1520,7 +1520,7 @@ DataStore.prototype.storage = function ( obj, op, type ) {
  */
 DataStore.prototype.sync = function () {
 	if ( this.uri === null || string.isEmpty( this.uri ) ) {
-		throw new Error( label.error.invalidArguments );
+		throw new Error( label.invalidArguments );
 	}
 
 	var self   = this,
@@ -1541,7 +1541,7 @@ DataStore.prototype.sync = function () {
 		var data;
 
 		if ( typeof arg != "object" ) {
-			throw new Error( label.error.expectedObject );
+			throw new Error( label.expectedObject );
 		}
 
 		if ( self.source !== null ) {
@@ -1646,6 +1646,7 @@ DataStore.prototype.teardown = function () {
  * Undoes the last modification to a record, if it exists
  *
  * @method undo
+ * @memberOf DataStore
  * @param  {Mixed}  key     Key or index
  * @param  {String} version [Optional] Version to restore
  * @return {Object}         Deferred
@@ -1657,14 +1658,14 @@ DataStore.prototype.undo = function ( key, version ) {
             previous;
 
         if ( record === undefined ) {
-                throw new Error( label.error.invalidArguments );
+                throw new Error( label.invalidArguments );
         }
 
         if ( versions ) {
                 previous = versions.get( version || versions.first );
 
                 if ( previous === undefined ) {
-                        defer.reject( label.error.datastoreNoPrevVersion );
+                        defer.reject( label.datastoreNoPrevVersion );
                 }
                 else {
                         this.set( key, previous ).then( function ( arg ) {
@@ -1675,7 +1676,7 @@ DataStore.prototype.undo = function ( key, version ) {
                 }
         }
         else {
-                defer.reject( label.error.datastoreNoPrevVersion );
+                defer.reject( label.datastoreNoPrevVersion );
         }
 
         return defer;
@@ -1711,7 +1712,7 @@ DataStore.prototype.update = function ( key, data ) {
 	    defer  = deferred();
 
 	if ( record === undefined ) {
-		throw new Error( label.error.invalidArguments );
+		throw new Error( label.invalidArguments );
 	}
 
 	utility.iterate( record.data, function ( v, k ) {

@@ -1,20 +1,19 @@
 /**
- * deferred factory
+ * Deferred factory
  *
  * @method deferred
- * @memberOf keigai
  * @private
  * @return {Object} {@link Deferred}
  */
-var deferred = function () {
+function deferred () {
 	return new Deferred();
-};
+}
 
 /**
  * Creates a new Deferred
  *
  * @constructor
- * @memberOf keigai
+ * @private
  */
 function Deferred () {
 	var self      = this;

@@ -1,8 +1,8 @@
 /**
- * Bootstraps framework
+ * Bootstraps environment
  *
- * @function bootstrap
- * @memberOf keigai
+ * @method bootstrap
+ * @private
  * @return {Undefined} undefined
  */
 function bootstrap () {
@@ -45,7 +45,7 @@ function bootstrap () {
 
 		// IE8 and older is not supported
 		if ( client.ie && client.version < 9 ) {
-			throw new Error( label.error.upgrade );
+			throw new Error( label.upgrade );
 		}
 
 		// getElementsByClassName shim for IE9

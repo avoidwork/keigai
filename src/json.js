@@ -1,4 +1,7 @@
-/** @namespace json */
+/**
+ * @namespace json
+ * @private
+ */
 var json = {
 	/**
 	 * Transforms JSON to CSV
@@ -11,14 +14,14 @@ var json = {
 	 * @return {String}            CSV string
 	 */
 	csv : function ( arg, delimiter, header ) {
+		var obj    = json.decode( arg, true ) || arg,
+		    result = "";
+
 		delimiter  = delimiter || ",";
 		header     = ( header !== false );
-		var obj    = json.decode( arg, true ) || arg,
-		    result = "",
-		    prepare;
 
 		// Prepares input based on CSV rules
-		prepare = function ( input ) {
+		function prepare ( input ) {
 			var output;
 
 			if ( input instanceof Array ) {
@@ -39,7 +42,7 @@ var json = {
 			}
 
 			return output;
-		};
+		}
 
 		if ( obj instanceof Array ) {
 			if ( obj[0] instanceof Object ) {
@@ -64,7 +67,7 @@ var json = {
 			result += ( array.cast( obj ).map( prepare ).join( delimiter ) + "\n" );
 		}
 
-		return result.replace(/\n$/, "");
+		return result.replace( regex.eol_nl , "");
 	},
 
 	/**

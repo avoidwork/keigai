@@ -2,10 +2,10 @@
  * XMLHttpRequest shim for node.js
  *
  * @method xhr
- * @memberOf keigai
+ * @private
  * @return {Object} XMLHttpRequest instance
  */
-var xhr = function () {
+function xhr () {
 	var UNSENT           = 0,
 	    OPENED           = 1,
 	    HEADERS_RECEIVED = 2,
@@ -105,7 +105,7 @@ var xhr = function () {
 	 * Creates a new XMLHttpRequest
 	 *
 	 * @constructor
-	 * @memberOf keigai
+	 * @private
 	 * @return {Object} XMLHttpRequest instance
 	 */
 	XMLHttpRequest = function () {
@@ -219,7 +219,7 @@ var xhr = function () {
 		var result = "";
 
 		if ( this.readyState < HEADERS_RECEIVED ) {
-			throw new Error( label.error.invalidStateNoHeaders );
+			throw new Error( label.invalidStateNoHeaders );
 		}
 
 		utility.iterate( this._resheaders, function ( v, k ) {
@@ -241,7 +241,7 @@ var xhr = function () {
 		var result;
 
 		if ( this.readyState < HEADERS_RECEIVED || this._error ) {
-			throw new Error( label.error.invalidStateNoHeaders );
+			throw new Error( label.invalidStateNoHeaders );
 		}
 
 		result = this._resheaders[header] || this._resheaders[header.toLowerCase()];
@@ -265,7 +265,7 @@ var xhr = function () {
 		var self = this;
 
 		if ( async !== true ) {
-			throw new Error( label.error.invalidStateNoSync );
+			throw new Error( label.invalidStateNoSync );
 		}
 
 		this.abort();
@@ -334,10 +334,10 @@ var xhr = function () {
 		    options, parsed, request, obj;
 
 		if ( this.readyState < OPENED ) {
-			throw new Error( label.error.invalidStateNotOpen );
+			throw new Error( label.invalidStateNotOpen );
 		}
 		else if ( this._send ) {
-			throw new Error( label.error.invalidStateNotSending );
+			throw new Error( label.invalidStateNotSending );
 		}
 
 		parsed      = utility.parse( this._params.url );
@@ -402,10 +402,10 @@ var xhr = function () {
 	 */
 	XMLHttpRequest.prototype.setRequestHeader = function ( header, value ) {
 		if ( this.readyState !== OPENED ) {
-			throw new Error( label.error.invalidStateNotUsable );
+			throw new Error( label.invalidStateNotUsable );
 		}
 		else if ( this._send ) {
-			throw new Error( label.error.invalidStateNotSending );
+			throw new Error( label.invalidStateNotSending );
 		}
 
 		this._headers[header] = value;
@@ -414,4 +414,4 @@ var xhr = function () {
 	};
 
 	return XMLHttpRequest;
-};
+}

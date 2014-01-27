@@ -1,4 +1,7 @@
-/** @namespace observer */
+/**
+ * @namespace observer
+ * @private
+ */
 var observer = {
 	/**
 	 * Collection of external event listeners
@@ -77,7 +80,7 @@ var observer = {
 		    reg      = false;
 
 		if ( !oId || !events || typeof fn != "function" ) {
-			throw new Error( label.error.invalidArguments );
+			throw new Error( label.invalidArguments );
 		}
 
 		// Preparing variables
@@ -123,55 +126,6 @@ var observer = {
 			}
 
 			observer.listeners[oId][st][ev].set( id, {fn: fn, scope: scope} );
-		} );
-
-		return obj;
-	},
-
-	/**
-	 * Decorates `obj` with `observer` methods
-	 *
-	 * @method decorate
-	 * @memberOf observer
-	 * @param  {Object} obj Object to decorate
-	 * @return {Object}     Object to decorate
-	 */
-	decorate : function ( obj ) {
-		var methods = [
-			[
-				"fire",
-				function () {
-					return observer.fire.apply( observer, [this].concat( array.cast( arguments ) ) );
-				}
-			],
-			[
-				"listeners",
-				function ( e ) {
-					return observer.list( this, e );
-				}
-			],
-			[
-				"on",
-				function ( e, listener, id, scope, standby ) {
-					return observer.add( this, e, listener, id, scope, standby );
-				}
-			],
-			[
-				"once",
-				function ( e, listener, id, scope, standby ) {
-					return observer.once( this, e, listener, id, scope, standby );
-				}
-			],
-			[
-				"un",
-				function ( e, id ) {
-					return observer.remove( this, e, id );
-				}
-			]
-		];
-
-		array.each( methods, function ( i ) {
-			utility.property( obj, i[0], {value: i[1], configurable: true, enumerable: true, writable: true} );
 		} );
 
 		return obj;
@@ -355,7 +309,7 @@ var observer = {
 		st    = st    || "active";
 
 		if ( !obj || !events || typeof fn != "function" ) {
-			throw new Error( label.error.invalidArguments );
+			throw new Error( label.invalidArguments );
 		}
 
 		array.each( string.explode( events ), function ( ev ) {

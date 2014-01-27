@@ -98,7 +98,7 @@ var promise = {
  * Creates a new Promise
  *
  * @constructor
- * @memberOf keigai
+ * @private
  */
 function Promise () {
 	this.deferred = false;

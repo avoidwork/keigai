@@ -5,7 +5,7 @@ bootstrap();
 WORKER = "var " + string.fromObject( array, "array" ) + ", " + string.fromObject( regex, "regex" ) + ", " + string.fromObject( string, "string" ) + ", " + string.fromObject( utility, "utility" ) + "; onmessage = " + datastore.worker.toString() + ";";
 
 // Returning factory
-return keigai;
+return datastore;
 } )();
 
 // Node, AMD & window supported

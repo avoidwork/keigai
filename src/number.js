@@ -1,4 +1,7 @@
-/** @namespace number */
+/**
+ * @namespace number
+ * @private
+ */
 var number = {
 	/**
 	 * Returns the difference of arg
@@ -10,22 +13,10 @@ var number = {
 	 */
 	diff : function ( num1, num2 ) {
 		if ( isNaN( num1 ) || isNaN( num2 ) ) {
-			throw new Error( label.error.expectedNumber );
+			throw new Error( label.expectedNumber );
 		}
 
 		return Math.abs( num1 - num2 );
-	},
-
-	/**
-	 * Tests if an number is even
-	 *
-	 * @method even
-	 * @memberOf number
-	 * @param {Number} arg Number to test
-	 * @return {Boolean}   True if even, or undefined
-	 */
-	even : function ( arg ) {
-		return arg % 2 === 0;
 	},
 
 	/**
@@ -40,7 +31,7 @@ var number = {
 	 */
 	format : function ( arg, delimiter, every ) {
 		if ( isNaN( arg ) ) {
-			throw new Error( label.error.expectedNumber );
+			throw new Error( label.expectedNumber );
 		}
 
 		arg       = arg.toString();
@@ -81,18 +72,6 @@ var number = {
 	},
 
 	/**
-	 * Tests if a number is odd
-	 *
-	 * @method odd
-	 * @memberOf number
-	 * @param  {Number} arg Number to test
-	 * @return {Boolean}    True if odd, or undefined
-	 */
-	odd : function ( arg ) {
-		return !number.even( arg );
-	},
-
-	/**
 	 * Parses the number
 	 *
 	 * @method parse
@@ -103,20 +82,6 @@ var number = {
 	 */
 	parse : function ( arg, base ) {
 		return ( base === undefined ) ? parseFloat( arg ) : parseInt( arg, base );
-	},
-
-	/**
-	 * Generates a random number between 0 and `arg`
-	 *
-	 * @method random
-	 * @memberOf number
-	 * @param  {Number} arg Ceiling for random number, default is 100
-	 * @return {Number}     Random number
-	 */
-	random : function ( arg ) {
-		arg = arg || 100;
-
-		return Math.floor( Math.random() * ( arg + 1 ) );
 	},
 
 	/**

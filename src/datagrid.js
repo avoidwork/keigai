@@ -1,8 +1,8 @@
 /**
  * DataGrid factory
  *
- * @method grid
- * @memberOf keigai
+ * @method datagrid
+ * @private
  * @param  {Object}  obj         Element to receive DataGrid
  * @param  {Object}  store       DataStore
  * @param  {Array}   fields      Array of fields to display
@@ -12,11 +12,11 @@
  * @param  {Number}  debounce    [Optional] DataListFilter input debounce, default is 250
  * @return {Object} {@link DataGrid}
  */
-var datagrid = function ( obj, store, fields, sortable, options, filtered, debounce ) {
+function datagrid ( obj, store, fields, sortable, options, filtered, debounce ) {
 	var ref = [store];
 
 	return new DataGrid( obj, ref[0], fields, sortable, options, filtered ).init( debounce );
-};
+}
 
 /**
  * Creates a new DataGrid
