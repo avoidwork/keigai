@@ -22,6 +22,9 @@ function Observable ( arg ) {
 	this.listeners = {};
 }
 
+// Prototype loop
+Observable.prototype.constructor = Observable;
+
 /**
  * Dispatches an event, with optional arguments
  *
@@ -30,24 +33,16 @@ function Observable ( arg ) {
  * @return {Object} {@link Observable}
  */
 Observable.prototype.dispatch = function () {
-	return this;
-};
+	var args = array.cast( arguments ),
+	    ev   = args.shift();
 
-/**
- * Returns a list of listeners
- *
- * @method list
- * @memberOf Observable
- * @param  {String} arg Event name
- * @return {Object}     List
- */
-Observable.prototype.list = function ( arg ) {
-	if ( arg ) {
-		return this.listeners[arg];
+	if ( ev && this.listeners[ev] ) {
+		utility.iterate( this.listeners[ev], function ( i ) {
+			i.handler.apply( i.scope, args );
+		} );
 	}
-	else {
-		return this.listeners;
-	}
+
+	return this;
 };
 
 /**
@@ -55,11 +50,20 @@ Observable.prototype.list = function ( arg ) {
  *
  * @method off
  * @memberOf Observable
- * @param {String} event Event name
- * @param {String} id    [Optional] Listener ID
+ * @param {String} ev Event name
+ * @param {String} id [Optional] Listener ID
  * @return {Object} {@link Observable}
  */
-Observable.prototype.off = function ( event, id ) {
+Observable.prototype.off = function ( ev, id ) {
+	if ( this.listeners[ev] ) {
+		if ( id ) {
+			delete this.listeners[ev][id];
+		}
+		else {
+			delete this.listeners[ev];
+		}
+	}
+
 	return this;
 };
 
@@ -68,13 +72,26 @@ Observable.prototype.off = function ( event, id ) {
  *
  * @method on
  * @memberOf Observer
- * @param  {String}   event   Event name
+ * @param  {String}   ev      Event name
  * @param  {Function} handler Handler
  * @param  {String}   id      [Optional] Handler ID
  * @param  {String}   scope   [Optional] Handler scope, default is `this`
  * @return {Object} {@link Observable}
  */
-Observable.prototype.on = function ( event, handler, id, scope ) {
+Observable.prototype.on = function ( ev, handler, id, scope ) {
+	id    = id    || utility.uuid();
+	scope = scope || this;
+
+	if ( !this.listeners[ev] ) {
+		this.listeners[ev] = {};
+	}
+
+	if ( array.keys( this.listeners[ev] ).length >= this.limit ) {
+		throw( new Error( "Possible memory leak, more than " + this.limit + " listeners for event: " + ev ) );
+	}
+
+	this.listeners[ev][id] = {scope: scope, handler: handler};
+
 	return this;
 };
 
@@ -83,12 +100,20 @@ Observable.prototype.on = function ( event, handler, id, scope ) {
  *
  * @method once
  * @memberOf Observer
- * @param  {String}   event   Event name
+ * @param  {String}   ev      Event name
  * @param  {Function} handler Handler
  * @param  {String}   id      [Optional] Handler ID
  * @param  {String}   scope   [Optional] Handler scope, default is `this`
  * @return {Object} {@link Observable}
  */
-Observable.prototype.once = function ( event, handler, id, scope  ) {
-	return this;
+Observable.prototype.once = function ( ev, handler, id, scope  ) {
+	var self = this;
+
+	id    = id    || utility.uuid();
+	scope = scope || this;
+
+	return this.on( ev, function () {
+		handler.apply( [scope].concat( array.cast( arguments ) ) );
+		self.off( ev, id );
+	}, id, scope );
 };

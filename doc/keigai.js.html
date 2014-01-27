@@ -5100,6 +5100,126 @@ var number = {
 };
 
 /**
+ * Observable factory
+ *
+ * @method observable
+ * @private
+ * @param  {Number} arg Maximum listeners, default is 10
+ * @return {Object} {@link Observable}
+ */
+function observable ( arg ) {
+	return new Observable( arg );
+}
+
+/**
+ * Observable
+ *
+ * @constructor
+ * @private
+ * @param  {Number} arg Maximum listeners, default is 10
+ */
+function Observable ( arg ) {
+	this.limit     = arg || 10;
+	this.listeners = {};
+}
+
+// Prototype loop
+Observable.prototype.constructor = Observable;
+
+/**
+ * Dispatches an event, with optional arguments
+ *
+ * @method dispatch
+ * @memberOf Observable
+ * @return {Object} {@link Observable}
+ */
+Observable.prototype.dispatch = function () {
+	var args = array.cast( arguments ),
+	    ev   = args.shift();
+
+	if ( ev && this.listeners[ev] ) {
+		utility.iterate( this.listeners[ev], function ( i ) {
+			i.handler.apply( i.scope, args );
+		} );
+	}
+
+	return this;
+};
+
+/**
+ * Removes all, or a specific listener for an event
+ *
+ * @method off
+ * @memberOf Observable
+ * @param {String} ev Event name
+ * @param {String} id [Optional] Listener ID
+ * @return {Object} {@link Observable}
+ */
+Observable.prototype.off = function ( ev, id ) {
+	if ( this.listeners[ev] ) {
+		if ( id ) {
+			delete this.listeners[ev][id];
+		}
+		else {
+			delete this.listeners[ev];
+		}
+	}
+
+	return this;
+};
+
+/**
+ * Adds a listener for an event
+ *
+ * @method on
+ * @memberOf Observer
+ * @param  {String}   ev      Event name
+ * @param  {Function} handler Handler
+ * @param  {String}   id      [Optional] Handler ID
+ * @param  {String}   scope   [Optional] Handler scope, default is `this`
+ * @return {Object} {@link Observable}
+ */
+Observable.prototype.on = function ( ev, handler, id, scope ) {
+	id    = id    || utility.uuid();
+	scope = scope || this;
+
+	if ( !this.listeners[ev] ) {
+		this.listeners[ev] = {};
+	}
+
+	if ( array.keys( this.listeners[ev] ).length >= this.limit ) {
+		throw( new Error( "Possible memory leak, more than " + this.limit + " listeners for event: " + ev ) );
+	}
+
+	this.listeners[ev][id] = {scope: scope, handler: handler};
+
+	return this;
+};
+
+/**
+ * Adds a short lived listener for an event
+ *
+ * @method once
+ * @memberOf Observer
+ * @param  {String}   ev      Event name
+ * @param  {Function} handler Handler
+ * @param  {String}   id      [Optional] Handler ID
+ * @param  {String}   scope   [Optional] Handler scope, default is `this`
+ * @return {Object} {@link Observable}
+ */
+Observable.prototype.once = function ( ev, handler, id, scope  ) {
+	var self = this;
+
+	id    = id    || utility.uuid();
+	scope = scope || this;
+
+	return this.on( ev, function () {
+		handler.apply( [scope].concat( array.cast( arguments ) ) );
+		self.off( ev, id );
+	}, id, scope );
+};
+
+/**
  * @namespace observer
  * @private
  */
@@ -7526,11 +7646,12 @@ WORKER = "var " + string.fromObject( array, "array" ) + ", " + string.fromObject
 
 // Interface
 return {
-	data    : datastore.decorator,
-	list    : datalist.factory,
-	filter  : datafilter,
-	grid    : datagrid,
-	version : "0.1.1"
+	data       : datastore.decorator,
+	list       : datalist.factory,
+	filter     : datafilter,
+	grid       : datagrid,
+	observable : observable,
+	version    : "0.1.1"
 };
 
 } )();
@@ -7558,13 +7679,13 @@ else {
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="datalist.html">datalist</a></li><li><a href="datastore.html">datastore</a></li><li><a href="element.html">element</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="number.html">number</a></li><li><a href="observer.html">observer</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#datafilter">datafilter</a></li><li><a href="global.html#datagrid">datagrid</a></li><li><a href="global.html#deferred">deferred</a></li><li><a href="global.html#isBoolean">isBoolean</a></li><li><a href="global.html#isNumber">isNumber</a></li><li><a href="global.html#lru">lru</a></li><li><a href="global.html#toCamelCase">toCamelCase</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="datalist.html">datalist</a></li><li><a href="datastore.html">datastore</a></li><li><a href="element.html">element</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="number.html">number</a></li><li><a href="observer.html">observer</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#datafilter">datafilter</a></li><li><a href="global.html#datagrid">datagrid</a></li><li><a href="global.html#deferred">deferred</a></li><li><a href="global.html#isBoolean">isBoolean</a></li><li><a href="global.html#isNumber">isNumber</a></li><li><a href="global.html#lru">lru</a></li><li><a href="global.html#observable">observable</a></li><li><a href="global.html#toCamelCase">toCamelCase</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Mon Jan 27 2014 07:33:10 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Mon Jan 27 2014 08:48:32 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>
