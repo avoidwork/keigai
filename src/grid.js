@@ -12,7 +12,7 @@
  * @param  {Number}  debounce    [Optional] DataListFilter input debounce, default is 250
  * @return {Object} {@link DataGrid}
  */
-function datagrid ( obj, store, fields, sortable, options, filtered, debounce ) {
+function grid ( obj, store, fields, sortable, options, filtered, debounce ) {
 	var ref = [store];
 
 	return new DataGrid( obj, ref[0], fields, sortable, options, filtered ).init( debounce );
@@ -117,14 +117,14 @@ DataGrid.prototype.init = function ( debounce ) {
 		}
 
 		// Creating DataList
-		ref.push( datalist.factory( container, this.store, template, this.options ) );
+		ref.push( list.factory( container, this.store, template, this.options ) );
 
 		// Setting by-reference DataList on DataGrid
 		this.list = ref[0];
 
 		if ( this.filtered === true ) {
 			// Creating DataListFilter
-			ref.push( datafilter( element.create( "input", {"class": "filter"}, container, "first" ), ref[0], this.fields.join( "," ), debounce || 250 ) );
+			ref.push( filter( element.create( "input", {"class": "filter"}, container, "first" ), ref[0], this.fields.join( "," ), debounce || 250 ) );
 			
 			// Setting by-reference DataListFilter on DataGrid
 			this.filter = ref[1];

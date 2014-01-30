@@ -2,7 +2,7 @@
  * @namespace datastore
  * @private
  */
-var datastore = {
+var store = {
 	/**
 	 * Decorates a DataStore on an Object
 	 *
@@ -340,7 +340,7 @@ DataStore.prototype.crawl = function ( arg ) {
 
 		array.add( self.collections, k );
 
-		record.data[k] = datastore.decorator( {id: record.key + "-" + k}, null, {key: self.key, pointer: self.pointer, source: self.source, ignore: self.ignore.slice(), leafs: self.leafs.slice(), depth: self.depth + 1, maxDepth: self.maxDepth, headers: self.headers, retrieve: true} );
+		record.data[k] = store.decorator( {id: record.key + "-" + k}, null, {key: self.key, pointer: self.pointer, source: self.source, ignore: self.ignore.slice(), leafs: self.leafs.slice(), depth: self.depth + 1, maxDepth: self.maxDepth, headers: self.headers, retrieve: true} );
 
 		if ( !array.contains( self.leafs, k ) && ( record.data[k].data.maxDepth === 0 || record.data[k].data.depth <= record.data[k].data.maxDepth ) ) {
 			if ( v instanceof Array ) {
@@ -1737,7 +1737,7 @@ DataStore.prototype.update = function ( key, data ) {
  * @return {Object} {@link DataFilter}
  */
 DataStore.prototype.filter = function () {
-	return datafilter();
+	return filter();
 };
 
 /**
@@ -1748,7 +1748,7 @@ DataStore.prototype.filter = function () {
  * @return {Object} {@link DataGrid}
  */
 DataStore.prototype.grid = function () {
-	return datagrid();
+	return grid();
 };
 
 /**
@@ -1759,5 +1759,5 @@ DataStore.prototype.grid = function () {
  * @return {Object} {@link DataList}
  */
 DataStore.prototype.list = function () {
-	return datalist();
+	return list();
 };

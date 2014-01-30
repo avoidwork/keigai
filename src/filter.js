@@ -9,7 +9,7 @@
  * @param  {Number} debounce [Optional] Milliseconds to debounce
  * @return {Object} {@link DataListFilter}
  */
-function datafilter ( obj, datalist, filters, debounce ) {
+function filter ( obj, datalist, filters, debounce ) {
 	var ref = [datalist];
 
 	debounce = debounce || 250;

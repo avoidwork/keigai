@@ -1,8 +1,8 @@
 /**
- * @namespace datalist
+ * @namespace list
  * @private
  */
-var datalist = {
+var list = {
 	/**
 	 * Creates an instance of datalist
 	 *
@@ -150,7 +150,7 @@ DataList.prototype.pages = function () {
 	    mid   = number.round( number.half( range ), "down" ),
 	    start = page - mid,
 	    end   = page + mid,
-	    total = datalist.pages.call( this ),
+	    total = list.pages.call( this ),
 	    diff;
 
 	if ( !regex.top_bottom.test( pos ) ) {
@@ -363,7 +363,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 
 	// Pagination
 	if ( !isNaN( this.pageIndex ) && !isNaN( this.pageSize ) ) {
-		ceiling = datalist.pages.call( this );
+		ceiling = list.pages.call( this );
 
 		// Passed the end, so putting you on the end
 		if ( ceiling > 0 && this.pageIndex > ceiling ) {
@@ -372,7 +372,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 
 		// Paginating the items
 		else if ( this.total > 0 ) {
-			range        = datalist.range.call( this );
+			range        = list.range.call( this );
 			this.current = array.limit( !filter ? this.records : this.filtered, range[0], range[1] );
 		}
 	}
