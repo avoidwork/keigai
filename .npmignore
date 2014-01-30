@@ -1,8 +1,7 @@
-/benchmarks/
 /doc/
 /node_modules/
-/lib/abaaso.map
-/lib/abaaso.min.js
+/lib/keigai.map
+/lib/keigai.min.js
 /src/
 /test/
 .git

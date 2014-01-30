@@ -62,7 +62,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line600">line 600</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line619">line 619</a>
     </li></ul></dd>
     
     
@@ -140,7 +140,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line611">line 611</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line630">line 630</a>
     </li></ul></dd>
     
     
@@ -276,7 +276,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line632">line 632</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line651">line 651</a>
     </li></ul></dd>
     
     
@@ -415,7 +415,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line674">line 674</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line693">line 693</a>
     </li></ul></dd>
     
     
@@ -554,7 +554,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line705">line 705</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line724">line 724</a>
     </li></ul></dd>
     
     
@@ -739,7 +739,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line717">line 717</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line736">line 736</a>
     </li></ul></dd>
     
     
@@ -947,7 +947,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line843">line 843</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line860">line 860</a>
     </li></ul></dd>
     
     
@@ -1109,7 +1109,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line777">line 777</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line794">line 794</a>
     </li></ul></dd>
     
     
@@ -1248,7 +1248,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line810">line 810</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line827">line 827</a>
     </li></ul></dd>
     
     
@@ -1308,14 +1308,7 @@
     <div class="description">
         Creates an XmlHttpRequest to a URI ( aliased to multiple methods )
 
-The returned Deferred will have an .xhr property decorated
-
-Events: before[type]          Fires before the XmlHttpRequest is made, type specific
-        failed[type]          Fires on error
-        progress[type]        Fires on progress
-        progressUpload[type]  Fires on upload progress
-        received[type]        Fires on XHR readystate 2
-        timeout[type]         Fires when XmlHttpRequest times out
+The returned Deferred will have an .xhr
     </div>
     
 
@@ -1534,7 +1527,7 @@ Events: before[type]          Fires before the XmlHttpRequest is made, type spec
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line906">line 906</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line923">line 923</a>
     </li></ul></dd>
     
     
@@ -1571,224 +1564,6 @@ Events: before[type]          Fires before the XmlHttpRequest is made, type spec
 	<dd>
 		
 <span class="param-type">Object</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="response"><span class="type-signature">&lt;static> </span>response<span class="signature">(xhr, uri, type, defer)</span><span class="type-signature"> &rarr; {Undefined}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Caches the URI headers & response if received, and fires the relevant events
-
-If state.header is set, an application state change is possible
-
-Permissions are handled if the ACCEPT header is received; a bit is set on the cached
-resource
-
-Events: after[type]  Fires after the XmlHttpRequest response is received, type specific
-        reset        Fires if a 206 response is received
-        failure      Fires if an exception is thrown
-        headers      Fires after a possible state change, with the headers from the response
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>xhr</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">XMLHttpRequest Object</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>uri</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">URI to query</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>type</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">Type of request</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>defer</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">Deferred to reconcile with the response</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line1105">line 1105</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    undefined
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Undefined</span>
 
 
 	</dd>
@@ -1843,7 +1618,7 @@ Events: after[type]  Fires after the XmlHttpRequest response is received, type s
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line621">line 621</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line640">line 640</a>
     </li></ul></dd>
     
     
@@ -1884,13 +1659,13 @@ Events: after[type]  Fires after the XmlHttpRequest response is received, type s
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="datastore.html">datastore</a></li><li><a href="element.html">element</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="list.html">list</a></li><li><a href="number.html">number</a></li><li><a href="observer.html">observer</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#datafilter">datafilter</a></li><li><a href="global.html#datagrid">datagrid</a></li><li><a href="global.html#deferred">deferred</a></li><li><a href="global.html#isBoolean">isBoolean</a></li><li><a href="global.html#isNumber">isNumber</a></li><li><a href="global.html#lru">lru</a></li><li><a href="global.html#observable">observable</a></li><li><a href="global.html#toCamelCase">toCamelCase</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="datastore.html">datastore</a></li><li><a href="element.html">element</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="list.html">list</a></li><li><a href="number.html">number</a></li><li><a href="observer.html">observer</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#datafilter">datafilter</a></li><li><a href="global.html#datagrid">datagrid</a></li><li><a href="global.html#deferred">deferred</a></li><li><a href="global.html#isBoolean">isBoolean</a></li><li><a href="global.html#isNumber">isNumber</a></li><li><a href="global.html#lru">lru</a></li><li><a href="global.html#mingle">mingle</a></li><li><a href="global.html#observable">observable</a></li><li><a href="global.html#toCamelCase">toCamelCase</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Thu Jan 30 2014 06:09:46 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Thu Jan 30 2014 18:03:21 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

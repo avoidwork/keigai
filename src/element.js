@@ -287,27 +287,6 @@ var element = {
 	},
 
 	/**
-	 * Determines if Element is equal to arg, supports nodeNames & CSS2+ selectors
-	 *
-	 * @method is
-	 * @memberOf element
-	 * @param  {Mixed}   obj Element
-	 * @param  {String}  arg Property to query
-	 * @return {Boolean}     True if a match
-	 */
-	is : function ( obj, arg ) {
-		if ( regex.selector_is.test( arg ) ) {
-			utility.id( obj );
-			return ( element.find( obj.parentNode, obj.nodeName.toLowerCase() + arg ).filter( function ( i ) {
-				return ( i.id === obj.id );
-			} ).length === 1 );
-		}
-		else {
-			return new RegExp( arg, "i" ).test( obj.nodeName );
-		}
-	},
-
-	/**
 	 * Adds or removes a CSS class
 	 *
 	 * @method klass

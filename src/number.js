@@ -20,58 +20,6 @@ var number = {
 	},
 
 	/**
-	 * Formats a Number to a delimited String
-	 *
-	 * @method format
-	 * @memberOf number
-	 * @param  {Number} arg       Number to format
-	 * @param  {String} delimiter [Optional] String to delimit the Number with
-	 * @param  {String} every     [Optional] Position to insert the delimiter, default is 3
-	 * @return {String}           Number represented as a comma delimited String
-	 */
-	format : function ( arg, delimiter, every ) {
-		if ( isNaN( arg ) ) {
-			throw new Error( label.expectedNumber );
-		}
-
-		arg       = arg.toString();
-		delimiter = delimiter || ",";
-		every     = every     || 3;
-
-		var d = arg.indexOf( "." ) > -1 ? "." + arg.replace( regex.number_format_1, "" ) : "",
-		    a = arg.replace( regex.number_format_2, "" ).split( "" ).reverse(),
-		    p = Math.floor( a.length / every ),
-		    i = 1, n, b;
-
-		for ( b = 0; b < p; b++ ) {
-			n = i === 1 ? every : ( every * i ) + ( i === 2 ? 1 : ( i - 1 ) );
-			a.splice( n, 0, delimiter );
-			i++;
-		}
-
-		a = a.reverse().join( "" );
-
-		if ( a.charAt( 0 ) === delimiter ) {
-			a = a.substring( 1 );
-		}
-
-		return a + d;
-	},
-
-	/**
-	 * Returns half of a, or true if a is half of b
-	 *
-	 * @method half
-	 * @memberOf number
-	 * @param  {Number} a Number to divide
-	 * @param  {Number} b [Optional] Number to test a against
-	 * @return {Mixed}    Boolean if b is passed, Number if b is undefined
-	 */
-	half : function ( a, b ) {
-		return b ? ( ( a / b ) === 0.5 ) : ( a / 2 );
-	},
-
-	/**
 	 * Parses the number
 	 *
 	 * @method parse
@@ -82,28 +30,5 @@ var number = {
 	 */
 	parse : function ( arg, base ) {
 		return ( base === undefined ) ? parseFloat( arg ) : parseInt( arg, base );
-	},
-
-	/**
-	 * Rounds a number up or down
-	 *
-	 * @method round
-	 * @memberOf number
-	 * @param  {Number} arg       Number to round
-	 * @param  {String} direction [Optional] "up" or "down"
-	 * @return {Number}           Rounded interger
-	 */
-	round : function ( arg, direction ) {
-		arg = number.parse( arg );
-
-		if ( direction === undefined || string.isEmpty( direction ) ) {
-			return number.parse( arg.toFixed( 0 ) );
-		}
-		else if ( regex.down.test( direction ) ) {
-			return ~~( arg );
-		}
-		else {
-			return Math.ceil( arg );
-		}
 	}
 };

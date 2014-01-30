@@ -31,7 +31,7 @@ var list = {
 			utility.merge( instance, options );
 		}
 
-		instance.store.datalists.push( instance );
+		instance.store.lists.push( instance );
 
 		// Rendering if not tied to an API or data is ready
 		if ( instance.store.uri === null || instance.store.loaded ) {
@@ -53,7 +53,7 @@ var list = {
 			throw new Error( label.invalidArguments );
 		}
 
-		return number.round( ( !this.filter ? this.total : this.filtered.length ) / this.pageSize, "up" );
+		return Math.ceil( ( !this.filter ? this.total : this.filtered.length ) / this.pageSize );
 	},
 
 	/**
@@ -147,7 +147,7 @@ DataList.prototype.pages = function () {
 	    page  = this.pageIndex,
 	    pos   = this.pagination,
 	    range = this.pageRange,
-	    mid   = number.round( number.half( range ), "down" ),
+	    mid   = Math.floor( range / 2 ),
 	    start = page - mid,
 	    end   = page + mid,
 	    total = list.pages.call( this ),
@@ -463,7 +463,7 @@ DataList.prototype.teardown = function ( destroy ) {
 		observer.remove( i );
 	} );
 
-	array.each( this.store.datalists, function ( i, idx ) {
+	array.each( this.store.lists, function ( i, idx ) {
 		if ( i.id === self.id ) {
 			this.remove( idx );
 

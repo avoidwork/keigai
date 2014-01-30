@@ -105,7 +105,8 @@ var array = {
 		    i, offset;
 
 		if ( async !== true ) {
-			for ( i = 0; i < nth; i++ ) {
+			i = -1;
+			while ( ++i < nth ) {
 				if ( fn.call( obj, obj[i], i ) === false ) {
 					break;
 				}
@@ -120,10 +121,10 @@ var array = {
 			}
 
 			utility.repeat( function () {
-				var i = 0,
+				var i = -1,
 				    idx;
 
-				for ( i = 0; i < size; i++ ) {
+				while ( ++i < size ) {
 					idx = i + offset;
 
 					if ( idx === nth || fn.call( obj, obj[idx], idx ) === false ) {
@@ -248,6 +249,24 @@ var array = {
 				result.push( obj[i] );
 			}
 		}
+
+		return result;
+	},
+
+	/**
+	 * Mingles Arrays and returns a 2D Array
+	 *
+	 * @method mingle
+	 * @param  {Array} obj1 Array to mingle
+	 * @param  {Array} obj2 Array to mingle
+	 * @return {Array}      2D Array
+	 */
+	mingle : function ( obj1, obj2 ) {
+		var result;
+
+		result = obj1.map( function ( i, idx ) {
+			return [i, obj2[idx]];
+		} );
 
 		return result;
 	},

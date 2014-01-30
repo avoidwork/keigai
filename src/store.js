@@ -13,12 +13,8 @@ var store = {
 	 * @param  {Object} args [Optional] Arguments to set on the store
 	 * @return {Object}      Decorated Object
 	 */
-	decorator : function ( obj, recs, args ) {
-		obj = obj || {};
-		utility.genId( obj );
-
-		// Creating store
-		obj = new DataStore( obj );
+	factory : function ( recs, args ) {
+		var obj = new DataStore();
 
 		if ( args instanceof Object ) {
 			utility.merge( obj, args );
@@ -97,15 +93,14 @@ var store = {
  * @constructor
  * @memberOf keigai
  */
-function DataStore ( obj ) {
-	utility.merge( this, obj );
+function DataStore () {
 	this.autosave    = false;
 	this.callback    = null;
 	this.collections = [];
 	this.credentials = null;
-	this.datalists   = [];
+	this.lists       = [];
 	this.depth       = 0;
-	this.events      = false;
+	this.events      = true;
 	this.expires     = null;
 	this.headers     = {Accept: "application/json"};
 	this.ignore      = [];
@@ -115,6 +110,7 @@ function DataStore ( obj ) {
 	this.loaded      = false;
 	this.maxDepth    = 0;
 	this.mongodb     = "";
+	this.observer    = observable( 10 );
 	this.pointer     = null;
 	this.records     = [];
 	this.retrieve    = false;
@@ -135,6 +131,23 @@ function DataStore ( obj ) {
  * @type {Function}
  */
 DataStore.prototype.constructor = DataStore;
+
+/**
+ * Adds an event listener
+ *
+ * @method addListener
+ * @memberOf DataStore
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link DataStore}
+ */
+DataStore.prototype.addListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
 
 /**
  * Batch sets or deletes data in the store
@@ -162,7 +175,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 	    deferreds = [];
 
 	if ( events ) {
-		observer.fire( self, "beforeDataBatch", data );
+		this.emit( "beforeDataBatch", data );
 	}
 
 	if ( sync ) {
@@ -173,7 +186,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 		this.loaded = true;
 
 		if ( events ) {
-			observer.fire( this, "afterDataBatch", this.records );
+			this.emit( "afterDataBatch", this.records );
 		}
 
 		defer.resolve( this.records );
@@ -194,10 +207,10 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 			self.loaded = true;
 
 			if ( events ) {
-				observer.fire( self, "afterDataBatch", self.records );
+				self.emit( "afterDataBatch", self.records );
 			}
 
-			array.each( self.datalists, function ( i ) {
+			array.each( self.lists, function ( i ) {
 				i.refresh( true, true );
 			} );
 
@@ -211,7 +224,10 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 
 			defer.resolve( self.records );
 		}, function ( e ) {
-			observer.fire( self, "failedDataBatch", e );
+			if ( events ) {
+				self.emit( "failedDataBatch", e );
+			}
+
 			defer.reject( e );
 		} );
 	}
@@ -250,10 +266,10 @@ DataStore.prototype.clear = function ( sync ) {
 
 	if ( !sync ) {
 		if ( events ) {
-			observer.fire( this, "beforeDataClear" );
+			this.emit( "beforeDataClear" );
 		}
 
-		array.each( this.datalists, function ( i ) {
+		array.each( this.lists, function ( i ) {
 			i.teardown( true );
 		} );
 
@@ -261,7 +277,7 @@ DataStore.prototype.clear = function ( sync ) {
 		this.callback    = null;
 		this.collections = [];
 		this.credentials = null;
-		this.datalists   = [];
+		this.lists       = [];
 		this.depth       = 0;
 		this.events      = true;
 		this.expires     = null;
@@ -283,7 +299,7 @@ DataStore.prototype.clear = function ( sync ) {
 		this.uri         = null;
 
 		if ( events ) {
-			observer.fire( this, "afterDataClear" );
+			this.emit( "afterDataClear" );
 		}
 	}
 	else {
@@ -294,7 +310,7 @@ DataStore.prototype.clear = function ( sync ) {
 		this.total       = 0;
 		this.views       = {};
 
-		array.each( this.datalists, function ( i ) {
+		array.each( this.lists, function ( i ) {
 			i.refresh( true, true );
 		} );
 	}
@@ -327,7 +343,7 @@ DataStore.prototype.crawl = function ( arg ) {
 	}
 
 	if ( events ) {
-		observer.fire( this, "beforeDataRetrieve", record );
+		this.emit( "beforeDataRetrieve", record );
 	}
 
 	// Depth of recursion is controled by `maxDepth`
@@ -369,13 +385,13 @@ DataStore.prototype.crawl = function ( arg ) {
 	if ( deferreds.length > 0 ) {
 		utility.when( deferreds ).then( function () {
 			if ( events ) {
-				observer.fire( self, "afterDataRetrieve", record );
+				self.emit( "afterDataRetrieve", record );
 			}
 
 			defer.resolve( record );
 		}, function ( e ) {
 			if ( events ) {
-				observer.fire( self, "failedDataRetrieve", record );
+				self.emit( "failedDataRetrieve", record );
 			}
 
 			defer.reject( e );
@@ -383,7 +399,7 @@ DataStore.prototype.crawl = function ( arg ) {
 	}
 	else {
 		if ( events ) {
-			observer.fire( self, "afterDataRetrieve", record );
+			self.emit( "afterDataRetrieve", record );
 		}
 
 		defer.resolve( record );
@@ -418,7 +434,7 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
 	}
 	else {
 		if ( this.events ) {
-			observer.fire( self, "beforeDataDelete", record );
+			self.emit( "beforeDataDelete", record );
 		}
 
 		if ( this.uri === null || this.callback !== null ) {
@@ -428,7 +444,7 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
 			client.request( this.buildUri( record.key ), "DELETE", function () {
 				self.delComplete( record, reindex, batch, defer );
 			}, function ( e ) {
-				observer.fire( self, "failedDataDelete", e );
+				self.emit( "failedDataDelete", e );
 				defer.reject( e );
 			}, undefined, utility.merge( {withCredentials: this.credentials}, this.headers ) );
 		}
@@ -471,15 +487,28 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 		}
 
 		if ( this.events ) {
-			observer.fire( this, "afterDataDelete", record );
+			this.emit( "afterDataDelete", record );
 		}
 
-		array.each( this.datalists, function ( i ) {
+		array.each( this.lists, function ( i ) {
 			i.refresh( true, true );
 		} );
 	}
 
 	defer.resolve( record.key );
+
+	return this;
+};
+
+/**
+ * Dispatches an event, with optional arguments
+ *
+ * @method emit
+ * @memberOf DataStore
+ * @return {Object} {@link DataStore}
+ */
+DataStore.prototype.dispatch = function () {
+	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
 
 	return this;
 };
@@ -531,58 +560,16 @@ DataStore.prototype.dump = function ( args, fields ) {
 };
 
 /**
- * Hook for observerable.fire
+ * Dispatches an event, with optional arguments
  *
- * @method fire
+ * @method emit
  * @memberOf DataStore
  * @return {Object} {@link DataStore}
  */
-DataStore.prototype.fire = function () {
-	return observer.fire.apply( observer, [this].concat( array.cast( arguments ) ) );
-};
+DataStore.prototype.emit = function () {
+	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
 
-/**
- * Hook for observerable.listeners
- *
- * @method listeners
- * @memberOf DataStore
- * @return {Object} {@link DataStore}
- */
-DataStore.prototype.listeners = function ( e ) {
-	return observer.list( this, e );
-};
-
-/**
- * Hook for observerable.off
- *
- * @method off
- * @memberOf DataStore
- * @return {Object} {@link DataStore}
- */
-DataStore.prototype.off = function ( e, id ) {
-	return observer.remove( this, e, id );
-};
-
-/**
- * Hook for observerable.on
- *
- * @method on
- * @memberOf DataStore
- * @return {Object} {@link DataStore}
- */
-DataStore.prototype.on = function ( e, listener, id, scope, standby ) {
-	return observer.add( this, e, listener, id, scope, standby );
-};
-
-/**
- * Hook for observerable.once
- *
- * @method once
- * @memberOf DataStore
- * @return {Object} {@link DataStore}
- */
-DataStore.prototype.once = function ( e, listener, id, scope, standby ) {
-	return observer.once( this, e, listener, id, scope, standby );
+	return this;
 };
 
 /**
@@ -751,6 +738,67 @@ DataStore.prototype.join = function ( arg, field, join ) {
 };
 
 /**
+ * Gets listeners
+ *
+ * @method listeners
+ * @memberOf DataStore
+ * @param  {String} ev [Optional] Event name
+ * @return {Object} Listeners
+ */
+DataStore.prototype.listeners = function ( ev ) {
+	return ev ? this.observer.listeners[ev] : this.listeners;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method off
+ * @memberOf DataStore
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link DataStore}
+ */
+DataStore.prototype.off = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
+ * Adds an event listener
+ *
+ * @method addListener
+ * @memberOf DataStore
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link DataStore}
+ */
+DataStore.prototype.on = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Adds a short lived event listener
+ *
+ * @method once
+ * @memberOf DataStore
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link DataStore}
+ */
+DataStore.prototype.once = function ( ev, listener, id, scope ) {
+	this.observer.once( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
  * Retrieves only 1 field/property
  *
  * @method only
@@ -802,6 +850,21 @@ DataStore.prototype.reindex = function () {
 			this.keys[this.records[i].key] = i;
 		}
 	}
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeListener
+ * @memberOf DataStore
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link DataStore}
+ */
+DataStore.prototype.removeListener = function ( ev, id ) {
+	this.observer.off( ev, id );
 
 	return this;
 };
@@ -960,13 +1023,13 @@ DataStore.prototype.set = function ( key, data, batch ) {
 		}
 		else {
 			if ( !batch && events ) {
-				observer.fire( self, "beforeDataSet", {key: key, data: data} );
+				self.emit( "beforeDataSet", {key: key, data: data} );
 			}
 
 			client.request( uri, "GET", function ( arg ) {
 				self.setComplete( record, key, self.source ? arg[self.source] : arg, batch, defer );
 			}, function ( e ) {
-				observer.fire( self, "failedDataSet", e );
+				self.emit( "failedDataSet", e );
 				defer.reject( e );
 			}, undefined, utility.merge( {withCredentials: self.credentials}, self.headers ) );
 		}
@@ -985,7 +1048,7 @@ DataStore.prototype.set = function ( key, data, batch ) {
 		}
 
 		if ( !batch && events ) {
-			observer.fire( self, "beforeDataSet", {key: key, data: data} );
+			self.emit( "beforeDataSet", {key: key, data: data} );
 		}
 
 		if ( batch || this.uri === null ) {
@@ -1014,7 +1077,7 @@ DataStore.prototype.set = function ( key, data, batch ) {
 			client.request( uri, method, function ( arg ) {
 				self.setComplete( record, key, self.source ? arg[self.source] : arg, batch, defer );
 			}, function ( e ) {
-				observer.fire( self, "failedDataSet", e );
+				self.emit( "failedDataSet", e );
 				defer.reject( e );
 			}, data, utility.merge( {withCredentials: this.credentials}, this.headers ) );
 		}
@@ -1081,9 +1144,9 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 	}
 
 	if ( !batch && this.events ) {
-		observer.fire( self, "afterDataSet", record );
+		self.emit( "afterDataSet", record );
 
-		array.each( this.datalists, function ( i ) {
+		array.each( this.lists, function ( i ) {
 			i.refresh( true, true );
 		} );
 	}
@@ -1558,7 +1621,7 @@ DataStore.prototype.sync = function () {
 
 		self.batch( "set", data, true ).then( function ( arg ) {
 			if ( events ) {
-				observer.fire( self, "afterDataSync", arg );
+				self.emit( "afterDataSync", arg );
 			}
 
 			defer.resolve( arg );
@@ -1576,14 +1639,14 @@ DataStore.prototype.sync = function () {
 	 */
 	failure = function ( e ) {
 		if ( events ) {
-			observer.fire( self, "failedDataSync", e );
+			self.emit( "failedDataSync", e );
 		}
 
 		defer.reject( e );
 	};
 
 	if ( events ) {
-		observer.fire( this, "beforeDataSync", this.uri );
+		this.emit( "beforeDataSync", this.uri );
 	}
 
 	if ( this.callback !== null ) {
@@ -1633,12 +1696,12 @@ DataStore.prototype.teardown = function () {
 		} );
 	}
 
-	array.each( this.datalists, function ( i ) {
+	array.each( this.lists, function ( i ) {
 		i.teardown();
 	} );
 
 	this.clear( true );
-	observer.fire( this, "afterDataTeardown" );
+	this.emit( "afterDataTeardown" );
 
 	return this;
 };
@@ -1727,37 +1790,4 @@ DataStore.prototype.update = function ( key, data ) {
 	} );
 
 	return defer;
-};
-
-/**
- * Creates a new DataFilter
- *
- * @method filter
- * @memberOf DataStore
- * @return {Object} {@link DataFilter}
- */
-DataStore.prototype.filter = function () {
-	return filter();
-};
-
-/**
- * Creates a new DataGrid
- *
- * @method grid
- * @memberOf DataStore
- * @return {Object} {@link DataGrid}
- */
-DataStore.prototype.grid = function () {
-	return grid();
-};
-
-/**
- * Creates a new DataList
- *
- * @method grid
- * @memberOf DataStore
- * @return {Object} {@link DataList}
- */
-DataStore.prototype.list = function () {
-	return list();
 };

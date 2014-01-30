@@ -244,7 +244,8 @@ var array = {
 		    i, offset;
 
 		if ( async !== true ) {
-			for ( i = 0; i &lt; nth; i++ ) {
+			i = -1;
+			while ( ++i &lt; nth ) {
 				if ( fn.call( obj, obj[i], i ) === false ) {
 					break;
 				}
@@ -259,10 +260,10 @@ var array = {
 			}
 
 			utility.repeat( function () {
-				var i = 0,
+				var i = -1,
 				    idx;
 
-				for ( i = 0; i &lt; size; i++ ) {
+				while ( ++i &lt; size ) {
 					idx = i + offset;
 
 					if ( idx === nth || fn.call( obj, obj[idx], idx ) === false ) {
@@ -387,6 +388,24 @@ var array = {
 				result.push( obj[i] );
 			}
 		}
+
+		return result;
+	},
+
+	/**
+	 * Mingles Arrays and returns a 2D Array
+	 *
+	 * @method mingle
+	 * @param  {Array} obj1 Array to mingle
+	 * @param  {Array} obj2 Array to mingle
+	 * @return {Array}      2D Array
+	 */
+	mingle : function ( obj1, obj2 ) {
+		var result;
+
+		result = obj1.map( function ( i, idx ) {
+			return [i, obj2[idx]];
+		} );
 
 		return result;
 	},
@@ -760,15 +779,13 @@ var client = {
 		    cors    = client.cors( uri );
 
 		array.each( headers, function ( i ) {
-			var header, value;
+			var header = i.split( ": " );
 
-			value         = i.replace( regex.header_value_replace, "" );
-			header        = i.replace( regex.header_replace, "" ).toLowerCase();
-			items[header] = value;
+			items[header[0].toLowerCase()] = header[1];
 
 			if ( allow === null ) {
 				if ( ( !cors && regex.allow.test( header ) ) || ( cors && regex.allow_cors.test( header ) ) ) {
-					allow = value;
+					allow = header[1];
 				}
 			}
 		} );
@@ -933,14 +950,7 @@ var client = {
 	/**
 	 * Creates an XmlHttpRequest to a URI ( aliased to multiple methods )
 	 *
-	 * The returned Deferred will have an .xhr property decorated
-	 *
-	 * Events: before[type]          Fires before the XmlHttpRequest is made, type specific
-	 *         failed[type]          Fires on error
-	 *         progress[type]        Fires on progress
-	 *         progressUpload[type]  Fires on upload progress
-	 *         received[type]        Fires on XHR readystate 2
-	 *         timeout[type]         Fires when XmlHttpRequest times out
+	 * The returned Deferred will have an .xhr
 	 *
 	 * @method request
 	 * @memberOf client
@@ -983,29 +993,24 @@ var client = {
 		// Using a deferred to resolve request
 		defer.then( function ( arg ) {
 			if ( typeof success == "function" ) {
-				success.call( uri, arg, xhr );
+				success.call( xhr, arg, xhr );
 			}
-
-			xhr = null;
 
 			return arg;
 		}, function ( e ) {
 			if ( typeof failure == "function" ) {
-				failure.call( uri, e, xhr );
+				try {
+					return failure.call( xhr, e, xhr );
+				}
+				catch ( err ) {
+					throw err;
+				}
 			}
-
-			xhr = null;
-
-			throw e;
 		} );
-
-		observer.fire( uri, "before" + typed );
 
 		if ( !cors && !regex.get_headers.test( type ) && client.allows( uri, type ) === false ) {
 			xhr.status = 405;
 			defer.reject( null );
-
-			return observer.fire( uri, "failed" + typed, null, xhr );
 		}
 
 		if ( type === "get" && Boolean( cached ) ) {
@@ -1017,40 +1022,8 @@ var client = {
 			}
 
 			defer.resolve( cached.response );
-			observer.fire( uri, "afterGet", cached.response, xhr );
 		}
 		else {
-			xhr[typeof xhr.onreadystatechange != "undefined" ? "onreadystatechange" : "onload"] = function () {
-				client.response( xhr, uri, type, defer );
-			};
-
-			// Setting timeout
-			try {
-				if ( xhr.timeout ) {
-					xhr.timeout = timeout;
-				}
-			}
-			catch ( e ) {}
-
-			// Setting events
-			if ( xhr.ontimeout ) {
-				xhr.ontimeout = function ( e ) {
-					observer.fire( uri, "timeout"  + typed, e, xhr );
-				};
-			}
-
-			if ( xhr.onprogress ) {
-				xhr.onprogress = function ( e ) {
-					observer.fire( uri, "progress" + typed, e, xhr );
-				};
-			}
-
-			if ( xhr.upload && xhr.upload.onprogress ) {
-				xhr.upload.onprogress = function ( e ) {
-					observer.fire( uri, "progressUpload" + typed, e, xhr );
-				};
-			}
-
 			xhr.open( type.toUpperCase(), uri, true );
 
 			// Setting content-type value
@@ -1120,6 +1093,110 @@ var client = {
 				}
 			}
 
+			xhr.onload = function () {
+				var xdr    = client.ie && xhr.readyState === undefined,
+				    shared = true,
+				    o, r, t, redirect;
+
+				if ( !xdr && xhr.readyState === 4 ) {
+					switch ( xhr.status ) {
+						case 200:
+						case 201:
+						case 202:
+						case 203:
+						case 204:
+						case 205:
+						case 206:
+							o = client.headers( xhr, uri, type );
+
+							if ( type === "head" ) {
+								return defer.resolve( o.headers );
+							}
+							else if ( type === "options" ) {
+								return defer.resolve( o.headers );
+							}
+							else if ( type !== "delete" ) {
+								if ( server && regex.priv.test( o.headers["cache-control"] ) ) {
+									shared = false;
+								}
+
+								if ( regex.http_body.test( xhr.status ) ) {
+									t = o.headers["content-type"] || "";
+									r = client.parse( xhr, t );
+
+									if ( r === undefined ) {
+										deferred.reject( new Error( label.serverError ) );
+									}
+								}
+
+								if ( type === "get" && shared ) {
+									cache.set( uri, "response", ( o.response = utility.clone( r, true ) ) );
+								}
+								else {
+									cache.expire( uri, true );
+								}
+							}
+							else if ( type === "delete" ) {
+								cache.expire( uri, true );
+							}
+
+							switch ( xhr.status ) {
+								case 200:
+								case 202:
+								case 203:
+								case 206:
+									defer.resolve( r );
+									break;
+								case 201:
+									if ( ( o.headers.Location === undefined || string.isEmpty( o.headers.Location ) ) && !string.isUrl( r ) ) {
+										deferred.reject( new Error( label.invalidArguments ) );
+									}
+									else {
+										redirect = string.trim ( o.headers.Location || r );
+										client.request( redirect, "GET", function ( arg ) {
+											defer.resolve ( arg );
+										}, function ( e ) {
+											deferred.reject( e );
+										} );
+										break;
+									}
+									break;
+								case 204:
+								case 205:
+									defer.resolve( null );
+									break;
+							}
+							break;
+						case 304:
+							defer.resolve( r );
+							break;
+						case 401:
+							deferred.reject( new Error( label.serverUnauthorized ) );
+							break;
+						case 403:
+							cache.set( uri, "!permission", client.bit( [type] ) );
+							deferred.reject( new Error( label.serverForbidden ) );
+							break;
+						case 405:
+							cache.set( uri, "!permission", client.bit( [type] ) );
+							deferred.reject( new Error( label.serverInvalidMethod ) );
+							break;
+						default:
+							deferred.reject( new Error( label.serverError ) );
+					}
+				}
+				else if ( xdr ) {
+					r = client.parse( xhr, "text/plain" );
+					cache.set( uri, "permission", client.bit( ["get"] ) );
+					cache.set( uri, "response", r );
+					defer.resolve( r );
+				}
+			};
+
+			xhr.onerror = function ( e ) {
+				defer.reject( e );
+			};
+
 			// Firing event & sending request
 			payload !== null ? xhr.send( payload ) : xhr.send();
 		}
@@ -1127,156 +1204,6 @@ var client = {
 		defer.xhr = xhr;
 
 		return defer;
-	},
-
-	/**
-	 * Caches the URI headers & response if received, and fires the relevant events
-	 *
-	 * If state.header is set, an application state change is possible
-	 *
-	 * Permissions are handled if the ACCEPT header is received; a bit is set on the cached
-	 * resource
-	 *
-	 * Events: after[type]  Fires after the XmlHttpRequest response is received, type specific
-	 *         reset        Fires if a 206 response is received
-	 *         failure      Fires if an exception is thrown
-	 *         headers      Fires after a possible state change, with the headers from the response
-	 *
-	 * @method response
-	 * @memberOf client
-	 * @param  {Object} xhr      XMLHttpRequest Object
-	 * @param  {String} uri      URI to query
-	 * @param  {String} type     Type of request
-	 * @param  {Object} defer    Deferred to reconcile with the response
-	 * @return {Undefined}       undefined
-	 */
-	response : function ( xhr, uri, type, defer ) {
-		var typed  = string.capitalize( type.toLowerCase() ),
-		    xdr    = client.ie && xhr.readyState === undefined,
-		    shared = true,
-		    o, r, t, redirect;
-
-		// server-side exception handling
-		function exception ( e, xhr ) {
-			defer.reject( e );
-			observer.fire( uri, "failed" + typed, client.parse( xhr ), xhr );
-		}
-
-		if ( !xdr && xhr.readyState === 2 ) {
-			observer.fire( uri, "received" + typed, null, xhr );
-		}
-		else if ( !xdr && xhr.readyState === 4 ) {
-			switch ( xhr.status ) {
-				case 200:
-				case 201:
-				case 202:
-				case 203:
-				case 204:
-				case 205:
-				case 206:
-					// Caching headers
-					o = client.headers( xhr, uri, type );
-					observer.fire( uri, "headers", o.headers, xhr );
-
-					if ( type === "head" ) {
-						defer.resolve( o.headers );
-
-						return observer.fire( uri, "afterHead", o.headers );
-					}
-					else if ( type === "options" ) {
-						defer.resolve( o.headers );
-
-						return observer.fire( uri, "afterOptions", o.headers );
-					}
-					else if ( type !== "delete" ) {
-						if ( server && regex.priv.test( o.headers["cache-control"] ) ) {
-							shared = false;
-						}
-
-						if ( regex.http_body.test( xhr.status ) ) {
-							t = o.headers["content-type"] || "";
-							r = client.parse( xhr, t );
-
-							if ( r === undefined ) {
-								exception( new Error( label.serverError ), xhr );
-							}
-						}
-
-						if ( type === "get" && shared ) {
-							cache.set( uri, "response", ( o.response = utility.clone( r, true ) ) );
-						}
-						else {
-							cache.expire( uri, true );
-						}
-					}
-					else if ( type === "delete" ) {
-						cache.expire( uri, true );
-					}
-
-					switch ( xhr.status ) {
-						case 200:
-						case 202:
-						case 203:
-						case 206:
-							defer.resolve( r );
-							observer.fire( uri, "after" + typed, r, xhr );
-							break;
-						case 201:
-							if ( ( o.headers.Location === undefined || string.isEmpty ( o.headers.Location ) ) && !string.isUrl ( r ) ) {
-								exception( new Error( label.invalidArguments ), xhr );
-							}
-							else {
-								redirect = string.trim ( o.headers.Location || r );
-								client.request( redirect, "GET", function ( arg ) {
-									defer.resolve ( arg );
-									observer.fire( uri, "after" + typed, arg, xhr );
-								}, function ( e ) {
-									exception( e, xhr );
-								} );
-								break;
-							}
-							break;
-						case 204:
-							defer.resolve( null );
-							observer.fire( uri, "after" + typed, null, xhr );
-							break;
-						case 205:
-							defer.resolve( null );
-							observer.fire( uri, "reset", null, xhr );
-							break;
-					}
-					break;
-				case 304:
-					defer.resolve( r );
-					observer.fire( uri, "after" + typed, r, xhr );
-					break;
-				case 401:
-					exception( new Error( label.serverUnauthorized ), xhr );
-					break;
-				case 403:
-					cache.set( uri, "!permission", client.bit( [type] ) );
-					exception( new Error( label.serverForbidden ), xhr );
-					break;
-				case 405:
-					cache.set( uri, "!permission", client.bit( [type] ) );
-					exception( new Error( label.serverInvalidMethod ), xhr );
-					break;
-				default:
-					exception( new Error( label.serverError ), xhr );
-			}
-
-			try {
-				xhr.onreadystatechange = null;
-			}
-			catch ( e ) {}
-		}
-		else if ( xdr ) {
-			r = client.parse( xhr, "text/plain" );
-			cache.set( uri, "permission", client.bit( ["get"] ) );
-			cache.set( uri, "response", r );
-			defer.resolve( r );
-			observer.fire( uri, "afterGet", r, xhr );
-		}
 	}
 };
 
@@ -1673,7 +1600,7 @@ var list = {
 			utility.merge( instance, options );
 		}
 
-		instance.store.datalists.push( instance );
+		instance.store.lists.push( instance );
 
 		// Rendering if not tied to an API or data is ready
 		if ( instance.store.uri === null || instance.store.loaded ) {
@@ -1695,7 +1622,7 @@ var list = {
 			throw new Error( label.invalidArguments );
 		}
 
-		return number.round( ( !this.filter ? this.total : this.filtered.length ) / this.pageSize, "up" );
+		return Math.ceil( ( !this.filter ? this.total : this.filtered.length ) / this.pageSize );
 	},
 
 	/**
@@ -1789,7 +1716,7 @@ DataList.prototype.pages = function () {
 	    page  = this.pageIndex,
 	    pos   = this.pagination,
 	    range = this.pageRange,
-	    mid   = number.round( number.half( range ), "down" ),
+	    mid   = Math.floor( range / 2 ),
 	    start = page - mid,
 	    end   = page + mid,
 	    total = list.pages.call( this ),
@@ -2105,7 +2032,7 @@ DataList.prototype.teardown = function ( destroy ) {
 		observer.remove( i );
 	} );
 
-	array.each( this.store.datalists, function ( i, idx ) {
+	array.each( this.store.lists, function ( i, idx ) {
 		if ( i.id === self.id ) {
 			this.remove( idx );
 
@@ -2596,27 +2523,6 @@ var element = {
 	 */
 	hasClass : function ( obj, klass ) {
 		return obj.classList.contains( klass );
-	},
-
-	/**
-	 * Determines if Element is equal to arg, supports nodeNames & CSS2+ selectors
-	 *
-	 * @method is
-	 * @memberOf element
-	 * @param  {Mixed}   obj Element
-	 * @param  {String}  arg Property to query
-	 * @return {Boolean}     True if a match
-	 */
-	is : function ( obj, arg ) {
-		if ( regex.selector_is.test( arg ) ) {
-			utility.id( obj );
-			return ( element.find( obj.parentNode, obj.nodeName.toLowerCase() + arg ).filter( function ( i ) {
-				return ( i.id === obj.id );
-			} ).length === 1 );
-		}
-		else {
-			return new RegExp( arg, "i" ).test( obj.nodeName );
-		}
 	},
 
 	/**
@@ -3247,58 +3153,6 @@ var number = {
 	},
 
 	/**
-	 * Formats a Number to a delimited String
-	 *
-	 * @method format
-	 * @memberOf number
-	 * @param  {Number} arg       Number to format
-	 * @param  {String} delimiter [Optional] String to delimit the Number with
-	 * @param  {String} every     [Optional] Position to insert the delimiter, default is 3
-	 * @return {String}           Number represented as a comma delimited String
-	 */
-	format : function ( arg, delimiter, every ) {
-		if ( isNaN( arg ) ) {
-			throw new Error( label.expectedNumber );
-		}
-
-		arg       = arg.toString();
-		delimiter = delimiter || ",";
-		every     = every     || 3;
-
-		var d = arg.indexOf( "." ) > -1 ? "." + arg.replace( regex.number_format_1, "" ) : "",
-		    a = arg.replace( regex.number_format_2, "" ).split( "" ).reverse(),
-		    p = Math.floor( a.length / every ),
-		    i = 1, n, b;
-
-		for ( b = 0; b &lt; p; b++ ) {
-			n = i === 1 ? every : ( every * i ) + ( i === 2 ? 1 : ( i - 1 ) );
-			a.splice( n, 0, delimiter );
-			i++;
-		}
-
-		a = a.reverse().join( "" );
-
-		if ( a.charAt( 0 ) === delimiter ) {
-			a = a.substring( 1 );
-		}
-
-		return a + d;
-	},
-
-	/**
-	 * Returns half of a, or true if a is half of b
-	 *
-	 * @method half
-	 * @memberOf number
-	 * @param  {Number} a Number to divide
-	 * @param  {Number} b [Optional] Number to test a against
-	 * @return {Mixed}    Boolean if b is passed, Number if b is undefined
-	 */
-	half : function ( a, b ) {
-		return b ? ( ( a / b ) === 0.5 ) : ( a / 2 );
-	},
-
-	/**
 	 * Parses the number
 	 *
 	 * @method parse
@@ -3309,29 +3163,6 @@ var number = {
 	 */
 	parse : function ( arg, base ) {
 		return ( base === undefined ) ? parseFloat( arg ) : parseInt( arg, base );
-	},
-
-	/**
-	 * Rounds a number up or down
-	 *
-	 * @method round
-	 * @memberOf number
-	 * @param  {Number} arg       Number to round
-	 * @param  {String} direction [Optional] "up" or "down"
-	 * @return {Number}           Rounded interger
-	 */
-	round : function ( arg, direction ) {
-		arg = number.parse( arg );
-
-		if ( direction === undefined || string.isEmpty( direction ) ) {
-			return number.parse( arg.toFixed( 0 ) );
-		}
-		else if ( regex.down.test( direction ) ) {
-			return ~~( arg );
-		}
-		else {
-			return Math.ceil( arg );
-		}
 	}
 };
 
@@ -3450,7 +3281,7 @@ Observable.prototype.once = function ( ev, handler, id, scope  ) {
 	scope = scope || this;
 
 	return this.on( ev, function () {
-		handler.apply( [scope].concat( array.cast( arguments ) ) );
+		handler.apply( scope, [].concat( array.cast( arguments ) ) );
 		self.off( ev, id );
 	}, id, scope );
 };
@@ -4153,12 +3984,8 @@ var store = {
 	 * @param  {Object} args [Optional] Arguments to set on the store
 	 * @return {Object}      Decorated Object
 	 */
-	decorator : function ( obj, recs, args ) {
-		obj = obj || {};
-		utility.genId( obj );
-
-		// Creating store
-		obj = new DataStore( obj );
+	factory : function ( recs, args ) {
+		var obj = new DataStore();
 
 		if ( args instanceof Object ) {
 			utility.merge( obj, args );
@@ -4237,15 +4064,14 @@ var store = {
  * @constructor
  * @memberOf keigai
  */
-function DataStore ( obj ) {
-	utility.merge( this, obj );
+function DataStore () {
 	this.autosave    = false;
 	this.callback    = null;
 	this.collections = [];
 	this.credentials = null;
-	this.datalists   = [];
+	this.lists       = [];
 	this.depth       = 0;
-	this.events      = false;
+	this.events      = true;
 	this.expires     = null;
 	this.headers     = {Accept: "application/json"};
 	this.ignore      = [];
@@ -4255,6 +4081,7 @@ function DataStore ( obj ) {
 	this.loaded      = false;
 	this.maxDepth    = 0;
 	this.mongodb     = "";
+	this.observer    = observable( 10 );
 	this.pointer     = null;
 	this.records     = [];
 	this.retrieve    = false;
@@ -4275,6 +4102,23 @@ function DataStore ( obj ) {
  * @type {Function}
  */
 DataStore.prototype.constructor = DataStore;
+
+/**
+ * Adds an event listener
+ *
+ * @method addListener
+ * @memberOf DataStore
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link DataStore}
+ */
+DataStore.prototype.addListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
 
 /**
  * Batch sets or deletes data in the store
@@ -4302,7 +4146,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 	    deferreds = [];
 
 	if ( events ) {
-		observer.fire( self, "beforeDataBatch", data );
+		this.emit( "beforeDataBatch", data );
 	}
 
 	if ( sync ) {
@@ -4313,7 +4157,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 		this.loaded = true;
 
 		if ( events ) {
-			observer.fire( this, "afterDataBatch", this.records );
+			this.emit( "afterDataBatch", this.records );
 		}
 
 		defer.resolve( this.records );
@@ -4334,10 +4178,10 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 			self.loaded = true;
 
 			if ( events ) {
-				observer.fire( self, "afterDataBatch", self.records );
+				self.emit( "afterDataBatch", self.records );
 			}
 
-			array.each( self.datalists, function ( i ) {
+			array.each( self.lists, function ( i ) {
 				i.refresh( true, true );
 			} );
 
@@ -4351,7 +4195,10 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 
 			defer.resolve( self.records );
 		}, function ( e ) {
-			observer.fire( self, "failedDataBatch", e );
+			if ( events ) {
+				self.emit( "failedDataBatch", e );
+			}
+
 			defer.reject( e );
 		} );
 	}
@@ -4390,10 +4237,10 @@ DataStore.prototype.clear = function ( sync ) {
 
 	if ( !sync ) {
 		if ( events ) {
-			observer.fire( this, "beforeDataClear" );
+			this.emit( "beforeDataClear" );
 		}
 
-		array.each( this.datalists, function ( i ) {
+		array.each( this.lists, function ( i ) {
 			i.teardown( true );
 		} );
 
@@ -4401,7 +4248,7 @@ DataStore.prototype.clear = function ( sync ) {
 		this.callback    = null;
 		this.collections = [];
 		this.credentials = null;
-		this.datalists   = [];
+		this.lists       = [];
 		this.depth       = 0;
 		this.events      = true;
 		this.expires     = null;
@@ -4423,7 +4270,7 @@ DataStore.prototype.clear = function ( sync ) {
 		this.uri         = null;
 
 		if ( events ) {
-			observer.fire( this, "afterDataClear" );
+			this.emit( "afterDataClear" );
 		}
 	}
 	else {
@@ -4434,7 +4281,7 @@ DataStore.prototype.clear = function ( sync ) {
 		this.total       = 0;
 		this.views       = {};
 
-		array.each( this.datalists, function ( i ) {
+		array.each( this.lists, function ( i ) {
 			i.refresh( true, true );
 		} );
 	}
@@ -4467,7 +4314,7 @@ DataStore.prototype.crawl = function ( arg ) {
 	}
 
 	if ( events ) {
-		observer.fire( this, "beforeDataRetrieve", record );
+		this.emit( "beforeDataRetrieve", record );
 	}
 
 	// Depth of recursion is controled by `maxDepth`
@@ -4509,13 +4356,13 @@ DataStore.prototype.crawl = function ( arg ) {
 	if ( deferreds.length > 0 ) {
 		utility.when( deferreds ).then( function () {
 			if ( events ) {
-				observer.fire( self, "afterDataRetrieve", record );
+				self.emit( "afterDataRetrieve", record );
 			}
 
 			defer.resolve( record );
 		}, function ( e ) {
 			if ( events ) {
-				observer.fire( self, "failedDataRetrieve", record );
+				self.emit( "failedDataRetrieve", record );
 			}
 
 			defer.reject( e );
@@ -4523,7 +4370,7 @@ DataStore.prototype.crawl = function ( arg ) {
 	}
 	else {
 		if ( events ) {
-			observer.fire( self, "afterDataRetrieve", record );
+			self.emit( "afterDataRetrieve", record );
 		}
 
 		defer.resolve( record );
@@ -4558,7 +4405,7 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
 	}
 	else {
 		if ( this.events ) {
-			observer.fire( self, "beforeDataDelete", record );
+			self.emit( "beforeDataDelete", record );
 		}
 
 		if ( this.uri === null || this.callback !== null ) {
@@ -4568,7 +4415,7 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
 			client.request( this.buildUri( record.key ), "DELETE", function () {
 				self.delComplete( record, reindex, batch, defer );
 			}, function ( e ) {
-				observer.fire( self, "failedDataDelete", e );
+				self.emit( "failedDataDelete", e );
 				defer.reject( e );
 			}, undefined, utility.merge( {withCredentials: this.credentials}, this.headers ) );
 		}
@@ -4611,15 +4458,28 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 		}
 
 		if ( this.events ) {
-			observer.fire( this, "afterDataDelete", record );
+			this.emit( "afterDataDelete", record );
 		}
 
-		array.each( this.datalists, function ( i ) {
+		array.each( this.lists, function ( i ) {
 			i.refresh( true, true );
 		} );
 	}
 
 	defer.resolve( record.key );
+
+	return this;
+};
+
+/**
+ * Dispatches an event, with optional arguments
+ *
+ * @method emit
+ * @memberOf DataStore
+ * @return {Object} {@link DataStore}
+ */
+DataStore.prototype.dispatch = function () {
+	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
 
 	return this;
 };
@@ -4671,58 +4531,16 @@ DataStore.prototype.dump = function ( args, fields ) {
 };
 
 /**
- * Hook for observerable.fire
+ * Dispatches an event, with optional arguments
  *
- * @method fire
+ * @method emit
  * @memberOf DataStore
  * @return {Object} {@link DataStore}
  */
-DataStore.prototype.fire = function () {
-	return observer.fire.apply( observer, [this].concat( array.cast( arguments ) ) );
-};
+DataStore.prototype.emit = function () {
+	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
 
-/**
- * Hook for observerable.listeners
- *
- * @method listeners
- * @memberOf DataStore
- * @return {Object} {@link DataStore}
- */
-DataStore.prototype.listeners = function ( e ) {
-	return observer.list( this, e );
-};
-
-/**
- * Hook for observerable.off
- *
- * @method off
- * @memberOf DataStore
- * @return {Object} {@link DataStore}
- */
-DataStore.prototype.off = function ( e, id ) {
-	return observer.remove( this, e, id );
-};
-
-/**
- * Hook for observerable.on
- *
- * @method on
- * @memberOf DataStore
- * @return {Object} {@link DataStore}
- */
-DataStore.prototype.on = function ( e, listener, id, scope, standby ) {
-	return observer.add( this, e, listener, id, scope, standby );
-};
-
-/**
- * Hook for observerable.once
- *
- * @method once
- * @memberOf DataStore
- * @return {Object} {@link DataStore}
- */
-DataStore.prototype.once = function ( e, listener, id, scope, standby ) {
-	return observer.once( this, e, listener, id, scope, standby );
+	return this;
 };
 
 /**
@@ -4891,6 +4709,67 @@ DataStore.prototype.join = function ( arg, field, join ) {
 };
 
 /**
+ * Gets listeners
+ *
+ * @method listeners
+ * @memberOf DataStore
+ * @param  {String} ev [Optional] Event name
+ * @return {Object} Listeners
+ */
+DataStore.prototype.listeners = function ( ev ) {
+	return ev ? this.observer.listeners[ev] : this.listeners;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method off
+ * @memberOf DataStore
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link DataStore}
+ */
+DataStore.prototype.off = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
+ * Adds an event listener
+ *
+ * @method addListener
+ * @memberOf DataStore
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link DataStore}
+ */
+DataStore.prototype.on = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Adds a short lived event listener
+ *
+ * @method once
+ * @memberOf DataStore
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link DataStore}
+ */
+DataStore.prototype.once = function ( ev, listener, id, scope ) {
+	this.observer.once( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
  * Retrieves only 1 field/property
  *
  * @method only
@@ -4942,6 +4821,21 @@ DataStore.prototype.reindex = function () {
 			this.keys[this.records[i].key] = i;
 		}
 	}
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeListener
+ * @memberOf DataStore
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link DataStore}
+ */
+DataStore.prototype.removeListener = function ( ev, id ) {
+	this.observer.off( ev, id );
 
 	return this;
 };
@@ -5100,13 +4994,13 @@ DataStore.prototype.set = function ( key, data, batch ) {
 		}
 		else {
 			if ( !batch && events ) {
-				observer.fire( self, "beforeDataSet", {key: key, data: data} );
+				self.emit( "beforeDataSet", {key: key, data: data} );
 			}
 
 			client.request( uri, "GET", function ( arg ) {
 				self.setComplete( record, key, self.source ? arg[self.source] : arg, batch, defer );
 			}, function ( e ) {
-				observer.fire( self, "failedDataSet", e );
+				self.emit( "failedDataSet", e );
 				defer.reject( e );
 			}, undefined, utility.merge( {withCredentials: self.credentials}, self.headers ) );
 		}
@@ -5125,7 +5019,7 @@ DataStore.prototype.set = function ( key, data, batch ) {
 		}
 
 		if ( !batch && events ) {
-			observer.fire( self, "beforeDataSet", {key: key, data: data} );
+			self.emit( "beforeDataSet", {key: key, data: data} );
 		}
 
 		if ( batch || this.uri === null ) {
@@ -5154,7 +5048,7 @@ DataStore.prototype.set = function ( key, data, batch ) {
 			client.request( uri, method, function ( arg ) {
 				self.setComplete( record, key, self.source ? arg[self.source] : arg, batch, defer );
 			}, function ( e ) {
-				observer.fire( self, "failedDataSet", e );
+				self.emit( "failedDataSet", e );
 				defer.reject( e );
 			}, data, utility.merge( {withCredentials: this.credentials}, this.headers ) );
 		}
@@ -5221,9 +5115,9 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 	}
 
 	if ( !batch && this.events ) {
-		observer.fire( self, "afterDataSet", record );
+		self.emit( "afterDataSet", record );
 
-		array.each( this.datalists, function ( i ) {
+		array.each( this.lists, function ( i ) {
 			i.refresh( true, true );
 		} );
 	}
@@ -5698,7 +5592,7 @@ DataStore.prototype.sync = function () {
 
 		self.batch( "set", data, true ).then( function ( arg ) {
 			if ( events ) {
-				observer.fire( self, "afterDataSync", arg );
+				self.emit( "afterDataSync", arg );
 			}
 
 			defer.resolve( arg );
@@ -5716,14 +5610,14 @@ DataStore.prototype.sync = function () {
 	 */
 	failure = function ( e ) {
 		if ( events ) {
-			observer.fire( self, "failedDataSync", e );
+			self.emit( "failedDataSync", e );
 		}
 
 		defer.reject( e );
 	};
 
 	if ( events ) {
-		observer.fire( this, "beforeDataSync", this.uri );
+		this.emit( "beforeDataSync", this.uri );
 	}
 
 	if ( this.callback !== null ) {
@@ -5773,12 +5667,12 @@ DataStore.prototype.teardown = function () {
 		} );
 	}
 
-	array.each( this.datalists, function ( i ) {
+	array.each( this.lists, function ( i ) {
 		i.teardown();
 	} );
 
 	this.clear( true );
-	observer.fire( this, "afterDataTeardown" );
+	this.emit( "afterDataTeardown" );
 
 	return this;
 };
@@ -5867,39 +5761,6 @@ DataStore.prototype.update = function ( key, data ) {
 	} );
 
 	return defer;
-};
-
-/**
- * Creates a new DataFilter
- *
- * @method filter
- * @memberOf DataStore
- * @return {Object} {@link DataFilter}
- */
-DataStore.prototype.filter = function () {
-	return filter();
-};
-
-/**
- * Creates a new DataGrid
- *
- * @method grid
- * @memberOf DataStore
- * @return {Object} {@link DataGrid}
- */
-DataStore.prototype.grid = function () {
-	return grid();
-};
-
-/**
- * Creates a new DataList
- *
- * @method grid
- * @memberOf DataStore
- * @return {Object} {@link DataList}
- */
-DataStore.prototype.list = function () {
-	return list();
 };
 
 /**
@@ -7646,12 +7507,10 @@ WORKER = "var " + string.fromObject( array, "array" ) + ", " + string.fromObject
 
 // Interface
 return {
-	store      : store.decorator,
-	list       : list.factory,
-	filter     : filter,
-	grid       : grid,
-	observable : observable,
-	version    : "0.1.1"
+	store   : store.factory,
+	list    : list.factory,
+	grid    : grid,
+	version : "0.1.1"
 };
 
 } )();
@@ -7679,13 +7538,13 @@ else {
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="datastore.html">datastore</a></li><li><a href="element.html">element</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="list.html">list</a></li><li><a href="number.html">number</a></li><li><a href="observer.html">observer</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#datafilter">datafilter</a></li><li><a href="global.html#datagrid">datagrid</a></li><li><a href="global.html#deferred">deferred</a></li><li><a href="global.html#isBoolean">isBoolean</a></li><li><a href="global.html#isNumber">isNumber</a></li><li><a href="global.html#lru">lru</a></li><li><a href="global.html#observable">observable</a></li><li><a href="global.html#toCamelCase">toCamelCase</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="datastore.html">datastore</a></li><li><a href="element.html">element</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="list.html">list</a></li><li><a href="number.html">number</a></li><li><a href="observer.html">observer</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#datafilter">datafilter</a></li><li><a href="global.html#datagrid">datagrid</a></li><li><a href="global.html#deferred">deferred</a></li><li><a href="global.html#isBoolean">isBoolean</a></li><li><a href="global.html#isNumber">isNumber</a></li><li><a href="global.html#lru">lru</a></li><li><a href="global.html#mingle">mingle</a></li><li><a href="global.html#observable">observable</a></li><li><a href="global.html#toCamelCase">toCamelCase</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Thu Jan 30 2014 06:09:46 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Thu Jan 30 2014 18:03:20 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

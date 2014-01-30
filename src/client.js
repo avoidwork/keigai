@@ -134,15 +134,13 @@ var client = {
 		    cors    = client.cors( uri );
 
 		array.each( headers, function ( i ) {
-			var header, value;
+			var header = i.split( ": " );
 
-			value         = i.replace( regex.header_value_replace, "" );
-			header        = i.replace( regex.header_replace, "" ).toLowerCase();
-			items[header] = value;
+			items[header[0].toLowerCase()] = header[1];
 
 			if ( allow === null ) {
 				if ( ( !cors && regex.allow.test( header ) ) || ( cors && regex.allow_cors.test( header ) ) ) {
-					allow = value;
+					allow = header[1];
 				}
 			}
 		} );
@@ -307,14 +305,7 @@ var client = {
 	/**
 	 * Creates an XmlHttpRequest to a URI ( aliased to multiple methods )
 	 *
-	 * The returned Deferred will have an .xhr property decorated
-	 *
-	 * Events: before[type]          Fires before the XmlHttpRequest is made, type specific
-	 *         failed[type]          Fires on error
-	 *         progress[type]        Fires on progress
-	 *         progressUpload[type]  Fires on upload progress
-	 *         received[type]        Fires on XHR readystate 2
-	 *         timeout[type]         Fires when XmlHttpRequest times out
+	 * The returned Deferred will have an .xhr
 	 *
 	 * @method request
 	 * @memberOf client
@@ -357,29 +348,24 @@ var client = {
 		// Using a deferred to resolve request
 		defer.then( function ( arg ) {
 			if ( typeof success == "function" ) {
-				success.call( uri, arg, xhr );
+				success.call( xhr, arg, xhr );
 			}
-
-			xhr = null;
 
 			return arg;
 		}, function ( e ) {
 			if ( typeof failure == "function" ) {
-				failure.call( uri, e, xhr );
+				try {
+					return failure.call( xhr, e, xhr );
+				}
+				catch ( err ) {
+					throw err;
+				}
 			}
-
-			xhr = null;
-
-			throw e;
 		} );
-
-		observer.fire( uri, "before" + typed );
 
 		if ( !cors && !regex.get_headers.test( type ) && client.allows( uri, type ) === false ) {
 			xhr.status = 405;
 			defer.reject( null );
-
-			return observer.fire( uri, "failed" + typed, null, xhr );
 		}
 
 		if ( type === "get" && Boolean( cached ) ) {
@@ -391,40 +377,8 @@ var client = {
 			}
 
 			defer.resolve( cached.response );
-			observer.fire( uri, "afterGet", cached.response, xhr );
 		}
 		else {
-			xhr[typeof xhr.onreadystatechange != "undefined" ? "onreadystatechange" : "onload"] = function () {
-				client.response( xhr, uri, type, defer );
-			};
-
-			// Setting timeout
-			try {
-				if ( xhr.timeout ) {
-					xhr.timeout = timeout;
-				}
-			}
-			catch ( e ) {}
-
-			// Setting events
-			if ( xhr.ontimeout ) {
-				xhr.ontimeout = function ( e ) {
-					observer.fire( uri, "timeout"  + typed, e, xhr );
-				};
-			}
-
-			if ( xhr.onprogress ) {
-				xhr.onprogress = function ( e ) {
-					observer.fire( uri, "progress" + typed, e, xhr );
-				};
-			}
-
-			if ( xhr.upload && xhr.upload.onprogress ) {
-				xhr.upload.onprogress = function ( e ) {
-					observer.fire( uri, "progressUpload" + typed, e, xhr );
-				};
-			}
-
 			xhr.open( type.toUpperCase(), uri, true );
 
 			// Setting content-type value
@@ -494,6 +448,110 @@ var client = {
 				}
 			}
 
+			xhr.onload = function () {
+				var xdr    = client.ie && xhr.readyState === undefined,
+				    shared = true,
+				    o, r, t, redirect;
+
+				if ( !xdr && xhr.readyState === 4 ) {
+					switch ( xhr.status ) {
+						case 200:
+						case 201:
+						case 202:
+						case 203:
+						case 204:
+						case 205:
+						case 206:
+							o = client.headers( xhr, uri, type );
+
+							if ( type === "head" ) {
+								return defer.resolve( o.headers );
+							}
+							else if ( type === "options" ) {
+								return defer.resolve( o.headers );
+							}
+							else if ( type !== "delete" ) {
+								if ( server && regex.priv.test( o.headers["cache-control"] ) ) {
+									shared = false;
+								}
+
+								if ( regex.http_body.test( xhr.status ) ) {
+									t = o.headers["content-type"] || "";
+									r = client.parse( xhr, t );
+
+									if ( r === undefined ) {
+										deferred.reject( new Error( label.serverError ) );
+									}
+								}
+
+								if ( type === "get" && shared ) {
+									cache.set( uri, "response", ( o.response = utility.clone( r, true ) ) );
+								}
+								else {
+									cache.expire( uri, true );
+								}
+							}
+							else if ( type === "delete" ) {
+								cache.expire( uri, true );
+							}
+
+							switch ( xhr.status ) {
+								case 200:
+								case 202:
+								case 203:
+								case 206:
+									defer.resolve( r );
+									break;
+								case 201:
+									if ( ( o.headers.Location === undefined || string.isEmpty( o.headers.Location ) ) && !string.isUrl( r ) ) {
+										deferred.reject( new Error( label.invalidArguments ) );
+									}
+									else {
+										redirect = string.trim ( o.headers.Location || r );
+										client.request( redirect, "GET", function ( arg ) {
+											defer.resolve ( arg );
+										}, function ( e ) {
+											deferred.reject( e );
+										} );
+										break;
+									}
+									break;
+								case 204:
+								case 205:
+									defer.resolve( null );
+									break;
+							}
+							break;
+						case 304:
+							defer.resolve( r );
+							break;
+						case 401:
+							deferred.reject( new Error( label.serverUnauthorized ) );
+							break;
+						case 403:
+							cache.set( uri, "!permission", client.bit( [type] ) );
+							deferred.reject( new Error( label.serverForbidden ) );
+							break;
+						case 405:
+							cache.set( uri, "!permission", client.bit( [type] ) );
+							deferred.reject( new Error( label.serverInvalidMethod ) );
+							break;
+						default:
+							deferred.reject( new Error( label.serverError ) );
+					}
+				}
+				else if ( xdr ) {
+					r = client.parse( xhr, "text/plain" );
+					cache.set( uri, "permission", client.bit( ["get"] ) );
+					cache.set( uri, "response", r );
+					defer.resolve( r );
+				}
+			};
+
+			xhr.onerror = function ( e ) {
+				defer.reject( e );
+			};
+
 			// Firing event & sending request
 			payload !== null ? xhr.send( payload ) : xhr.send();
 		}
@@ -501,155 +559,5 @@ var client = {
 		defer.xhr = xhr;
 
 		return defer;
-	},
-
-	/**
-	 * Caches the URI headers & response if received, and fires the relevant events
-	 *
-	 * If state.header is set, an application state change is possible
-	 *
-	 * Permissions are handled if the ACCEPT header is received; a bit is set on the cached
-	 * resource
-	 *
-	 * Events: after[type]  Fires after the XmlHttpRequest response is received, type specific
-	 *         reset        Fires if a 206 response is received
-	 *         failure      Fires if an exception is thrown
-	 *         headers      Fires after a possible state change, with the headers from the response
-	 *
-	 * @method response
-	 * @memberOf client
-	 * @param  {Object} xhr      XMLHttpRequest Object
-	 * @param  {String} uri      URI to query
-	 * @param  {String} type     Type of request
-	 * @param  {Object} defer    Deferred to reconcile with the response
-	 * @return {Undefined}       undefined
-	 */
-	response : function ( xhr, uri, type, defer ) {
-		var typed  = string.capitalize( type.toLowerCase() ),
-		    xdr    = client.ie && xhr.readyState === undefined,
-		    shared = true,
-		    o, r, t, redirect;
-
-		// server-side exception handling
-		function exception ( e, xhr ) {
-			defer.reject( e );
-			observer.fire( uri, "failed" + typed, client.parse( xhr ), xhr );
-		}
-
-		if ( !xdr && xhr.readyState === 2 ) {
-			observer.fire( uri, "received" + typed, null, xhr );
-		}
-		else if ( !xdr && xhr.readyState === 4 ) {
-			switch ( xhr.status ) {
-				case 200:
-				case 201:
-				case 202:
-				case 203:
-				case 204:
-				case 205:
-				case 206:
-					// Caching headers
-					o = client.headers( xhr, uri, type );
-					observer.fire( uri, "headers", o.headers, xhr );
-
-					if ( type === "head" ) {
-						defer.resolve( o.headers );
-
-						return observer.fire( uri, "afterHead", o.headers );
-					}
-					else if ( type === "options" ) {
-						defer.resolve( o.headers );
-
-						return observer.fire( uri, "afterOptions", o.headers );
-					}
-					else if ( type !== "delete" ) {
-						if ( server && regex.priv.test( o.headers["cache-control"] ) ) {
-							shared = false;
-						}
-
-						if ( regex.http_body.test( xhr.status ) ) {
-							t = o.headers["content-type"] || "";
-							r = client.parse( xhr, t );
-
-							if ( r === undefined ) {
-								exception( new Error( label.serverError ), xhr );
-							}
-						}
-
-						if ( type === "get" && shared ) {
-							cache.set( uri, "response", ( o.response = utility.clone( r, true ) ) );
-						}
-						else {
-							cache.expire( uri, true );
-						}
-					}
-					else if ( type === "delete" ) {
-						cache.expire( uri, true );
-					}
-
-					switch ( xhr.status ) {
-						case 200:
-						case 202:
-						case 203:
-						case 206:
-							defer.resolve( r );
-							observer.fire( uri, "after" + typed, r, xhr );
-							break;
-						case 201:
-							if ( ( o.headers.Location === undefined || string.isEmpty ( o.headers.Location ) ) && !string.isUrl ( r ) ) {
-								exception( new Error( label.invalidArguments ), xhr );
-							}
-							else {
-								redirect = string.trim ( o.headers.Location || r );
-								client.request( redirect, "GET", function ( arg ) {
-									defer.resolve ( arg );
-									observer.fire( uri, "after" + typed, arg, xhr );
-								}, function ( e ) {
-									exception( e, xhr );
-								} );
-								break;
-							}
-							break;
-						case 204:
-							defer.resolve( null );
-							observer.fire( uri, "after" + typed, null, xhr );
-							break;
-						case 205:
-							defer.resolve( null );
-							observer.fire( uri, "reset", null, xhr );
-							break;
-					}
-					break;
-				case 304:
-					defer.resolve( r );
-					observer.fire( uri, "after" + typed, r, xhr );
-					break;
-				case 401:
-					exception( new Error( label.serverUnauthorized ), xhr );
-					break;
-				case 403:
-					cache.set( uri, "!permission", client.bit( [type] ) );
-					exception( new Error( label.serverForbidden ), xhr );
-					break;
-				case 405:
-					cache.set( uri, "!permission", client.bit( [type] ) );
-					exception( new Error( label.serverInvalidMethod ), xhr );
-					break;
-				default:
-					exception( new Error( label.serverError ), xhr );
-			}
-
-			try {
-				xhr.onreadystatechange = null;
-			}
-			catch ( e ) {}
-		}
-		else if ( xdr ) {
-			r = client.parse( xhr, "text/plain" );
-			cache.set( uri, "permission", client.bit( ["get"] ) );
-			cache.set( uri, "response", r );
-			defer.resolve( r );
-			observer.fire( uri, "afterGet", r, xhr );
-		}
 	}
 };

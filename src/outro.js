@@ -6,12 +6,10 @@ WORKER = "var " + string.fromObject( array, "array" ) + ", " + string.fromObject
 
 // Interface
 return {
-	store      : store.decorator,
-	list       : list.factory,
-	filter     : filter,
-	grid       : grid,
-	observable : observable,
-	version    : "{{VERSION}}"
+	store   : store.factory,
+	list    : list.factory,
+	grid    : grid,
+	version : "{{VERSION}}"
 };
 
 } )();

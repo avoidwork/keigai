@@ -113,7 +113,7 @@ Observable.prototype.once = function ( ev, handler, id, scope  ) {
 	scope = scope || this;
 
 	return this.on( ev, function () {
-		handler.apply( [scope].concat( array.cast( arguments ) ) );
+		handler.apply( scope, [].concat( array.cast( arguments ) ) );
 		self.off( ev, id );
 	}, id, scope );
 };
