@@ -196,8 +196,6 @@ var element = {
 	 * @return {Undefined} undefined
 	 */
 	destroy : function ( obj ) {
-		observer.remove( obj );
-
 		if ( obj.parentNode !== null ) {
 			obj.parentNode.removeChild( obj );
 		}
@@ -368,8 +366,6 @@ var element = {
 	 * @return {Object}      Element
 	 */
 	update : function ( obj, args ) {
-		args = args || {};
-
 		utility.iterate( args, function ( v, k ) {
 			if ( regex.element_update.test( k ) ) {
 				obj[k] = v;
@@ -379,14 +375,6 @@ var element = {
 			}
 			else if ( k.indexOf( "data-" ) === 0 ) {
 				element.data( obj, k.replace( "data-", "" ), v );
-			}
-			else if ( k === "id" ) {
-				var o = observer.listeners;
-
-				if ( o[obj.id] ) {
-					o[k] = o[obj.id];
-					delete o[obj.id];
-				}
 			}
 			else {
 				element.attr ( obj, k, v );

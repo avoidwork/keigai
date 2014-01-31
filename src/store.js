@@ -109,7 +109,7 @@ function DataStore () {
 	this.loaded      = false;
 	this.maxDepth    = 0;
 	this.mongodb     = "";
-	this.observer    = observable.factory( 10 );
+	this.observer    = new Observable();
 	this.pointer     = null;
 	this.records     = [];
 	this.retrieve    = false;
@@ -1115,7 +1115,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 
 		this.keys[key]                = record.index;
 		this.records[record.index]    = record;
-		this.versions[record.key]     = lru( VERSIONS );
+		this.versions[record.key]     = new LRU( VERSIONS );
 		this.versions[record.key].nth = 0;
 
 		if ( this.retrieve ) {
@@ -1199,7 +1199,7 @@ DataStore.prototype.setExpires = function ( arg ) {
 		}
 
 		if ( !cache.expire( self.uri ) ) {
-			observer.fire( self.uri, "beforeExpire, expire, afterExpire" );
+			//observer.fire( self.uri, "beforeExpire, expire, afterExpire" );
 		}
 	}, expires, id, false );
 };
@@ -1242,17 +1242,17 @@ DataStore.prototype.setUri = function ( arg ) {
 	}
 
 	if ( this.uri !== null) {
-		observer.remove( this.uri );
+		//observer.remove( this.uri );
 	}
 
 	this.uri = uri;
 
 	if ( this.uri !== null ) {
-		observer.add( this.uri, "expire", function () {
+		/*observer.add( this.uri, "expire", function () {
 			this.sync();
-		}, "dataSync", this);
+		}, "dataSync", this);*/
 
-		cache.expire( this.uri, true );
+		cache.expire( this.uri );
 
 		this.sync().then( function (arg ) {
 			defer.resolve( arg );
@@ -1670,7 +1670,7 @@ DataStore.prototype.teardown = function () {
 
 	if ( uri !== null ) {
 		cache.expire( uri, true );
-		observer.remove( uri );
+		//observer.remove( uri );
 
 		id = this.id + "DataExpire";
 		utility.clearTimers( id );
@@ -1679,7 +1679,7 @@ DataStore.prototype.teardown = function () {
 			var recordUri = uri + "/" + i.key;
 
 			cache.expire( recordUri, true );
-			observer.remove( recordUri );
+			//observer.remove( recordUri );
 
 			utility.iterate( i.data, function ( v ) {
 				if ( v === null ) {
@@ -1687,7 +1687,7 @@ DataStore.prototype.teardown = function () {
 				}
 
 				if ( v.data && typeof v.data.teardown == "function" ) {
-					observer.remove( v.id );
+					//observer.remove( v.id );
 					v.data.teardown();
 				}
 			} );

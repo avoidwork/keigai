@@ -1,22 +1,4 @@
 /**
- * @namespace lru
- * @private
- */
-var lru = {
-	/**
-	 * LRU cache factory
-	 *
-	 * @method factory
-	 * @memberOf lru
-	 * @param  {Number} max [Optional] Max size of cache, default is 1000
-	 * @return {Object} {@link keigai.LRU}
-	 */
-	factory : function ( max ) {
-		return new LRU( max );
-	}
-};
-
-/**
  * Creates a new Least Recently Used cache
  *
  * @constructor

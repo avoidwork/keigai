@@ -31,7 +31,6 @@ module.exports = function (grunt) {
 					"src/lru.js",
 					"src/number.js",
 					"src/observable.js",
-					"src/observer.js",
 					"src/promise.js",
 					"src/store.js",
 					"src/string.js",

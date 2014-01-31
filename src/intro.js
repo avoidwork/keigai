@@ -5,6 +5,7 @@ var document  = global.document,
     navigator = global.navigator,
     server    = typeof process != "undefined",
     webWorker = typeof Blob != "undefined" && typeof Worker != "undefined",
+    MAX       = 10,
     VERSIONS  = 100,
     http, https, lib, url, WORKER;
 

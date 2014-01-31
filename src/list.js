@@ -22,7 +22,7 @@ var list = {
 			throw new Error( label.invalidArguments );
 		}
 
-		obj = element.create( "ul", {"class": "list", id: store.parentNode.id + "-datalist"}, target );
+		obj = element.create( "ul", {"class": "list"}, target );
 
 		// Creating instance
 		instance = new DataList( obj, ref[0], template );
@@ -32,6 +32,9 @@ var list = {
 		}
 
 		instance.store.lists.push( instance );
+
+		// Hooking observable into DOM events
+		instance.observer.watch( obj, "click" );
 
 		// Rendering if not tied to an API or data is ready
 		if ( instance.store.uri === null || instance.store.loaded ) {
@@ -85,6 +88,7 @@ function DataList ( element, store, template ) {
 	this.filter      = null;
 	this.filtered    = [];
 	this.id          = utility.genId();
+	this.observer    = new Observable();
 	this.pageIndex   = 1;
 	this.pageSize    = null;
 	this.pageRange   = 5;
@@ -141,7 +145,7 @@ DataList.prototype.page = function ( arg, redraw, create ) {
  * @return {Object} {@link keigai.DataList}
  */
 DataList.prototype.pages = function () {
-	var self  = this,
+	var /*self  = this,*/
 	    obj   = this.element,
 	    page  = this.pageIndex,
 	    pos   = this.pagination,
@@ -220,7 +224,7 @@ DataList.prototype.pages = function () {
 		element.klass( el, "hidden", false );
 
 		// Click handler scrolls to top the top of page
-		observer.add( el, "click", function ( e ) {
+		/*observer.add( el, "click", function ( e ) {
 			var target = utility.target( e );
 
 			utility.stop( e );
@@ -228,7 +232,7 @@ DataList.prototype.pages = function () {
 			if ( target.nodeName === "A" ) {
 				self.page( element.data( target, "page") );
 			}
-		}, "pagination");
+		}, "pagination");*/
 	} );
 
 	return this;
@@ -261,7 +265,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 	redraw = ( redraw !== false );
 	create = ( create === true );
 
-	observer.fire( el, "beforeDataListRefresh" );
+	//observer.fire( el, "beforeDataListRefresh" );
 
 	// Function to create templates for the html rep
 	if ( !template ) {
@@ -423,7 +427,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 		} );
 	}
 
-	observer.fire( el, "afterDataListRefresh" );
+	//observer.fire( el, "afterDataListRefresh" );
 
 	return this;
 };
@@ -453,14 +457,14 @@ DataList.prototype.sort = function ( order, create ) {
  */
 DataList.prototype.teardown = function ( destroy ) {
 	destroy  = ( destroy === true );
-	var self = this,
-	    id   = this.element.id;
+	var self = this;/*,
+	    id   = this.element.id;*/
 
-	observer.remove( id );
+	//observer.remove( id );
 
-	array.each( utility.dom( "#" + id + "-pages-top, #" + id + "-pages-bottom" ), function ( i ) {
+	/*array.each( utility.dom( "#" + id + "-pages-top, #" + id + "-pages-bottom" ), function ( i ) {
 		observer.remove( i );
-	} );
+	} );*/
 
 	array.each( this.store.lists, function ( i, idx ) {
 		if ( i.id === self.id ) {

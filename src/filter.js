@@ -60,8 +60,8 @@ DataListFilter.prototype.constructor = DataListFilter;
  * @return {Object} {@link keigai.DataListFilter}
  */
 DataListFilter.prototype.init = function () {
-	observer.add( this.element, "keyup", this.update, "filter", this );
-	observer.add( this.element, "input", this.update, "value",  this );
+	//observer.add( this.element, "keyup", this.update, "filter", this );
+	//observer.add( this.element, "input", this.update, "value",  this );
 
 	return this;
 };
@@ -96,8 +96,8 @@ DataListFilter.prototype.set = function ( fields ) {
  * @return {Object} {@link keigai.DataListFilter}
  */
 DataListFilter.prototype.teardown = function () {
-	observer.remove( this.element, "keyup", "filter" );
-	observer.remove( this.element, "input", "value" );
+	//observer.remove( this.element, "keyup", "filter" );
+	//observer.remove( this.element, "input", "value" );
 
 	return this;
 };

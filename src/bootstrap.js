@@ -6,19 +6,6 @@
  * @return {Undefined} undefined
  */
 function bootstrap () {
-	// Removes references to deleted DOM elements, avoiding memory leaks
-	function cleanup ( obj ) {
-		observer.remove( obj );
-
-		if ( utility.observers[obj.id] ) {
-			delete utility.observers[obj.id];
-		}
-
-		array.each( array.cast( obj.childNodes ), function ( i ) {
-			cleanup( i );
-		} );
-	}
-
 	// Second phase
 	function init () {
 		// Cache garbage collector (every minute)
@@ -35,9 +22,6 @@ function bootstrap () {
 			return false;
 		}
 	}
-
-	// Creating error log
-	utility.error.log = [];
 
 	// Describing the Client
 	if ( !server ) {
@@ -133,50 +117,6 @@ function bootstrap () {
 	// Caching functions
 	has   = Object.prototype.hasOwnProperty;
 	slice = Array.prototype.slice;
-
-	// Setting events & garbage collection
-	if ( !server ) {
-		// DOM 4+
-		if ( typeof MutationObserver == "function" ) {
-			utility.observers.document = new MutationObserver( function ( arg ) {
-				array.each( arg, function ( record ) {
-					// Added Elements
-					array.each( array.cast( record.addedNodes ).filter( function ( obj ) {
-						return obj.id !== undefined;
-					} ), function( obj ) {
-						utility.genId( obj, true );
-
-						if ( !utility.observers[obj.id] ) {
-							utility.observers[obj.id] = new MutationObserver( function ( arg ) {
-								observer.fire( obj, "change", arg );
-							} );
-
-							utility.observers[obj.id].observe( obj, {attributes: true, attributeOldValue: true, childList: true, characterData: true, characterDataOldValue: true, subtree: true} );
-						}
-					} );
-
-					// Removed Elements
-					array.each( array.cast( record.removedNodes ).filter( function ( obj ) {
-						return obj.id !== undefined;
-					} ), function ( obj ) {
-						cleanup( obj );
-					} );
-				} );
-			} );
-
-			utility.observers.document.observe( document, {childList: true, subtree: true} );
-		}
-		// DOM 3 (slow!)
-		else {
-			observer.add( global, "DOMNodeRemoved", function ( e ) {
-				var obj = utility.target( e );
-
-				if ( obj.id && ( e.relatedNode instanceof Element ) ) {
-					cleanup( obj );
-				}
-			}, "mutation", global, "all");
-		}
-	}
 
 	// Initializing
 	if ( typeof exports != "undefined" || typeof define == "function" || regex.complete_loaded.test( document.readyState ) ) {

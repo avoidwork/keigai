@@ -118,7 +118,7 @@ DataGrid.prototype.init = function ( debounce ) {
 
 		// Setting click handler on sortable "columns"
 		if ( this.sortable.length > 0 ) {
-			observer.add( header, "click", this.sort, "sort", this );
+			//observer.add( header, "click", this.sort, "sort", this );
 		}
 
 		// Creating DataList
@@ -213,7 +213,7 @@ DataGrid.prototype.teardown = function () {
 	this.list.teardown();
 
 	// Removing click handler on DataGrid header
-	observer.remove( element.find( this.element, ".header" )[0], "click", "sort" );
+	//observer.remove( element.find( this.element, ".header" )[0], "click", "sort" );
 
 	// Destroying DataGrid (from DOM)
 	element.destroy( element.find( this.element, ".grid" )[0] );

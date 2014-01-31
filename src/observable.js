@@ -1,22 +1,4 @@
 /**
- * @namespace observable
- * @private
- */
-var observable = {
-	/**
-	 * Observable factory
-	 *
-	 * @method factory
-	 * @memberOf observable
-	 * @param  {Number} arg Maximum listeners, default is 10
-	 * @return {Object} {@link keigai.Observable}
-	 */
-	factory : function ( arg ) {
-		return new Observable( arg );
-	}
-};
-
-/**
  * Creates a new Observable
  *
  * @constructor
@@ -24,7 +6,7 @@ var observable = {
  * @param  {Number} arg Maximum listeners, default is 10
  */
 function Observable ( arg ) {
-	this.limit     = arg || 10;
+	this.limit     = arg || MAX;
 	this.listeners = {};
 }
 
@@ -128,4 +110,28 @@ Observable.prototype.once = function ( ev, handler, id, scope  ) {
 		handler.apply( scope, [].concat( array.cast( arguments ) ) );
 		self.off( ev, id );
 	}, id, scope );
+};
+
+/**
+ * Watches `obj` for a DOM event
+ *
+ * @method watch
+ * @memberOf keigai.Observable
+ * @param  {Object} target Element
+ * @param  {String} ev     Event
+ * @return {Object}        Element
+ */
+Observable.prototype.watch = function ( target, ev ) {
+	var self = this;
+
+	if ( typeof target.addEventListener != "function" ) {
+		throw new Error( label.invalidArguments );
+	}
+	else {
+		target.addEventListener( ev, function ( arg ) {
+			self.dispatch( ev, arg );
+		} );
+	}
+
+	return target;
 };

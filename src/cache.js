@@ -33,17 +33,12 @@ var cache = {
 	 *
 	 * @method expire
 	 * @memberOf cache
-	 * @param  {String}  uri    URI of the local representation
-	 * @param  {Boolean} silent [Optional] If 'true', the event will not fire
-	 * @return {Undefined}      undefined
+	 * @param  {String} uri URI of the local representation
+	 * @return {Boolean} `true` if successful
 	 */
-	expire : function ( uri, silent ) {
+	expire : function ( uri ) {
 		if ( cache.items[uri] ) {
 			delete cache.items[uri];
-
-			if ( silent !== true ) {
-				observer.fire( uri, "beforeExpire, expire, afterExpire" );
-			}
 
 			return true;
 		}

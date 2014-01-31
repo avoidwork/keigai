@@ -286,8 +286,7 @@ var client = {
 		uri = uri.replace( callback + "=?", callback + "=" + external + ".callback." + cbid );
 
 		global.callback[cbid] = function ( arg ) {
-			clearTimeout( utility.timer[cbid] );
-			delete utility.timer[cbid];
+			utility.clearTimers( cbid );
 			delete global.callback[cbid];
 			defer.resolve( arg );
 			element.destroy( s );

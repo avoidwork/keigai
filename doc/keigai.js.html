@@ -42,6 +42,7 @@ var document  = global.document,
     navigator = global.navigator,
     server    = typeof process != "undefined",
     webWorker = typeof Blob != "undefined" && typeof Worker != "undefined",
+    MAX       = 10,
     VERSIONS  = 100,
     http, https, lib, url, WORKER;
 
@@ -92,7 +93,7 @@ var regex = {
 	down                 : /down/,
 	endslash             : /\/$/,
 	eol_nl               : /\n$/,
-	element_update       : /innerHTML|innerText|textContent|type|src/,
+	element_update       : /id|innerHTML|innerText|textContent|type|src/,
 	get_headers          : /^(head|get|options)$/,
 	get_remove_set       : /get|remove|set/,
 	hash                 : /^\#/,
@@ -115,7 +116,6 @@ var regex = {
 	number_present       : /\d{1,}/,
 	number_string        : /number|string/i,
 	number_string_object : /number|object|string/i,
-	observer_globals     : /body|document|window/i,
 	object_type          : /\[object Object\]/,
 	patch                : /^patch$/,
 	primitive            : /^(boolean|function|number|string)$/,
@@ -553,17 +553,12 @@ var cache = {
 	 *
 	 * @method expire
 	 * @memberOf cache
-	 * @param  {String}  uri    URI of the local representation
-	 * @param  {Boolean} silent [Optional] If 'true', the event will not fire
-	 * @return {Undefined}      undefined
+	 * @param  {String} uri URI of the local representation
+	 * @return {Boolean} `true` if successful
 	 */
-	expire : function ( uri, silent ) {
+	expire : function ( uri ) {
 		if ( cache.items[uri] ) {
 			delete cache.items[uri];
-
-			if ( silent !== true ) {
-				observer.fire( uri, "beforeExpire, expire, afterExpire" );
-			}
 
 			return true;
 		}
@@ -932,8 +927,7 @@ var client = {
 		uri = uri.replace( callback + "=?", callback + "=" + external + ".callback." + cbid );
 
 		global.callback[cbid] = function ( arg ) {
-			clearTimeout( utility.timer[cbid] );
-			delete utility.timer[cbid];
+			utility.clearTimers( cbid );
 			delete global.callback[cbid];
 			defer.resolve( arg );
 			element.destroy( s );
@@ -1270,8 +1264,8 @@ DataListFilter.prototype.constructor = DataListFilter;
  * @return {Object} {@link keigai.DataListFilter}
  */
 DataListFilter.prototype.init = function () {
-	observer.add( this.element, "keyup", this.update, "filter", this );
-	observer.add( this.element, "input", this.update, "value",  this );
+	//observer.add( this.element, "keyup", this.update, "filter", this );
+	//observer.add( this.element, "input", this.update, "value",  this );
 
 	return this;
 };
@@ -1306,8 +1300,8 @@ DataListFilter.prototype.set = function ( fields ) {
  * @return {Object} {@link keigai.DataListFilter}
  */
 DataListFilter.prototype.teardown = function () {
-	observer.remove( this.element, "keyup", "filter" );
-	observer.remove( this.element, "input", "value" );
+	//observer.remove( this.element, "keyup", "filter" );
+	//observer.remove( this.element, "input", "value" );
 
 	return this;
 };
@@ -1475,7 +1469,7 @@ DataGrid.prototype.init = function ( debounce ) {
 
 		// Setting click handler on sortable "columns"
 		if ( this.sortable.length > 0 ) {
-			observer.add( header, "click", this.sort, "sort", this );
+			//observer.add( header, "click", this.sort, "sort", this );
 		}
 
 		// Creating DataList
@@ -1570,7 +1564,7 @@ DataGrid.prototype.teardown = function () {
 	this.list.teardown();
 
 	// Removing click handler on DataGrid header
-	observer.remove( element.find( this.element, ".header" )[0], "click", "sort" );
+	//observer.remove( element.find( this.element, ".header" )[0], "click", "sort" );
 
 	// Destroying DataGrid (from DOM)
 	element.destroy( element.find( this.element, ".grid" )[0] );
@@ -1602,7 +1596,7 @@ var list = {
 			throw new Error( label.invalidArguments );
 		}
 
-		obj = element.create( "ul", {"class": "list", id: store.parentNode.id + "-datalist"}, target );
+		obj = element.create( "ul", {"class": "list"}, target );
 
 		// Creating instance
 		instance = new DataList( obj, ref[0], template );
@@ -1612,6 +1606,9 @@ var list = {
 		}
 
 		instance.store.lists.push( instance );
+
+		// Hooking observable into DOM events
+		instance.observer.watch( obj, "click" );
 
 		// Rendering if not tied to an API or data is ready
 		if ( instance.store.uri === null || instance.store.loaded ) {
@@ -1665,6 +1662,7 @@ function DataList ( element, store, template ) {
 	this.filter      = null;
 	this.filtered    = [];
 	this.id          = utility.genId();
+	this.observer    = new Observable();
 	this.pageIndex   = 1;
 	this.pageSize    = null;
 	this.pageRange   = 5;
@@ -1721,7 +1719,7 @@ DataList.prototype.page = function ( arg, redraw, create ) {
  * @return {Object} {@link keigai.DataList}
  */
 DataList.prototype.pages = function () {
-	var self  = this,
+	var /*self  = this,*/
 	    obj   = this.element,
 	    page  = this.pageIndex,
 	    pos   = this.pagination,
@@ -1800,7 +1798,7 @@ DataList.prototype.pages = function () {
 		element.klass( el, "hidden", false );
 
 		// Click handler scrolls to top the top of page
-		observer.add( el, "click", function ( e ) {
+		/*observer.add( el, "click", function ( e ) {
 			var target = utility.target( e );
 
 			utility.stop( e );
@@ -1808,7 +1806,7 @@ DataList.prototype.pages = function () {
 			if ( target.nodeName === "A" ) {
 				self.page( element.data( target, "page") );
 			}
-		}, "pagination");
+		}, "pagination");*/
 	} );
 
 	return this;
@@ -1841,7 +1839,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 	redraw = ( redraw !== false );
 	create = ( create === true );
 
-	observer.fire( el, "beforeDataListRefresh" );
+	//observer.fire( el, "beforeDataListRefresh" );
 
 	// Function to create templates for the html rep
 	if ( !template ) {
@@ -2003,7 +2001,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 		} );
 	}
 
-	observer.fire( el, "afterDataListRefresh" );
+	//observer.fire( el, "afterDataListRefresh" );
 
 	return this;
 };
@@ -2033,14 +2031,14 @@ DataList.prototype.sort = function ( order, create ) {
  */
 DataList.prototype.teardown = function ( destroy ) {
 	destroy  = ( destroy === true );
-	var self = this,
-	    id   = this.element.id;
+	var self = this;/*,
+	    id   = this.element.id;*/
 
-	observer.remove( id );
+	//observer.remove( id );
 
-	array.each( utility.dom( "#" + id + "-pages-top, #" + id + "-pages-bottom" ), function ( i ) {
+	/*array.each( utility.dom( "#" + id + "-pages-top, #" + id + "-pages-bottom" ), function ( i ) {
 		observer.remove( i );
-	} );
+	} );*/
 
 	array.each( this.store.lists, function ( i, idx ) {
 		if ( i.id === self.id ) {
@@ -2450,8 +2448,6 @@ var element = {
 	 * @return {Undefined} undefined
 	 */
 	destroy : function ( obj ) {
-		observer.remove( obj );
-
 		if ( obj.parentNode !== null ) {
 			obj.parentNode.removeChild( obj );
 		}
@@ -2622,8 +2618,6 @@ var element = {
 	 * @return {Object}      Element
 	 */
 	update : function ( obj, args ) {
-		args = args || {};
-
 		utility.iterate( args, function ( v, k ) {
 			if ( regex.element_update.test( k ) ) {
 				obj[k] = v;
@@ -2633,14 +2627,6 @@ var element = {
 			}
 			else if ( k.indexOf( "data-" ) === 0 ) {
 				element.data( obj, k.replace( "data-", "" ), v );
-			}
-			else if ( k === "id" ) {
-				var o = observer.listeners;
-
-				if ( o[obj.id] ) {
-					o[k] = o[obj.id];
-					delete o[obj.id];
-				}
 			}
 			else {
 				element.attr ( obj, k, v );
@@ -2976,24 +2962,6 @@ var label = {
 };
 
 /**
- * @namespace lru
- * @private
- */
-var lru = {
-	/**
-	 * LRU cache factory
-	 *
-	 * @method factory
-	 * @memberOf lru
-	 * @param  {Number} max [Optional] Max size of cache, default is 1000
-	 * @return {Object} {@link keigai.LRU}
-	 */
-	factory : function ( max ) {
-		return new LRU( max );
-	}
-};
-
-/**
  * Creates a new Least Recently Used cache
  *
  * @constructor
@@ -3186,24 +3154,6 @@ var number = {
 };
 
 /**
- * @namespace observable
- * @private
- */
-var observable = {
-	/**
-	 * Observable factory
-	 *
-	 * @method factory
-	 * @memberOf observable
-	 * @param  {Number} arg Maximum listeners, default is 10
-	 * @return {Object} {@link keigai.Observable}
-	 */
-	factory : function ( arg ) {
-		return new Observable( arg );
-	}
-};
-
-/**
  * Creates a new Observable
  *
  * @constructor
@@ -3211,7 +3161,7 @@ var observable = {
  * @param  {Number} arg Maximum listeners, default is 10
  */
 function Observable ( arg ) {
-	this.limit     = arg || 10;
+	this.limit     = arg || MAX;
 	this.listeners = {};
 }
 
@@ -3318,455 +3268,27 @@ Observable.prototype.once = function ( ev, handler, id, scope  ) {
 };
 
 /**
- * @namespace observer
- * @private
+ * Watches `obj` for a DOM event
+ *
+ * @method watch
+ * @memberOf keigai.Observable
+ * @param  {Object} target Element
+ * @param  {String} ev     Event
+ * @return {Object}        Element
  */
-var observer = {
-	/**
-	 * Collection of external event listeners
-	 *
-	 * @memberOf observer
-	 * @type {Object}
-	 */
-	elisteners : {},
+Observable.prototype.watch = function ( target, ev ) {
+	var self = this;
 
-	/**
-	 * If `true`, events are ignored
-	 *
-	 * @memberOf observer
-	 * @type {Boolean}
-	 */
-	ignore : false,
-
-	/**
-	 * Collection of listeners
-	 *
-	 * @memberOf observer
-	 * @type {Object}
-	 */
-	listeners : {},
-
-	/**
-	 * Boolean indicating if events are logged to the console
-	 *
-	 * @memberOf observer
-	 * @type {Boolean}
-	 */
-	log : false,
-
-	/**
-	 * Maximum amount of handlers per event
-	 *
-	 * @memberOf observer
-	 * @type {Number}
-	 */
-	maxListeners : 10,
-
-	/**
-	 * Queue of events to fire
-	 *
-	 * @memberOf observer
-	 * @type {Array}
-	 */
-	queue : [],
-
-	/**
-	 * If `true`, events are queued
-	 *
-	 * @memberOf observer
-	 * @type {Boolean}
-	 */
-	silent : false,
-
-	/**
-	 * Adds a handler for an event
-	 *
-	 * @method add
-	 * @memberOf observer
-	 * @param  {Mixed}    obj    Primitive
-	 * @param  {String}   events Comma delimited string of events
-	 * @param  {Function} fn     Event handler
-	 * @param  {String}   id     [Optional / Recommended] ID for the listener
-	 * @param  {String}   scope  [Optional / Recommended] ID of the object or element to be set as 'this'
-	 * @param  {String}   st     [Optional] Application state, default is current
-	 * @return {Mixed}           Primitive
-	 */
-	add : function ( obj, events, fn, id, scope, st ) {
-		var oId      = observer.id( obj ),
-		    instance = regex.observer_globals.test( oId ) || ( !/\//g.test( oId ) && oId !== "keigai" ) ? obj : null,
-		    jsonp    = /^afterjsonp$/i,
-		    add      = false,
-		    reg      = false;
-
-		if ( !oId || !events || typeof fn != "function" ) {
-			throw new Error( label.invalidArguments );
-		}
-
-		// Preparing variables
-		id    = id    || utility.uuid();
-		scope = scope || obj;
-		st    = st    || "active";
-
-		if ( instance ) {
-			add = typeof instance.addEventListener == "function";
-			reg = typeof instance.attachEvent == "object" || add;
-		}
-
-		// Preparing
-		if ( !observer.listeners[oId] ) {
-			observer.listeners[oId]     = {};
-			observer.listeners[oId].all = {};
-		}
-
-		if ( st !== "all" && !observer.listeners[oId][st] ) {
-			observer.listeners[oId][st] = {};
-		}
-
-		// Setting event listeners (with DOM hooks if applicable)
-		array.each( string.explode( events ), function ( ev ) {
-			var eId = oId + "_" + ev;
-
-			// Creating caches if not present
-			if ( !observer.listeners[oId].all[ev] ) {
-				observer.listeners[oId].all[ev] = lru( observer.maxListeners );
-			}
-
-			if ( st !== "all" && !observer.listeners[oId][st][ev] ) {
-				observer.listeners[oId][st][ev] = lru( observer.maxListeners );
-			}
-
-			// Hooking event listener
-			if ( reg && !jsonp.test( ev ) && !observer.elisteners[eId] ) {
-				observer.elisteners[eId] = function ( e ) {
-					observer.fire( oId, ev, e );
-				};
-
-				instance[add ? "addEventListener" : "attachEvent"]( ( add ? "" : "on" ) + ev, observer.elisteners[eId], false );
-			}
-
-			observer.listeners[oId][st][ev].set( id, {fn: fn, scope: scope} );
-		} );
-
-		return obj;
-	},
-
-	/**
-	 * Discard observer events
-	 *
-	 * @method discard
-	 * @memberOf observer
-	 * @param  {Boolean} arg [Optional] Boolean indicating if events will be ignored
-	 * @return {Boolean}     Current setting
-	 */
-	discard : function ( arg ) {
-		return arg === undefined ? observer.ignore : ( observer.ignore = ( arg === true ) );
-	},
-
-	/**
-	 * Fires an event
-	 *
-	 * @method fire
-	 * @memberOf observer
-	 * @param  {Mixed}  obj    Primitive
-	 * @param  {String} events Comma delimited string of events
-	 * @return {Mixed}         Primitive
-	 */
-	fire : function ( obj, events ) {
-		var args, cache, item, oId;
-
-		if ( !observer.ignore ) {
-			if ( observer.silent ) {
-				observer.queue.push( array.cast( arguments ) );
-			}
-			else {
-				oId = observer.id( obj );
-
-				if ( observer.listeners[oId] ) {
-					args = array.remove( array.cast( arguments ), 0, 1 );
-
-					array.each( string.explode( events ), function ( ev ) {
-						if ( observer.log ) {
-							utility.log( oId + " fired " + ev );
-						}
-
-						array.each( observer.states(), function ( st ) {
-							if ( observer.listeners[oId][st] && observer.listeners[oId][st][ev] ) {
-								cache = observer.listeners[oId][st][ev];
-
-								if ( cache.length > 0 ) {
-									item  = cache.cache[cache.last];
-
-									do {
-										if ( item.value.fn.apply( item.value.scope, args ) !== false && item.next ) {
-											item = cache.cache[item.next];
-										}
-										else {
-											return false;
-										}
-									}
-									while ( item );
-								}
-							}
-						} );
-					} );
-				}
-				else if ( observer.log ) {
-					array.each( string.explode( events ), function ( ev ) {
-						utility.log( oId + " fired " + ev );
-					} );
-				}
-			}
-		}
-
-		return obj;
-	},
-
-	/**
-	 * Gets the Observer id of arg
-	 *
-	 * @method id
-	 * @memberOf observer
-	 * @param  {Mixed}  Object or String
-	 * @return {String} Observer id
-	 */
-	id : function ( arg ) {
-		var id;
-
-		if ( arg === global ) {
-			id = "window";
-		}
-		else if ( !server && arg === document ) {
-			id = "document";
-		}
-		else if ( !server && arg === document.body ) {
-			id = "body";
-		}
-		else {
-			utility.genId( arg );
-			id = arg.id || ( typeof arg.toString == "function" ? arg.toString() : arg );
-		}
-
-		return id;
-	},
-
-	/**
-	 * Gets the listeners for an event
-	 *
-	 * @method list
-	 * @memberOf observer
-	 * @param  {Mixed}  obj Primitive
-	 * @param  {String} ev  Event being queried
-	 * @return {Mixed}      Primitive
-	 */
-	list : function ( obj, ev ) {
-		var oId    = observer.id( obj ),
-		    result = {},
-		    events, states;
-
-		// Do nothing
-		if ( !observer.listeners[oId] ) {
-		}
-		// All events
-		else if ( !ev ) {
-			events = [];
-			states = array.keys( observer.listeners[oId] );
-
-			array.each( states, function ( st ) {
-				array.merge( events, array.keys( observer.listeners[oId][st] ) );
-			} );
-
-			array.each( events, function ( ev ) {
-				result[ev] = {};
-			} );
-
-			array.each( states, function ( st ) {
-				if ( observer.listeners[oId][st] ) {
-					array.each( array.keys( observer.listeners[oId][st] ), function ( ev ) {
-						if ( observer.listeners[oId][st][ev].length > 0 ) {
-							result[ev][st] = {};
-
-							utility.iterate( observer.listeners[oId][st][ev].cache, function ( v, k ) {
-								result[ev][st][k] = v.value;
-							} );
-						}
-					} );
-				}
-			} );
-		}
-		// Specific event
-		else {
-			array.each( observer.states(), function ( st ) {
-				if ( observer.listeners[oId][st] && observer.listeners[oId][st][ev] && observer.listeners[oId][st][ev].length > 0 ) {
-					result[st] = {};
-
-					utility.iterate( observer.listeners[oId][st][ev].cache, function ( v, k ) {
-						result[st][k] = v.value;
-					} );
-				}
-			} );
-		}
-
-		return result;
-	},
-
-	/**
-	 * Adds a listener for a single execution
-	 *
-	 * @method once
-	 * @memberOf observer
-	 * @param  {Mixed}    obj    Primitive
-	 * @param  {String}   events Comma delimited string of events being fired
-	 * @param  {Function} fn     Event handler
-	 * @param  {String}   id     [Optional / Recommended] ID for the listener
-	 * @param  {String}   scope  [Optional / Recommended] ID of the object or element to be set as 'this'
-	 * @param  {String}   st     [Optional] Application state, default is current
-	 * @return {Mixed}           Primitive
-	 */
-	once : function ( obj, events, fn, id, scope, st ) {
-		id    = id    || utility.uuid();
-		scope = scope || obj;
-		st    = st    || "active";
-
-		if ( !obj || !events || typeof fn != "function" ) {
-			throw new Error( label.invalidArguments );
-		}
-
-		array.each( string.explode( events ), function ( ev ) {
-			observer.add( obj, ev, function () {
-				fn.apply( scope, arguments );
-				observer.remove( obj, ev, id, st );
-			}, id, scope, st );
-		} );
-
-		return obj;
-	},
-
-	/**
-	 * Pauses observer events, and queues them
-	 *
-	 * @method pause
-	 * @memberOf observer
-	 * @param  {Boolean} arg Boolean indicating if events will be queued
-	 * @return {Boolean}     Current setting
-	 */
-	pause : function ( arg ) {
-		if ( arg === true ) {
-			observer.silent = arg;
-		}
-		else if ( arg === false ) {
-			observer.silent = arg;
-
-			array.each( observer.queue, function ( i ) {
-				observer.fire.apply( observer, i );
-			} );
-
-			observer.queue = [];
-		}
-
-		return observer.silent;
-	},
-
-	/**
-	 * Removes listeners
-	 *
-	 * @method remove
-	 * @memberOf observer
-	 * @param  {Mixed}  obj    Primitive
-	 * @param  {String} events [Optional] Comma delimited string of events being removed
-	 * @param  {String} id     [Optional] Listener id
-	 * @param  {String} st     [Optional] Application state, default is current
-	 * @return {Mixed}         Primitive
-	 */
-	remove : function ( obj, events, id, st ) {
-		var oId   = observer.id( obj ),
-		    add   = typeof obj.addEventListener == "function",
-		    reg   = typeof obj.attachEvent == "object" || add,
-		    regex = /.*_/,
-		    states, total, unhook;
-
-		/**
-		 * Removes DOM event hook
-		 *
-		 * @method unhook
-		 * @memberOf observer.remove
-		 * @private
-		 * @param  {Mixed}  eId Event ID
-		 * @param  {Number} ev  Event
-		 * @return {Undefined}  undefined
-		 */
-		unhook = function ( eId, ev ) {
-			if ( reg ) {
-				obj[add ? "removeEventListener" : "detachEvent"]( ( add ? "" : "on" ) + ev, this[eId], false );
-			}
-
-			delete this[eId];
-		};
-
-		if ( observer.listeners[oId] ) {
-			if ( !events ) {
-				utility.iterate( observer.elisteners, function ( v, k ) {
-					if ( k.indexOf( oId + "_" ) === 0 ) {
-						unhook.call( this, k, k.replace( regex, "" ) );
-					}
-				} );
-
-				delete observer.listeners[oId];
-			}
-			else {
-				events = string.explode( events );
-				st     = st || "active";
-				states = array.keys( observer.listeners[oId] );
-				total  = 0;
-
-				// Total listeners
-				array.each( states, function ( s ) {
-					array.each( events, function ( e ) {
-						if ( observer.listeners[oId][s][e] ) {
-							total += observer.listeners[oId][s][e].length;
-						}
-					} );
-				} );
-
-				array.each( events, function ( ev ) {
-					if ( observer.listeners[oId][st][ev] ) {
-						// Specific listener
-						if ( id ) {
-							observer.listeners[oId][st][ev].remove( id );
-
-							if ( --total === 0 ) {
-								array.each( states, function ( s ) {
-									delete observer.listeners[oId][s][ev];
-								} );
-
-								unhook.call( observer.elisteners, oId + "_" + ev, ev );
-							}
-						}
-						// All listeners for the event
-						else {
-							array.each( states, function ( s ) {
-								delete observer.listeners[oId][s][ev];
-							} );
-
-							unhook.call( observer.elisteners, oId + "_" + ev, ev );
-						}
-					}
-				} );
-			}
-		}
-
-		return obj;
-	},
-
-	/**
-	 * Returns an Array of active observer states
-	 *
-	 * @method states
-	 * @memberOf observer
-	 * @return {Array} Array of active states
-	 */
-	states : function () {
-		return ["all", "active"];
+	if ( typeof target.addEventListener != "function" ) {
+		throw new Error( label.invalidArguments );
 	}
+	else {
+		target.addEventListener( ev, function ( arg ) {
+			self.dispatch( ev, arg );
+		} );
+	}
+
+	return target;
 };
 
 /**
@@ -4111,7 +3633,7 @@ function DataStore () {
 	this.loaded      = false;
 	this.maxDepth    = 0;
 	this.mongodb     = "";
-	this.observer    = observable.factory( 10 );
+	this.observer    = new Observable();
 	this.pointer     = null;
 	this.records     = [];
 	this.retrieve    = false;
@@ -5117,7 +4639,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 
 		this.keys[key]                = record.index;
 		this.records[record.index]    = record;
-		this.versions[record.key]     = lru( VERSIONS );
+		this.versions[record.key]     = new LRU( VERSIONS );
 		this.versions[record.key].nth = 0;
 
 		if ( this.retrieve ) {
@@ -5201,7 +4723,7 @@ DataStore.prototype.setExpires = function ( arg ) {
 		}
 
 		if ( !cache.expire( self.uri ) ) {
-			observer.fire( self.uri, "beforeExpire, expire, afterExpire" );
+			//observer.fire( self.uri, "beforeExpire, expire, afterExpire" );
 		}
 	}, expires, id, false );
 };
@@ -5244,17 +4766,17 @@ DataStore.prototype.setUri = function ( arg ) {
 	}
 
 	if ( this.uri !== null) {
-		observer.remove( this.uri );
+		//observer.remove( this.uri );
 	}
 
 	this.uri = uri;
 
 	if ( this.uri !== null ) {
-		observer.add( this.uri, "expire", function () {
+		/*observer.add( this.uri, "expire", function () {
 			this.sync();
-		}, "dataSync", this);
+		}, "dataSync", this);*/
 
-		cache.expire( this.uri, true );
+		cache.expire( this.uri );
 
 		this.sync().then( function (arg ) {
 			defer.resolve( arg );
@@ -5672,7 +5194,7 @@ DataStore.prototype.teardown = function () {
 
 	if ( uri !== null ) {
 		cache.expire( uri, true );
-		observer.remove( uri );
+		//observer.remove( uri );
 
 		id = this.id + "DataExpire";
 		utility.clearTimers( id );
@@ -5681,7 +5203,7 @@ DataStore.prototype.teardown = function () {
 			var recordUri = uri + "/" + i.key;
 
 			cache.expire( recordUri, true );
-			observer.remove( recordUri );
+			//observer.remove( recordUri );
 
 			utility.iterate( i.data, function ( v ) {
 				if ( v === null ) {
@@ -5689,7 +5211,7 @@ DataStore.prototype.teardown = function () {
 				}
 
 				if ( v.data && typeof v.data.teardown == "function" ) {
-					observer.remove( v.id );
+					//observer.remove( v.id );
 					v.data.teardown();
 				}
 			} );
@@ -5990,14 +5512,6 @@ var string = {
  * @private
  */
 var utility = {
-	/**
-	 * MutationObserver instances
-	 *
-	 * @memberOf utility
-	 * @type {Object}
-	 */
-	observers : {},
-
 	/**
 	 * Collection of timers
 	 *
@@ -6365,8 +5879,6 @@ var utility = {
 		};
 
 		utility.log( o.stack || o.message, warning !== true ? "error" : "warn" );
-		utility.error.log.push( o );
-		observer.fire( "keigai", "error", o );
 
 		return undefined;
 	},
@@ -7342,19 +6854,6 @@ var xml = {
  * @return {Undefined} undefined
  */
 function bootstrap () {
-	// Removes references to deleted DOM elements, avoiding memory leaks
-	function cleanup ( obj ) {
-		observer.remove( obj );
-
-		if ( utility.observers[obj.id] ) {
-			delete utility.observers[obj.id];
-		}
-
-		array.each( array.cast( obj.childNodes ), function ( i ) {
-			cleanup( i );
-		} );
-	}
-
 	// Second phase
 	function init () {
 		// Cache garbage collector (every minute)
@@ -7371,9 +6870,6 @@ function bootstrap () {
 			return false;
 		}
 	}
-
-	// Creating error log
-	utility.error.log = [];
 
 	// Describing the Client
 	if ( !server ) {
@@ -7470,50 +6966,6 @@ function bootstrap () {
 	has   = Object.prototype.hasOwnProperty;
 	slice = Array.prototype.slice;
 
-	// Setting events & garbage collection
-	if ( !server ) {
-		// DOM 4+
-		if ( typeof MutationObserver == "function" ) {
-			utility.observers.document = new MutationObserver( function ( arg ) {
-				array.each( arg, function ( record ) {
-					// Added Elements
-					array.each( array.cast( record.addedNodes ).filter( function ( obj ) {
-						return obj.id !== undefined;
-					} ), function( obj ) {
-						utility.genId( obj, true );
-
-						if ( !utility.observers[obj.id] ) {
-							utility.observers[obj.id] = new MutationObserver( function ( arg ) {
-								observer.fire( obj, "change", arg );
-							} );
-
-							utility.observers[obj.id].observe( obj, {attributes: true, attributeOldValue: true, childList: true, characterData: true, characterDataOldValue: true, subtree: true} );
-						}
-					} );
-
-					// Removed Elements
-					array.each( array.cast( record.removedNodes ).filter( function ( obj ) {
-						return obj.id !== undefined;
-					} ), function ( obj ) {
-						cleanup( obj );
-					} );
-				} );
-			} );
-
-			utility.observers.document.observe( document, {childList: true, subtree: true} );
-		}
-		// DOM 3 (slow!)
-		else {
-			observer.add( global, "DOMNodeRemoved", function ( e ) {
-				var obj = utility.target( e );
-
-				if ( obj.id && ( e.relatedNode instanceof Element ) ) {
-					cleanup( obj );
-				}
-			}, "mutation", global, "all");
-		}
-	}
-
 	// Initializing
 	if ( typeof exports != "undefined" || typeof define == "function" || regex.complete_loaded.test( document.readyState ) ) {
 		init();
@@ -7570,13 +7022,13 @@ else {
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataListFilter.html">DataListFilter</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="keigai.Deferred.html">Deferred</a></li><li><a href="keigai.LRU.html">LRU</a></li><li><a href="keigai.LRUItem.html">LRUItem</a></li><li><a href="keigai.Observable.html">Observable</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="deferred.html">deferred</a></li><li><a href="element.html">element</a></li><li><a href="filter.html">filter</a></li><li><a href="grid.html">grid</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="list.html">list</a></li><li><a href="lru.html">lru</a></li><li><a href="number.html">number</a></li><li><a href="observable.html">observable</a></li><li><a href="observer.html">observer</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="store.html">store</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataListFilter.html">DataListFilter</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="keigai.Deferred.html">Deferred</a></li><li><a href="keigai.LRU.html">LRU</a></li><li><a href="keigai.LRUItem.html">LRUItem</a></li><li><a href="keigai.Observable.html">Observable</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="deferred.html">deferred</a></li><li><a href="element.html">element</a></li><li><a href="filter.html">filter</a></li><li><a href="grid.html">grid</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="list.html">list</a></li><li><a href="number.html">number</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="store.html">store</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Thu Jan 30 2014 19:52:49 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Fri Jan 31 2014 07:34:37 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

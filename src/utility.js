@@ -4,14 +4,6 @@
  */
 var utility = {
 	/**
-	 * MutationObserver instances
-	 *
-	 * @memberOf utility
-	 * @type {Object}
-	 */
-	observers : {},
-
-	/**
 	 * Collection of timers
 	 *
 	 * @memberOf utility
@@ -378,8 +370,6 @@ var utility = {
 		};
 
 		utility.log( o.stack || o.message, warning !== true ? "error" : "warn" );
-		utility.error.log.push( o );
-		observer.fire( "keigai", "error", o );
 
 		return undefined;
 	},
