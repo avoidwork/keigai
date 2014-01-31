@@ -1,20 +1,26 @@
 /**
- * Observable factory
- *
- * @method observable
+ * @namespace observable
  * @private
- * @param  {Number} arg Maximum listeners, default is 10
- * @return {Object} {@link Observable}
  */
-function observable ( arg ) {
-	return new Observable( arg );
-}
+var observable = {
+	/**
+	 * Observable factory
+	 *
+	 * @method factory
+	 * @memberOf observable
+	 * @param  {Number} arg Maximum listeners, default is 10
+	 * @return {Object} {@link keigai.Observable}
+	 */
+	factory : function ( arg ) {
+		return new Observable( arg );
+	}
+};
 
 /**
- * Observable
+ * Creates a new Observable
  *
  * @constructor
- * @private
+ * @memberOf keigai
  * @param  {Number} arg Maximum listeners, default is 10
  */
 function Observable ( arg ) {
@@ -22,15 +28,21 @@ function Observable ( arg ) {
 	this.listeners = {};
 }
 
-// Prototype loop
+/**
+ * Setting constructor loop
+ *
+ * @method constructor
+ * @memberOf keigai.Observable
+ * @type {Function}
+ */
 Observable.prototype.constructor = Observable;
 
 /**
  * Dispatches an event, with optional arguments
  *
  * @method dispatch
- * @memberOf Observable
- * @return {Object} {@link Observable}
+ * @memberOf keigai.Observable
+ * @return {Object} {@link keigai.Observable}
  */
 Observable.prototype.dispatch = function () {
 	var args = array.cast( arguments ),
@@ -49,10 +61,10 @@ Observable.prototype.dispatch = function () {
  * Removes all, or a specific listener for an event
  *
  * @method off
- * @memberOf Observable
+ * @memberOf keigai.Observable
  * @param {String} ev Event name
  * @param {String} id [Optional] Listener ID
- * @return {Object} {@link Observable}
+ * @return {Object} {@link keigai.Observable}
  */
 Observable.prototype.off = function ( ev, id ) {
 	if ( this.listeners[ev] ) {
@@ -71,12 +83,12 @@ Observable.prototype.off = function ( ev, id ) {
  * Adds a listener for an event
  *
  * @method on
- * @memberOf Observer
+ * @memberOf keigai.Observable
  * @param  {String}   ev      Event name
  * @param  {Function} handler Handler
  * @param  {String}   id      [Optional] Handler ID
  * @param  {String}   scope   [Optional] Handler scope, default is `this`
- * @return {Object} {@link Observable}
+ * @return {Object} {@link keigai.Observable}
  */
 Observable.prototype.on = function ( ev, handler, id, scope ) {
 	id    = id    || utility.uuid();
@@ -99,12 +111,12 @@ Observable.prototype.on = function ( ev, handler, id, scope ) {
  * Adds a short lived listener for an event
  *
  * @method once
- * @memberOf Observer
+ * @memberOf keigai.Observable
  * @param  {String}   ev      Event name
  * @param  {Function} handler Handler
  * @param  {String}   id      [Optional] Handler ID
  * @param  {String}   scope   [Optional] Handler scope, default is `this`
- * @return {Object} {@link Observable}
+ * @return {Object} {@link keigai.Observable}
  */
 Observable.prototype.once = function ( ev, handler, id, scope  ) {
 	var self = this;

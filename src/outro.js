@@ -8,7 +8,7 @@ WORKER = "var " + string.fromObject( array, "array" ) + ", " + string.fromObject
 return {
 	store   : store.factory,
 	list    : list.factory,
-	grid    : grid,
+	grid    : grid.factory,
 	version : "{{VERSION}}"
 };
 

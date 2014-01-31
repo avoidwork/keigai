@@ -83,6 +83,7 @@ var string = {
 	 * Tests if a string is a boolean
 	 *
 	 * @method isBoolean
+	 * @memberOf string
 	 * @param  {String}  obj String to test
 	 * @return {Boolean}     Result of test
 	 */
@@ -106,6 +107,7 @@ var string = {
 	 * Tests if a string is a number
 	 *
 	 * @method isNumber
+	 * @memberOf string
 	 * @param  {String}  obj String to test
 	 * @return {Boolean}     Result of test
 	 */
@@ -117,7 +119,7 @@ var string = {
 	 * Tests if a string is a URL
 	 *
 	 * @method isUrl
-	 * @memberOf abaaso.string
+	 * @memberOf string
 	 * @param  {String}  obj String to test
 	 * @return {Boolean}     Result of test
 	 */
@@ -129,6 +131,7 @@ var string = {
 	 * Transforms the case of a String into CamelCase
 	 *
 	 * @method toCamelCase
+	 * @memberOf string
 	 * @param  {String} obj String to capitalize
 	 * @return {String}     Camel case String
 	 */

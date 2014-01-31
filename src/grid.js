@@ -1,22 +1,28 @@
 /**
- * DataGrid factory
- *
- * @method datagrid
+ * @namespace grid
  * @private
- * @param  {Object}  obj         Element to receive DataGrid
- * @param  {Object}  store       DataStore
- * @param  {Array}   fields      Array of fields to display
- * @param  {Array}   sortable    [Optional] Array of sortable columns/fields
- * @param  {Object}  options     [Optional] DataList options
- * @param  {Boolean} filtered    [Optional] Create an input to filter the data grid
- * @param  {Number}  debounce    [Optional] DataListFilter input debounce, default is 250
- * @return {Object} {@link DataGrid}
  */
-function grid ( obj, store, fields, sortable, options, filtered, debounce ) {
-	var ref = [store];
+var grid = {
+	/**
+	 * DataGrid factory
+	 *
+	 * @method factory
+	 * @memberOf grid
+	 * @param  {Object}  obj         Element to receive DataGrid
+	 * @param  {Object}  store       DataStore
+	 * @param  {Array}   fields      Array of fields to display
+	 * @param  {Array}   sortable    [Optional] Array of sortable columns/fields
+	 * @param  {Object}  options     [Optional] DataList options
+	 * @param  {Boolean} filtered    [Optional] Create an input to filter the data grid
+	 * @param  {Number}  debounce    [Optional] DataListFilter input debounce, default is 250
+	 * @return {Object} {@link keigai.DataGrid}
+	 */
+	factory : function ( obj, store, fields, sortable, options, filtered, debounce ) {
+		var ref = [store];
 
-	return new DataGrid( obj, ref[0], fields, sortable, options, filtered ).init( debounce );
-}
+		return new DataGrid( obj, ref[0], fields, sortable, options, filtered ).init( debounce );
+	}
+};
 
 /**
  * Creates a new DataGrid
@@ -55,8 +61,7 @@ function DataGrid ( obj, store, fields, sortable, options, filtered ) {
  * Setting constructor loop
  *
  * @method constructor
- * @memberOf DataGrid
- * @private
+ * @memberOf keigai.DataGrid
  * @type {Function}
  */
 DataGrid.prototype.constructor = DataGrid;
@@ -65,7 +70,7 @@ DataGrid.prototype.constructor = DataGrid;
  * Exports data grid records
  *
  * @method dump
- * @memberOf DataGrid
+ * @memberOf keigai.DataGrid
  * @return {Array} Record set
  */
 DataGrid.prototype.dump = function () {
@@ -76,9 +81,9 @@ DataGrid.prototype.dump = function () {
  * Initializes DataGrid
  *
  * @method init
- * @memberOf DataGrid
+ * @memberOf keigai.DataGrid
  * @param  {Number} debounce [Optional] Debounce value for DataListFilter, defaults to 250
- * @return {Object} {@link DataGrid}
+ * @return {Object} {@link keigai.DataGrid}
  */
 DataGrid.prototype.init = function ( debounce ) {
 	var self, ref, template, container, header, width, css, sort;
@@ -140,8 +145,8 @@ DataGrid.prototype.init = function ( debounce ) {
  * Refreshes the DataGrid
  *
  * @method refresh
- * @memberOf DataGrid
- * @return {Object} {@link DataGrid}
+ * @memberOf keigai.DataGrid
+ * @return {Object} {@link keigai.DataGrid}
  */
 DataGrid.prototype.refresh = function () {
 	var sort = [],
@@ -169,9 +174,9 @@ DataGrid.prototype.refresh = function () {
  * Sorts the DataGrid when a column header is clicked
  *
  * @method sort
- * @memberOf DataGrid
+ * @memberOf keigai.DataGrid
  * @param  {Object} e Event
- * @return {Object} {@link DataGrid}
+ * @return {Object} {@link keigai.DataGrid}
  */
 DataGrid.prototype.sort = function ( e ) {
 	var target = utility.target( e ),
@@ -197,8 +202,8 @@ DataGrid.prototype.sort = function ( e ) {
  * Tears down the DataGrid
  *
  * @method teardown
- * @memberOf DataGrid
- * @return {Object} {@link DataGrid}
+ * @memberOf keigai.DataGrid
+ * @return {Object} {@link keigai.DataGrid}
  */
 DataGrid.prototype.teardown = function () {
 	if ( this.filter !== null ) {

@@ -7,12 +7,12 @@ var list = {
 	 * Creates an instance of datalist
 	 *
 	 * @method factory
-	 * @memberOf datalist
+	 * @memberOf list
 	 * @param  {Object} target   Element to receive the DataList
 	 * @param  {Object} store    Data store to feed the DataList
 	 * @param  {Mixed}  template Record field, template ( $.tpl ), or String, e.g. "<p>this is a {{field}} sample.</p>", fields are marked with {{ }}
 	 * @param  {Object} options  Optional parameters to set on the DataList
-	 * @return {Object} {@link DataList}
+	 * @return {Object} {@link keigai.DataList}
 	 */
 	factory : function ( target, store, template, options ) {
 		var ref = [store],
@@ -45,7 +45,7 @@ var list = {
 	 * Calculates the total pages
 	 *
 	 * @method pages
-	 * @memberOf datalist
+	 * @memberOf list
 	 * @return {Number} Total pages
 	 */
 	pages : function () {
@@ -60,7 +60,7 @@ var list = {
 	 * Calculates the page size as an Array of start & finish
 	 *
 	 * @method range
-	 * @memberOf datalist
+	 * @memberOf list
 	 * @return {Array}  Array of start & end numbers
 	 */
 	range : function () {
@@ -102,8 +102,7 @@ function DataList ( element, store, template ) {
  * Setting constructor loop
  *
  * @method constructor
- * @private
- * @memberOf DataList
+ * @memberOf keigai.DataList
  * @type {Function}
  */
 DataList.prototype.constructor = DataList;
@@ -112,7 +111,7 @@ DataList.prototype.constructor = DataList;
  * Exports data list records
  *
  * @method dump
- * @memberOf DataList
+ * @memberOf keigai.DataList
  * @return {Array} Record set
  */
 DataList.prototype.dump = function () {
@@ -123,10 +122,10 @@ DataList.prototype.dump = function () {
  * Changes the page index of the DataList
  *
  * @method page
- * @memberOf DataList
+ * @memberOf keigai.DataList
  * @param  {Boolean} redraw [Optional] Boolean to force clearing the DataList, default is `true`, `false` toggles "hidden" class of items
  * @param  {Boolean} create [Optional] Recreates cached View of data
- * @return {Object} {@link DataList}
+ * @return {Object} {@link keigai.DataList}
  */
 DataList.prototype.page = function ( arg, redraw, create ) {
 	this.pageIndex = arg;
@@ -138,8 +137,8 @@ DataList.prototype.page = function ( arg, redraw, create ) {
  * Adds pagination Elements to the View
  *
  * @method pages
- * @memberOf DataList
- * @return {Object} {@link DataList}
+ * @memberOf keigai.DataList
+ * @return {Object} {@link keigai.DataList}
  */
 DataList.prototype.pages = function () {
 	var self  = this,
@@ -242,10 +241,10 @@ DataList.prototype.pages = function () {
  *         afterDataListRefresh   Fires from the element containing the DataList
  *
  * @method refresh
- * @memberOf DataList
+ * @memberOf keigai.DataList
  * @param  {Boolean} redraw [Optional] Boolean to force clearing the DataList ( default ), false toggles "hidden" class of items
  * @param  {Boolean} create [Optional] Recreates cached View of data
- * @return {Object} {@link DataList}
+ * @return {Object} {@link keigai.DataList}
  */
 DataList.prototype.refresh = function ( redraw, create ) {
 	var el       = this.element,
@@ -433,10 +432,10 @@ DataList.prototype.refresh = function ( redraw, create ) {
  * Sorts data list & refreshes element
  *
  * @method sort
- * @memberOf DataList
+ * @memberOf keigai.DataList
  * @param  {String}  order  SQL "order by" statement
  * @param  {Boolean} create [Optional] Recreates cached View of data store
- * @return {Object} {@link DataList}
+ * @return {Object} {@link keigai.DataList}
  */
 DataList.prototype.sort = function ( order, create ) {
 	this.order = order;
@@ -448,9 +447,9 @@ DataList.prototype.sort = function ( order, create ) {
  * Tears down references to the DataList
  *
  * @method teardown
- * @memberOf DataList
+ * @memberOf keigai.DataList
  * @param  {Boolean} destroy [Optional] `true` will remove the DataList from the DOM
- * @return {Object} {@link DataList}
+ * @return {Object} {@link keigai.DataList}
  */
 DataList.prototype.teardown = function ( destroy ) {
 	destroy  = ( destroy === true );

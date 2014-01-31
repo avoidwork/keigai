@@ -12,7 +12,7 @@ var array = {
 	 * @param  {Mixed} arg Argument to set in 'obj'
 	 * @return {Array}     Array that was queried
 	 */
-	add : function add ( obj, arg ) {
+	add : function ( obj, arg ) {
 		if ( !array.contains( obj, arg ) ) {
 			obj.push( arg );
 		}
@@ -257,6 +257,7 @@ var array = {
 	 * Mingles Arrays and returns a 2D Array
 	 *
 	 * @method mingle
+	 * @memberOf array
 	 * @param  {Array} obj1 Array to mingle
 	 * @param  {Array} obj2 Array to mingle
 	 * @return {Array}      2D Array

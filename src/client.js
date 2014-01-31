@@ -248,10 +248,10 @@ var client = {
 	 * @param  {Function} success A handler function to execute when an appropriate response been received
 	 * @param  {Function} failure [Optional] A handler function to execute on error
 	 * @param  {Mixed}    args    Custom JSONP handler parameter name, default is "callback"; or custom headers for GET request ( CORS )
-	 * @return {Object} {@link Deferred}
+	 * @return {Object} {@link keigai.Deferred}
 	 */
 	jsonp : function ( uri, success, failure, args ) {
-		var defer    = deferred(),
+		var defer    = deferred.factory(),
 		    callback = "callback", cbid, s;
 
 		if ( external === undefined ) {
@@ -338,7 +338,7 @@ var client = {
 		doc         = typeof Document != "undefined";
 		ab          = typeof ArrayBuffer != "undefined";
 		blob        = typeof Blob != "undefined";
-		defer       = deferred();
+		defer       = deferred.factory();
 
 		// Only GET & POST is supported by XDomainRequest (so useless!)
 		if ( cors && client.ie && client.version === 9 && !regex.xdomainrequest.test( type ) ) {

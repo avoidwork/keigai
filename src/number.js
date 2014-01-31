@@ -6,7 +6,7 @@ var number = {
 	/**
 	 * Returns the difference of arg
 	 *
-	 * @method odd
+	 * @method diff
 	 * @memberOf number
 	 * @param {Number} arg Number to compare
 	 * @return {Number}    The absolute difference

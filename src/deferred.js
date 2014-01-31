@@ -1,19 +1,25 @@
 /**
- * Deferred factory
- *
- * @method deferred
+ * @namespace deferred
  * @private
- * @return {Object} {@link Deferred}
  */
-function deferred () {
-	return new Deferred();
-}
+var deferred = {
+	/**
+	 * Deferred factory
+	 *
+	 * @method factory
+	 * @memberOf deferred
+	 * @return {Object} {@link keigai.Deferred}
+	 */
+	 factory : function () {
+		return new Deferred();
+	}
+};
 
 /**
  * Creates a new Deferred
  *
  * @constructor
- * @private
+ * @memberOf keigai
  */
 function Deferred () {
 	var self      = this;
@@ -59,8 +65,7 @@ function Deferred () {
  * Setting constructor loop
  *
  * @method constructor
- * @private
- * @memberOf Deferred
+ * @memberOf keigai.Deferred
  * @type {Function}
  */
 Deferred.prototype.constructor = Deferred;
@@ -69,9 +74,9 @@ Deferred.prototype.constructor = Deferred;
  * Registers a function to execute after Promise is reconciled
  *
  * @method always
- * @memberOf Deferred
+ * @memberOf keigai.Deferred
  * @param  {Function} arg Function to execute
- * @return {Object} {@link Deferred}
+ * @return {Object} {@link keigai.Deferred}
  */
 Deferred.prototype.always = function ( arg ) {
 	if ( !this.isResolved() && !this.isRejected() && typeof arg == "function" ) {
@@ -85,9 +90,9 @@ Deferred.prototype.always = function ( arg ) {
  * Registers a function to execute after Promise is resolved
  *
  * @method done
- * @memberOf Deferred
+ * @memberOf keigai.Deferred
  * @param  {Function} arg Function to execute
- * @return {Object} {@link Deferred}
+ * @return {Object} {@link keigai.Deferred}
  */
 Deferred.prototype.done = function ( arg ) {
 	if ( !this.isResolved() && !this.isRejected() && typeof arg == "function" ) {
@@ -101,9 +106,9 @@ Deferred.prototype.done = function ( arg ) {
  * Registers a function to execute after Promise is rejected
  *
  * @method fail
- * @memberOf Deferred
+ * @memberOf keigai.Deferred
  * @param  {Function} arg Function to execute
- * @return {Object} {@link Deferred}
+ * @return {Object} {@link keigai.Deferred}
  */
 Deferred.prototype.fail = function ( arg ) {
 	if ( !this.isResolved() && !this.isRejected() && typeof arg == "function" ) {
@@ -117,7 +122,7 @@ Deferred.prototype.fail = function ( arg ) {
  * Determines if Deferred is rejected
  *
  * @method isRejected
- * @memberOf Deferred
+ * @memberOf keigai.Deferred
  * @return {Boolean} `true` if rejected
  */
 Deferred.prototype.isRejected = function () {
@@ -128,7 +133,7 @@ Deferred.prototype.isRejected = function () {
  * Determines if Deferred is resolved
  *
  * @method isResolved
- * @memberOf Deferred
+ * @memberOf keigai.Deferred
  * @return {Boolean} `true` if resolved
  */
 Deferred.prototype.isResolved = function () {
@@ -139,9 +144,9 @@ Deferred.prototype.isResolved = function () {
  * Rejects the Promise
  *
  * @method reject
- * @memberOf Deferred
+ * @memberOf keigai.Deferred
  * @param  {Mixed} arg Rejection outcome
- * @return {Object} {@link Deferred}
+ * @return {Object} {@link keigai.Deferred}
  */
 Deferred.prototype.reject = function ( arg ) {
 	this.promise.reject.call( this.promise, arg );
@@ -153,9 +158,9 @@ Deferred.prototype.reject = function ( arg ) {
  * Resolves the Promise
  *
  * @method resolve
- * @memberOf Deferred
+ * @memberOf keigai.Deferred
  * @param  {Mixed} arg Resolution outcome
- * @return {Object} {@link Deferred}
+ * @return {Object} {@link keigai.Deferred}
  */
 Deferred.prototype.resolve = function ( arg ) {
 	this.promise.resolve.call( this.promise, arg );
@@ -167,7 +172,7 @@ Deferred.prototype.resolve = function ( arg ) {
  * Gets the state of the Promise
  *
  * @method state
- * @memberOf Deferred
+ * @memberOf keigai.Deferred
  * @return {String} Describes the state
  */
 Deferred.prototype.state = function () {
@@ -178,7 +183,7 @@ Deferred.prototype.state = function () {
  * Registers handler(s) for the Promise
  *
  * @method then
- * @memberOf Deferred
+ * @memberOf keigai.Deferred
  * @param  {Function} success Executed when/if promise is resolved
  * @param  {Function} failure [Optional] Executed when/if promise is broken
  * @return {Object} {@link Promise}

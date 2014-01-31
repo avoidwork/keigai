@@ -1,17 +1,16 @@
 /**
- * @namespace datastore
+ * @namespace store
  * @private
  */
 var store = {
 	/**
 	 * Decorates a DataStore on an Object
 	 *
-	 * @method decorator
-	 * @memberOf datastore
-	 * @param  {Object} obj  Object
+	 * @method factory
+	 * @memberOf store
 	 * @param  {Mixed}  recs [Optional] Data to set with this.batch
 	 * @param  {Object} args [Optional] Arguments to set on the store
-	 * @return {Object}      Decorated Object
+	 * @return {Object} {@link keigai.DataStore}
 	 */
 	factory : function ( recs, args ) {
 		var obj = new DataStore();
@@ -31,7 +30,7 @@ var store = {
 	 * DataStore worker handler
 	 *
 	 * @method worker
-	 * @memberOf datastore
+	 * @memberOf store
 	 * @param  {Object} ev Event
 	 * @return {Undefined} undefined
 	 */
@@ -88,7 +87,7 @@ var store = {
 };
 
 /**
- * DataStore
+ * Creates a new DataStore
  *
  * @constructor
  * @memberOf keigai
@@ -110,7 +109,7 @@ function DataStore () {
 	this.loaded      = false;
 	this.maxDepth    = 0;
 	this.mongodb     = "";
-	this.observer    = observable( 10 );
+	this.observer    = observable.factory( 10 );
 	this.pointer     = null;
 	this.records     = [];
 	this.retrieve    = false;
@@ -126,8 +125,7 @@ function DataStore () {
  * Setting constructor loop
  *
  * @method constructor
- * @private
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @type {Function}
  */
 DataStore.prototype.constructor = DataStore;
@@ -136,12 +134,12 @@ DataStore.prototype.constructor = DataStore;
  * Adds an event listener
  *
  * @method addListener
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {String}   ev       Event name
  * @param  {Function} listener Function to execute
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link DataStore}
+ * @return {Object} {@link keigai.DataStore}
  */
 DataStore.prototype.addListener = function ( ev, listener, id, scope ) {
 	this.observer.on( ev, listener, id, scope || this );
@@ -157,11 +155,11 @@ DataStore.prototype.addListener = function ( ev, listener, id, scope ) {
  *         failedDataBatch  Fires when an exception occurs
  *
  * @method batch
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {String}  type Type of action to perform ( set/del/delete )
  * @param  {Array}   data Array of keys or indices to delete, or Object containing multiple records to set
  * @param  {Boolean} sync [Optional] Syncs store with data, if true everything is erased
- * @return {Object} {@link Deferred}
+ * @return {Object} {@link keigai.Deferred}
  */
 DataStore.prototype.batch = function ( type, data, sync ) {
 	if ( !regex.set_del.test( type ) || ( sync && regex.del.test( type ) ) || typeof data != "object" ) {
@@ -171,7 +169,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 	sync          = ( sync === true );
 	var self      = this,
 	    events    = this.events,
-	    defer     = deferred(),
+	    defer     = deferred.factory(),
 	    deferreds = [];
 
 	if ( events ) {
@@ -239,7 +237,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
  * Builds a URI
  *
  * @method buildUri
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {String} key Record key
  * @return {String}     URI
  */
@@ -256,9 +254,9 @@ DataStore.prototype.buildUri = function ( key ) {
  *         afterDataClear  Fires after the data is cleared
  *
  * @method clear
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {Boolean} sync [Optional] Boolean to limit clearing of properties
- * @return {Object} {@link DataStore}
+ * @return {Object} {@link keigai.DataStore}
  */
 DataStore.prototype.clear = function ( sync ) {
 	sync       = ( sync === true );
@@ -326,15 +324,15 @@ DataStore.prototype.clear = function ( sync ) {
  *         failedDataRetrieve Fires if an exception occurs
  *
  * @method crawl
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {Mixed}  arg Record, key or index
- * @return {Object} {@link Deferred}
+ * @return {Object} {@link keigai.Deferred}
  */
 DataStore.prototype.crawl = function ( arg ) {
 	var self      = this,
 	    events    = ( this.events === true ),
 	    record    = ( arg instanceof Object ) ? arg : this.get( arg ),
-	    defer     = deferred(),
+	    defer     = deferred.factory(),
 	    deferreds = [],
 	    parsed    = utility.parse( this.uri || "" );
 
@@ -416,18 +414,18 @@ DataStore.prototype.crawl = function ( arg ) {
  *         failedDataDelete  Fires if the store is RESTful and the action is denied
  *
  * @method del
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {Mixed}   record  Record, key or index
  * @param  {Boolean} reindex [Optional] `true` if DataStore should be reindexed
  * @param  {Boolean} batch   [Optional] `true` if part of a batch operation
- * @return {Object} {@link Deferred}
+ * @return {Object} {@link keigai.Deferred}
  */
 DataStore.prototype.del = function ( record, reindex, batch ) {
 	record    = record.key ? record : this.get ( record );
 	reindex   = ( reindex !== false );
 	batch     = ( batch === true );
 	var self  = this,
-	    defer = deferred();
+	    defer = deferred.factory();
 
 	if ( record === undefined ) {
 		defer.reject( new Error( label.invalidArguments ) );
@@ -457,12 +455,12 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
  * Delete completion
  *
  * @method delComplete
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {Object}  record  DataStore record
  * @param  {Boolean} reindex `true` if DataStore should be reindexed
  * @param  {Boolean} batch   `true` if part of a batch operation
  * @param  {Object}  defer   Deferred instance
- * @return {Object} {@link DataStore}
+ * @return {Object} {@link keigai.DataStore}
  */
 DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 	delete this.keys[record.key];
@@ -504,8 +502,8 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
  * Dispatches an event, with optional arguments
  *
  * @method emit
- * @memberOf DataStore
- * @return {Object} {@link DataStore}
+ * @memberOf keigai.DataStore
+ * @return {Object} {@link keigai.DataStore}
  */
 DataStore.prototype.dispatch = function () {
 	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
@@ -517,7 +515,7 @@ DataStore.prototype.dispatch = function () {
  * Exports a subset or complete record set of DataStore
  *
  * @method dump
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {Array} args   [Optional] Sub-data set of DataStore
  * @param  {Array} fields [Optional] Fields to export, defaults to all
  * @return {Array}        Records
@@ -563,8 +561,8 @@ DataStore.prototype.dump = function ( args, fields ) {
  * Dispatches an event, with optional arguments
  *
  * @method emit
- * @memberOf DataStore
- * @return {Object} {@link DataStore}
+ * @memberOf keigai.DataStore
+ * @return {Object} {@link keigai.DataStore}
  */
 DataStore.prototype.emit = function () {
 	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
@@ -578,7 +576,7 @@ DataStore.prototype.emit = function () {
  * If the key is an integer, cast to a string before sending as an argument!
  *
  * @method get
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {Mixed}  record Key, index or Array of pagination start & end; or comma delimited String of keys or indices
  * @param  {Number} offset [Optional] Offset from `record` for pagination
  * @return {Mixed}         Individual record, or Array of records
@@ -623,16 +621,16 @@ DataStore.prototype.get = function ( record, offset ) {
  * Performs an (INNER/LEFT/RIGHT) JOIN on two DataStores
  *
  * @method join
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {String} arg   DataStore to join
  * @param  {String} field Field in both DataStores
  * @param  {String} join  Type of JOIN to perform, defaults to `inner`
- * @return {Object} {@link Deferred}
+ * @return {Object} {@link keigai.Deferred}
  */
 DataStore.prototype.join = function ( arg, field, join ) {
 	join          = join || "inner";
 	var self      = this,
-	    defer     = deferred(),
+	    defer     = deferred.factory(),
 	    results   = [],
 	    deferreds = [],
 	    key       = field === this.key,
@@ -643,7 +641,7 @@ DataStore.prototype.join = function ( arg, field, join ) {
 		fn = function ( i ) {
 			var where  = {},
 			    record = utility.clone( i.data, true ),
-			    defer  = deferred();
+			    defer  = deferred.factory();
 
 			where[field] = key ? i.key : record[field];
 			
@@ -667,7 +665,7 @@ DataStore.prototype.join = function ( arg, field, join ) {
 		fn = function ( i ) {
 			var where  = {},
 			    record = utility.clone( i.data, true ),
-			    defer  = deferred();
+			    defer  = deferred.factory();
 
 			where[field] = key ? i.key : record[field];
 
@@ -698,7 +696,7 @@ DataStore.prototype.join = function ( arg, field, join ) {
 		fn = function ( i ) {
 			var where  = {},
 			    record = utility.clone( i.data, true ),
-			    defer  = deferred();
+			    defer  = deferred.factory();
 
 			where[field] = key ? i.key : record[field];
 			
@@ -741,7 +739,7 @@ DataStore.prototype.join = function ( arg, field, join ) {
  * Gets listeners
  *
  * @method listeners
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {String} ev [Optional] Event name
  * @return {Object} Listeners
  */
@@ -753,10 +751,10 @@ DataStore.prototype.listeners = function ( ev ) {
  * Removes an event listener
  *
  * @method off
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {String} ev Event name
  * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link DataStore}
+ * @return {Object} {@link keigai.DataStore}
  */
 DataStore.prototype.off = function ( ev, id ) {
 	this.observer.off( ev, id );
@@ -767,13 +765,13 @@ DataStore.prototype.off = function ( ev, id ) {
 /**
  * Adds an event listener
  *
- * @method addListener
- * @memberOf DataStore
+ * @method on
+ * @memberOf keigai.DataStore
  * @param  {String}   ev       Event name
  * @param  {Function} listener Function to execute
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link DataStore}
+ * @return {Object} {@link keigai.DataStore}
  */
 DataStore.prototype.on = function ( ev, listener, id, scope ) {
 	this.observer.on( ev, listener, id, scope || this );
@@ -785,12 +783,12 @@ DataStore.prototype.on = function ( ev, listener, id, scope ) {
  * Adds a short lived event listener
  *
  * @method once
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {String}   ev       Event name
  * @param  {Function} listener Function to execute
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link DataStore}
+ * @return {Object} {@link keigai.DataStore}
  */
 DataStore.prototype.once = function ( ev, listener, id, scope ) {
 	this.observer.once( ev, listener, id, scope || this );
@@ -802,7 +800,7 @@ DataStore.prototype.once = function ( ev, listener, id, scope ) {
  * Retrieves only 1 field/property
  *
  * @method only
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {String} arg Field/property to retrieve
  * @return {Array}      Array of values
  */
@@ -823,7 +821,7 @@ DataStore.prototype.only = function ( arg ) {
  * Purges DataStore or record from localStorage
  *
  * @method purge
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {Mixed} arg  [Optional] String or Number for record
  * @return {Object}     Record or store
  */
@@ -835,8 +833,8 @@ DataStore.prototype.purge = function ( arg ) {
  * Reindexes the DataStore
  *
  * @method reindex
- * @memberOf DataStore
- * @return {Object} {@link DataStore}
+ * @memberOf keigai.DataStore
+ * @return {Object} {@link keigai.DataStore}
  */
 DataStore.prototype.reindex = function () {
 	var nth = this.total,
@@ -858,10 +856,10 @@ DataStore.prototype.reindex = function () {
  * Removes an event listener
  *
  * @method removeListener
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {String} ev Event name
  * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link DataStore}
+ * @return {Object} {@link keigai.DataStore}
  */
 DataStore.prototype.removeListener = function ( ev, id ) {
 	this.observer.off( ev, id );
@@ -873,7 +871,7 @@ DataStore.prototype.removeListener = function ( ev, id ) {
  * Restores DataStore or record frome localStorage
  *
  * @method restore
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {Mixed} arg  [Optional] String or Number for record
  * @return {Object}     Record or store
  */
@@ -885,9 +883,9 @@ DataStore.prototype.restore = function ( arg ) {
  * Saves DataStore or record to localStorage, sessionStorage or MongoDB (node.js only)
  *
  * @method save
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {Mixed} arg  [Optional] String or Number for record
- * @return {Object} {@link Deferred}
+ * @return {Object} {@link keigai.Deferred}
  */
 DataStore.prototype.save = function ( arg ) {
 	return this.storage( arg || this, "set" );
@@ -899,12 +897,12 @@ DataStore.prototype.save = function ( arg ) {
  * Note: Records are not by reference!
  *
  * @method select
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {Object} where Object describing the WHERE clause
- * @return {Object} {@link Deferred}
+ * @return {Object} {@link keigai.Deferred}
  */
 DataStore.prototype.select = function ( where ) {
-	var defer = deferred(),
+	var defer = deferred.factory(),
 	    blob, clauses, cond, functions, worker;
 
 	if ( !( where instanceof Object ) ) {
@@ -981,18 +979,18 @@ DataStore.prototype.select = function ( where ) {
  *         failedDataSet  Fires if the store is RESTful and the action is denied
  *
  * @method set
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {Mixed}   key   [Optional] Integer or String to use as a Primary Key
  * @param  {Object}  data  Key:Value pairs to set as field values
  * @param  {Boolean} batch [Optional] True if called by data.batch
- * @return {Object} {@link Deferred}
+ * @return {Object} {@link keigai.Deferred}
  */
 DataStore.prototype.set = function ( key, data, batch ) {
 	data       = utility.clone( data, true );
 	batch      = ( batch === true );
 	var self   = this,
 	    events = this.events,
-	    defer  = deferred(),
+	    defer  = deferred.factory(),
 	    record = key !== null ? this.get( key ) || null : data[this.key] ? this.get( data[this.key] ) || null : null,
 	    method = "POST",
 	    parsed = utility.parse( self.uri || "" ),
@@ -1090,13 +1088,13 @@ DataStore.prototype.set = function ( key, data, batch ) {
  * Set completion
  *
  * @method setComplete
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {Mixed}   record DataStore record, or `null` if new
  * @param  {String}  key    Record key
  * @param  {Object}  data   Record data
  * @param  {Boolean} batch  `true` if part of a batch operation
  * @param  {Object}  defer  Deferred instance
- * @return {Object} {@link DataStore}
+ * @return {Object} {@link keigai.DataStore}
  */
 DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 	var self      = this,
@@ -1167,9 +1165,9 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
  * Gets or sets an explicit expiration of data
  *
  * @method setExpires
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {Number} arg  Milliseconds until data is stale
- * @return {Object} {@link DataStore}
+ * @return {Object} {@link keigai.DataStore}
  */
 DataStore.prototype.setExpires = function ( arg ) {
 	// Expiry cannot be less than a second, and must be a valid scenario for consumption; null will disable repetitive expiration
@@ -1210,12 +1208,12 @@ DataStore.prototype.setExpires = function ( arg ) {
  * Sets the RESTful API end point
  *
  * @method setUri
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {String} arg API collection end point
  * @return {Object}     Deferred
  */
 DataStore.prototype.setUri = function ( arg ) {
-	var defer = deferred(),
+	var defer = deferred.factory(),
 	    parsed, uri;
 
 	if ( arg !== null && string.isEmpty( arg ) ) {
@@ -1272,17 +1270,17 @@ DataStore.prototype.setUri = function ( arg ) {
  * Records in a view are not by reference, they are clones
  *
  * @method sort
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {String} query  SQL ( style ) order by
  * @param  {String} create [Optional, default behavior is true, value is false] Boolean determines whether to recreate a view if it exists
  * @param  {Object} where  [Optional] Object describing the WHERE clause
- * @return {Object} {@link Deferred}
+ * @return {Object} {@link keigai.Deferred}
  */
 DataStore.prototype.sort = function ( query, create, where ) {
 	create      = ( create === true || ( where instanceof Object ) );
 	var self    = this,
 	    view    = string.toCamelCase( string.explode( query ).join( " " ) ),
-	    defer   = deferred(),
+	    defer   = deferred.factory(),
 	    blob, next, worker;
 
 	// Next phase
@@ -1325,19 +1323,19 @@ DataStore.prototype.sort = function ( query, create, where ) {
  *
  * SQL/NoSQL backends will be used if configured in lieu of localStorage (node.js only)
  *
- * @methd storage
- * @memberOf DataStore
+ * @method storage
+ * @memberOf keigai.DataStore
  * @param  {Mixed}  obj  Record ( Object, key or index ) or store
  * @param  {Object} op   Operation to perform ( get, remove or set )
  * @param  {String} type [Optional] Type of Storage to use ( local, session [local] )
- * @return {Object} {@link Deferred}
+ * @return {Object} {@link keigai.Deferred}
  */
 DataStore.prototype.storage = function ( obj, op, type ) {
 	var self    = this,
 	    record  = false,
 	    mongo   = !string.isEmpty( this.mongodb ),
 	    session = ( type === "session" && typeof sessionStorage != "undefined" ),
-	    defer   = deferred(),
+	    defer   = deferred.factory(),
 	    data, deferreds, key, result;
 
 	if ( !regex.number_string_object.test( typeof obj ) || !regex.get_remove_set.test( op ) ) {
@@ -1527,7 +1525,7 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 
 									array.each( self.records, function ( i ) {
 										var data   = {},
-										    defer2 = deferred();
+										    defer2 = deferred.factory();
 
 										deferreds.push( defer2 );
 
@@ -1579,8 +1577,8 @@ DataStore.prototype.storage = function ( obj, op, type ) {
  *         failedDataSync  Fires when an exception occurs
  *
  * @method sync
- * @memberOf DataStore
- * @return {Object} {@link Deferred}
+ * @memberOf keigai.DataStore
+ * @return {Object} {@link keigai.Deferred}
  */
 DataStore.prototype.sync = function () {
 	if ( this.uri === null || string.isEmpty( this.uri ) ) {
@@ -1589,14 +1587,14 @@ DataStore.prototype.sync = function () {
 
 	var self   = this,
 	    events = ( this.events === true ),
-	    defer  = deferred(),
+	    defer  = deferred.factory(),
 	    success, failure;
 
 	/**
 	 * Resolves public deferred
 	 *
 	 * @method success
-	 * @memberOf DataStore.sync
+	 * @memberOf keigai.DataStore.sync
 	 * @private
 	 * @param  {Object} arg API response
 	 * @return {Undefined}  undefined
@@ -1632,7 +1630,7 @@ DataStore.prototype.sync = function () {
 	 * Rejects public deferred
 	 *
 	 * @method failure
-	 * @memberOf DataStore.sync
+	 * @memberOf keigai.DataStore.sync
 	 * @private
 	 * @param  {Object} e Error instance
 	 * @return {Undefined} undefined
@@ -1663,8 +1661,8 @@ DataStore.prototype.sync = function () {
  * Tears down a store & expires all records associated to an API
  *
  * @method teardown
- * @memberOf DataStore
- * @return {Object} {@link DataStore}
+ * @memberOf keigai.DataStore
+ * @return {Object} {@link keigai.DataStore}
  */
 DataStore.prototype.teardown = function () {
 	var uri = this.uri,
@@ -1710,14 +1708,14 @@ DataStore.prototype.teardown = function () {
  * Undoes the last modification to a record, if it exists
  *
  * @method undo
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {Mixed}  key     Key or index
  * @param  {String} version [Optional] Version to restore
  * @return {Object}         Deferred
  */
 DataStore.prototype.undo = function ( key, version ) {
         var record   = this.get( key ),
-            defer    = deferred(),
+            defer    = deferred.factory(),
             versions = this.versions[record.key],
             previous;
 
@@ -1750,7 +1748,7 @@ DataStore.prototype.undo = function ( key, version ) {
  * Returns Array of unique values of `key`
  *
  * @method unique
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {String} key Field to compare
  * @return {Array}      Array of values
  */
@@ -1766,14 +1764,14 @@ DataStore.prototype.unique = function ( key ) {
  * Use `data.set()` if `data` is the complete field set
  *
  * @method update
- * @memberOf DataStore
+ * @memberOf keigai.DataStore
  * @param  {Mixed}  key  Key or index
  * @param  {Object} data Key:Value pairs to set as field values
- * @return {Object} {@link Deferred}
+ * @return {Object} {@link keigai.Deferred}
  */
 DataStore.prototype.update = function ( key, data ) {
 	var record = this.get( key ),
-	    defer  = deferred();
+	    defer  = deferred.factory();
 
 	if ( record === undefined ) {
 		throw new Error( label.invalidArguments );

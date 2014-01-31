@@ -774,11 +774,11 @@ var utility = {
 	 *
 	 * @method when
 	 * @memberOf utility
-	 * @return {Object} {@link Deferred}
+	 * @return {Object} {@link keigai.Deferred}
 	 */
 	when : function () {
 		var i     = 0,
-		    defer = deferred(),
+		    defer = deferred.factory(),
 		    args  = array.cast( arguments ),
 		    nth;
 
