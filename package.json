@@ -44,6 +44,8 @@
   },
   "keywords": [
     "data",
-    "structure"
+    "datastore"
+    "structure",
+    "store"
   ]
 }
