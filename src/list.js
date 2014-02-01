@@ -9,7 +9,7 @@ var list = {
 	 * @method factory
 	 * @memberOf list
 	 * @param  {Object} target   Element to receive the DataList
-	 * @param  {Object} store    Data store to feed the DataList
+	 * @param  {Object} store    {@link keigai.DataStore}
 	 * @param  {Mixed}  template Record field, template ( $.tpl ), or String, e.g. "<p>this is a {{field}} sample.</p>", fields are marked with {{ }}
 	 * @param  {Object} options  Optional parameters to set on the DataList
 	 * @return {Object} {@link keigai.DataList}
@@ -183,7 +183,6 @@ DataList.prototype.emit = function () {
 
 	return this;
 };
-
 
 /**
  * Gets listeners
@@ -377,7 +376,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 	    reg      = new RegExp(),
 	    registry = [], // keeps track of records in the list ( for filtering )
 	    range    = [],
-	    fn, ceiling;
+	    fn, ceiling, next;
 
 	redraw = ( redraw !== false );
 	create = ( create === true );
@@ -434,117 +433,131 @@ DataList.prototype.refresh = function ( redraw, create ) {
 		};
 	}
 
-	// Creating view of DataStore
-	if ( create ) {
-		// Consuming records based on sort
-		if ( this.where === null ) {
-			this.records = string.isEmpty( this.order ) ? this.store.get() : this.store.sort( this.order, create );
+	// Next phase
+	next = function ( args ) {
+		self.records = args;
+
+		// Creating view of DataStore
+		if ( create ) {
+			self.total    = self.records.length;
+			self.filtered = [];
 		}
-		else {
-			this.records = string.isEmpty( this.order ) ? this.store.select( this.where ) : this.store.sort( this.order, create, this.where );
-		}
 
-		this.total    = this.records.length;
-		this.filtered = [];
-	}
+		// Resetting 'view' specific arrays
+		self.current  = [];
 
-	// Resetting 'view' specific arrays
-	this.current  = [];
+		// Filtering records (if applicable)
+		if ( filter && create ) {
+			array.each( self.records, function ( i ) {
+				utility.iterate( self.filter, function ( v, k ) {
+					var reg, key;
 
-	// Filtering records (if applicable)
-	if ( filter && create ) {
-		array.each( this.records, function ( i ) {
-			utility.iterate( self.filter, function ( v, k ) {
-				var reg, key;
-
-				if ( array.contains( registry, i.key ) ) {
-					return false;
-				}
-				
-				v   = string.explode( v );
-				reg = new RegExp(),
-				key = ( k === self.store.key );
-
-				array.each( v, function ( query ) {
-					var value = !key ? utility.walk( i.data, k ) : "";
-
-					utility.compile( reg, query, "i" );
-
-					if ( ( key && reg.test( i.key ) ) || reg.test( value ) ) {
-						registry.push( i.key );
-						self.filtered.push( i );
-
+					if ( array.contains( registry, i.key ) ) {
 						return false;
 					}
+					
+					v   = string.explode( v );
+					reg = new RegExp(),
+					key = ( k === self.store.key );
+
+					array.each( v, function ( query ) {
+						var value = !key ? utility.walk( i.data, k ) : "";
+
+						utility.compile( reg, query, "i" );
+
+						if ( ( key && reg.test( i.key ) ) || reg.test( value ) ) {
+							registry.push( i.key );
+							self.filtered.push( i );
+
+							return false;
+						}
+					} );
 				} );
 			} );
-		} );
-	}
-
-	// Pagination
-	if ( this.pageSize !== null && !isNaN( this.pageIndex ) && !isNaN( this.pageSize ) ) {
-		ceiling = list.pages.call( this );
-
-		// Passed the end, so putting you on the end
-		if ( ceiling > 0 && this.pageIndex > ceiling ) {
-			return this.page( ceiling );
 		}
 
-		// Paginating the items
-		else if ( this.total > 0 ) {
-			range        = list.range.call( this );
-			this.current = array.limit( !filter ? this.records : this.filtered, range[0], range[1] );
-		}
-	}
-	else {
-		this.current = !filter ? this.records : this.filtered;
-	}
+		// Pagination
+		if ( self.pageSize !== null && !isNaN( self.pageIndex ) && !isNaN( self.pageSize ) ) {
+			ceiling = list.pages.call( self );
 
-	// Processing records & generating templates
-	array.each( this.current, function ( i ) {
-		items.push( {key: i.key, template: fn( i )} );
-	} );
+			// Passed the end, so putting you on the end
+			if ( ceiling > 0 && self.pageIndex > ceiling ) {
+				return self.page( ceiling );
+			}
 
-	// Preparing the target element
-	if ( redraw ) {
-		if ( items.length === 0 ) {
-			el.innerHTML = "<li class=\"empty\">" + this.emptyMsg + "</li>";
-		}
-		else {
-			el.innerHTML = items.map( function ( i ) {
-				return i.template;
-			} ).join( "\n" );
-
-			if ( callback ) {
-				array.each( element.find( el, "> li" ), function ( i ) {
-					self.callback( i );
-				} );
+			// Paginating the items
+			else if ( self.total > 0 ) {
+				range        = list.range.call( self );
+				self.current = array.limit( !filter ? self.records : self.filtered, range[0], range[1] );
 			}
 		}
-	}
-	else {
-		array.each( element.find( el, "> li" ), function ( i ) {
-			element.addClass( i, "hidden" );
+		else {
+			self.current = !filter ? self.records : self.filtered;
+		}
+
+		// Processing records & generating templates
+		array.each( self.current, function ( i ) {
+			items.push( {key: i.key, template: fn( i )} );
 		} );
 
-		array.each( items, function ( i ) {
-			array.each( element.find( el, "> li[data-key='" + i.key + "']" ), function ( o ) {
-				element.removeClass( o, "hidden" );
+		// Preparing the target element
+		if ( redraw ) {
+			if ( items.length === 0 ) {
+				el.innerHTML = "<li class=\"empty\">" + self.emptyMsg + "</li>";
+			}
+			else {
+				el.innerHTML = items.map( function ( i ) {
+					return i.template;
+				} ).join( "\n" );
+
+				if ( callback ) {
+					array.each( element.find( el, "> li" ), function ( i ) {
+						self.callback( i );
+					} );
+				}
+			}
+		}
+		else {
+			array.each( element.find( el, "> li" ), function ( i ) {
+				element.addClass( i, "hidden" );
 			} );
+
+			array.each( items, function ( i ) {
+				array.each( element.find( el, "> li[data-key='" + i.key + "']" ), function ( o ) {
+					element.removeClass( o, "hidden" );
+				} );
+			} );
+		}
+
+		// Rendering pagination elements
+		if ( self.pageSize !== null && regex.top_bottom.test( self.pagination ) && !isNaN( self.pageIndex ) && !isNaN( self.pageSize ) ) {
+			self.pages();
+		}
+		else {
+			array.each( utility.$( "#" + el.id + "-pages-top, #" + el.id + "-pages-bottom" ), function ( i ) {
+				element.destroy( i );
+			} );
+		}
+
+		self.dispatch( "afterRefresh", el );
+	};
+
+	// Consuming records based on sort
+	if ( this.where === null ) {
+		string.isEmpty( this.order ) ? next( this.store.get() ) : this.store.sort( this.order, create ).then( next, function ( e ) {
+			utility.error( e );
 		} );
 	}
-
-	// Rendering pagination elements
-	if ( this.pageSize !== null && regex.top_bottom.test( this.pagination ) && !isNaN( this.pageIndex ) && !isNaN( this.pageSize ) ) {
-		this.pages();
+	else if ( string.isEmpty( this.order ) ) {
+		this.store.select( this.where ).then( next, function ( e ) {
+			utility.error( e );
+		} );
 	}
 	else {
-		array.each( utility.$( "#" + el.id + "-pages-top, #" + el.id + "-pages-bottom" ), function ( i ) {
-			element.destroy( i );
+		this.store.sort( this.order, create, this.where ).then( next, function ( e ) {
+			utility.error( e );
 		} );
 	}
-
-	this.dispatch( "afterRefresh", el );
 
 	return this;
 };

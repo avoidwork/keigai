@@ -6,9 +6,10 @@ WORKER = "var " + string.fromObject( array, "array" ) + ", " + string.fromObject
 
 // Interface
 return {
-	store   : store.factory,
+	filter  : filter.factory,
 	list    : list.factory,
 	grid    : grid.factory,
+	store   : store.factory,
 	version : "{{VERSION}}"
 };
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: cache</title>
+    <title>JSDoc: Class: Promise</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Namespace: cache</h1>
+    <h1 class="page-title">Class: Promise</h1>
     
     
 
@@ -27,7 +27,7 @@
     
 <header>
     <h2>
-    cache
+    Promise
     </h2>
     
 </header>  
@@ -38,85 +38,25 @@
     
     
         
-        
-        
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line494">line 494</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-        
-        
-    
-    </div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        <h3 class="subsection-title">Members</h3>
-        
-        <dl>
-            
 <dt>
-    <h4 class="name" id="items"><span class="type-signature">&lt;static> </span>items<span class="type-signature"> :Object</span></h4>
+    <h4 class="name" id="Promise"><span class="type-signature"></span>new Promise<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
     
+    
     <div class="description">
-        Collection URIs
+        Creates a new Promise
     </div>
     
+
     
     
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">Object</span>
-
-
-            </li>
-        </ul>
     
-
+    
+    
+    
     
 <dl class="details">
     
@@ -140,7 +80,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line505">line 505</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line3709">line 3709</a>
     </li></ul></dd>
     
     
@@ -153,9 +93,31 @@
 
     
     
+
+    
+
+    
+    
+    
+    
+    
+    
+    
 </dd>
 
-        </dl>
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -164,7 +126,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="clean"><span class="type-signature">&lt;static> </span>clean<span class="signature">()</span><span class="type-signature"> &rarr; {Undefined}</span></h4>
+    <h4 class="name" id="constructor"><span class="type-signature">&lt;private, static> </span>constructor<span class="signature">()</span><span class="type-signature"> &rarr; {function}</span></h4>
     
     
 </dt>
@@ -172,7 +134,7 @@
     
     
     <div class="description">
-        Garbage collector for the cached items
+        Setting constructor loop
     </div>
     
 
@@ -205,7 +167,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line507">line 507</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line3716">line 3716</a>
     </li></ul></dd>
     
     
@@ -229,10 +191,6 @@
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    undefined
-</div>
-
 
 
 <dl>
@@ -241,7 +199,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type">Undefined</span>
+<span class="param-type">function</span>
 
 
 	</dd>
@@ -255,7 +213,7 @@
         
             
 <dt>
-    <h4 class="name" id="expire"><span class="type-signature">&lt;static> </span>expire<span class="signature">(uri)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+    <h4 class="name" id="process"><span class="type-signature">&lt;static> </span>process<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
     
 </dt>
@@ -263,9 +221,7 @@
     
     
     <div class="description">
-        Expires a URI from the local cache
-
-Events: expire    Fires when the URI expires
+        Processes `handlers` queue
     </div>
     
 
@@ -273,54 +229,6 @@ Events: expire    Fires when the URI expires
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>uri</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">URI of the local representation</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
     
     
     
@@ -346,7 +254,7 @@ Events: expire    Fires when the URI expires
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line522">line 522</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line3726">line 3726</a>
     </li></ul></dd>
     
     
@@ -371,7 +279,7 @@ Events: expire    Fires when the URI expires
     
             
 <div class="param-desc">
-    `true` if successful
+    Promise
 </div>
 
 
@@ -382,148 +290,9 @@ Events: expire    Fires when the URI expires
 	</dt>
 	<dd>
 		
-<span class="param-type">Boolean</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="expired"><span class="type-signature">&lt;static> </span>expired<span class="signature">(uri)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Determines if a URI has expired
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>uri</code></td>
-            
-            
-            <td class="type">
-            
-                
 <span class="param-type">Object</span>
 
 
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">Cached URI object</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line543">line 543</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    True if the URI has expired
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Boolean</span>
-
-
 	</dd>
 </dl>
 
@@ -535,7 +304,7 @@ Events: expire    Fires when the URI expires
         
             
 <dt>
-    <h4 class="name" id="get"><span class="type-signature">&lt;static> </span>get<span class="signature">(uri, expire, silent)</span><span class="type-signature"> &rarr; {Mixed}</span></h4>
+    <h4 class="name" id="reject"><span class="type-signature">&lt;static> </span>reject<span class="signature">(arg)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
     
 </dt>
@@ -543,7 +312,7 @@ Events: expire    Fires when the URI expires
     
     
     <div class="description">
-        Returns the cached object {headers, response} of the URI or false
+        Breaks a Promise
     </div>
     
 
@@ -577,13 +346,13 @@ Events: expire    Fires when the URI expires
 	
         <tr>
             
-                <td class="name"><code>uri</code></td>
+                <td class="name"><code>arg</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">Mixed</span>
 
 
             
@@ -593,53 +362,7 @@ Events: expire    Fires when the URI expires
             
             
             
-            <td class="description last">URI/Identifier for the resource to retrieve from cache</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>expire</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">[Optional] If 'false' the URI will not expire</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>silent</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">[Optional] If 'true', the event will not fire</td>
+            <td class="description last">Promise value</td>
         </tr>
 	
 	
@@ -670,7 +393,7 @@ Events: expire    Fires when the URI expires
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line557">line 557</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line3784">line 3784</a>
     </li></ul></dd>
     
     
@@ -695,7 +418,7 @@ Events: expire    Fires when the URI expires
     
             
 <div class="param-desc">
-    URI Object {headers, response} or False
+    Promise
 </div>
 
 
@@ -706,7 +429,7 @@ Events: expire    Fires when the URI expires
 	</dt>
 	<dd>
 		
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
 	</dd>
@@ -720,7 +443,7 @@ Events: expire    Fires when the URI expires
         
             
 <dt>
-    <h4 class="name" id="set"><span class="type-signature">&lt;static> </span>set<span class="signature">(uri, property, value)</span><span class="type-signature"> &rarr; {Mixed}</span></h4>
+    <h4 class="name" id="resolve"><span class="type-signature">&lt;static> </span>resolve<span class="signature">(arg)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
     
 </dt>
@@ -728,7 +451,7 @@ Events: expire    Fires when the URI expires
     
     
     <div class="description">
-        Sets, or updates an item in cache.items
+        Resolves a Promise
     </div>
     
 
@@ -762,53 +485,7 @@ Events: expire    Fires when the URI expires
 	
         <tr>
             
-                <td class="name"><code>uri</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">URI to set or update</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>property</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">Property of the cached URI to set</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>value</code></td>
+                <td class="name"><code>arg</code></td>
             
             
             <td class="type">
@@ -824,7 +501,7 @@ Events: expire    Fires when the URI expires
             
             
             
-            <td class="description last">Value to set</td>
+            <td class="description last">Promise value</td>
         </tr>
 	
 	
@@ -855,7 +532,7 @@ Events: expire    Fires when the URI expires
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line583">line 583</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line3796">line 3796</a>
     </li></ul></dd>
     
     
@@ -880,7 +557,7 @@ Events: expire    Fires when the URI expires
     
             
 <div class="param-desc">
-    URI Object {headers, response} or undefined
+    Promise
 </div>
 
 
@@ -891,7 +568,169 @@ Events: expire    Fires when the URI expires
 	</dt>
 	<dd>
 		
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="then"><span class="type-signature">&lt;static> </span>then<span class="signature">(success, failure)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Registers handler(s) for a Promise
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>success</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">[Optional] Success handler for eventual value</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>failure</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">[Optional] Failure handler for eventual value</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line3808">line 3808</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Promise
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
 
 
 	</dd>
@@ -924,7 +763,7 @@ Events: expire    Fires when the URI expires
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Feb 01 2014 13:21:32 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Feb 01 2014 13:21:33 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

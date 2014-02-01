@@ -150,9 +150,9 @@ DataStore.prototype.addListener = function ( ev, listener, id, scope ) {
 /**
  * Batch sets or deletes data in the store
  *
- * Events: beforeDataBatch  Fires before the batch is queued
- *         afterDataBatch   Fires after the batch is queued
- *         failedDataBatch  Fires when an exception occurs
+ * Events: beforeBatch  Fires before the batch is queued
+ *         afterBatch   Fires after the batch is queued
+ *         failedBatch  Fires when an exception occurs
  *
  * @method batch
  * @memberOf keigai.DataStore
@@ -173,7 +173,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 	    deferreds = [];
 
 	if ( events ) {
-		this.emit( "beforeDataBatch", data );
+		this.emit( "beforeBatch", data );
 	}
 
 	if ( sync ) {
@@ -184,7 +184,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 		this.loaded = true;
 
 		if ( events ) {
-			this.emit( "afterDataBatch", this.records );
+			this.emit( "afterBatch", this.records );
 		}
 
 		defer.resolve( this.records );
@@ -205,7 +205,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 			self.loaded = true;
 
 			if ( events ) {
-				self.emit( "afterDataBatch", self.records );
+				self.emit( "afterBatch", self.records );
 			}
 
 			array.each( self.lists, function ( i ) {
@@ -223,7 +223,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 			defer.resolve( self.records );
 		}, function ( e ) {
 			if ( events ) {
-				self.emit( "failedDataBatch", e );
+				self.emit( "failedBatch", e );
 			}
 
 			defer.reject( e );
@@ -250,8 +250,8 @@ DataStore.prototype.buildUri = function ( key ) {
 /**
  * Clears the data object, unsets the uri property
  *
- * Events: beforeDataClear Fires before the data is cleared
- *         afterDataClear  Fires after the data is cleared
+ * Events: beforeClear Fires before the data is cleared
+ *         afterClear  Fires after the data is cleared
  *
  * @method clear
  * @memberOf keigai.DataStore
@@ -264,7 +264,7 @@ DataStore.prototype.clear = function ( sync ) {
 
 	if ( !sync ) {
 		if ( events ) {
-			this.emit( "beforeDataClear" );
+			this.emit( "beforeClear" );
 		}
 
 		array.each( this.lists, function ( i ) {
@@ -297,7 +297,7 @@ DataStore.prototype.clear = function ( sync ) {
 		this.uri         = null;
 
 		if ( events ) {
-			this.emit( "afterDataClear" );
+			this.emit( "afterClear" );
 		}
 	}
 	else {
@@ -319,9 +319,9 @@ DataStore.prototype.clear = function ( sync ) {
 /**
  * Crawls a record's properties and creates DataStores when URIs are detected
  *
- * Events: beforeDataRetrieve Fires before crawling a record
- *         afterDataRetrieve  Fires after the store has retrieved all data from crawling
- *         failedDataRetrieve Fires if an exception occurs
+ * Events: beforeRetrieve Fires before crawling a record
+ *         afterRetrieve  Fires after the store has retrieved all data from crawling
+ *         failedRetrieve Fires if an exception occurs
  *
  * @method crawl
  * @memberOf keigai.DataStore
@@ -341,7 +341,7 @@ DataStore.prototype.crawl = function ( arg ) {
 	}
 
 	if ( events ) {
-		this.emit( "beforeDataRetrieve", record );
+		this.emit( "beforeRetrieve", record );
 	}
 
 	// Depth of recursion is controled by `maxDepth`
@@ -383,13 +383,13 @@ DataStore.prototype.crawl = function ( arg ) {
 	if ( deferreds.length > 0 ) {
 		utility.when( deferreds ).then( function () {
 			if ( events ) {
-				self.emit( "afterDataRetrieve", record );
+				self.emit( "afterRetrieve", record );
 			}
 
 			defer.resolve( record );
 		}, function ( e ) {
 			if ( events ) {
-				self.emit( "failedDataRetrieve", record );
+				self.emit( "failedRetrieve", record );
 			}
 
 			defer.reject( e );
@@ -397,7 +397,7 @@ DataStore.prototype.crawl = function ( arg ) {
 	}
 	else {
 		if ( events ) {
-			self.emit( "afterDataRetrieve", record );
+			self.emit( "afterRetrieve", record );
 		}
 
 		defer.resolve( record );
@@ -409,9 +409,9 @@ DataStore.prototype.crawl = function ( arg ) {
 /**
  * Deletes a record based on key or index
  *
- * Events: beforeDataDelete  Fires before the record is deleted
- *         afterDataDelete   Fires after the record is deleted
- *         failedDataDelete  Fires if the store is RESTful and the action is denied
+ * Events: beforeDelete  Fires before the record is deleted
+ *         afterDelete   Fires after the record is deleted
+ *         failedDelete  Fires if the store is RESTful and the action is denied
  *
  * @method del
  * @memberOf keigai.DataStore
@@ -432,7 +432,7 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
 	}
 	else {
 		if ( this.events ) {
-			self.emit( "beforeDataDelete", record );
+			self.emit( "beforeDelete", record );
 		}
 
 		if ( this.uri === null || this.callback !== null ) {
@@ -442,7 +442,7 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
 			client.request( this.buildUri( record.key ), "DELETE", function () {
 				self.delComplete( record, reindex, batch, defer );
 			}, function ( e ) {
-				self.emit( "failedDataDelete", e );
+				self.emit( "failedDelete", e );
 				defer.reject( e );
 			}, undefined, utility.merge( {withCredentials: this.credentials}, this.headers ) );
 		}
@@ -485,7 +485,7 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 		}
 
 		if ( this.events ) {
-			this.emit( "afterDataDelete", record );
+			this.emit( "afterDelete", record );
 		}
 
 		array.each( this.lists, function ( i ) {
@@ -974,9 +974,9 @@ DataStore.prototype.select = function ( where ) {
 /**
  * Creates or updates an existing record
  *
- * Events: beforeDataSet  Fires before the record is set
- *         afterDataSet   Fires after the record is set, the record is the argument for listeners
- *         failedDataSet  Fires if the store is RESTful and the action is denied
+ * Events: beforeSet  Fires before the record is set
+ *         afterSet   Fires after the record is set, the record is the argument for listeners
+ *         failedSet  Fires if the store is RESTful and the action is denied
  *
  * @method set
  * @memberOf keigai.DataStore
@@ -1021,13 +1021,13 @@ DataStore.prototype.set = function ( key, data, batch ) {
 		}
 		else {
 			if ( !batch && events ) {
-				self.emit( "beforeDataSet", {key: key, data: data} );
+				self.emit( "beforeSet", {key: key, data: data} );
 			}
 
 			client.request( uri, "GET", function ( arg ) {
 				self.setComplete( record, key, self.source ? arg[self.source] : arg, batch, defer );
 			}, function ( e ) {
-				self.emit( "failedDataSet", e );
+				self.emit( "failedSet", e );
 				defer.reject( e );
 			}, undefined, utility.merge( {withCredentials: self.credentials}, self.headers ) );
 		}
@@ -1046,7 +1046,7 @@ DataStore.prototype.set = function ( key, data, batch ) {
 		}
 
 		if ( !batch && events ) {
-			self.emit( "beforeDataSet", {key: key, data: data} );
+			self.emit( "beforeSet", {key: key, data: data} );
 		}
 
 		if ( batch || this.uri === null ) {
@@ -1075,7 +1075,7 @@ DataStore.prototype.set = function ( key, data, batch ) {
 			client.request( uri, method, function ( arg ) {
 				self.setComplete( record, key, self.source ? arg[self.source] : arg, batch, defer );
 			}, function ( e ) {
-				self.emit( "failedDataSet", e );
+				self.emit( "failedSet", e );
 				defer.reject( e );
 			}, data, utility.merge( {withCredentials: this.credentials}, this.headers ) );
 		}
@@ -1142,7 +1142,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 	}
 
 	if ( !batch && this.events ) {
-		self.emit( "afterDataSet", record );
+		self.emit( "afterSet", record );
 
 		array.each( this.lists, function ( i ) {
 			i.refresh( true, true );
@@ -1299,6 +1299,8 @@ DataStore.prototype.sort = function ( query, create, where ) {
 				self.views[view] = ev.data;
 				defer.resolve( self.views[view] );
 			};
+
+			debugger;
 
 			worker.postMessage( {cmd: "sort", records: records, query: query} );
 		}
@@ -1572,9 +1574,9 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 /**
  * Syncs the DataStore with a URI representation
  *
- * Events: beforeDataSync  Fires before syncing the DataStore
- *         afterDataSync   Fires after syncing the DataStore
- *         failedDataSync  Fires when an exception occurs
+ * Events: beforeSync  Fires before syncing the DataStore
+ *         afterSync   Fires after syncing the DataStore
+ *         failedSync  Fires when an exception occurs
  *
  * @method sync
  * @memberOf keigai.DataStore
@@ -1619,7 +1621,7 @@ DataStore.prototype.sync = function () {
 
 		self.batch( "set", data, true ).then( function ( arg ) {
 			if ( events ) {
-				self.emit( "afterDataSync", arg );
+				self.emit( "afterSync", arg );
 			}
 
 			defer.resolve( arg );
@@ -1637,14 +1639,14 @@ DataStore.prototype.sync = function () {
 	 */
 	failure = function ( e ) {
 		if ( events ) {
-			self.emit( "failedDataSync", e );
+			self.emit( "failedSync", e );
 		}
 
 		defer.reject( e );
 	};
 
 	if ( events ) {
-		this.emit( "beforeDataSync", this.uri );
+		this.emit( "beforeSync", this.uri );
 	}
 
 	if ( this.callback !== null ) {
@@ -1699,7 +1701,7 @@ DataStore.prototype.teardown = function () {
 	} );
 
 	this.clear( true );
-	this.emit( "afterDataTeardown" );
+	this.emit( "afterTeardown" );
 
 	return this;
 };

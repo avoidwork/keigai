@@ -98,7 +98,7 @@ var promise = {
  * Creates a new Promise
  *
  * @constructor
- * @private
+ * @memberOf keigai
  */
 function Promise () {
 	this.deferred = false;
@@ -111,7 +111,7 @@ function Promise () {
  * Setting constructor loop
  *
  * @method constructor
- * @memberOf Promise
+ * @memberOf keigai.Promise
  * @private
  * @type {Function}
  */
@@ -121,7 +121,7 @@ Promise.prototype.constructor = Promise;
  * Processes `handlers` queue
  *
  * @method process
- * @memberOf Promise
+ * @memberOf keigai.Promise
  * @return {Object} {@link Promise}
  */
 Promise.prototype.process = function() {
@@ -179,7 +179,7 @@ Promise.prototype.process = function() {
  * Breaks a Promise
  *
  * @method reject
- * @memberOf Promise
+ * @memberOf keigai.Promise
  * @param  {Mixed} arg Promise value
  * @return {Object} {@link Promise}
  */
@@ -191,7 +191,7 @@ Promise.prototype.reject = function ( arg ) {
  * Resolves a Promise
  *
  * @method resolve
- * @memberOf Promise
+ * @memberOf keigai.Promise
  * @param  {Mixed} arg Promise value
  * @return {Object} {@link Promise}
  */
@@ -203,7 +203,7 @@ Promise.prototype.resolve = function ( arg ) {
  * Registers handler(s) for a Promise
  *
  * @method then
- * @memberOf Promise
+ * @memberOf keigai.Promise
  * @param  {Function} success [Optional] Success handler for eventual value
  * @param  {Function} failure [Optional] Failure handler for eventual value
  * @return {Object} {@link Promise}

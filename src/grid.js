@@ -8,7 +8,7 @@ var grid = {
 	 *
 	 * @method factory
 	 * @memberOf grid
-	 * @param  {Object}  obj         Element to receive DataGrid
+	 * @param  {Object}  target      Element to receive DataGrid
 	 * @param  {Object}  store       DataStore
 	 * @param  {Array}   fields      Array of fields to display
 	 * @param  {Array}   sortable    [Optional] Array of sortable columns/fields
@@ -17,10 +17,65 @@ var grid = {
 	 * @param  {Number}  debounce    [Optional] DataListFilter input debounce, default is 250
 	 * @return {Object} {@link keigai.DataGrid}
 	 */
-	factory : function ( obj, store, fields, sortable, options, filtered, debounce ) {
-		var ref = [store];
+	factory : function ( target, store, fields, sortable, options, filtered, debounce ) {
+		debugger;
+		var ref = [store],
+		    obj, template, header, width, css, sort;
 
-		return new DataGrid( obj, ref[0], fields, sortable, options, filtered ).init( debounce );
+		obj       = new DataGrid( target, ref[0], fields, sortable, options, filtered );
+		template  = "";
+		header    = element.create( "li", {}, element.create( "ul", {"class": "header"}, obj.element ) );
+		width     = ( 100 / obj.fields.length ) + "%";
+		css       = "display:inline-block;width:" + width;
+		sort      = obj.options.order ? string.explode( obj.options.order ) : [];
+
+		// Creating DataList template based on fields
+		array.each( obj.fields, function ( i ) {
+			var trimmed = i.replace( /.*\./g, "" ),
+			    el      = element.create( "span", {innerHTML: string.capitalize( string.unCamelCase( string.unhyphenate( trimmed, true ) ), true ), style: css, "data-field": i}, header );
+
+			// Adding CSS class if "column" is sortable
+			if ( obj.sortable.contains( i ) ) {
+				element.klass( el, "sortable", true );
+
+				// Applying default sort, if specified
+				if ( sort.filter( function ( x ) { return ( x.indexOf( i ) === 0 ); } ).length > 0 ) {
+					element.data( el, "sort", array.contains( sort, i + " desc" ) ? "desc" : "asc" );
+				}
+			}
+
+			template += "<span class=\"" + i + "\" data-field=\"" + i + "\" style=\"" + css + "\">{{" + i + "}}</span>";
+		} );
+
+		// Setting click handler on sortable "columns"
+		if ( obj.sortable.length > 0 ) {
+			obj.observer.hook( header, "click", obj.sort, "sort", obj );
+		}
+
+		// Creating DataList
+		ref.push( list.factory( obj.element, ref[0], template, obj.options ) );
+
+		// Setting by-reference DataList on DataGrid
+		obj.list = ref[0];
+
+		if ( obj.filtered === true ) {
+			// Creating DataListFilter
+			ref.push( filter( element.create( "input", {"class": "filter"}, obj.element, "first" ), ref[0], obj.fields.join( "," ), debounce || 250 ) );
+			
+			// Setting by-reference DataListFilter on DataGrid
+			obj.filter = ref[1];
+		}
+
+		// Setting up a chain of Events
+		obj.on( "beforeRefresh", function ( arg ) {
+			element.dispatch( arg, "beforeRefresh" );
+		}, "bubble" );
+
+		obj.on( "afterRefresh", function ( arg ) {
+			element.dispatch( arg, "afterRefresh" );
+		}, "bubble" );
+
+		return obj;
 	}
 };
 
@@ -29,14 +84,14 @@ var grid = {
  *
  * @constructor
  * @memberOf keigai
- * @param  {Object}  obj      Element to receive DataGrid
+ * @param  {Object}  target   Element to receive DataGrid
  * @param  {Object}  store    DataStore
  * @param  {Array}   fields   Array of fields to display
  * @param  {Array}   sortable [Optional] Array of sortable columns/fields
  * @param  {Object}  options  [Optional] DataList options
  * @param  {Boolean} filtered [Optional] Create an input to filter the DataGrid
  */
-function DataGrid ( obj, store, fields, sortable, options, filtered ) {
+function DataGrid ( target, store, fields, sortable, options, filtered ) {
 	var sortOrder;
 
 	if ( options.order && !string.isEmpty( options.order ) ) {
@@ -45,16 +100,16 @@ function DataGrid ( obj, store, fields, sortable, options, filtered ) {
 		} );
 	}
 
-	this.element     = obj;
-	this.fields      = fields;
-	this.filter      = null;
-	this.filtered    = ( filtered === true );
-	this.initialized = false;
-	this.list        = null;
-	this.options     = options   || {};
-	this.store       = store;
-	this.sortable    = sortable  || [];
-	this.sortOrder   = sortOrder || sortable || [];
+	this.element   = element.create( "section", {"class": "grid"}, target );
+	this.fields    = fields;
+	this.filter    = null;
+	this.filtered  = filtered === true;
+	this.list      = null;
+	this.observer  = new Observable();
+	this.options   = options   || {};
+	this.store     = store;
+	this.sortable  = sortable  || [];
+	this.sortOrder = sortOrder || sortable || [];
 }
 
 /**
@@ -65,6 +120,36 @@ function DataGrid ( obj, store, fields, sortable, options, filtered ) {
  * @type {Function}
  */
 DataGrid.prototype.constructor = DataGrid;
+
+/**
+ * Adds an event listener
+ *
+ * @method addListener
+ * @memberOf keigai.DataGrid
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.DataGrid}
+ */
+DataGrid.prototype.addListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Dispatches an event, with optional arguments
+ *
+ * @method emit
+ * @memberOf keigai.DataGrid
+ * @return {Object} {@link keigai.DataGrid}
+ */
+DataGrid.prototype.dispatch = function () {
+	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
+
+	return this;
+};
 
 /**
  * Exports data grid records
@@ -78,71 +163,84 @@ DataGrid.prototype.dump = function () {
 };
 
 /**
- * Initializes DataGrid
+ * Dispatches an event, with optional arguments
  *
- * @method init
+ * @method emit
  * @memberOf keigai.DataGrid
- * @param  {Number} debounce [Optional] Debounce value for DataListFilter, defaults to 250
  * @return {Object} {@link keigai.DataGrid}
  */
-DataGrid.prototype.init = function ( debounce ) {
-	var self, ref, template, container, header, width, css, sort;
+DataGrid.prototype.emit = function () {
+	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
 
-	if ( !this.initialized ) {
-		self      = this;
-		ref       = [];
-		template  = "";
-		container = element.create( "section", {"class": "grid"}, this.element );
-		header    = element.create( "li", {}, element.create( "ul", {"class": "header"}, container ) );
-		width     = ( 100 / this.fields.length ) + "%";
-		css       = "display:inline-block;width:" + width;
-		sort      = this.options.order ? string.explode( this.options.order ) : [];
+	return this;
+};
 
-		// Creating DataList template based on fields
-		array.each( this.fields, function ( i ) {
-			var trimmed = i.replace( /.*\./g, "" ),
-			    obj     = element.create( "span", {innerHTML: string.capitalize( string.unCamelCase( string.unhyphenate( trimmed, true ) ), true ), style: css, "class": trimmed, "data-field": i}, header );
+/**
+ * Gets listeners
+ *
+ * @method listeners
+ * @memberOf keigai.DataGrid
+ * @param  {String} ev [Optional] Event name
+ * @return {Object} Listeners
+ */
+DataGrid.prototype.listeners = function ( ev ) {
+	return ev ? this.observer.listeners[ev] : this.listeners;
+};
 
-			// Adding CSS class if "column" is sortable
-			if ( self.sortable.contains( i ) ) {
-				element.klass( obj, "sortable", true );
+/**
+ * Removes an event listener
+ *
+ * @method off
+ * @memberOf keigai.DataGrid
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataGrid}
+ */
+DataGrid.prototype.off = function ( ev, id ) {
+	this.observer.off( ev, id );
 
-				// Applying default sort, if specified
-				if ( sort.filter( function ( x ) { return ( x.indexOf( i ) === 0 ); } ).length > 0 ) {
-					element.data( obj, "sort", array.contains( sort, i + " desc" ) ? "desc" : "asc" );
-				}
-			}
+	return this;
+};
 
-			template += "<span class=\"" + i + "\" data-field=\"" + i + "\" style=\"" + css + "\">{{" + i + "}}</span>";
-		} );
+/**
+ * Adds an event listener
+ *
+ * @method on
+ * @memberOf keigai.DataGrid
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.DataGrid}
+ */
+DataGrid.prototype.on = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
 
-		// Setting click handler on sortable "columns"
-		if ( this.sortable.length > 0 ) {
-			//observer.add( header, "click", this.sort, "sort", this );
-		}
+	return this;
+};
 
-		// Creating DataList
-		ref.push( list.factory( container, this.store, template, this.options ) );
-
-		// Setting by-reference DataList on DataGrid
-		this.list = ref[0];
-
-		if ( this.filtered === true ) {
-			// Creating DataListFilter
-			ref.push( filter( element.create( "input", {"class": "filter"}, container, "first" ), ref[0], this.fields.join( "," ), debounce || 250 ) );
-			
-			// Setting by-reference DataListFilter on DataGrid
-			this.filter = ref[1];
-		}
-
-		this.initialized = true;
-	}
+/**
+ * Adds a short lived event listener
+ *
+ * @method once
+ * @memberOf keigai.DataGrid
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.DataGrid}
+ */
+DataGrid.prototype.once = function ( ev, listener, id, scope ) {
+	this.observer.once( ev, listener, id, scope || this );
 
 	return this;
 };
 
 /**
  * Refreshes the DataGrid
+ *
+ * Events: beforeRefresh  Fires from the element containing the DataGrid
+ *         afterRefresh   Fires from the element containing the DataGrid
  *
  * @method refresh
  * @memberOf keigai.DataGrid
@@ -151,6 +249,8 @@ DataGrid.prototype.init = function ( debounce ) {
 DataGrid.prototype.refresh = function () {
 	var sort = [],
 	    self = this;
+
+	this.dispatch( "beforeRefresh", this.element );
 
 	if ( this.sortOrder.length > 0 ) {
 		array.each( this.sortOrder, function ( i ) {
@@ -164,8 +264,9 @@ DataGrid.prototype.refresh = function () {
 
 	this.list.where = null;
 	utility.merge( this.list, this.options );
-
 	this.list.refresh( true, true );
+
+	this.dispatch( "afterRefresh", this.element );
 
 	return this;
 };
@@ -188,7 +289,6 @@ DataGrid.prototype.sort = function ( e ) {
 	// Refreshing list if target is sortable
 	if ( element.hasClass( target, "sortable" ) ) {
 		field = element.data( target, "field" );
-
 		element.data( target, "sort", element.data( target, "sort" ) === "asc" ? "desc" : "asc" );
 		array.remove( this.sortOrder, field );
 		this.sortOrder.splice( 0, 0, field );
@@ -208,15 +308,13 @@ DataGrid.prototype.sort = function ( e ) {
 DataGrid.prototype.teardown = function () {
 	if ( this.filter !== null ) {
 		this.filter.teardown();
+		this.filter = null;
 	}
 
 	this.list.teardown();
-
-	// Removing click handler on DataGrid header
-	//observer.remove( element.find( this.element, ".header" )[0], "click", "sort" );
-
-	// Destroying DataGrid (from DOM)
-	element.destroy( element.find( this.element, ".grid" )[0] );
+	this.observer.unhook( element.find( this.element, ".header" )[0], "click" );
+	element.destroy( this.element );
+	this.element = null;
 
 	return this;
 };
