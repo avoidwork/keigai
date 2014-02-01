@@ -6,7 +6,7 @@ keigai has no dependencies, and offers a pluggable data store solution for any a
 
 ## API
 
-See included documenation for complete API.
+Full API documentation is included, and available at http://api.keigai.io
 
 ### filter (target, list, filters[, debounce])
 Returns a DataListFilter instance. DataListFilters provide a fast & easy way for the end user to refine the contents of a DataList or DataGrid. Wildcards are supported.
