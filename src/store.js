@@ -1300,8 +1300,6 @@ DataStore.prototype.sort = function ( query, create, where ) {
 				defer.resolve( self.views[view] );
 			};
 
-			debugger;
-
 			worker.postMessage( {cmd: "sort", records: records, query: query} );
 		}
 		else {

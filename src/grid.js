@@ -18,7 +18,6 @@ var grid = {
 	 * @return {Object} {@link keigai.DataGrid}
 	 */
 	factory : function ( target, store, fields, sortable, options, filtered, debounce ) {
-		debugger;
 		var ref = [store],
 		    obj, template, header, width, css, sort;
 
@@ -49,21 +48,21 @@ var grid = {
 
 		// Setting click handler on sortable "columns"
 		if ( obj.sortable.length > 0 ) {
-			obj.observer.hook( header, "click", obj.sort, "sort", obj );
+			obj.observer.hook( header.parentNode, "click", obj.sort, "sort", obj );
 		}
 
 		// Creating DataList
 		ref.push( list.factory( obj.element, ref[0], template, obj.options ) );
 
 		// Setting by-reference DataList on DataGrid
-		obj.list = ref[0];
+		obj.list = ref[1];
 
 		if ( obj.filtered === true ) {
 			// Creating DataListFilter
-			ref.push( filter( element.create( "input", {"class": "filter"}, obj.element, "first" ), ref[0], obj.fields.join( "," ), debounce || 250 ) );
+			ref.push( filter.factory( element.create( "input", {"class": "filter"}, obj.element, "first" ), ref[1], obj.fields.join( "," ), debounce || 250 ) );
 			
 			// Setting by-reference DataListFilter on DataGrid
-			obj.filter = ref[1];
+			obj.filter = ref[2];
 		}
 
 		// Setting up a chain of Events
@@ -74,6 +73,12 @@ var grid = {
 		obj.on( "afterRefresh", function ( arg ) {
 			element.dispatch( arg, "afterRefresh" );
 		}, "bubble" );
+
+		obj.on( "click", function ( e ) {
+			if ( element.hasClass( e.currentTarget, "header" ) ) {
+				obj.sort( e );
+			}
+		}, "header" );
 
 		return obj;
 	}
