@@ -256,7 +256,7 @@ var client = {
 
 		if ( external === undefined ) {
 			if ( !global.keigai ) {
-				utility.define( "keigai.callback", {}, global );
+				global.keigai = {callback: {}};
 			}
 
 			external = "keigai";

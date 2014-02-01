@@ -8,6 +8,7 @@
 function Observable ( arg ) {
 	this.limit     = arg || MAX;
 	this.listeners = {};
+	this.hooks     = {};
 }
 
 /**
@@ -37,6 +38,33 @@ Observable.prototype.dispatch = function () {
 	}
 
 	return this;
+};
+
+/**
+ * Hooks into `target` for a DOM event
+ *
+ * @method hook
+ * @memberOf keigai.Observable
+ * @param  {Object} target Element
+ * @param  {String} ev     Event
+ * @return {Object}        Element
+ */
+Observable.prototype.hook = function ( target, ev ) {
+	var self = this;
+
+	if ( typeof target.addEventListener != "function" ) {
+		throw new Error( label.invalidArguments );
+	}
+
+	utility.genId( target, true );
+
+	this.hooks[target.id] = function ( arg ) {
+		self.dispatch( ev, arg );
+	};
+
+	target.addEventListener( ev, this.hooks[target.id], false );
+
+	return target;
 };
 
 /**
@@ -113,25 +141,16 @@ Observable.prototype.once = function ( ev, handler, id, scope  ) {
 };
 
 /**
- * Watches `obj` for a DOM event
+ * Unhooks from `target` for a DOM event
  *
- * @method watch
+ * @method unhook
  * @memberOf keigai.Observable
  * @param  {Object} target Element
  * @param  {String} ev     Event
  * @return {Object}        Element
  */
-Observable.prototype.watch = function ( target, ev ) {
-	var self = this;
-
-	if ( typeof target.addEventListener != "function" ) {
-		throw new Error( label.invalidArguments );
-	}
-	else {
-		target.addEventListener( ev, function ( arg ) {
-			self.dispatch( ev, arg );
-		} );
-	}
+Observable.prototype.unhook = function ( target, ev ) {
+	target.removeEventListener( ev, this.hooks[target.id], false );
 
 	return target;
 };

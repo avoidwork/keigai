@@ -213,62 +213,6 @@ var utility = {
 	},
 
 	/**
-	 * Allows deep setting of properties without knowing
-	 * if the structure is valid
-	 *
-	 * @method define
-	 * @memberOf utility
-	 * @param  {String} args  Dot delimited string of the structure
-	 * @param  {Mixed}  value Value to set
-	 * @param  {Object} obj   Object receiving value
-	 * @return {Object}       Object receiving value
-	 */
-	define : function ( args, value, obj ) {
-		args    = args.split( "." );
-		var p   = obj,
-		    nth = args.length;
-
-		if ( obj === undefined ) {
-			obj = this;
-		}
-
-		if ( value === undefined ) {
-			value = null;
-		}
-
-		array.each( args, function ( i, idx ) {
-			var num = idx + 1 < nth && !isNaN( number.parse( args[idx + 1], 10 ) ),
-			    val = value;
-
-			if ( !isNaN( number.parse( i, 10 ) ) )  {
-				i = number.parse( i, 10 );
-			}
-			
-			// Creating or casting
-			if ( p[i] === undefined ) {
-				p[i] = num ? [] : {};
-			}
-			else if ( p[i] instanceof Object && num ) {
-				p[i] = array.cast( p[i] );
-			}
-			else if ( p[i] instanceof Object ) {
-				// Do nothing
-			}
-			else if ( p[i] instanceof Array && !num ) {
-				p[i] = array.toObject( p[i] );
-			}
-			else {
-				p[i] = {};
-			}
-
-			// Setting reference or value
-			idx + 1 === nth ? p[i] = val : p = p[i];
-		} );
-
-		return obj;
-	},
-
-	/**
 	 * Defers the execution of Function by at least the supplied milliseconds.
 	 * Timing may vary under "heavy load" relative to the CPU & client JavaScript engine.
 	 *

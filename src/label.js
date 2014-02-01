@@ -76,6 +76,14 @@ var label = {
 	invalidStateNotUsable : "INVALID_STATE_ERR: Object is not usable",
 
 	/**
+	 * Defauly `emptyMsg` of DataLists
+	 *
+	 * @type {String}
+	 * @memberOf label
+	 */
+	noData : "Nothing to display",
+
+	/**
 	 * Requested method is not available
 	 *
 	 * @type {String}

@@ -16,32 +16,51 @@ var list = {
 	 */
 	factory : function ( target, store, template, options ) {
 		var ref = [store],
-		    obj, instance;
+		    obj;
 
 		if ( !( target instanceof Element ) || typeof store != "object" || !regex.string_object.test( typeof template ) ) {
 			throw new Error( label.invalidArguments );
 		}
 
-		obj = element.create( "ul", {"class": "list"}, target );
-
 		// Creating instance
-		instance = new DataList( obj, ref[0], template );
+		obj = new DataList( element.create( "ul", {"class": "list"}, target ), ref[0], template );
 
 		if ( options instanceof Object ) {
-			utility.merge( instance, options );
+			utility.merge( obj, options );
 		}
 
-		instance.store.lists.push( instance );
+		obj.store.lists.push( obj );
 
-		// Hooking observable into DOM events
-		instance.observer.watch( obj, "click" );
+		// Setting up a chain of Events
+		obj.on( "beforeRefresh", function ( arg ) {
+			element.dispatch( arg, "beforeRefresh" );
+		}, "bubble" );
+
+		obj.on( "afterRefresh", function ( arg ) {
+			element.dispatch( arg, "afterRefresh" );
+		}, "bubble" );
+
+		obj.on( "click", function ( e ) {
+			var target = utility.target( e ),
+			    page;
+
+			utility.stop( e );
+
+			if ( target.nodeName === "A" ) {
+				page = element.data( target, "page" );
+
+				if ( !isNaN( page ) ) {
+					obj.page( page );
+				}
+			}
+		}, "pagination" );
 
 		// Rendering if not tied to an API or data is ready
-		if ( instance.store.uri === null || instance.store.loaded ) {
-			instance.refresh( true, true );
+		if ( obj.store.uri === null || obj.store.loaded ) {
+			obj.refresh( true, true );
 		}
 
-		return instance;
+		return obj;
 	},
 
 	/**
@@ -84,7 +103,7 @@ function DataList ( element, store, template ) {
 	this.callback    = null;
 	this.current     = [];
 	this.element     = element;
-	this.emptyMsg    = "Nothing to display";
+	this.emptyMsg    = label.noData;
 	this.filter      = null;
 	this.filtered    = [];
 	this.id          = utility.genId();
@@ -112,6 +131,36 @@ function DataList ( element, store, template ) {
 DataList.prototype.constructor = DataList;
 
 /**
+ * Adds an event listener
+ *
+ * @method addListener
+ * @memberOf keigai.DataList
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.addListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Dispatches an event, with optional arguments
+ *
+ * @method emit
+ * @memberOf keigai.DataList
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.dispatch = function () {
+	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
+
+	return this;
+};
+
+/**
  * Exports data list records
  *
  * @method dump
@@ -120,6 +169,81 @@ DataList.prototype.constructor = DataList;
  */
 DataList.prototype.dump = function () {
 	return this.store.dump( this.records );
+};
+
+/**
+ * Dispatches an event, with optional arguments
+ *
+ * @method emit
+ * @memberOf keigai.DataList
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.emit = function () {
+	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
+
+	return this;
+};
+
+
+/**
+ * Gets listeners
+ *
+ * @method listeners
+ * @memberOf keigai.DataList
+ * @param  {String} ev [Optional] Event name
+ * @return {Object} Listeners
+ */
+DataList.prototype.listeners = function ( ev ) {
+	return ev ? this.observer.listeners[ev] : this.listeners;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method off
+ * @memberOf keigai.DataList
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.off = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
+ * Adds an event listener
+ *
+ * @method on
+ * @memberOf keigai.DataList
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.on = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Adds a short lived event listener
+ *
+ * @method once
+ * @memberOf keigai.DataList
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.once = function ( ev, listener, id, scope ) {
+	this.observer.once( ev, listener, id, scope || this );
+
+	return this;
 };
 
 /**
@@ -145,7 +269,7 @@ DataList.prototype.page = function ( arg, redraw, create ) {
  * @return {Object} {@link keigai.DataList}
  */
 DataList.prototype.pages = function () {
-	var /*self  = this,*/
+	var self  = this,
 	    obj   = this.element,
 	    page  = this.pageIndex,
 	    pos   = this.pagination,
@@ -163,6 +287,7 @@ DataList.prototype.pages = function () {
 	// Removing the existing controls
 	array.each( utility.dom( "#" + obj.id + "-pages-top, #" + obj.id + "-pages-bottom" ), function ( i ) {
 		if ( i ) {
+			self.observer.unhook( i, "click" );
 			element.destroy( i );
 		}
 	} );
@@ -223,16 +348,8 @@ DataList.prototype.pages = function () {
 		// Adding to DOM
 		element.klass( el, "hidden", false );
 
-		// Click handler scrolls to top the top of page
-		/*observer.add( el, "click", function ( e ) {
-			var target = utility.target( e );
-
-			utility.stop( e );
-
-			if ( target.nodeName === "A" ) {
-				self.page( element.data( target, "page") );
-			}
-		}, "pagination");*/
+		// Pagination listener
+		self.observer.hook( el, "click" );
 	} );
 
 	return this;
@@ -241,8 +358,8 @@ DataList.prototype.pages = function () {
 /**
  * Refreshes element
  *
- * Events: beforeDataListRefresh  Fires from the element containing the DataList
- *         afterDataListRefresh   Fires from the element containing the DataList
+ * Events: beforeRefresh  Fires from the element containing the DataList
+ *         afterRefresh   Fires from the element containing the DataList
  *
  * @method refresh
  * @memberOf keigai.DataList
@@ -265,7 +382,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 	redraw = ( redraw !== false );
 	create = ( create === true );
 
-	//observer.fire( el, "beforeDataListRefresh" );
+	this.dispatch( "beforeRefresh", el );
 
 	// Function to create templates for the html rep
 	if ( !template ) {
@@ -365,7 +482,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 	}
 
 	// Pagination
-	if ( !isNaN( this.pageIndex ) && !isNaN( this.pageSize ) ) {
+	if ( this.pageSize !== null && !isNaN( this.pageIndex ) && !isNaN( this.pageSize ) ) {
 		ceiling = list.pages.call( this );
 
 		// Passed the end, so putting you on the end
@@ -418,7 +535,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 	}
 
 	// Rendering pagination elements
-	if ( regex.top_bottom.test( this.pagination ) && !isNaN( this.pageIndex ) && !isNaN( this.pageSize ) ) {
+	if ( this.pageSize !== null && regex.top_bottom.test( this.pagination ) && !isNaN( this.pageIndex ) && !isNaN( this.pageSize ) ) {
 		this.pages();
 	}
 	else {
@@ -427,7 +544,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 		} );
 	}
 
-	//observer.fire( el, "afterDataListRefresh" );
+	this.dispatch( "afterRefresh", el );
 
 	return this;
 };
@@ -457,14 +574,7 @@ DataList.prototype.sort = function ( order, create ) {
  */
 DataList.prototype.teardown = function ( destroy ) {
 	destroy  = ( destroy === true );
-	var self = this;/*,
-	    id   = this.element.id;*/
-
-	//observer.remove( id );
-
-	/*array.each( utility.dom( "#" + id + "-pages-top, #" + id + "-pages-bottom" ), function ( i ) {
-		observer.remove( i );
-	} );*/
+	var self = this;
 
 	array.each( this.store.lists, function ( i, idx ) {
 		if ( i.id === self.id ) {
@@ -473,6 +583,8 @@ DataList.prototype.teardown = function ( destroy ) {
 			return false;
 		}
 	} );
+
+	delete this.observer.hooks[this.element.id];
 
 	if ( destroy ) {
 		element.destroy( this.element );
