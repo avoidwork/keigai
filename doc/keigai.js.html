@@ -1219,7 +1219,8 @@ var filter = {
 	 * @return {Object} {@link keigai.DataListFilter}
 	 */
 	factory : function ( target, list, filters, debounce ) {
-		var ref = [list];
+		var ref = [list],
+		    obj;
 
 		debounce = debounce || 250;
 
@@ -1227,7 +1228,15 @@ var filter = {
 			throw new Error( label.invalidArguments );
 		}
 
-		return new DataListFilter( target, ref[0], debounce ).set( filters ).init();
+		obj = new DataListFilter( target, ref[0], debounce ).set( filters );
+
+		// Setting up a chain of Events
+		obj.observer.hook( obj.element, "keyup" );
+		obj.observer.hook( obj.element, "input" );
+		obj.on( "keyup", obj.update, "keyup" );
+		obj.on( "input", obj.update, "input" );
+
+		return obj;
 	}
 };
 
@@ -1296,20 +1305,6 @@ DataListFilter.prototype.dispatch = function () {
  */
 DataListFilter.prototype.emit = function () {
 	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
- * Initiate all event listeners
- *
- * @method init
- * @memberOf keigai.DataListFilter
- * @return {Object} {@link keigai.DataListFilter}
- */
-DataListFilter.prototype.init = function () {
-	//observer.add( this.element, "keyup", this.update, "filter", this );
-	//observer.add( this.element, "input", this.update, "value",  this );
 
 	return this;
 };
@@ -1405,8 +1400,8 @@ DataListFilter.prototype.set = function ( fields ) {
  * @return {Object} {@link keigai.DataListFilter}
  */
 DataListFilter.prototype.teardown = function () {
-	//observer.remove( this.element, "keyup", "filter" );
-	//observer.remove( this.element, "input", "value" );
+	this.observer.unhook( this.element, "keyup" );
+	this.observer.unhook( this.element, "input" );
 
 	return this;
 };
@@ -1424,6 +1419,8 @@ DataListFilter.prototype.update = function () {
 	utility.defer( function () {
 		var val = element.val( self.element ).toString();
 		
+		self.dispatch( "beforeFilter", self.element );
+
 		if ( !string.isEmpty( val ) ) {
 			utility.iterate( self.filters, function ( v, k ) {
 				var queries = string.explode( val );
@@ -1449,6 +1446,8 @@ DataListFilter.prototype.update = function () {
 
 		self.list.pageIndex = 1;
 		self.list.refresh( true, true );
+
+		self.dispatch( "afterFilter", self.element );
 	}, this.debounce, this.element.id + "Debounce");
 
 	return this;
@@ -1504,21 +1503,21 @@ var grid = {
 
 		// Setting click handler on sortable "columns"
 		if ( obj.sortable.length > 0 ) {
-			obj.observer.hook( header, "click", obj.sort, "sort", obj );
+			obj.observer.hook( header.parentNode, "click", obj.sort, "sort", obj );
 		}
 
 		// Creating DataList
-		ref.push( list.factory( obj.element, obj.store, template, obj.options ) );
+		ref.push( list.factory( obj.element, ref[0], template, obj.options ) );
 
 		// Setting by-reference DataList on DataGrid
-		obj.list = ref[0];
+		obj.list = ref[1];
 
 		if ( obj.filtered === true ) {
 			// Creating DataListFilter
-			ref.push( filter( element.create( "input", {"class": "filter"}, obj.element, "first" ), ref[0], obj.fields.join( "," ), debounce || 250 ) );
+			ref.push( filter.factory( element.create( "input", {"class": "filter"}, obj.element, "first" ), ref[1], obj.fields.join( "," ), debounce || 250 ) );
 			
 			// Setting by-reference DataListFilter on DataGrid
-			obj.filter = ref[1];
+			obj.filter = ref[2];
 		}
 
 		// Setting up a chain of Events
@@ -1529,6 +1528,12 @@ var grid = {
 		obj.on( "afterRefresh", function ( arg ) {
 			element.dispatch( arg, "afterRefresh" );
 		}, "bubble" );
+
+		obj.on( "click", function ( e ) {
+			if ( element.hasClass( e.currentTarget, "header" ) ) {
+				obj.sort( e );
+			}
+		}, "header" );
 
 		return obj;
 	}
@@ -2152,7 +2157,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 	    reg      = new RegExp(),
 	    registry = [], // keeps track of records in the list ( for filtering )
 	    range    = [],
-	    fn, ceiling;
+	    fn, ceiling, next;
 
 	redraw = ( redraw !== false );
 	create = ( create === true );
@@ -2209,117 +2214,131 @@ DataList.prototype.refresh = function ( redraw, create ) {
 		};
 	}
 
-	// Creating view of DataStore
-	if ( create ) {
-		// Consuming records based on sort
-		if ( this.where === null ) {
-			this.records = string.isEmpty( this.order ) ? this.store.get() : this.store.sort( this.order, create );
+	// Next phase
+	next = function ( args ) {
+		self.records = args;
+
+		// Creating view of DataStore
+		if ( create ) {
+			self.total    = self.records.length;
+			self.filtered = [];
 		}
-		else {
-			this.records = string.isEmpty( this.order ) ? this.store.select( this.where ) : this.store.sort( this.order, create, this.where );
-		}
 
-		this.total    = this.records.length;
-		this.filtered = [];
-	}
+		// Resetting 'view' specific arrays
+		self.current  = [];
 
-	// Resetting 'view' specific arrays
-	this.current  = [];
+		// Filtering records (if applicable)
+		if ( filter && create ) {
+			array.each( self.records, function ( i ) {
+				utility.iterate( self.filter, function ( v, k ) {
+					var reg, key;
 
-	// Filtering records (if applicable)
-	if ( filter && create ) {
-		array.each( this.records, function ( i ) {
-			utility.iterate( self.filter, function ( v, k ) {
-				var reg, key;
-
-				if ( array.contains( registry, i.key ) ) {
-					return false;
-				}
-				
-				v   = string.explode( v );
-				reg = new RegExp(),
-				key = ( k === self.store.key );
-
-				array.each( v, function ( query ) {
-					var value = !key ? utility.walk( i.data, k ) : "";
-
-					utility.compile( reg, query, "i" );
-
-					if ( ( key && reg.test( i.key ) ) || reg.test( value ) ) {
-						registry.push( i.key );
-						self.filtered.push( i );
-
+					if ( array.contains( registry, i.key ) ) {
 						return false;
 					}
+					
+					v   = string.explode( v );
+					reg = new RegExp(),
+					key = ( k === self.store.key );
+
+					array.each( v, function ( query ) {
+						var value = !key ? utility.walk( i.data, k ) : "";
+
+						utility.compile( reg, query, "i" );
+
+						if ( ( key && reg.test( i.key ) ) || reg.test( value ) ) {
+							registry.push( i.key );
+							self.filtered.push( i );
+
+							return false;
+						}
+					} );
 				} );
 			} );
-		} );
-	}
-
-	// Pagination
-	if ( this.pageSize !== null && !isNaN( this.pageIndex ) && !isNaN( this.pageSize ) ) {
-		ceiling = list.pages.call( this );
-
-		// Passed the end, so putting you on the end
-		if ( ceiling > 0 && this.pageIndex > ceiling ) {
-			return this.page( ceiling );
 		}
 
-		// Paginating the items
-		else if ( this.total > 0 ) {
-			range        = list.range.call( this );
-			this.current = array.limit( !filter ? this.records : this.filtered, range[0], range[1] );
-		}
-	}
-	else {
-		this.current = !filter ? this.records : this.filtered;
-	}
+		// Pagination
+		if ( self.pageSize !== null && !isNaN( self.pageIndex ) && !isNaN( self.pageSize ) ) {
+			ceiling = list.pages.call( self );
 
-	// Processing records & generating templates
-	array.each( this.current, function ( i ) {
-		items.push( {key: i.key, template: fn( i )} );
-	} );
+			// Passed the end, so putting you on the end
+			if ( ceiling > 0 && self.pageIndex > ceiling ) {
+				return self.page( ceiling );
+			}
 
-	// Preparing the target element
-	if ( redraw ) {
-		if ( items.length === 0 ) {
-			el.innerHTML = "&lt;li class=\"empty\">" + this.emptyMsg + "&lt;/li>";
-		}
-		else {
-			el.innerHTML = items.map( function ( i ) {
-				return i.template;
-			} ).join( "\n" );
-
-			if ( callback ) {
-				array.each( element.find( el, "> li" ), function ( i ) {
-					self.callback( i );
-				} );
+			// Paginating the items
+			else if ( self.total > 0 ) {
+				range        = list.range.call( self );
+				self.current = array.limit( !filter ? self.records : self.filtered, range[0], range[1] );
 			}
 		}
-	}
-	else {
-		array.each( element.find( el, "> li" ), function ( i ) {
-			element.addClass( i, "hidden" );
+		else {
+			self.current = !filter ? self.records : self.filtered;
+		}
+
+		// Processing records & generating templates
+		array.each( self.current, function ( i ) {
+			items.push( {key: i.key, template: fn( i )} );
 		} );
 
-		array.each( items, function ( i ) {
-			array.each( element.find( el, "> li[data-key='" + i.key + "']" ), function ( o ) {
-				element.removeClass( o, "hidden" );
+		// Preparing the target element
+		if ( redraw ) {
+			if ( items.length === 0 ) {
+				el.innerHTML = "&lt;li class=\"empty\">" + self.emptyMsg + "&lt;/li>";
+			}
+			else {
+				el.innerHTML = items.map( function ( i ) {
+					return i.template;
+				} ).join( "\n" );
+
+				if ( callback ) {
+					array.each( element.find( el, "> li" ), function ( i ) {
+						self.callback( i );
+					} );
+				}
+			}
+		}
+		else {
+			array.each( element.find( el, "> li" ), function ( i ) {
+				element.addClass( i, "hidden" );
 			} );
+
+			array.each( items, function ( i ) {
+				array.each( element.find( el, "> li[data-key='" + i.key + "']" ), function ( o ) {
+					element.removeClass( o, "hidden" );
+				} );
+			} );
+		}
+
+		// Rendering pagination elements
+		if ( self.pageSize !== null && regex.top_bottom.test( self.pagination ) && !isNaN( self.pageIndex ) && !isNaN( self.pageSize ) ) {
+			self.pages();
+		}
+		else {
+			array.each( utility.$( "#" + el.id + "-pages-top, #" + el.id + "-pages-bottom" ), function ( i ) {
+				element.destroy( i );
+			} );
+		}
+
+		self.dispatch( "afterRefresh", el );
+	};
+
+	// Consuming records based on sort
+	if ( this.where === null ) {
+		string.isEmpty( this.order ) ? next( this.store.get() ) : this.store.sort( this.order, create ).then( next, function ( e ) {
+			utility.error( e );
 		} );
 	}
-
-	// Rendering pagination elements
-	if ( this.pageSize !== null && regex.top_bottom.test( this.pagination ) && !isNaN( this.pageIndex ) && !isNaN( this.pageSize ) ) {
-		this.pages();
+	else if ( string.isEmpty( this.order ) ) {
+		this.store.select( this.where ).then( next, function ( e ) {
+			utility.error( e );
+		} );
 	}
 	else {
-		array.each( utility.$( "#" + el.id + "-pages-top, #" + el.id + "-pages-bottom" ), function ( i ) {
-			element.destroy( i );
+		this.store.sort( this.order, create, this.where ).then( next, function ( e ) {
+			utility.error( e );
 		} );
 	}
-
-	this.dispatch( "afterRefresh", el );
 
 	return this;
 };
@@ -4014,9 +4033,9 @@ DataStore.prototype.addListener = function ( ev, listener, id, scope ) {
 /**
  * Batch sets or deletes data in the store
  *
- * Events: beforeDataBatch  Fires before the batch is queued
- *         afterDataBatch   Fires after the batch is queued
- *         failedDataBatch  Fires when an exception occurs
+ * Events: beforeBatch  Fires before the batch is queued
+ *         afterBatch   Fires after the batch is queued
+ *         failedBatch  Fires when an exception occurs
  *
  * @method batch
  * @memberOf keigai.DataStore
@@ -4037,7 +4056,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 	    deferreds = [];
 
 	if ( events ) {
-		this.emit( "beforeDataBatch", data );
+		this.emit( "beforeBatch", data );
 	}
 
 	if ( sync ) {
@@ -4048,7 +4067,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 		this.loaded = true;
 
 		if ( events ) {
-			this.emit( "afterDataBatch", this.records );
+			this.emit( "afterBatch", this.records );
 		}
 
 		defer.resolve( this.records );
@@ -4069,7 +4088,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 			self.loaded = true;
 
 			if ( events ) {
-				self.emit( "afterDataBatch", self.records );
+				self.emit( "afterBatch", self.records );
 			}
 
 			array.each( self.lists, function ( i ) {
@@ -4087,7 +4106,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 			defer.resolve( self.records );
 		}, function ( e ) {
 			if ( events ) {
-				self.emit( "failedDataBatch", e );
+				self.emit( "failedBatch", e );
 			}
 
 			defer.reject( e );
@@ -4114,8 +4133,8 @@ DataStore.prototype.buildUri = function ( key ) {
 /**
  * Clears the data object, unsets the uri property
  *
- * Events: beforeDataClear Fires before the data is cleared
- *         afterDataClear  Fires after the data is cleared
+ * Events: beforeClear Fires before the data is cleared
+ *         afterClear  Fires after the data is cleared
  *
  * @method clear
  * @memberOf keigai.DataStore
@@ -4128,7 +4147,7 @@ DataStore.prototype.clear = function ( sync ) {
 
 	if ( !sync ) {
 		if ( events ) {
-			this.emit( "beforeDataClear" );
+			this.emit( "beforeClear" );
 		}
 
 		array.each( this.lists, function ( i ) {
@@ -4161,7 +4180,7 @@ DataStore.prototype.clear = function ( sync ) {
 		this.uri         = null;
 
 		if ( events ) {
-			this.emit( "afterDataClear" );
+			this.emit( "afterClear" );
 		}
 	}
 	else {
@@ -4183,9 +4202,9 @@ DataStore.prototype.clear = function ( sync ) {
 /**
  * Crawls a record's properties and creates DataStores when URIs are detected
  *
- * Events: beforeDataRetrieve Fires before crawling a record
- *         afterDataRetrieve  Fires after the store has retrieved all data from crawling
- *         failedDataRetrieve Fires if an exception occurs
+ * Events: beforeRetrieve Fires before crawling a record
+ *         afterRetrieve  Fires after the store has retrieved all data from crawling
+ *         failedRetrieve Fires if an exception occurs
  *
  * @method crawl
  * @memberOf keigai.DataStore
@@ -4205,7 +4224,7 @@ DataStore.prototype.crawl = function ( arg ) {
 	}
 
 	if ( events ) {
-		this.emit( "beforeDataRetrieve", record );
+		this.emit( "beforeRetrieve", record );
 	}
 
 	// Depth of recursion is controled by `maxDepth`
@@ -4247,13 +4266,13 @@ DataStore.prototype.crawl = function ( arg ) {
 	if ( deferreds.length > 0 ) {
 		utility.when( deferreds ).then( function () {
 			if ( events ) {
-				self.emit( "afterDataRetrieve", record );
+				self.emit( "afterRetrieve", record );
 			}
 
 			defer.resolve( record );
 		}, function ( e ) {
 			if ( events ) {
-				self.emit( "failedDataRetrieve", record );
+				self.emit( "failedRetrieve", record );
 			}
 
 			defer.reject( e );
@@ -4261,7 +4280,7 @@ DataStore.prototype.crawl = function ( arg ) {
 	}
 	else {
 		if ( events ) {
-			self.emit( "afterDataRetrieve", record );
+			self.emit( "afterRetrieve", record );
 		}
 
 		defer.resolve( record );
@@ -4273,9 +4292,9 @@ DataStore.prototype.crawl = function ( arg ) {
 /**
  * Deletes a record based on key or index
  *
- * Events: beforeDataDelete  Fires before the record is deleted
- *         afterDataDelete   Fires after the record is deleted
- *         failedDataDelete  Fires if the store is RESTful and the action is denied
+ * Events: beforeDelete  Fires before the record is deleted
+ *         afterDelete   Fires after the record is deleted
+ *         failedDelete  Fires if the store is RESTful and the action is denied
  *
  * @method del
  * @memberOf keigai.DataStore
@@ -4296,7 +4315,7 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
 	}
 	else {
 		if ( this.events ) {
-			self.emit( "beforeDataDelete", record );
+			self.emit( "beforeDelete", record );
 		}
 
 		if ( this.uri === null || this.callback !== null ) {
@@ -4306,7 +4325,7 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
 			client.request( this.buildUri( record.key ), "DELETE", function () {
 				self.delComplete( record, reindex, batch, defer );
 			}, function ( e ) {
-				self.emit( "failedDataDelete", e );
+				self.emit( "failedDelete", e );
 				defer.reject( e );
 			}, undefined, utility.merge( {withCredentials: this.credentials}, this.headers ) );
 		}
@@ -4349,7 +4368,7 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 		}
 
 		if ( this.events ) {
-			this.emit( "afterDataDelete", record );
+			this.emit( "afterDelete", record );
 		}
 
 		array.each( this.lists, function ( i ) {
@@ -4838,9 +4857,9 @@ DataStore.prototype.select = function ( where ) {
 /**
  * Creates or updates an existing record
  *
- * Events: beforeDataSet  Fires before the record is set
- *         afterDataSet   Fires after the record is set, the record is the argument for listeners
- *         failedDataSet  Fires if the store is RESTful and the action is denied
+ * Events: beforeSet  Fires before the record is set
+ *         afterSet   Fires after the record is set, the record is the argument for listeners
+ *         failedSet  Fires if the store is RESTful and the action is denied
  *
  * @method set
  * @memberOf keigai.DataStore
@@ -4885,13 +4904,13 @@ DataStore.prototype.set = function ( key, data, batch ) {
 		}
 		else {
 			if ( !batch && events ) {
-				self.emit( "beforeDataSet", {key: key, data: data} );
+				self.emit( "beforeSet", {key: key, data: data} );
 			}
 
 			client.request( uri, "GET", function ( arg ) {
 				self.setComplete( record, key, self.source ? arg[self.source] : arg, batch, defer );
 			}, function ( e ) {
-				self.emit( "failedDataSet", e );
+				self.emit( "failedSet", e );
 				defer.reject( e );
 			}, undefined, utility.merge( {withCredentials: self.credentials}, self.headers ) );
 		}
@@ -4910,7 +4929,7 @@ DataStore.prototype.set = function ( key, data, batch ) {
 		}
 
 		if ( !batch && events ) {
-			self.emit( "beforeDataSet", {key: key, data: data} );
+			self.emit( "beforeSet", {key: key, data: data} );
 		}
 
 		if ( batch || this.uri === null ) {
@@ -4939,7 +4958,7 @@ DataStore.prototype.set = function ( key, data, batch ) {
 			client.request( uri, method, function ( arg ) {
 				self.setComplete( record, key, self.source ? arg[self.source] : arg, batch, defer );
 			}, function ( e ) {
-				self.emit( "failedDataSet", e );
+				self.emit( "failedSet", e );
 				defer.reject( e );
 			}, data, utility.merge( {withCredentials: this.credentials}, this.headers ) );
 		}
@@ -5006,7 +5025,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 	}
 
 	if ( !batch && this.events ) {
-		self.emit( "afterDataSet", record );
+		self.emit( "afterSet", record );
 
 		array.each( this.lists, function ( i ) {
 			i.refresh( true, true );
@@ -5436,9 +5455,9 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 /**
  * Syncs the DataStore with a URI representation
  *
- * Events: beforeDataSync  Fires before syncing the DataStore
- *         afterDataSync   Fires after syncing the DataStore
- *         failedDataSync  Fires when an exception occurs
+ * Events: beforeSync  Fires before syncing the DataStore
+ *         afterSync   Fires after syncing the DataStore
+ *         failedSync  Fires when an exception occurs
  *
  * @method sync
  * @memberOf keigai.DataStore
@@ -5483,7 +5502,7 @@ DataStore.prototype.sync = function () {
 
 		self.batch( "set", data, true ).then( function ( arg ) {
 			if ( events ) {
-				self.emit( "afterDataSync", arg );
+				self.emit( "afterSync", arg );
 			}
 
 			defer.resolve( arg );
@@ -5501,14 +5520,14 @@ DataStore.prototype.sync = function () {
 	 */
 	failure = function ( e ) {
 		if ( events ) {
-			self.emit( "failedDataSync", e );
+			self.emit( "failedSync", e );
 		}
 
 		defer.reject( e );
 	};
 
 	if ( events ) {
-		this.emit( "beforeDataSync", this.uri );
+		this.emit( "beforeSync", this.uri );
 	}
 
 	if ( this.callback !== null ) {
@@ -5563,7 +5582,7 @@ DataStore.prototype.teardown = function () {
 	} );
 
 	this.clear( true );
-	this.emit( "afterDataTeardown" );
+	this.emit( "afterTeardown" );
 
 	return this;
 };
@@ -7313,7 +7332,7 @@ else {
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Feb 01 2014 13:21:32 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Feb 01 2014 14:55:25 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

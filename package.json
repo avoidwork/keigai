@@ -44,6 +44,12 @@
   },
   "keywords": [
     "data",
-    "structure"
+    "datastore",
+    "store",
+    "structure",
+    "database",
+    "nosql",
+    "reactive",
+    "components"
   ]
 }

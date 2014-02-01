@@ -15,7 +15,8 @@ var filter = {
 	 * @return {Object} {@link keigai.DataListFilter}
 	 */
 	factory : function ( target, list, filters, debounce ) {
-		var ref = [list];
+		var ref = [list],
+		    obj;
 
 		debounce = debounce || 250;
 
@@ -23,7 +24,15 @@ var filter = {
 			throw new Error( label.invalidArguments );
 		}
 
-		return new DataListFilter( target, ref[0], debounce ).set( filters ).init();
+		obj = new DataListFilter( target, ref[0], debounce ).set( filters );
+
+		// Setting up a chain of Events
+		obj.observer.hook( obj.element, "keyup" );
+		obj.observer.hook( obj.element, "input" );
+		obj.on( "keyup", obj.update, "keyup" );
+		obj.on( "input", obj.update, "input" );
+
+		return obj;
 	}
 };
 
@@ -92,20 +101,6 @@ DataListFilter.prototype.dispatch = function () {
  */
 DataListFilter.prototype.emit = function () {
 	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
- * Initiate all event listeners
- *
- * @method init
- * @memberOf keigai.DataListFilter
- * @return {Object} {@link keigai.DataListFilter}
- */
-DataListFilter.prototype.init = function () {
-	//observer.add( this.element, "keyup", this.update, "filter", this );
-	//observer.add( this.element, "input", this.update, "value",  this );
 
 	return this;
 };
@@ -201,8 +196,8 @@ DataListFilter.prototype.set = function ( fields ) {
  * @return {Object} {@link keigai.DataListFilter}
  */
 DataListFilter.prototype.teardown = function () {
-	//observer.remove( this.element, "keyup", "filter" );
-	//observer.remove( this.element, "input", "value" );
+	this.observer.unhook( this.element, "keyup" );
+	this.observer.unhook( this.element, "input" );
 
 	return this;
 };
@@ -220,6 +215,8 @@ DataListFilter.prototype.update = function () {
 	utility.defer( function () {
 		var val = element.val( self.element ).toString();
 		
+		self.dispatch( "beforeFilter", self.element );
+
 		if ( !string.isEmpty( val ) ) {
 			utility.iterate( self.filters, function ( v, k ) {
 				var queries = string.explode( val );
@@ -245,6 +242,8 @@ DataListFilter.prototype.update = function () {
 
 		self.list.pageIndex = 1;
 		self.list.refresh( true, true );
+
+		self.dispatch( "afterFilter", self.element );
 	}, this.debounce, this.element.id + "Debounce");
 
 	return this;
