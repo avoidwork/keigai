@@ -36,12 +36,13 @@ var store = {
 	 */
 	worker : function ( ev ) {
 		var cmd = ev.data.cmd,
-		    clauses, cond, result, where;
+		    clauses, cond, result, where, functions;
 
 		if ( cmd === "select" ) {
-			where   = JSON.parse( ev.data.where );
-			clauses = array.fromObject( where );
-			cond    = "return ( ";
+			where     = JSON.parse( ev.data.where );
+			functions = ev.data.functions;
+			clauses   = array.fromObject( where );
+			cond      = "return ( ";
 
 			if ( clauses.length > 1 ) {
 				array.each( clauses, function ( i, idx ) {
@@ -51,8 +52,8 @@ var store = {
 						b1 = " && ( ";
 					}
 
-					if ( i[1] instanceof Function ) {
-						cond += b1 + i[1].toString() + "( rec.data[\"" + i[0] + "\"] ) )";
+					if ( array.contains( functions, i[0] ) ) {
+						cond += b1 + i[1] + "( rec.data[\"" + i[0] + "\"] ) )";
 					}
 					else if ( !isNaN( i[1] ) ) {
 						cond += b1 + "rec.data[\"" + i[0] + "\"] === " + i[1] + " )";
@@ -63,8 +64,8 @@ var store = {
 				} );
 			}
 			else {
-				if ( clauses[0][1] instanceof Function ) {
-					cond += clauses[0][1].toString() + "( rec.data[\"" + clauses[0][0] + "\"] )";
+				if ( array.contains( functions, clauses[0][0] ) ) {
+					cond += clauses[0][1] + "( rec.data[\"" + clauses[0][0] + "\"] )";
 				}
 				else if ( !isNaN( clauses[0][1] ) ) {
 					cond += "rec.data[\"" + clauses[0][0] + "\"] === " + clauses[0][1];
