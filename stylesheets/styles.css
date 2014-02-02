@@ -17,6 +17,11 @@
   font-weight: bold;
 }
 
+.buttons a,
+.grid a {
+  text-decoration: none;
+}
+
 .grid ul {
   padding: 0;
 }
@@ -87,7 +92,7 @@ h1 img {
 }
 
 h2 {
-  color:#393939;
+  color:#77b427;
 }
 
 h3, h4, h5, h6 {
@@ -95,9 +100,9 @@ h3, h4, h5, h6 {
 }
 
 a {
-  color:#39CC33;
+  color:#77b427;
   font-weight:400;
-  text-decoration:none;
+  text-decoration:underline;
 }
 
 a small {

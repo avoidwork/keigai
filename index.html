@@ -16,17 +16,44 @@
 		<div class="wrapper">
 			<header>
 				<h1><img src="images/logo.png" alt="logo" />keigai</h1>
-				<p>keigai is a lightweight data store library featuring two way binding, 1-n reactive views, MVCC inspired versioning &amp; API abstraction.</p>
-				<p>keigai has no dependencies, and offers a pluggable data store solution for any architecture by using a pub/sub (observer) paradigm for external hooks into UIs, and other work flows.</p>
+				<p>keigai is a lightweight data store library, providing a powerful model &amp; reactive UI components, with 1-n relationships.</p>
+				<p>keigai data stores have MVCC inspired record versioning, for an easy "undo", &amp; they can be wired to APIs.</p>
 				<p>keigai can be installed from npm &amp; bower, and supports AMD loaders or script tags.</p>
 				<p class="view"><a href="https://github.com/avoidwork/keigai">View the Project on GitHub</a></p>
-				<ul>
+				<ul class="buttons">
 					<li><a href="https://github.com/avoidwork/keigai/zipball/master">Download <strong>ZIP File</strong></a></li>
 					<li><a href="https://github.com/avoidwork/keigai/tarball/master">Download <strong>TAR Ball</strong></a></li>
 					<li><a href="https://github.com/avoidwork/keigai">View On <strong>GitHub</strong></a></li>
 				</ul>
 			</header>
 			<section>
+				<h2><a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Quick Start</h2>
+				<p>The following examples will show you the basics. You'll be able to create loosely coupled &amp; powerful models or interfaces in no time!</p>
+
+				<h3><a name="create-store" class="anchor" href="#create-store"><span class="octicon octicon-link"></span></a>Creating a data store</h3>
+				<p>This example batch loads an Array of records into the data store, which becomes available from the returned Deferred.</p>
+				<script src="https://gist.github.com/avoidwork/8762643.js"></script>
+
+				<h3><a name="wire-store" class="anchor" href="#wire-store"><span class="octicon octicon-link"></span></a>Wiring a data store</h3>
+				<p>This example retrieves a data set from a URI, which becomes available from the returned Deferred. Changes to the records via `store.set()`, or `store.del()` will be reconciled with the API/URI before updating the local record(s).</p>
+				<script src="https://gist.github.com/avoidwork/8762599.js"></script>
+
+				<h3><a name="wire-store" class="anchor" href="#wire-store"><span class="octicon octicon-link"></span></a>Selecting records</h3>
+				<p>Now that our data store has some records, lets find everyone that's over 21.</p>
+				<script src="https://gist.github.com/avoidwork/8771035.js"></script>
+
+				<h3><a name="create-list" class="anchor" href="#create-list"><span class="octicon octicon-link"></span></a>Creating a data list</h3>
+				<p>This example retrieves a data set from a URI, and displays it with a data list. Data lists can be customized with CSS, and the `options` parameter.</p>
+				<script src="https://gist.github.com/avoidwork/8762735.js"></script>
+				<h4>Result:</h4>
+				<div id="create-list"></div>
+
+				<h3><a name="create-grid" class="anchor" href="#create-grid"><span class="octicon octicon-link"></span></a>Creating a data grid</h3>
+				<p>This example retrieves a data set from a URI, and displays it with a data grid. Data grids can be customized with CSS, and the `options` parameter.</p>
+				<script src="https://gist.github.com/avoidwork/8762924.js"></script>
+				<h4>Result:</h4>
+				<div id="create-grid"></div>
+
 				<h2><a name="api" class="anchor" href="#api"><span class="octicon octicon-link"></span></a>API</h2>
 				<p>Full API documentation is included, and available at <a href="http://api.keigai.io">http://api.keigai.io</a></p>
 				
@@ -43,29 +70,6 @@
 				<p>Returns a DataStore instance. DataStores are in ram NoSQL databases, with many features found in SQL databases, such as JOINs, ORDER BYs, &amp; WHERE clauses. DataStores use Web Workers when possible, to not block the UI event loop.</p>
 				<p>DataStores can be wired to an API through the <code>setUri()</code> method, which hooks them into the feedback loop. If you "set" or "delete" a record, the operation doesn't complete until the API provides a "success" or "failure" response.</p>
 				<p>Deferreds (Promises) are returned from methods that can "go over the wire", for easy handling of the asynchronous communication.</p>
-
-				<h2><a name="examples" class="anchor" href="#api"><span class="octicon octicon-link"></span></a>Basic Examples</h2>
-				<p>The following examples will show you the basics. You'll be able to create loosely coupled &amp; powerful models or interfaces in no time!</p>
-
-				<h3><a name="create-store" class="anchor" href="#create-store"><span class="octicon octicon-link"></span></a>Creating a data store</h3>
-				<p>This example batch loads an Array of records into the data store, which becomes available from the returned Deferred.</p>
-				<script src="https://gist.github.com/avoidwork/8762643.js"></script>
-
-				<h3><a name="wire-store" class="anchor" href="#wire-store"><span class="octicon octicon-link"></span></a>Wiring a data store</h3>
-				<p>This example retrieves a data set from a URI, which becomes available from the returned Deferred. Changes to the records via `store.set()`, or `store.del()` will be reconciled with the API/URI before updating the local record(s).</p>
-				<script src="https://gist.github.com/avoidwork/8762599.js"></script>
-
-				<h3><a name="create-list" class="anchor" href="#create-list"><span class="octicon octicon-link"></span></a>Creating a data list</h3>
-				<p>This example retrieves a data set from a URI, and displays it with a data list. Data lists can be customized with CSS, and the `options` parameter.</p>
-				<script src="https://gist.github.com/avoidwork/8762735.js"></script>
-				<h4>Result:</h4>
-				<div id="create-list"></div>
-
-				<h3><a name="create-grid" class="anchor" href="#create-grid"><span class="octicon octicon-link"></span></a>Creating a data grid</h3>
-				<p>This example retrieves a data set from a URI, and displays it with a data grid. Data grids can be customized with CSS, and the `options` parameter.</p>
-				<script src="https://gist.github.com/avoidwork/8762924.js"></script>
-				<h4>Result:</h4>
-				<div id="create-grid"></div>
 			</section>
 			<footer>
 				<p>This project is maintained by <a href="https://github.com/avoidwork">Jason Mulligan</a></p>
