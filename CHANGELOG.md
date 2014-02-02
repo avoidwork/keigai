@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.3
+- Fixing `DataStore.select()` Worker code path
+
 ## 0.1.2
 - Standardized `DataStores` to use `dispatch()` for events
 - Fixing a reference error in `grid.factory()`
