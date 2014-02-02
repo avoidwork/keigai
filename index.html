@@ -39,9 +39,32 @@
 				<p>Returns a DataList instance. DataLists are the core visual representation of a DataStore, using "handle bar" style templates.</p>
 
 				<h3><a name="store-data-options" class="anchor" href="#store-data-options"><span class="octicon octicon-link"></span></a>store ([data, options])</h3>
-				<p>Returns a DataStore instance. DataStores are in ram NoSQL databases, with many features found in SQL databases, such as JOINs, ORDER BYs, &amp; WHERE clauses.</p>
+				<p>Returns a DataStore instance. DataStores are in ram NoSQL databases, with many features found in SQL databases, such as JOINs, ORDER BYs, &amp; WHERE clauses. DataStores use Web Workers when possible, to not block the UI event loop.</p>
 				<p>DataStores can be wired to an API through the <code>setUri()</code> method, which hooks them into the feedback loop. If you "set" or "delete" a record, the operation doesn't complete until the API provides a "success" or "failure" response.</p>
 				<p>Deferreds (Promises) are returned from methods that can "go over the wire", for easy handling of the asynchronous communication.</p>
+
+				<h2><a name="examples" class="anchor" href="#api"><span class="octicon octicon-link"></span></a>Basic Examples</h2>
+				<p>The following examples will show you the basics. You'll be able to create loosely coupled &amp; powerful models or interfaces in no time!</p>
+
+				<h3><a name="create-store" class="anchor" href="#create-store"><span class="octicon octicon-link"></span></a>Creating a data store</h3>
+				<p>This example batch loads an Array of records into the data store, which becomes available from the returned Deferred.</p>
+				<script src="https://gist.github.com/avoidwork/8762643.js"></script>
+
+				<h3><a name="wire-store" class="anchor" href="#wire-store"><span class="octicon octicon-link"></span></a>Wiring a data store</h3>
+				<p>This example retrieves a data set from a URI, which becomes available from the returned Deferred. Changes to the records via `store.set()`, or `store.del()` will be reconciled with the API/URI before updating the local record(s).</p>
+				<script src="https://gist.github.com/avoidwork/8762599.js"></script>
+
+				<h3><a name="create-list" class="anchor" href="#create-list"><span class="octicon octicon-link"></span></a>Creating a data list</h3>
+				<p>This example retrieves a data set from a URI, and displays it with a data list. Data lists can be customized with CSS, and the `options` parameter.</p>
+				<script src="https://gist.github.com/avoidwork/8762735.js"></script>
+				<h4>Result:</h4>
+				<div id="create-list"></div>
+
+				<h3><a name="create-grid" class="anchor" href="#create-grid"><span class="octicon octicon-link"></span></a>Creating a data grid</h3>
+				<p>This example retrieves a data set from a URI, and displays it with a data grid. Data grids can be customized with CSS, and the `options` parameter.</p>
+				<script src="https://gist.github.com/avoidwork/8762924.js"></script>
+				<h4>Result:</h4>
+				<div id="create-grid"></div>
 			</section>
 			<footer>
 				<p>This project is maintained by <a href="https://github.com/avoidwork">Jason Mulligan</a></p>
@@ -49,5 +72,6 @@
 		</div>
 		<script src="javascripts/scale.fix.js"></script>
 		<script src="javascripts/keigai.js"></script>
+		<script src="javascripts/examples.js"></script>
 	</body>
 </html>
