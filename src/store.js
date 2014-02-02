@@ -173,7 +173,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 	    deferreds = [];
 
 	if ( events ) {
-		this.emit( "beforeBatch", data );
+		this.dispatch( "beforeBatch", data );
 	}
 
 	if ( sync ) {
@@ -184,7 +184,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 		this.loaded = true;
 
 		if ( events ) {
-			this.emit( "afterBatch", this.records );
+			this.dispatch( "afterBatch", this.records );
 		}
 
 		defer.resolve( this.records );
@@ -205,7 +205,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 			self.loaded = true;
 
 			if ( events ) {
-				self.emit( "afterBatch", self.records );
+				self.dispatch( "afterBatch", self.records );
 			}
 
 			array.each( self.lists, function ( i ) {
@@ -223,7 +223,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 			defer.resolve( self.records );
 		}, function ( e ) {
 			if ( events ) {
-				self.emit( "failedBatch", e );
+				self.dispatch( "failedBatch", e );
 			}
 
 			defer.reject( e );
@@ -264,7 +264,7 @@ DataStore.prototype.clear = function ( sync ) {
 
 	if ( !sync ) {
 		if ( events ) {
-			this.emit( "beforeClear" );
+			this.dispatch( "beforeClear" );
 		}
 
 		array.each( this.lists, function ( i ) {
@@ -297,7 +297,7 @@ DataStore.prototype.clear = function ( sync ) {
 		this.uri         = null;
 
 		if ( events ) {
-			this.emit( "afterClear" );
+			this.dispatch( "afterClear" );
 		}
 	}
 	else {
@@ -341,7 +341,7 @@ DataStore.prototype.crawl = function ( arg ) {
 	}
 
 	if ( events ) {
-		this.emit( "beforeRetrieve", record );
+		this.dispatch( "beforeRetrieve", record );
 	}
 
 	// Depth of recursion is controled by `maxDepth`
@@ -383,13 +383,13 @@ DataStore.prototype.crawl = function ( arg ) {
 	if ( deferreds.length > 0 ) {
 		utility.when( deferreds ).then( function () {
 			if ( events ) {
-				self.emit( "afterRetrieve", record );
+				self.dispatch( "afterRetrieve", record );
 			}
 
 			defer.resolve( record );
 		}, function ( e ) {
 			if ( events ) {
-				self.emit( "failedRetrieve", record );
+				self.dispatch( "failedRetrieve", record );
 			}
 
 			defer.reject( e );
@@ -397,7 +397,7 @@ DataStore.prototype.crawl = function ( arg ) {
 	}
 	else {
 		if ( events ) {
-			self.emit( "afterRetrieve", record );
+			self.dispatch( "afterRetrieve", record );
 		}
 
 		defer.resolve( record );
@@ -432,7 +432,7 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
 	}
 	else {
 		if ( this.events ) {
-			self.emit( "beforeDelete", record );
+			self.dispatch( "beforeDelete", record );
 		}
 
 		if ( this.uri === null || this.callback !== null ) {
@@ -442,7 +442,7 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
 			client.request( this.buildUri( record.key ), "DELETE", function () {
 				self.delComplete( record, reindex, batch, defer );
 			}, function ( e ) {
-				self.emit( "failedDelete", e );
+				self.dispatch( "failedDelete", e );
 				defer.reject( e );
 			}, undefined, utility.merge( {withCredentials: this.credentials}, this.headers ) );
 		}
@@ -485,7 +485,7 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 		}
 
 		if ( this.events ) {
-			this.emit( "afterDelete", record );
+			this.dispatch( "afterDelete", record );
 		}
 
 		array.each( this.lists, function ( i ) {
@@ -1021,13 +1021,13 @@ DataStore.prototype.set = function ( key, data, batch ) {
 		}
 		else {
 			if ( !batch && events ) {
-				self.emit( "beforeSet", {key: key, data: data} );
+				self.dispatch( "beforeSet", {key: key, data: data} );
 			}
 
 			client.request( uri, "GET", function ( arg ) {
 				self.setComplete( record, key, self.source ? arg[self.source] : arg, batch, defer );
 			}, function ( e ) {
-				self.emit( "failedSet", e );
+				self.dispatch( "failedSet", e );
 				defer.reject( e );
 			}, undefined, utility.merge( {withCredentials: self.credentials}, self.headers ) );
 		}
@@ -1046,7 +1046,7 @@ DataStore.prototype.set = function ( key, data, batch ) {
 		}
 
 		if ( !batch && events ) {
-			self.emit( "beforeSet", {key: key, data: data} );
+			self.dispatch( "beforeSet", {key: key, data: data} );
 		}
 
 		if ( batch || this.uri === null ) {
@@ -1075,7 +1075,7 @@ DataStore.prototype.set = function ( key, data, batch ) {
 			client.request( uri, method, function ( arg ) {
 				self.setComplete( record, key, self.source ? arg[self.source] : arg, batch, defer );
 			}, function ( e ) {
-				self.emit( "failedSet", e );
+				self.dispatch( "failedSet", e );
 				defer.reject( e );
 			}, data, utility.merge( {withCredentials: this.credentials}, this.headers ) );
 		}
@@ -1142,7 +1142,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 	}
 
 	if ( !batch && this.events ) {
-		self.emit( "afterSet", record );
+		self.dispatch( "afterSet", record );
 
 		array.each( this.lists, function ( i ) {
 			i.refresh( true, true );
@@ -1181,7 +1181,7 @@ DataStore.prototype.setExpires = function ( arg ) {
 
 	this.expires = arg;
 
-	var id      = this.id + "DataExpire",
+	var id      = this.id + "Expire",
 	    expires = arg,
 	    self    = this;
 
@@ -1199,7 +1199,9 @@ DataStore.prototype.setExpires = function ( arg ) {
 		}
 
 		if ( !cache.expire( self.uri ) ) {
-			//observer.fire( self.uri, "beforeExpire, expire, afterExpire" );
+			self.dispatch( "beforeExpire");
+			self.dispatch( "expire");
+			self.dispatch( "afterExpire");
 		}
 	}, expires, id, false );
 };
@@ -1241,16 +1243,12 @@ DataStore.prototype.setUri = function ( arg ) {
 		uri = uri.replace( "?&", "?" );
 	}
 
-	if ( this.uri !== null) {
-		//observer.remove( this.uri );
-	}
-
 	this.uri = uri;
 
 	if ( this.uri !== null ) {
-		/*observer.add( this.uri, "expire", function () {
+		this.on( "expire", function () {
 			this.sync();
-		}, "dataSync", this);*/
+		}, "resync", this );
 
 		cache.expire( this.uri );
 
@@ -1619,7 +1617,7 @@ DataStore.prototype.sync = function () {
 
 		self.batch( "set", data, true ).then( function ( arg ) {
 			if ( events ) {
-				self.emit( "afterSync", arg );
+				self.dispatch( "afterSync", arg );
 			}
 
 			defer.resolve( arg );
@@ -1637,14 +1635,14 @@ DataStore.prototype.sync = function () {
 	 */
 	failure = function ( e ) {
 		if ( events ) {
-			self.emit( "failedSync", e );
+			self.dispatch( "failedSync", e );
 		}
 
 		defer.reject( e );
 	};
 
 	if ( events ) {
-		this.emit( "beforeSync", this.uri );
+		this.dispatch( "beforeSync", this.uri );
 	}
 
 	if ( this.callback !== null ) {
@@ -1670,7 +1668,6 @@ DataStore.prototype.teardown = function () {
 
 	if ( uri !== null ) {
 		cache.expire( uri, true );
-		//observer.remove( uri );
 
 		id = this.id + "DataExpire";
 		utility.clearTimers( id );
@@ -1679,7 +1676,6 @@ DataStore.prototype.teardown = function () {
 			var recordUri = uri + "/" + i.key;
 
 			cache.expire( recordUri, true );
-			//observer.remove( recordUri );
 
 			utility.iterate( i.data, function ( v ) {
 				if ( v === null ) {
@@ -1687,7 +1683,6 @@ DataStore.prototype.teardown = function () {
 				}
 
 				if ( v.data && typeof v.data.teardown == "function" ) {
-					//observer.remove( v.id );
 					v.data.teardown();
 				}
 			} );
@@ -1699,7 +1694,7 @@ DataStore.prototype.teardown = function () {
 	} );
 
 	this.clear( true );
-	this.emit( "afterTeardown" );
+	this.dispatch( "afterTeardown" );
 
 	return this;
 };
@@ -1714,34 +1709,34 @@ DataStore.prototype.teardown = function () {
  * @return {Object}         Deferred
  */
 DataStore.prototype.undo = function ( key, version ) {
-        var record   = this.get( key ),
-            defer    = deferred.factory(),
-            versions = this.versions[record.key],
-            previous;
+	var record   = this.get( key ),
+	    defer    = deferred.factory(),
+	    versions = this.versions[record.key],
+	    previous;
 
-        if ( record === undefined ) {
-                throw new Error( label.invalidArguments );
-        }
+	if ( record === undefined ) {
+		throw new Error( label.invalidArguments );
+	}
 
-        if ( versions ) {
-                previous = versions.get( version || versions.first );
+	if ( versions ) {
+		previous = versions.get( version || versions.first );
 
-                if ( previous === undefined ) {
-                        defer.reject( label.datastoreNoPrevVersion );
-                }
-                else {
-                        this.set( key, previous ).then( function ( arg ) {
-                                defer.resolve( arg );
-                        }, function ( e ) {
-                                defer.reject( e );
-                        } );
-                }
-        }
-        else {
-                defer.reject( label.datastoreNoPrevVersion );
-        }
+		if ( previous === undefined ) {
+			defer.reject( label.datastoreNoPrevVersion );
+		}
+		else {
+			this.set( key, previous ).then( function ( arg ) {
+				defer.resolve( arg );
+			}, function ( e ) {
+				defer.reject( e );
+			} );
+		}
+	}
+	else {
+		defer.reject( label.datastoreNoPrevVersion );
+	}
 
-        return defer;
+	return defer;
 };
 
 /**

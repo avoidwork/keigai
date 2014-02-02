@@ -33,7 +33,7 @@
  * @license BSD-3 &lt;https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.1.1
+ * @version 0.1.2
  */
 ( function ( global ) {
 
@@ -393,6 +393,22 @@ var array = {
 	},
 
 	/**
+	 * Merges `arg` into `obj`, excluding duplicate indices
+	 *
+	 * @method merge
+	 * @param  {Array} obj Array to receive indices
+	 * @param  {Array} arg Array to merge
+	 * @return {Array}     obj
+	 */
+	merge : function ( obj, arg ) {
+		array.each( arg, function ( i ) {
+			array.add( obj, i );
+		} );
+
+		return obj;
+	},
+
+	/**
 	 * Mingles Arrays and returns a 2D Array
 	 *
 	 * @method mingle
@@ -409,23 +425,6 @@ var array = {
 		} );
 
 		return result;
-	},
-
-	/**
-	 * Merges `arg` into `obj`, excluding duplicate indices
-	 *
-	 * @method merge
-	 * @memberOf array
-	 * @param  {Array} obj Array to receive indices
-	 * @param  {Array} arg Array to merge
-	 * @return {Array}     obj
-	 */
-	merge : function ( obj, arg ) {
-		array.each( arg, function ( i ) {
-			array.add( obj, i );
-		} );
-
-		return obj;
 	},
 
 	/**
@@ -1489,7 +1488,7 @@ var grid = {
 			    el      = element.create( "span", {innerHTML: string.capitalize( string.unCamelCase( string.unhyphenate( trimmed, true ) ), true ), style: css, "data-field": i}, header );
 
 			// Adding CSS class if "column" is sortable
-			if ( obj.sortable.contains( i ) ) {
+			if ( array.contains( obj.sortable, i ) ) {
 				element.klass( el, "sortable", true );
 
 				// Applying default sort, if specified
@@ -4056,7 +4055,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 	    deferreds = [];
 
 	if ( events ) {
-		this.emit( "beforeBatch", data );
+		this.dispatch( "beforeBatch", data );
 	}
 
 	if ( sync ) {
@@ -4067,7 +4066,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 		this.loaded = true;
 
 		if ( events ) {
-			this.emit( "afterBatch", this.records );
+			this.dispatch( "afterBatch", this.records );
 		}
 
 		defer.resolve( this.records );
@@ -4088,7 +4087,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 			self.loaded = true;
 
 			if ( events ) {
-				self.emit( "afterBatch", self.records );
+				self.dispatch( "afterBatch", self.records );
 			}
 
 			array.each( self.lists, function ( i ) {
@@ -4106,7 +4105,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 			defer.resolve( self.records );
 		}, function ( e ) {
 			if ( events ) {
-				self.emit( "failedBatch", e );
+				self.dispatch( "failedBatch", e );
 			}
 
 			defer.reject( e );
@@ -4147,7 +4146,7 @@ DataStore.prototype.clear = function ( sync ) {
 
 	if ( !sync ) {
 		if ( events ) {
-			this.emit( "beforeClear" );
+			this.dispatch( "beforeClear" );
 		}
 
 		array.each( this.lists, function ( i ) {
@@ -4180,7 +4179,7 @@ DataStore.prototype.clear = function ( sync ) {
 		this.uri         = null;
 
 		if ( events ) {
-			this.emit( "afterClear" );
+			this.dispatch( "afterClear" );
 		}
 	}
 	else {
@@ -4224,7 +4223,7 @@ DataStore.prototype.crawl = function ( arg ) {
 	}
 
 	if ( events ) {
-		this.emit( "beforeRetrieve", record );
+		this.dispatch( "beforeRetrieve", record );
 	}
 
 	// Depth of recursion is controled by `maxDepth`
@@ -4266,13 +4265,13 @@ DataStore.prototype.crawl = function ( arg ) {
 	if ( deferreds.length > 0 ) {
 		utility.when( deferreds ).then( function () {
 			if ( events ) {
-				self.emit( "afterRetrieve", record );
+				self.dispatch( "afterRetrieve", record );
 			}
 
 			defer.resolve( record );
 		}, function ( e ) {
 			if ( events ) {
-				self.emit( "failedRetrieve", record );
+				self.dispatch( "failedRetrieve", record );
 			}
 
 			defer.reject( e );
@@ -4280,7 +4279,7 @@ DataStore.prototype.crawl = function ( arg ) {
 	}
 	else {
 		if ( events ) {
-			self.emit( "afterRetrieve", record );
+			self.dispatch( "afterRetrieve", record );
 		}
 
 		defer.resolve( record );
@@ -4315,7 +4314,7 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
 	}
 	else {
 		if ( this.events ) {
-			self.emit( "beforeDelete", record );
+			self.dispatch( "beforeDelete", record );
 		}
 
 		if ( this.uri === null || this.callback !== null ) {
@@ -4325,7 +4324,7 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
 			client.request( this.buildUri( record.key ), "DELETE", function () {
 				self.delComplete( record, reindex, batch, defer );
 			}, function ( e ) {
-				self.emit( "failedDelete", e );
+				self.dispatch( "failedDelete", e );
 				defer.reject( e );
 			}, undefined, utility.merge( {withCredentials: this.credentials}, this.headers ) );
 		}
@@ -4368,7 +4367,7 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 		}
 
 		if ( this.events ) {
-			this.emit( "afterDelete", record );
+			this.dispatch( "afterDelete", record );
 		}
 
 		array.each( this.lists, function ( i ) {
@@ -4904,13 +4903,13 @@ DataStore.prototype.set = function ( key, data, batch ) {
 		}
 		else {
 			if ( !batch && events ) {
-				self.emit( "beforeSet", {key: key, data: data} );
+				self.dispatch( "beforeSet", {key: key, data: data} );
 			}
 
 			client.request( uri, "GET", function ( arg ) {
 				self.setComplete( record, key, self.source ? arg[self.source] : arg, batch, defer );
 			}, function ( e ) {
-				self.emit( "failedSet", e );
+				self.dispatch( "failedSet", e );
 				defer.reject( e );
 			}, undefined, utility.merge( {withCredentials: self.credentials}, self.headers ) );
 		}
@@ -4929,7 +4928,7 @@ DataStore.prototype.set = function ( key, data, batch ) {
 		}
 
 		if ( !batch && events ) {
-			self.emit( "beforeSet", {key: key, data: data} );
+			self.dispatch( "beforeSet", {key: key, data: data} );
 		}
 
 		if ( batch || this.uri === null ) {
@@ -4958,7 +4957,7 @@ DataStore.prototype.set = function ( key, data, batch ) {
 			client.request( uri, method, function ( arg ) {
 				self.setComplete( record, key, self.source ? arg[self.source] : arg, batch, defer );
 			}, function ( e ) {
-				self.emit( "failedSet", e );
+				self.dispatch( "failedSet", e );
 				defer.reject( e );
 			}, data, utility.merge( {withCredentials: this.credentials}, this.headers ) );
 		}
@@ -5025,7 +5024,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 	}
 
 	if ( !batch && this.events ) {
-		self.emit( "afterSet", record );
+		self.dispatch( "afterSet", record );
 
 		array.each( this.lists, function ( i ) {
 			i.refresh( true, true );
@@ -5064,7 +5063,7 @@ DataStore.prototype.setExpires = function ( arg ) {
 
 	this.expires = arg;
 
-	var id      = this.id + "DataExpire",
+	var id      = this.id + "Expire",
 	    expires = arg,
 	    self    = this;
 
@@ -5082,7 +5081,9 @@ DataStore.prototype.setExpires = function ( arg ) {
 		}
 
 		if ( !cache.expire( self.uri ) ) {
-			//observer.fire( self.uri, "beforeExpire, expire, afterExpire" );
+			self.dispatch( "beforeExpire");
+			self.dispatch( "expire");
+			self.dispatch( "afterExpire");
 		}
 	}, expires, id, false );
 };
@@ -5124,16 +5125,12 @@ DataStore.prototype.setUri = function ( arg ) {
 		uri = uri.replace( "?&", "?" );
 	}
 
-	if ( this.uri !== null) {
-		//observer.remove( this.uri );
-	}
-
 	this.uri = uri;
 
 	if ( this.uri !== null ) {
-		/*observer.add( this.uri, "expire", function () {
+		this.on( "expire", function () {
 			this.sync();
-		}, "dataSync", this);*/
+		}, "resync", this );
 
 		cache.expire( this.uri );
 
@@ -5502,7 +5499,7 @@ DataStore.prototype.sync = function () {
 
 		self.batch( "set", data, true ).then( function ( arg ) {
 			if ( events ) {
-				self.emit( "afterSync", arg );
+				self.dispatch( "afterSync", arg );
 			}
 
 			defer.resolve( arg );
@@ -5520,14 +5517,14 @@ DataStore.prototype.sync = function () {
 	 */
 	failure = function ( e ) {
 		if ( events ) {
-			self.emit( "failedSync", e );
+			self.dispatch( "failedSync", e );
 		}
 
 		defer.reject( e );
 	};
 
 	if ( events ) {
-		this.emit( "beforeSync", this.uri );
+		this.dispatch( "beforeSync", this.uri );
 	}
 
 	if ( this.callback !== null ) {
@@ -5553,7 +5550,6 @@ DataStore.prototype.teardown = function () {
 
 	if ( uri !== null ) {
 		cache.expire( uri, true );
-		//observer.remove( uri );
 
 		id = this.id + "DataExpire";
 		utility.clearTimers( id );
@@ -5562,7 +5558,6 @@ DataStore.prototype.teardown = function () {
 			var recordUri = uri + "/" + i.key;
 
 			cache.expire( recordUri, true );
-			//observer.remove( recordUri );
 
 			utility.iterate( i.data, function ( v ) {
 				if ( v === null ) {
@@ -5570,7 +5565,6 @@ DataStore.prototype.teardown = function () {
 				}
 
 				if ( v.data && typeof v.data.teardown == "function" ) {
-					//observer.remove( v.id );
 					v.data.teardown();
 				}
 			} );
@@ -5582,7 +5576,7 @@ DataStore.prototype.teardown = function () {
 	} );
 
 	this.clear( true );
-	this.emit( "afterTeardown" );
+	this.dispatch( "afterTeardown" );
 
 	return this;
 };
@@ -5597,34 +5591,34 @@ DataStore.prototype.teardown = function () {
  * @return {Object}         Deferred
  */
 DataStore.prototype.undo = function ( key, version ) {
-        var record   = this.get( key ),
-            defer    = deferred.factory(),
-            versions = this.versions[record.key],
-            previous;
+	var record   = this.get( key ),
+	    defer    = deferred.factory(),
+	    versions = this.versions[record.key],
+	    previous;
 
-        if ( record === undefined ) {
-                throw new Error( label.invalidArguments );
-        }
+	if ( record === undefined ) {
+		throw new Error( label.invalidArguments );
+	}
 
-        if ( versions ) {
-                previous = versions.get( version || versions.first );
+	if ( versions ) {
+		previous = versions.get( version || versions.first );
 
-                if ( previous === undefined ) {
-                        defer.reject( label.datastoreNoPrevVersion );
-                }
-                else {
-                        this.set( key, previous ).then( function ( arg ) {
-                                defer.resolve( arg );
-                        }, function ( e ) {
-                                defer.reject( e );
-                        } );
-                }
-        }
-        else {
-                defer.reject( label.datastoreNoPrevVersion );
-        }
+		if ( previous === undefined ) {
+			defer.reject( label.datastoreNoPrevVersion );
+		}
+		else {
+			this.set( key, previous ).then( function ( arg ) {
+				defer.resolve( arg );
+			}, function ( e ) {
+				defer.reject( e );
+			} );
+		}
+	}
+	else {
+		defer.reject( label.datastoreNoPrevVersion );
+	}
 
-        return defer;
+	return defer;
 };
 
 /**
@@ -6647,7 +6641,7 @@ function xhr () {
 	    XMLHttpRequest, headers, handler, handlerError, state;
 
 	headers = {
-		"User-Agent"   : "keigai/0.1.1 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"User-Agent"   : "keigai/0.1.2 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"Content-Type" : "text/plain",
 		"Accept"       : "*/*"
 	};
@@ -7298,7 +7292,7 @@ return {
 	list    : list.factory,
 	grid    : grid.factory,
 	store   : store.factory,
-	version : "0.1.1"
+	version : "0.1.2"
 };
 
 } )();
@@ -7326,13 +7320,13 @@ else {
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataListFilter.html">DataListFilter</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="keigai.Deferred.html">Deferred</a></li><li><a href="keigai.LRU.html">LRU</a></li><li><a href="keigai.LRUItem.html">LRUItem</a></li><li><a href="keigai.Observable.html">Observable</a></li><li><a href="keigai.Promise.html">Promise</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="deferred.html">deferred</a></li><li><a href="element.html">element</a></li><li><a href="filter.html">filter</a></li><li><a href="grid.html">grid</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="list.html">list</a></li><li><a href="number.html">number</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="store.html">store</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataListFilter.html">DataListFilter</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="keigai.Deferred.html">Deferred</a></li><li><a href="keigai.LRU.html">LRU</a></li><li><a href="keigai.LRUItem.html">LRUItem</a></li><li><a href="keigai.Observable.html">Observable</a></li><li><a href="keigai.Promise.html">Promise</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="deferred.html">deferred</a></li><li><a href="element.html">element</a></li><li><a href="filter.html">filter</a></li><li><a href="grid.html">grid</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="list.html">list</a></li><li><a href="number.html">number</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="store.html">store</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#merge">merge</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Feb 01 2014 14:55:25 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Feb 01 2014 23:47:38 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -34,7 +34,7 @@ var grid = {
 			    el      = element.create( "span", {innerHTML: string.capitalize( string.unCamelCase( string.unhyphenate( trimmed, true ) ), true ), style: css, "data-field": i}, header );
 
 			// Adding CSS class if "column" is sortable
-			if ( obj.sortable.contains( i ) ) {
+			if ( array.contains( obj.sortable, i ) ) {
 				element.klass( el, "sortable", true );
 
 				// Applying default sort, if specified

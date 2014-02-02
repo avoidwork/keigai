@@ -254,6 +254,22 @@ var array = {
 	},
 
 	/**
+	 * Merges `arg` into `obj`, excluding duplicate indices
+	 *
+	 * @method merge
+	 * @param  {Array} obj Array to receive indices
+	 * @param  {Array} arg Array to merge
+	 * @return {Array}     obj
+	 */
+	merge : function ( obj, arg ) {
+		array.each( arg, function ( i ) {
+			array.add( obj, i );
+		} );
+
+		return obj;
+	},
+
+	/**
 	 * Mingles Arrays and returns a 2D Array
 	 *
 	 * @method mingle
@@ -270,23 +286,6 @@ var array = {
 		} );
 
 		return result;
-	},
-
-	/**
-	 * Merges `arg` into `obj`, excluding duplicate indices
-	 *
-	 * @method merge
-	 * @memberOf array
-	 * @param  {Array} obj Array to receive indices
-	 * @param  {Array} arg Array to merge
-	 * @return {Array}     obj
-	 */
-	merge : function ( obj, arg ) {
-		array.each( arg, function ( i ) {
-			array.add( obj, i );
-		} );
-
-		return obj;
 	},
 
 	/**
