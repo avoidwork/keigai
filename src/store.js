@@ -925,10 +925,12 @@ DataStore.prototype.select = function ( where ) {
 
 		worker.onerror = function ( err ) {
 			defer.reject( err );
+			worker.terminate();
 		};
 
 		worker.onmessage = function ( ev ) {
 			defer.resolve( ev.data );
+			worker.terminate();
 		};
 
 		worker.postMessage( {cmd: "select", records: this.records, where: json.encode( where ), functions: functions} );
@@ -1300,11 +1302,13 @@ DataStore.prototype.sort = function ( query, create, where ) {
 
 			worker.onerror = function ( err ) {
 				defer.reject( err );
+				worker.terminate();
 			};
 
 			worker.onmessage = function ( ev ) {
 				self.views[view] = ev.data;
 				defer.resolve( self.views[view] );
+				worker.terminate();
 			};
 
 			worker.postMessage( {cmd: "sort", records: records, query: query} );
