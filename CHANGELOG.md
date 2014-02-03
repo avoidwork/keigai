@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.5
+- Terminating web workers, so they're short lived
+
 ## 0.1.4
 - Adding error handling to `DataStore.select()` and `DataStore.sort()` when Web Workers are leveraged
 
