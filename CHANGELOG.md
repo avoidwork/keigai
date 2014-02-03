@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.4
+- Adding error handling to `DataStore.select()` and `DataStore.sort()` when Web Workers are leveraged
+
 ## 0.1.3
 - Fixing `DataStore.select()` Worker code path
 
