@@ -6,7 +6,7 @@
  * @license BSD-3 <https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.1.4
+ * @version 0.1.5
  */
 ( function ( global ) {
 
@@ -4780,10 +4780,12 @@ DataStore.prototype.select = function ( where ) {
 
 		worker.onerror = function ( err ) {
 			defer.reject( err );
+			worker.terminate();
 		};
 
 		worker.onmessage = function ( ev ) {
 			defer.resolve( ev.data );
+			worker.terminate();
 		};
 
 		worker.postMessage( {cmd: "select", records: this.records, where: json.encode( where ), functions: functions} );
@@ -5155,11 +5157,13 @@ DataStore.prototype.sort = function ( query, create, where ) {
 
 			worker.onerror = function ( err ) {
 				defer.reject( err );
+				worker.terminate();
 			};
 
 			worker.onmessage = function ( ev ) {
 				self.views[view] = ev.data;
 				defer.resolve( self.views[view] );
+				worker.terminate();
 			};
 
 			worker.postMessage( {cmd: "sort", records: records, query: query} );
@@ -6623,7 +6627,7 @@ function xhr () {
 	    XMLHttpRequest, headers, handler, handlerError, state;
 
 	headers = {
-		"User-Agent"   : "keigai/0.1.4 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"User-Agent"   : "keigai/0.1.5 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"Content-Type" : "text/plain",
 		"Accept"       : "*/*"
 	};
@@ -7274,7 +7278,7 @@ return {
 	list    : list.factory,
 	grid    : grid.factory,
 	store   : store.factory,
-	version : "0.1.4"
+	version : "0.1.5"
 };
 
 } )();
