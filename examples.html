@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
-		<title>keigai - lightweight data stores</title>
+		<title>keigai - examples</title>
 		<link rel="stylesheet" href="stylesheets/styles.css">
 		<link rel="stylesheet" href="stylesheets/pygment_trac.css">
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -16,17 +16,8 @@
 		<div class="wrapper">
 			<header>
 				<h1><img src="images/logo.png" alt="logo" />keigai</h1>
-				<p>keigai is a lightweight data store library, providing a powerful model &amp; reactive UI components, with 1-n relationships.</p>
-				<p>keigai data stores have MVCC inspired record versioning, for an easy "undo", &amp; they can be wired to APIs.</p>
-				<p>keigai can be installed from npm &amp; bower, and supports AMD loaders or script tags.</p>
-				<p class="objects"><a href="objects.html">View more about keigai Objects</a></p>
-				<!--<p class="examples"><a href="examples.html">View more examples</a></p>-->
-				<p class="view"><a href="https://github.com/avoidwork/keigai">View the Project on GitHub</a></p>
-				<ul class="buttons">
-					<li><a href="https://github.com/avoidwork/keigai/zipball/master">Download <strong>ZIP File</strong></a></li>
-					<li><a href="https://github.com/avoidwork/keigai/tarball/master">Download <strong>TAR Ball</strong></a></li>
-					<li><a href="https://github.com/avoidwork/keigai">View On <strong>GitHub</strong></a></li>
-				</ul>
+				<p>keigai can be used with any architecture style, so you don't have to change the way you write code.</p>
+				<p class="home"><a href="./">View main page</a></p>
 			</header>
 			<section>
 				<h2><a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Quick Start</h2>
@@ -69,7 +60,9 @@
 				<p>Returns a DataList instance. DataLists are the core visual representation of a DataStore, using "handle bar" style templates.</p>
 
 				<h3><a name="store-data-options" class="anchor" href="#store-data-options"><span class="octicon octicon-link"></span></a>store ([data, options])</h3>
-				<p>Returns a DataStore instance. DataStores are in ram NoSQL databases, with many features found in SQL databases, such as JOINs, ORDER BYs, &amp; WHERE clauses.</p>
+				<p>Returns a DataStore instance. DataStores are in ram NoSQL databases, with many features found in SQL databases, such as JOINs, ORDER BYs, &amp; WHERE clauses. DataStores use Web Workers when possible, to not block the UI event loop.</p>
+				<p>DataStores can be wired to an API through the <code>setUri()</code> method, which hooks them into the feedback loop. If you "set" or "delete" a record, the operation doesn't complete until the API provides a "success" or "failure" response.</p>
+				<p>Deferreds (Promises) are returned from methods that can "go over the wire", for easy handling of the asynchronous communication.</p>
 			</section>
 			<footer>
 				<p>This project is maintained by <a href="https://github.com/avoidwork">Jason Mulligan</a></p>
