@@ -269,7 +269,7 @@ DataGrid.prototype.refresh = function () {
 
 	this.list.where = null;
 	utility.merge( this.list, this.options );
-	this.list.refresh( true, true );
+	this.list.refresh();
 
 	this.dispatch( "afterRefresh", this.element );
 

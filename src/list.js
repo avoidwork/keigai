@@ -57,7 +57,7 @@ var list = {
 
 		// Rendering if not tied to an API or data is ready
 		if ( obj.store.uri === null || obj.store.loaded ) {
-			obj.refresh( true, true );
+			obj.refresh();
 		}
 
 		return obj;
@@ -250,14 +250,13 @@ DataList.prototype.once = function ( ev, listener, id, scope ) {
  *
  * @method page
  * @memberOf keigai.DataList
- * @param  {Boolean} redraw [Optional] Boolean to force clearing the DataList, default is `true`, `false` toggles "hidden" class of items
- * @param  {Boolean} create [Optional] Recreates cached View of data
+ * @param  {Number} page Page to view
  * @return {Object} {@link keigai.DataList}
  */
-DataList.prototype.page = function ( arg, redraw, create ) {
-	this.pageIndex = arg;
+DataList.prototype.page = function ( page ) {
+	this.pageIndex = page;
 
-	return this.refresh( redraw, create );
+	return this.refresh();
 };
 
 /**
@@ -357,8 +356,9 @@ DataList.prototype.pages = function () {
 /**
  * Refreshes element
  *
- * Events: beforeRefresh  Fires from the element containing the DataList
- *         afterRefresh   Fires from the element containing the DataList
+ * Events: beforeRefresh  Emits before the DataList refreshes
+ *         afterRefresh   Emits after the DataList has refreshed
+ *         error          Emits when an error occurs during a refresh
  *
  * @method refresh
  * @memberOf keigai.DataList
@@ -367,19 +367,19 @@ DataList.prototype.pages = function () {
  * @return {Object} {@link keigai.DataList}
  */
 DataList.prototype.refresh = function ( redraw, create ) {
-	var el       = this.element,
+	var self     = this,
+	    el       = this.element,
 	    template = ( typeof this.template == "object" ),
 	    filter   = this.filter !== null,
 	    items    = [],
-	    self     = this,
 	    callback = ( typeof this.callback == "function" ),
 	    reg      = new RegExp(),
 	    registry = [], // keeps track of records in the list ( for filtering )
 	    range    = [],
 	    fn, ceiling, next;
 
-	redraw = ( redraw !== false );
-	create = ( create === true );
+	redraw = redraw !== false;
+	create = create === true;
 
 	this.dispatch( "beforeRefresh", el );
 
@@ -435,19 +435,16 @@ DataList.prototype.refresh = function ( redraw, create ) {
 
 	// Next phase
 	next = function ( args ) {
-		self.records = args;
-
 		// Creating view of DataStore
-		if ( create ) {
-			self.total    = self.records.length;
-			self.filtered = [];
-		}
+		self.records  = args;
+		self.total    = self.records.length;
+		self.filtered = [];
 
 		// Resetting 'view' specific arrays
 		self.current  = [];
 
 		// Filtering records (if applicable)
-		if ( filter && create ) {
+		if ( filter ) {
 			array.each( self.records, function ( i ) {
 				utility.iterate( self.filter, function ( v, k ) {
 					var reg, key;
@@ -546,16 +543,19 @@ DataList.prototype.refresh = function ( redraw, create ) {
 	if ( this.where === null ) {
 		string.isEmpty( this.order ) ? next( this.store.get() ) : this.store.sort( this.order, create ).then( next, function ( e ) {
 			utility.error( e );
+			self.dispatch( "error", e );
 		} );
 	}
 	else if ( string.isEmpty( this.order ) ) {
 		this.store.select( this.where ).then( next, function ( e ) {
 			utility.error( e );
+			self.dispatch( "error", e );
 		} );
 	}
 	else {
 		this.store.sort( this.order, create, this.where ).then( next, function ( e ) {
 			utility.error( e );
+			self.dispatch( "error", e );
 		} );
 	}
 
@@ -567,14 +567,13 @@ DataList.prototype.refresh = function ( redraw, create ) {
  *
  * @method sort
  * @memberOf keigai.DataList
- * @param  {String}  order  SQL "order by" statement
- * @param  {Boolean} create [Optional] Recreates cached View of data store
+ * @param  {String} order SQL "ORDER BY" clause
  * @return {Object} {@link keigai.DataList}
  */
-DataList.prototype.sort = function ( order, create ) {
+DataList.prototype.sort = function ( order ) {
 	this.order = order;
 
-	return this.refresh( true, create );
+	return this.refresh();
 };
 
 /**

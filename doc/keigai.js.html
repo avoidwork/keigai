@@ -1444,7 +1444,7 @@ DataListFilter.prototype.update = function () {
 		}
 
 		self.list.pageIndex = 1;
-		self.list.refresh( true, true );
+		self.list.refresh();
 
 		self.dispatch( "afterFilter", self.element );
 	}, this.debounce, this.element.id + "Debounce");
@@ -1723,7 +1723,7 @@ DataGrid.prototype.refresh = function () {
 
 	this.list.where = null;
 	utility.merge( this.list, this.options );
-	this.list.refresh( true, true );
+	this.list.refresh();
 
 	this.dispatch( "afterRefresh", this.element );
 
@@ -1837,7 +1837,7 @@ var list = {
 
 		// Rendering if not tied to an API or data is ready
 		if ( obj.store.uri === null || obj.store.loaded ) {
-			obj.refresh( true, true );
+			obj.refresh();
 		}
 
 		return obj;
@@ -2030,14 +2030,13 @@ DataList.prototype.once = function ( ev, listener, id, scope ) {
  *
  * @method page
  * @memberOf keigai.DataList
- * @param  {Boolean} redraw [Optional] Boolean to force clearing the DataList, default is `true`, `false` toggles "hidden" class of items
- * @param  {Boolean} create [Optional] Recreates cached View of data
+ * @param  {Number} page Page to view
  * @return {Object} {@link keigai.DataList}
  */
-DataList.prototype.page = function ( arg, redraw, create ) {
-	this.pageIndex = arg;
+DataList.prototype.page = function ( page ) {
+	this.pageIndex = page;
 
-	return this.refresh( redraw, create );
+	return this.refresh();
 };
 
 /**
@@ -2137,8 +2136,9 @@ DataList.prototype.pages = function () {
 /**
  * Refreshes element
  *
- * Events: beforeRefresh  Fires from the element containing the DataList
- *         afterRefresh   Fires from the element containing the DataList
+ * Events: beforeRefresh  Emits before the DataList refreshes
+ *         afterRefresh   Emits after the DataList has refreshed
+ *         error          Emits when an error occurs during a refresh
  *
  * @method refresh
  * @memberOf keigai.DataList
@@ -2147,19 +2147,19 @@ DataList.prototype.pages = function () {
  * @return {Object} {@link keigai.DataList}
  */
 DataList.prototype.refresh = function ( redraw, create ) {
-	var el       = this.element,
+	var self     = this,
+	    el       = this.element,
 	    template = ( typeof this.template == "object" ),
 	    filter   = this.filter !== null,
 	    items    = [],
-	    self     = this,
 	    callback = ( typeof this.callback == "function" ),
 	    reg      = new RegExp(),
 	    registry = [], // keeps track of records in the list ( for filtering )
 	    range    = [],
 	    fn, ceiling, next;
 
-	redraw = ( redraw !== false );
-	create = ( create === true );
+	redraw = redraw !== false;
+	create = create === true;
 
 	this.dispatch( "beforeRefresh", el );
 
@@ -2215,19 +2215,16 @@ DataList.prototype.refresh = function ( redraw, create ) {
 
 	// Next phase
 	next = function ( args ) {
-		self.records = args;
-
 		// Creating view of DataStore
-		if ( create ) {
-			self.total    = self.records.length;
-			self.filtered = [];
-		}
+		self.records  = args;
+		self.total    = self.records.length;
+		self.filtered = [];
 
 		// Resetting 'view' specific arrays
 		self.current  = [];
 
 		// Filtering records (if applicable)
-		if ( filter && create ) {
+		if ( filter ) {
 			array.each( self.records, function ( i ) {
 				utility.iterate( self.filter, function ( v, k ) {
 					var reg, key;
@@ -2326,16 +2323,19 @@ DataList.prototype.refresh = function ( redraw, create ) {
 	if ( this.where === null ) {
 		string.isEmpty( this.order ) ? next( this.store.get() ) : this.store.sort( this.order, create ).then( next, function ( e ) {
 			utility.error( e );
+			self.dispatch( "error", e );
 		} );
 	}
 	else if ( string.isEmpty( this.order ) ) {
 		this.store.select( this.where ).then( next, function ( e ) {
 			utility.error( e );
+			self.dispatch( "error", e );
 		} );
 	}
 	else {
 		this.store.sort( this.order, create, this.where ).then( next, function ( e ) {
 			utility.error( e );
+			self.dispatch( "error", e );
 		} );
 	}
 
@@ -2347,14 +2347,13 @@ DataList.prototype.refresh = function ( redraw, create ) {
  *
  * @method sort
  * @memberOf keigai.DataList
- * @param  {String}  order  SQL "order by" statement
- * @param  {Boolean} create [Optional] Recreates cached View of data store
+ * @param  {String} order SQL "ORDER BY" clause
  * @return {Object} {@link keigai.DataList}
  */
-DataList.prototype.sort = function ( order, create ) {
+DataList.prototype.sort = function ( order ) {
 	this.order = order;
 
-	return this.refresh( true, create );
+	return this.refresh();
 };
 
 /**
@@ -4092,7 +4091,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 			}
 
 			array.each( self.lists, function ( i ) {
-				i.refresh( true, true );
+				i.refresh();
 			} );
 
 			if ( type === "del" ) {
@@ -4192,7 +4191,7 @@ DataStore.prototype.clear = function ( sync ) {
 		this.views       = {};
 
 		array.each( this.lists, function ( i ) {
-			i.refresh( true, true );
+			i.refresh();
 		} );
 	}
 
@@ -4372,7 +4371,7 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 		}
 
 		array.each( this.lists, function ( i ) {
-			i.refresh( true, true );
+			i.refresh();
 		} );
 	}
 
@@ -4989,6 +4988,9 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 	var self      = this,
 	    deferreds = [];
 
+	// Clearing views
+	this.views = {};
+
 	// Removing primary key from data
 	if ( this.key ) {
 		delete data[this.key];
@@ -5034,7 +5036,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 		self.dispatch( "afterSet", record );
 
 		array.each( this.lists, function ( i ) {
-			i.refresh( true, true );
+			i.refresh();
 		} );
 	}
 
@@ -5055,7 +5057,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
  *
  * @method setExpires
  * @memberOf keigai.DataStore
- * @param  {Number} arg  Milliseconds until data is stale
+ * @param  {Number} arg Milliseconds until data is stale
  * @return {Object} {@link keigai.DataStore}
  */
 DataStore.prototype.setExpires = function ( arg ) {
@@ -7339,7 +7341,7 @@ else {
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Mon Feb 03 2014 07:24:00 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Wed Feb 05 2014 07:18:51 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

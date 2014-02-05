@@ -241,7 +241,7 @@ DataListFilter.prototype.update = function () {
 		}
 
 		self.list.pageIndex = 1;
-		self.list.refresh( true, true );
+		self.list.refresh();
 
 		self.dispatch( "afterFilter", self.element );
 	}, this.debounce, this.element.id + "Debounce");
