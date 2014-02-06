@@ -6,7 +6,7 @@
  * @license BSD-3 <https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.1.6
+ * @version 0.1.7
  */
 ( function ( global ) {
 
@@ -2977,10 +2977,13 @@ var element = {
 
 			if ( output !== undefined ) {
 				output = utility.coerce( output );
-			}
 
-			if ( typeof output == "string" ) {
-				output = string.trim( output );
+				if ( typeof output == "string" ) {
+					output = string.trim( output );
+				}
+			}
+			else {
+				output = "";
 			}
 		}
 		else {
@@ -6629,7 +6632,7 @@ function xhr () {
 	    XMLHttpRequest, headers, handler, handlerError, state;
 
 	headers = {
-		"User-Agent"   : "keigai/0.1.6 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"User-Agent"   : "keigai/0.1.7 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"Content-Type" : "text/plain",
 		"Accept"       : "*/*"
 	};
@@ -7280,7 +7283,7 @@ return {
 	list    : list.factory,
 	grid    : grid.factory,
 	store   : store.factory,
-	version : "0.1.6"
+	version : "0.1.7"
 };
 
 } )();

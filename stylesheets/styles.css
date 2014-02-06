@@ -51,6 +51,10 @@ a small {
   display:block;
 }
 
+.buttons a {
+  text-decoration:none;
+}
+
 .wrapper {
   width:860px;
   margin:0 auto;
