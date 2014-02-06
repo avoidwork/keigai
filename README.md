@@ -4,6 +4,19 @@ keigai is a lightweight data store library featuring two way binding, 1-n reacti
 
 keigai has no dependencies, and offers a pluggable data store solution for any architecture by using a pub/sub (observer) paradigm for external hooks into UIs, and other work flows.
 
+## Example
+This example shows a how a data store can have many reactive UI components linked to it. This is running on http://keigai.io
+
+```javascript
+var fields  = ["name", "age"],
+    options = {pageSize: 5, order: "age desc, name"},
+    store   = keigai.store(),
+    list    = keigai.list( document.querySelector( "#create-list" ), store, "{{name}}", {order: "name"} ),
+    grid    = keigai.grid( document.querySelector( "#create-grid" ), store, fields, fields, options, true);
+
+store.setUri( "data.json" );
+```
+
 ## API
 
 Full API documentation is included, and available at http://api.keigai.io
