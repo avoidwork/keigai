@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.7
+- Fixing `element.val()` for Firefox
+
 ## 0.1.6
 - Clearing `DataStore.views` from `DataStore.setComplete()`
 - Updating all `DataList.refresh()` calls to not clear cached views
