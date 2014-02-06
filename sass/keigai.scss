@@ -1,0 +1,57 @@
+.grid {
+	.filter {
+		margin: 0 0 20px 0;
+	}
+
+	.header {
+		font-weight: bold;
+
+		.sortable {
+			cursor: pointer;
+		}
+
+		.sortable[data-sort="asc"]:after,
+		.sortable[data-sort="desc"]:after {
+			margin-left: 5px;
+			font-size: 12px;
+			vertical-align: text-top;
+		}
+
+		.sortable[data-sort="asc"]:after {
+			content: "\25B2";
+		}
+
+		.sortable[data-sort="desc"]:after {
+			content: "\25BC";
+		}
+	}
+
+	.pages {
+		li {
+			display: inline-block;
+			width: 20px;
+			text-align: center;
+
+			a {
+				padding: 4px;
+
+				&:hover {
+					cursor: pointer;
+				}
+			}
+		}
+	}
+
+	a {
+		text-decoration: none;
+	}
+
+	ul {
+		padding: 0;
+
+		li {
+			margin: 0;
+			list-style: none;
+		}
+	}
+}

@@ -68,6 +68,16 @@ module.exports = function (grunt) {
 		nodeunit : {
 			all : ["test/*.js"]
 		},
+		sass: {
+			dist: {
+				options : {
+					style : "compressed"
+				},
+				files : {
+					"css/keigai.css" : "sass/keigai.scss"
+				}
+			}
+		},
 		sed : {
 			version : {
 				pattern : "{{VERSION}}",
@@ -95,9 +105,10 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-contrib-nodeunit");
 	grunt.loadNpmTasks("grunt-contrib-jshint");
 	grunt.loadNpmTasks("grunt-contrib-watch");
+	grunt.loadNpmTasks("grunt-contrib-sass");
 
 	// aliases
 	grunt.registerTask("test", [/*"nodeunit",*/ "jshint"]);
-	grunt.registerTask("build", ["concat", "sed", "exec"]);
+	grunt.registerTask("build", ["concat", "sed", "exec", "sass"]);
 	grunt.registerTask("default", ["build", "test", "jsdoc"]);
 };
