@@ -59,7 +59,7 @@ var grid = {
 
 		if ( obj.filtered === true ) {
 			// Creating DataListFilter
-			ref.push( filter.factory( element.create( "input", {"class": "filter"}, obj.element, "first" ), ref[1], obj.fields.join( "," ), debounce || 250 ) );
+			ref.push( filter.factory( element.create( "input", {"class": "filter", placeholder: "Filter"}, obj.element, "first" ), ref[1], obj.fields.join( "," ), debounce || 250 ) );
 			
 			// Setting by-reference DataListFilter on DataGrid
 			obj.filter = ref[2];

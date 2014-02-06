@@ -4,6 +4,7 @@
 - Clearing `DataStore.views` from `DataStore.setComplete()`
 - Updating all `DataList.refresh()` calls to not clear cached views
 - Adding SASS source & CSS output files for DataGrids
+- Adding a `placeholder` attribute to the optional `DataListFilter` instantiated from a `DataGrid`
 
 ## 0.1.5
 - Terminating web workers, so they're short lived
