@@ -25,6 +25,25 @@
 				<p>DataStores are in ram NoSQL databases, with many features found in SQL databases, such as JOINs, ORDER BYs, &amp; WHERE clauses. DataStores use Web Workers for "sorting" &amp; "selecting" records, when possible, to avoid blocking the UI event loop.</p>
 				<p>DataStores can be wired to an API through the <code>setUri()</code> method, which hooks them into the feedback loop. If you "set" or "delete" a record, the operation doesn't complete until the API provides a "success" or "failure" response.</p>
 				<p>Deferreds (Promises) are returned from methods that can "go over the wire", for easy handling of the asynchronous communication.</p>
+				<h4>Options</h4>
+				<pre>
+autosave (Boolean)    Enables persistent storage to localStorage, sessionStorage or MongoDB (on the server)
+callback (String)     JSONP facing variable to denote the callback variable in the request URL
+credentials (Boolean) Sets withCredentials on XHR for API interaction (default is null)
+depth (Number)        Current API crawling depth relative to 'origin' DataStore
+events (Boolean)      Enable/disable Observer based pub/sub behaviour (default is true)
+expires (Number)      Milliseconds, (default is null)
+headers (Object)      Outbound headers to decorate on the XHR
+ignore (Array)        Custom properties to not send back an API, e.g. UI facing settings on records
+key (String)          Primary key for records (default is null, generates a UUID v4)
+leafs (Array)         Keys to treat as leafs, e.g. do not crawl them
+maxDepth (Number)     Maximum depth to travese during API crawling
+mongodb (String)      MongoDB connection string for persistent storage when autosave is true
+retrieve (Boolean)    Triggers automatic crawling of API responses
+source (String)       API response property that contains records, e.g. "data" in {"data": [...]}
+versioning (Boolean)  Enable/disable record versioning (default is true)
+uri (String)          API end point (default is null)
+				</pre>
 				<p><a href="http://api.keigai.io/keigai.DataStore.html" title="DataStore API">API documentation</p>
 
 				<h3><a name="datagrid" class="anchor" href="#datagrid"><span class="octicon octicon-link"></span></a>DataGrid</h3>
