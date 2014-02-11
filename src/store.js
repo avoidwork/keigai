@@ -111,7 +111,6 @@ function DataStore () {
 	this.maxDepth    = 0;
 	this.mongodb     = "";
 	this.observer    = new Observable();
-	this.pointer     = null;
 	this.records     = [];
 	this.retrieve    = false;
 	this.source      = null;
@@ -287,7 +286,6 @@ DataStore.prototype.clear = function ( sync ) {
 		this.leafs       = [];
 		this.loaded      = false;
 		this.maxDepth    = 0;
-		this.pointer     = null;
 		this.records     = [];
 		this.retrieve    = false;
 		this.source      = null;
@@ -355,7 +353,7 @@ DataStore.prototype.crawl = function ( arg ) {
 
 		array.add( self.collections, k );
 
-		record.data[k] = store.decorator( {id: record.key + "-" + k}, null, {key: self.key, pointer: self.pointer, source: self.source, ignore: self.ignore.slice(), leafs: self.leafs.slice(), depth: self.depth + 1, maxDepth: self.maxDepth, headers: self.headers, retrieve: true} );
+		record.data[k] = store.factory( null, {id: record.key + "-" + k, key: self.key, source: self.source, ignore: self.ignore.slice(), leafs: self.leafs.slice(), depth: self.depth + 1, maxDepth: self.maxDepth, headers: self.headers, retrieve: true} );
 
 		if ( !array.contains( self.leafs, k ) && ( record.data[k].data.maxDepth === 0 || record.data[k].data.depth <= record.data[k].data.maxDepth ) ) {
 			if ( v instanceof Array ) {
