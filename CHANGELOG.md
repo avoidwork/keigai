@@ -1,5 +1,22 @@
 # Change Log
 
+## 0.2.0
+- Created `MutationObserver` on `DataList`.`mutation`, which dispatches `change` events
+- Created `DataGrid` `change` event, also dispatches from `DataGrid.element`
+- Created `DataGrid` `beforeFilter` event, also dispatches from `DataGrid.element`
+- Created `DataGrid` `afterFilter` event, also dispatches from `DataGrid.element`
+- Created `DataGrid` `beforeRefresh` event, also dispatches from `DataGrid.element`
+- Created `DataGrid` `afterRefresh` event, also dispatches from `DataGrid.element`
+- Created `DataList` `change` event, also dispatches from `DataList.element`
+- Created `DataList` `beforeFilter` event, also dispatches from `DataList.element`
+- Created `DataList` `afterFilter` event, also dispatches from `DataList.element`
+- Created `DataList` `beforeRefresh` event, also dispatches from `DataList.element`
+- Created `DataList` `afterRefresh` event, also dispatches from `DataList.element`
+
+## 0.1.8
+- Fixing `DataStore.crawl()` reference error
+- Removing an unused property from `DataStores`
+
 ## 0.1.7
 - Fixing `element.val()` for Firefox
 
