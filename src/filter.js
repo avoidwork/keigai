@@ -207,6 +207,8 @@ DataListFilter.prototype.teardown = function () {
  *
  * @method update
  * @memberOf keigai.DataListFilter
+ * @fires DataList#beforeFilter Fires before filter
+ * @fires DataList#afterFilter Fires after filter
  * @return {Object} {@link keigai.DataListFilter}
  */
 DataListFilter.prototype.update = function () {
@@ -215,7 +217,7 @@ DataListFilter.prototype.update = function () {
 	utility.defer( function () {
 		var val = element.val( self.element ).toString();
 		
-		self.dispatch( "beforeFilter", self.element );
+		self.list.dispatch( "beforeFilter", self.element, val );
 
 		if ( !string.isEmpty( val ) ) {
 			utility.iterate( self.filters, function ( v, k ) {
@@ -243,7 +245,7 @@ DataListFilter.prototype.update = function () {
 		self.list.pageIndex = 1;
 		self.list.refresh();
 
-		self.dispatch( "afterFilter", self.element );
+		self.list.dispatch( "afterFilter", self.element );
 	}, this.debounce, this.element.id + "Debounce");
 
 	return this;
