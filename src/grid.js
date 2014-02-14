@@ -8,6 +8,7 @@ var grid = {
 	 *
 	 * @method factory
 	 * @memberOf grid
+	 * @fires DataGrid#change Fires when the DOM changes
 	 * @param  {Object}  target      Element to receive DataGrid
 	 * @param  {Object}  store       DataStore
 	 * @param  {Array}   fields      Array of fields to display
@@ -79,6 +80,18 @@ var grid = {
 				obj.sort( e );
 			}
 		}, "header" );
+
+		obj.list.on( "change", function ( arg ) {
+			obj.dispatch( "change", arg );
+		}, "change" );
+
+		obj.list.on( "beforeFilter", function ( arg ) {
+			obj.dispatch( "beforeFilter", arg );
+		}, "beforeFilter" );
+
+		obj.list.on( "afterFilter", function ( arg ) {
+			obj.dispatch( "afterFilter", arg );
+		}, "afterFilter" );
 
 		return obj;
 	}
@@ -244,11 +257,10 @@ DataGrid.prototype.once = function ( ev, listener, id, scope ) {
 /**
  * Refreshes the DataGrid
  *
- * Events: beforeRefresh  Fires from the element containing the DataGrid
- *         afterRefresh   Fires from the element containing the DataGrid
- *
  * @method refresh
  * @memberOf keigai.DataGrid
+ * @fires DataGrid#beforeRefresh Fires before refresh
+ * @fires DataGrid#afterRefresh Fires after refresh
  * @return {Object} {@link keigai.DataGrid}
  */
 DataGrid.prototype.refresh = function () {

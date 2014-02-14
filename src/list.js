@@ -8,6 +8,7 @@ var list = {
 	 *
 	 * @method factory
 	 * @memberOf list
+	 * @fires DataList#change Fires when the DOM changes
 	 * @param  {Object} target   Element to receive the DataList
 	 * @param  {Object} store    {@link keigai.DataStore}
 	 * @param  {Mixed}  template Record field, template ( $.tpl ), or String, e.g. "<p>this is a {{field}} sample.</p>", fields are marked with {{ }}
@@ -40,6 +41,10 @@ var list = {
 			element.dispatch( arg, "afterRefresh" );
 		}, "bubble" );
 
+		obj.on( "change", function ( arg ) {
+			element.dispatch( obj.element, "change", arg );
+		}, "change" );
+
 		obj.on( "click", function ( e ) {
 			var target = utility.target( e ),
 			    page;
@@ -54,6 +59,14 @@ var list = {
 				}
 			}
 		}, "pagination" );
+
+		if ( typeof MutationObserver == "function" ) {
+			obj.mutation = new MutationObserver( function ( arg ) {
+				obj.dispatch( "change", arg );
+			} );
+
+			obj.mutation.observe( obj.element, {childList: true, subtree: true} );
+		}
 
 		// Rendering if not tied to an API or data is ready
 		if ( obj.store.uri === null || obj.store.loaded ) {
@@ -107,6 +120,7 @@ function DataList ( element, store, template ) {
 	this.filter      = null;
 	this.filtered    = [];
 	this.id          = utility.genId();
+	this.mutation    = null;
 	this.observer    = new Observable();
 	this.pageIndex   = 1;
 	this.pageSize    = null;
@@ -356,12 +370,11 @@ DataList.prototype.pages = function () {
 /**
  * Refreshes element
  *
- * Events: beforeRefresh  Emits before the DataList refreshes
- *         afterRefresh   Emits after the DataList has refreshed
- *         error          Emits when an error occurs during a refresh
- *
  * @method refresh
  * @memberOf keigai.DataList
+ * @fires DataList#beforeRefresh Fires before refresh
+ * @fires DataList#afterRefresh Fires after refresh
+ * @fires DataList#error Fires on error
  * @param  {Boolean} redraw [Optional] Boolean to force clearing the DataList ( default ), false toggles "hidden" class of items
  * @param  {Boolean} create [Optional] Recreates cached View of data
  * @return {Object} {@link keigai.DataList}
