@@ -81,16 +81,16 @@ var grid = {
 			}
 		}, "header" );
 
-		obj.list.on( "change", function ( arg ) {
-			obj.dispatch( "change", arg );
+		obj.list.on( "change", function () {
+			obj.dispatch.apply( obj, ["change"].concat( array.cast( arguments ) ) );
 		}, "change" );
 
-		obj.list.on( "beforeFilter", function ( arg ) {
-			obj.dispatch( "beforeFilter", arg );
+		obj.list.on( "beforeFilter", function () {
+			obj.dispatch.apply( obj, ["beforeFilter"].concat( array.cast( arguments ) ) );
 		}, "beforeFilter" );
 
-		obj.list.on( "afterFilter", function ( arg ) {
-			obj.dispatch( "afterFilter", arg );
+		obj.list.on( "afterFilter", function () {
+			obj.dispatch.apply( obj, ["afterFilter"].concat( array.cast( arguments ) ) );
 		}, "afterFilter" );
 
 		return obj;

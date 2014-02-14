@@ -217,7 +217,7 @@ DataListFilter.prototype.update = function () {
 	utility.defer( function () {
 		var val = element.val( self.element ).toString();
 		
-		self.list.dispatch( "beforeFilter", self.element );
+		self.list.dispatch( "beforeFilter", self.element, val );
 
 		if ( !string.isEmpty( val ) ) {
 			utility.iterate( self.filters, function ( v, k ) {
