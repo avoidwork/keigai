@@ -111,7 +111,7 @@ header {
   position:fixed;
 }
 
-header ul {
+header ul.buttons {
   list-style:none;
   height:40px;
   
@@ -131,14 +131,14 @@ header ul {
   width:270px;
 }
 
-header li {
+header ul.buttons li {
   width:89px;
   float:left;
   border-right:1px solid #d2d2d2;
   height:40px;
 }
 
-header ul a {
+header ul.buttons a {
   line-height:1;
   font-size:11px;
   color:#999;
@@ -153,17 +153,17 @@ strong {
   font-weight:700;
 }
 
-header ul li + li {
+header ul.buttons li + li {
   width:88px;
   border-left:1px solid #fff;
 }
 
-header ul li + li + li {
+header ul.buttons li + li + li {
   border-right:none;
   width:89px;
 }
 
-header ul a strong {
+header ul.buttons a strong {
   font-size:14px;
   display:block;
   color:#222;
@@ -191,6 +191,29 @@ footer {
   float:left;
   position:fixed;
   bottom:50px;
+}
+
+ul.blank {
+  margin: 0 0 20px 0 !important;
+  padding: 0 !important;
+}
+
+ul.blank li {
+  list-style-type: none !important;
+  margin: 0 0 10px 0 !important;
+  padding: 0 !important;
+}
+
+section.objects h2 {
+  border-top: 1px solid #e5e5e5;
+  margin-top: 20px;
+  padding-top: 20px;
+}
+
+section.objects h2.blank {
+  border-top: 0px !important;
+  margin-top: 0px !important;
+  padding-top: 0px !important;
 }
 
 @media print, screen and (max-width: 960px) {

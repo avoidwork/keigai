@@ -15,50 +15,199 @@
 		<div class="wrapper">
 			<header>
 				<h1><img src="images/logo.png" alt="logo" />keigai</h1>
-				<p class="home"><a href="./">View main page</a></p>
+				<p>keigai has a minimal interface, exposing four types of Objects.</p>
+				<ul class="blank">
+					<li><a href="#datastore" title="View DataStore details">View DataStore details</a></li>
+					<li><a href="#datagrid" title="View DataGrid details">View DataGrid details</a></li>
+					<li><a href="#datalist" title="View DataList details">View DataList details</a></li>
+					<li><a href="#datalistfilter" title="View DataListFilter details">View DataListFilter details </a></li>
+				</ul>
+				<p><a href="./" title="View main page">View main page</a></p>
 			</header>
-			<section>
-				<h2><a name="objects" class="anchor" href="#objects"><span class="octicon octicon-link"></span></a>Core Objects</h2>
-				<p>keigai has a minimal interface, exposing four types of Objects for use:</p>
-
-				<h3><a name="datastore" class="anchor" href="#datastore"><span class="octicon octicon-link"></span></a>DataStore</h3>
+			<section class="objects">
+				<h2 class="blank"><a name="datastore" class="anchor" href="#datastore"><span class="octicon octicon-link"></span></a>DataStore</h2>
 				<p>DataStores are in ram NoSQL databases, with many features found in SQL databases, such as JOINs, ORDER BYs, &amp; WHERE clauses. DataStores use Web Workers for "sorting" &amp; "selecting" records, when possible, to avoid blocking the UI event loop.</p>
 				<p>DataStores can be wired to an API through the <code>setUri()</code> method, which hooks them into the feedback loop. If you "set" or "delete" a record, the operation doesn't complete until the API provides a "success" or "failure" response.</p>
 				<p>Deferreds (Promises) are returned from methods that can "go over the wire", for easy handling of the asynchronous communication.</p>
-				<h4>Options</h4>
-				<pre>
-autosave (Boolean)    Enables persistent storage to localStorage, sessionStorage or MongoDB (on the server)
-callback (String)     JSONP facing variable to denote the callback variable in the request URL
-credentials (Boolean) Sets withCredentials on XHR for API interaction (default is null)
-depth (Number)        Current API crawling depth relative to 'origin' DataStore
-events (Boolean)      Enable/disable Observer based pub/sub behaviour (default is true)
-expires (Number)      Milliseconds, (default is null)
-headers (Object)      Outbound headers to decorate on the XHR
-ignore (Array)        Custom properties to not send back an API, e.g. UI facing settings on records
-key (String)          Primary key for records (default is null, generates a UUID v4)
-leafs (Array)         Keys to treat as leafs, e.g. do not crawl them
-maxDepth (Number)     Maximum depth to travese during API crawling
-mongodb (String)      MongoDB connection string for persistent storage when autosave is true
-retrieve (Boolean)    Triggers automatic crawling of API responses
-source (String)       API response property that contains records, e.g. "data" in {"data": [...]}
-versioning (Boolean)  Enable/disable record versioning (default is true)
-uri (String)          API end point (default is null)
-				</pre>
-				<p><a href="http://api.keigai.io/keigai.DataStore.html" title="DataStore API">API documentation</p>
+				<p><a href="http://api.keigai.io/keigai.DataStore.html" title="DataStore API">API documentation</a></p>
+				<h3>Options</h3>
+				<ul class="blank">
+					<li>
+						<strong>autosave</strong> <em>Boolean</em><br />
+						Enables persistent storage to localStorage, sessionStorage or MongoDB (node.js)
+					</li>
+					<li>
+						<strong>callback</strong> <em>String</em><br />
+						JSONP callback variable, will be decorated in request URL
+					</li>
+					<li>
+						<strong>credentials</strong> <em>Boolean</em><br />
+						Sets withCredentials on XHR for API interaction (default is null)
+					</li>
+					<li>
+						<strong>depth</strong> <em>Number</em><br />
+						Current API crawling depth relative to 'origin' DataStore
+					</li>
+					<li>
+						<strong>events</strong> <em>Boolean</em><br />
+						Enable/disable Observer based pub/sub behaviour (default is true)
+					</li>
+					<li>
+						<strong>expires</strong> <em>Number</em><br />
+						Explicit expiration in milliseconds, triggers a re-sync with the API (default is null)
+					</li>
+					<li>
+						<strong>headers</strong> <em>Object</em><br />
+						HTTP request headers
+					</li>
+					<li>
+						<strong>ignore</strong> <em>Array</em><br />
+						Custom keys not to be sent back an API, e.g. UI facing settings on records
+					</li>
+					<li>
+						<strong>key</strong> <em>String</em><br />
+						Primary key for records (default is null, generates a UUID v4)
+					</li>
+					<li>
+						<strong>leafs</strong> <em>Array</em><br />
+						Keys to treat as leafs; they will not be crawled
+					</li>
+					<li>
+						<strong>maxDepth</strong> <em>Number</em><br />
+						Maximum depth to travese during API crawling
+					</li>
+					<li>
+						<strong>mongodb</strong> <em>String</em><br />
+						MongoDB connection string for persistent storage when autosave is `true`, and running in node.js
+					</li>
+					<li>
+						<strong>retrieve</strong> <em>Boolean</em><br />
+						Triggers automatic crawling of API responses
+					</li>
+					<li>
+						<strong>source</strong> <em>String</em><br />
+						API response property that contains records, e.g. "data" in `{"data": [...]}`
+					</li>
+					<li>
+						<strong>versioning</strong> <em>Boolean</em><br />
+						Enable or disable record versioning (default is true)
+					</li>
+					<li>
+						<strong>uri</strong> <em>String</em><br />
+						API end point (default is null)
+					</li>
+				</ul>
 
-				<h3><a name="datagrid" class="anchor" href="#datagrid"><span class="octicon octicon-link"></span></a>DataGrid</h3>
+				<h2><a name="datagrid" class="anchor" href="#datagrid"><span class="octicon octicon-link"></span></a>DataGrid</h2>
 				<p>DataGrids combine DataStores, DataLists, &amp; DataListFilters into fast &amp; responsive tabular representations. DataGrids can be sorted by many "fields" in different directions, similar to an SQL <code>ORDER BY</code> clause.</p>
 				<p>DataGrids differ from many <code>table</code> based solutions, by only rendering what can be seen. This minimizes DOM repaints/reflows, and keeps the UI fast.</p>
-				<p><a href="http://api.keigai.io/keigai.DataGrid.html" title="DataGrid API">API documentation</p>
+				<p><a href="http://api.keigai.io/keigai.DataGrid.html" title="DataGrid API">API documentation</a></p>
+				<h3>Options</h3>
+				<ul class="blank">
+					<li>
+						<strong>callback</strong> <em>Function</em><br />
+						Callback function to execute on DataGrid rows, argument is the new Element
+					</li>
+					<li>
+						<strong>emptyMsg</strong> <em>String</em><br />
+						Message to display when there is no records to display
+					</li>
+					<li>
+						<strong>filter</strong> <em>String</em><br />
+						Comma delimited string of keys to filter on
+					</li>
+					<li>
+						<strong>pageIndex</strong> <em>Number</em><br />
+						Page displayed
+					</li>
+					<li>
+						<strong>pageRange</strong> <em>Number</em><br />
+						Range of pages to display (default is 5)
+					</li>
+					<li>
+						<strong>pageSize</strong> <em>Number</em><br />
+						Page size (default is 5)
+					</li>
+					<li>
+						<strong>pagination</strong> <em>String</em><br />
+						Pagination position: "top", "bottom", or "top|bottom" (default is "bottom")
+					</li>
+					<li>
+						<strong>placeholder</strong> <em>String</em><br />
+						String to use in lieu of an undefined record (data) property
+					</li>
+					<li>
+						<strong>order</strong> <em>String</em><br />
+						SQL `ORDER BY` clause for grid columns (default is null)
+					</li>
+					<li>
+						<strong>where</strong> <em>Number</em><br />
+						Maximum depth to travese during API crawling
+					</li>
+				</ul>
 
-				<h3><a name="datalist" class="anchor" href="#datalist"><span class="octicon octicon-link"></span></a>DataList</h3>
+				<h2><a name="datalist" class="anchor" href="#datalist"><span class="octicon octicon-link"></span></a>DataList</h2>
 				<p>DataLists are the visual representation of a DataStore, using "handlebar" style templates. They can be sorted, paginated, &amp; styled with CSS. DataLists can be identified with the "list" CSS class on their <code>UL</code> Element.</p>
 				<p>DataLists bind to a DataStore, and become a reactive view, refreshing automatically when the DataStore records change.</p>
-				<p><a href="http://api.keigai.io/keigai.DataList.html" title="DataList API">API documentation</p>
+				<p><a href="http://api.keigai.io/keigai.DataList.html" title="DataList API">API documentation</a></p>
+				<h3>Options</h3>
+				<ul class="blank">
+					<li>
+						<strong>callback</strong> <em>Function</em><br />
+						Callback function to execute on DataList rows, argument is the new Element
+					</li>
+					<li>
+						<strong>emptyMsg</strong> <em>String</em><br />
+						Message to display when there is no records to display
+					</li>
+					<li>
+						<strong>filter</strong> <em>String</em><br />
+						Comma delimited string of keys to filter on
+					</li>
+					<li>
+						<strong>pageIndex</strong> <em>Number</em><br />
+						Page displayed
+					</li>
+					<li>
+						<strong>pageRange</strong> <em>Number</em><br />
+						Range of pages to display (default is 5)
+					</li>
+					<li>
+						<strong>pageSize</strong> <em>Number</em><br />
+						Page size (default is 5)
+					</li>
+					<li>
+						<strong>pagination</strong> <em>String</em><br />
+						Pagination position: "top", "bottom", or "top|bottom" (default is "bottom")
+					</li>
+					<li>
+						<strong>placeholder</strong> <em>String</em><br />
+						String to use in lieu of an undefined record (data) property
+					</li>
+					<li>
+						<strong>order</strong> <em>String</em><br />
+						SQL `ORDER BY` clause for grid columns (default is null)
+					</li>
+					<li>
+						<strong>template</strong> <em>String</em><br />
+						DataList item template
+					</li>
+					<li>
+						<strong>where</strong> <em>Number</em><br />
+						Maximum depth to travese during API crawling
+					</li>
+				</ul>
 
-				<h3><a name="datalistfilter" class="anchor" href="#datalistfilter"><span class="octicon octicon-link"></span></a>DataListFilter</h3>
+				<h2><a name="datalistfilter" class="anchor" href="#datalistfilter"><span class="octicon octicon-link"></span></a>DataListFilter</h2>
 				<p>DataListFilters provide a fast &amp; easy way for the end user to refine the contents of a DataList or DataGrid, by binding to an existing DOM input Element. Wildcards &amp; regular expressions are supported. Keyboard input is debounced to avoid excessive filtering.</p>
-				<p><a href="http://api.keigai.io/keigai.DataListFilter.html" title="DataListFilter API">API documentation</p>
+				<p><a href="http://api.keigai.io/keigai.DataListFilter.html" title="DataListFilter API">API documentation</a></p>
+				<h3>Options</h3>
+				<ul class="blank">
+					<li>
+						<strong>debounce</strong> <em>Number</em><br />
+						Debounce input by N milliseconds (default is 125)
+					</li>
+				</ul>
 			</section>
 			<footer>
 				<p>This project is maintained by <a href="https://github.com/avoidwork">Jason Mulligan</a></p>
