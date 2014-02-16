@@ -26,6 +26,7 @@
 			</header>
 			<section class="objects">
 				<h2 class="blank"><a name="datastore" class="anchor" href="#datastore"><span class="octicon octicon-link"></span></a>DataStore</h2>
+				<p><strong>keigai.store([data, options])</strong></p>
 				<p>DataStores are in ram NoSQL databases, with many features found in SQL databases, such as JOINs, ORDER BYs, &amp; WHERE clauses. DataStores use Web Workers for "sorting" &amp; "selecting" records, when possible, to avoid blocking the UI event loop.</p>
 				<p>DataStores can be wired to an API through the <code>setUri()</code> method, which hooks them into the feedback loop. If you "set" or "delete" a record, the operation doesn't complete until the API provides a "success" or "failure" response.</p>
 				<p>Deferreds (Promises) are returned from methods that can "go over the wire", for easy handling of the asynchronous communication.</p>
@@ -99,6 +100,7 @@
 				</ul>
 
 				<h2><a name="datagrid" class="anchor" href="#datagrid"><span class="octicon octicon-link"></span></a>DataGrid</h2>
+				<p><strong>keigai.grid(target, store, fields[, sortable, options, filtered, debounce])</strong></p>
 				<p>DataGrids combine DataStores, DataLists, &amp; DataListFilters into fast &amp; responsive tabular representations. DataGrids can be sorted by many "fields" in different directions, similar to an SQL <code>ORDER BY</code> clause.</p>
 				<p>DataGrids differ from many <code>table</code> based solutions, by only rendering what can be seen. This minimizes DOM repaints/reflows, and keeps the UI fast.</p>
 				<p><a href="http://api.keigai.io/keigai.DataGrid.html" title="DataGrid API">API documentation</a></p>
@@ -111,10 +113,6 @@
 					<li>
 						<strong>emptyMsg</strong> <em>String</em><br />
 						Message to display when there is no records to display
-					</li>
-					<li>
-						<strong>filter</strong> <em>String</em><br />
-						Comma delimited string of keys to filter on
 					</li>
 					<li>
 						<strong>pageIndex</strong> <em>Number</em><br />
@@ -147,6 +145,7 @@
 				</ul>
 
 				<h2><a name="datalist" class="anchor" href="#datalist"><span class="octicon octicon-link"></span></a>DataList</h2>
+				<p><strong>keigai.list(target, store, template[, options])</strong></p>
 				<p>DataLists are the visual representation of a DataStore, using "handlebar" style templates. They can be sorted, paginated, &amp; styled with CSS. DataLists can be identified with the "list" CSS class on their <code>UL</code> Element.</p>
 				<p>DataLists bind to a DataStore, and become a reactive view, refreshing automatically when the DataStore records change.</p>
 				<p><a href="http://api.keigai.io/keigai.DataList.html" title="DataList API">API documentation</a></p>
@@ -189,25 +188,15 @@
 						SQL `ORDER BY` clause for grid columns (default is null)
 					</li>
 					<li>
-						<strong>template</strong> <em>String</em><br />
-						DataList item template
-					</li>
-					<li>
 						<strong>where</strong> <em>Number</em><br />
 						Maximum depth to travese during API crawling
 					</li>
 				</ul>
 
 				<h2><a name="datalistfilter" class="anchor" href="#datalistfilter"><span class="octicon octicon-link"></span></a>DataListFilter</h2>
+				<p><strong>keigai.filter(target, list, filters[, debounce])</strong></p>
 				<p>DataListFilters provide a fast &amp; easy way for the end user to refine the contents of a DataList or DataGrid, by binding to an existing DOM input Element. Wildcards &amp; regular expressions are supported. Keyboard input is debounced to avoid excessive filtering.</p>
 				<p><a href="http://api.keigai.io/keigai.DataListFilter.html" title="DataListFilter API">API documentation</a></p>
-				<h3>Options</h3>
-				<ul class="blank">
-					<li>
-						<strong>debounce</strong> <em>Number</em><br />
-						Debounce input by N milliseconds (default is 125)
-					</li>
-				</ul>
 			</section>
 			<footer>
 				<p>This project is maintained by <a href="https://github.com/avoidwork">Jason Mulligan</a></p>
