@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.2.3
+- Fixing `client.headers()` by trimming values
+- Created `el.css(obj, key, value)`, & `el.html( obj[, arg] )` to manipulate CSS attributes of DOM Elements
+- Created `element.is()` for easy testing of DOM elements
+- Created `regex.caps` to test strings for capital letters
+- Created `number.format()` to create formatted strings from numbers,
+- Added `number` to `keigai.util`
+
 ## 0.2.2
 - Created `keigai.util` to expose utility methods
 

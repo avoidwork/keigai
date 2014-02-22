@@ -136,7 +136,7 @@ var client = {
 		array.each( headers, function ( i ) {
 			var header = i.split( ": " );
 
-			items[header[0].toLowerCase()] = header[1];
+			items[header[0].toLowerCase()] = string.trim( header[1] );
 
 			if ( allow === null ) {
 				if ( ( !cors && regex.allow.test( header ) ) || ( cors && regex.allow_cors.test( header ) ) ) {

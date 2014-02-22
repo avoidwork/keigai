@@ -20,6 +20,45 @@ var number = {
 	},
 
 	/**
+	 * Formats a Number to a delimited String
+	 *
+	 * @method format
+	 * @memberOf number
+	 * @param  {Number} arg       Number to format
+	 * @param  {String} delimiter [Optional] String to delimit the Number with
+	 * @param  {String} every     [Optional] Position to insert the delimiter, default is 3
+	 * @return {String}           Number represented as a comma delimited String
+	 */
+	format : function ( arg, delimiter, every ) {
+		if ( isNaN( arg ) ) {
+			throw new Error( label.error.expectedNumber );
+		}
+
+		arg       = arg.toString();
+		delimiter = delimiter || ",";
+		every     = every     || 3;
+
+		var d = arg.indexOf( "." ) > -1 ? "." + arg.replace( regex.number_format_1, "" ) : "",
+		    a = arg.replace( regex.number_format_2, "" ).split( "" ).reverse(),
+		    p = Math.floor( a.length / every ),
+		    i = 1, n, b;
+
+		for ( b = 0; b < p; b++ ) {
+			n = i === 1 ? every : ( every * i ) + ( i === 2 ? 1 : ( i - 1 ) );
+			a.splice( n, 0, delimiter );
+			i++;
+		}
+
+		a = a.reverse().join( "" );
+
+		if ( a.charAt( 0 ) === delimiter ) {
+			a = a.substring( 1 );
+		}
+
+		return a + d;
+	},
+
+	/**
 	 * Parses the number
 	 *
 	 * @method parse

@@ -33,7 +33,7 @@
  * @license BSD-3 &lt;https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.2.2
+ * @version 0.2.3
  */
 ( function ( global ) {
 
@@ -84,6 +84,7 @@ var regex = {
 	args                 : /\((.*)\)/,
 	auth                 : /\/\/(.*)\@/,
 	bool                 : /^(true|false)?$/,
+	caps                 : /[A-Z]/,
 	cdata                : /\&|&lt;|>|\"|\'|\t|\r|\n|\@|\$/,
 	checked_disabled     : /checked|disabled/i,
 	complete_loaded      : /^(complete|loaded)$/i,
@@ -776,7 +777,7 @@ var client = {
 		array.each( headers, function ( i ) {
 			var header = i.split( ": " );
 
-			items[header[0].toLowerCase()] = header[1];
+			items[header[0].toLowerCase()] = string.trim( header[1] );
 
 			if ( allow === null ) {
 				if ( ( !cors && regex.allow.test( header ) ) || ( cors && regex.allow_cors.test( header ) ) ) {
@@ -2777,6 +2778,29 @@ var element = {
 	},
 
 	/**
+	 * Gets or sets a CSS style attribute on an Element
+	 *
+	 * @method css
+	 * @param  {Mixed}  obj   Element
+	 * @param  {String} key   CSS to put in a style tag
+	 * @param  {String} value [Optional] Value to set
+	 * @return {Object}       Element
+	 */
+	css : function ( obj, key, value ) {
+		if ( !regex.caps.test( key ) ) {
+			key = string.toCamelCase( key );
+		}
+
+		if ( value !== undefined ) {
+			obj.style[key] = value;
+			return obj;
+		}
+		else {
+			return obj.style[key];
+		}
+	},
+
+	/**
 	 * Data attribute facade acting as a getter (with coercion) & setter
 	 *
 	 * @method data
@@ -2789,6 +2813,7 @@ var element = {
 	data : function ( obj, key, value ) {
 		if ( value !== undefined ) {
 			obj.setAttribute( "data-" + key, regex.json_wrap.test( value ) ? json.encode( value ) : value );
+
 			return obj;
 		}
 		else {
@@ -2891,6 +2916,43 @@ var element = {
 	 */
 	hasClass : function ( obj, klass ) {
 		return obj.classList.contains( klass );
+	},
+
+	/**
+	 * Gets or sets an Elements innerHTML
+	 *
+	 * @method html
+	 * @param  {Object} obj Element
+	 * @param  {String} arg [Optional] innerHTML value
+	 * @return {Object}     Element
+	 */
+	html : function ( obj, arg ) {
+		if ( arg === undefined ) {
+			return obj.innerHTML;
+		}
+		else {
+			 obj.innerHTML = arg;
+			 return obj;
+		}
+	},
+
+	/**
+	 * Determines if Element is equal to arg, supports nodeNames & CSS2+ selectors
+	 *
+	 * @method is
+	 * @param  {Mixed}   obj Element
+	 * @param  {String}  arg Property to query
+	 * @return {Boolean}     True if a match
+	 */
+	is : function ( obj, arg ) {
+		if ( regex.selector_is.test( arg ) ) {
+			return ( element.find( obj.parentNode, obj.nodeName.toLowerCase() + arg ).filter( function ( i ) {
+				return i.id === obj.id;
+			} ).length === 1 );
+		}
+		else {
+			return new RegExp( arg, "i" ).test( obj.nodeName );
+		}
 	},
 
 	/**
@@ -3505,6 +3567,45 @@ var number = {
 		}
 
 		return Math.abs( num1 - num2 );
+	},
+
+	/**
+	 * Formats a Number to a delimited String
+	 *
+	 * @method format
+	 * @memberOf number
+	 * @param  {Number} arg       Number to format
+	 * @param  {String} delimiter [Optional] String to delimit the Number with
+	 * @param  {String} every     [Optional] Position to insert the delimiter, default is 3
+	 * @return {String}           Number represented as a comma delimited String
+	 */
+	format : function ( arg, delimiter, every ) {
+		if ( isNaN( arg ) ) {
+			throw new Error( label.error.expectedNumber );
+		}
+
+		arg       = arg.toString();
+		delimiter = delimiter || ",";
+		every     = every     || 3;
+
+		var d = arg.indexOf( "." ) > -1 ? "." + arg.replace( regex.number_format_1, "" ) : "",
+		    a = arg.replace( regex.number_format_2, "" ).split( "" ).reverse(),
+		    p = Math.floor( a.length / every ),
+		    i = 1, n, b;
+
+		for ( b = 0; b &lt; p; b++ ) {
+			n = i === 1 ? every : ( every * i ) + ( i === 2 ? 1 : ( i - 1 ) );
+			a.splice( n, 0, delimiter );
+			i++;
+		}
+
+		a = a.reverse().join( "" );
+
+		if ( a.charAt( 0 ) === delimiter ) {
+			a = a.substring( 1 );
+		}
+
+		return a + d;
 	},
 
 	/**
@@ -6693,7 +6794,7 @@ function xhr () {
 	    XMLHttpRequest, headers, handler, handlerError, state;
 
 	headers = {
-		"User-Agent"   : "keigai/0.2.2 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"User-Agent"   : "keigai/0.2.3 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"Content-Type" : "text/plain",
 		"Accept"       : "*/*"
 	};
@@ -7356,6 +7457,7 @@ return {
 		jsonp    : client.jsonp,
 		log      : utility.log,
 		merge    : utility.merge,
+		number   : number,
 		observer : Observable,
 		parse    : utility.parse,
 		prevent  : utility.prevent,
@@ -7366,7 +7468,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.2.2"
+	version : "0.2.3"
 };
 
 } )();
@@ -7394,13 +7496,13 @@ else {
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataListFilter.html">DataListFilter</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="keigai.Deferred.html">Deferred</a></li><li><a href="keigai.LRU.html">LRU</a></li><li><a href="keigai.LRUItem.html">LRUItem</a></li><li><a href="keigai.Observable.html">Observable</a></li><li><a href="keigai.Promise.html">Promise</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="deferred.html">deferred</a></li><li><a href="element.html">element</a></li><li><a href="filter.html">filter</a></li><li><a href="grid.html">grid</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="list.html">list</a></li><li><a href="number.html">number</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="store.html">store</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#merge">merge</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataListFilter.html">DataListFilter</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="keigai.Deferred.html">Deferred</a></li><li><a href="keigai.LRU.html">LRU</a></li><li><a href="keigai.LRUItem.html">LRUItem</a></li><li><a href="keigai.Observable.html">Observable</a></li><li><a href="keigai.Promise.html">Promise</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="deferred.html">deferred</a></li><li><a href="element.html">element</a></li><li><a href="filter.html">filter</a></li><li><a href="grid.html">grid</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="list.html">list</a></li><li><a href="number.html">number</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="store.html">store</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#css">css</a></li><li><a href="global.html#html">html</a></li><li><a href="global.html#is">is</a></li><li><a href="global.html#merge">merge</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Feb 22 2014 11:26:28 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Feb 22 2014 12:26:33 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>
