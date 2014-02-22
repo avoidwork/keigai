@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.2
+- Created `keigai.util` to expose utility methods
+
 ## 0.2.1
 - Setting `key` argument in `DataStore.setComplete()` to correct an erroneous PUT to an API
 

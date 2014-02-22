@@ -33,6 +33,9 @@ Returns a DataList instance. DataLists are the core visual representation of a D
 ### store ([data, options])
 Returns a DataStore instance. DataStores are in ram NoSQL databases, with many features found in SQL databases, such as JOINs, ORDER BYs, & WHERE clauses.
 
+### util
+Fast & light weight utility methods for Arrays, DOM manipulation, etc.
+
 DataStores can be wired to an API through the `setUri()` method, which hooks them into the feedback loop. If you "set" or "delete" a record, the operation doesn't complete until the API provides a "success" or "failure" response.
 
 Deferreds (Promises) are returned from methods that can "go over the wire", for easy handling of the asynchronous communication.
