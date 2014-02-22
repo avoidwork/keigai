@@ -10,6 +10,28 @@ return {
 	list    : list.factory,
 	grid    : grid.factory,
 	store   : store.factory,
+	util    : {
+		$        : utility.$,
+		array    : array,
+		clone    : utility.clone,
+		coerce   : utility.coerce,
+		defer    : deferred.factory,
+		el       : element,
+		extend   : utility.extend,
+		iterate  : utility.iterate,
+		jsonp    : client.jsonp,
+		log      : utility.log,
+		merge    : utility.merge,
+		observer : Observable,
+		parse    : utility.parse,
+		prevent  : utility.prevent,
+		request  : client.request,
+		stop     : utility.stop,
+		target   : utility.target,
+		uuid     : utility.uuid,
+		walk     : utility.walk,
+		when     : utility.when
+	},
 	version : "{{VERSION}}"
 };
 
