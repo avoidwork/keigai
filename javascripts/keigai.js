@@ -6,7 +6,7 @@
  * @license BSD-3 <https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.2.1
+ * @version 0.2.3
  */
 ( function ( global ) {
 
@@ -57,6 +57,7 @@ var regex = {
 	args                 : /\((.*)\)/,
 	auth                 : /\/\/(.*)\@/,
 	bool                 : /^(true|false)?$/,
+	caps                 : /[A-Z]/,
 	cdata                : /\&|<|>|\"|\'|\t|\r|\n|\@|\$/,
 	checked_disabled     : /checked|disabled/i,
 	complete_loaded      : /^(complete|loaded)$/i,
@@ -749,7 +750,7 @@ var client = {
 		array.each( headers, function ( i ) {
 			var header = i.split( ": " );
 
-			items[header[0].toLowerCase()] = header[1];
+			items[header[0].toLowerCase()] = string.trim( header[1] );
 
 			if ( allow === null ) {
 				if ( ( !cors && regex.allow.test( header ) ) || ( cors && regex.allow_cors.test( header ) ) ) {
@@ -2750,6 +2751,29 @@ var element = {
 	},
 
 	/**
+	 * Gets or sets a CSS style attribute on an Element
+	 *
+	 * @method css
+	 * @param  {Mixed}  obj   Element
+	 * @param  {String} key   CSS to put in a style tag
+	 * @param  {String} value [Optional] Value to set
+	 * @return {Object}       Element
+	 */
+	css : function ( obj, key, value ) {
+		if ( !regex.caps.test( key ) ) {
+			key = string.toCamelCase( key );
+		}
+
+		if ( value !== undefined ) {
+			obj.style[key] = value;
+			return obj;
+		}
+		else {
+			return obj.style[key];
+		}
+	},
+
+	/**
 	 * Data attribute facade acting as a getter (with coercion) & setter
 	 *
 	 * @method data
@@ -2762,6 +2786,7 @@ var element = {
 	data : function ( obj, key, value ) {
 		if ( value !== undefined ) {
 			obj.setAttribute( "data-" + key, regex.json_wrap.test( value ) ? json.encode( value ) : value );
+
 			return obj;
 		}
 		else {
@@ -2864,6 +2889,43 @@ var element = {
 	 */
 	hasClass : function ( obj, klass ) {
 		return obj.classList.contains( klass );
+	},
+
+	/**
+	 * Gets or sets an Elements innerHTML
+	 *
+	 * @method html
+	 * @param  {Object} obj Element
+	 * @param  {String} arg [Optional] innerHTML value
+	 * @return {Object}     Element
+	 */
+	html : function ( obj, arg ) {
+		if ( arg === undefined ) {
+			return obj.innerHTML;
+		}
+		else {
+			 obj.innerHTML = arg;
+			 return obj;
+		}
+	},
+
+	/**
+	 * Determines if Element is equal to arg, supports nodeNames & CSS2+ selectors
+	 *
+	 * @method is
+	 * @param  {Mixed}   obj Element
+	 * @param  {String}  arg Property to query
+	 * @return {Boolean}     True if a match
+	 */
+	is : function ( obj, arg ) {
+		if ( regex.selector_is.test( arg ) ) {
+			return ( element.find( obj.parentNode, obj.nodeName.toLowerCase() + arg ).filter( function ( i ) {
+				return i.id === obj.id;
+			} ).length === 1 );
+		}
+		else {
+			return new RegExp( arg, "i" ).test( obj.nodeName );
+		}
 	},
 
 	/**
@@ -3478,6 +3540,45 @@ var number = {
 		}
 
 		return Math.abs( num1 - num2 );
+	},
+
+	/**
+	 * Formats a Number to a delimited String
+	 *
+	 * @method format
+	 * @memberOf number
+	 * @param  {Number} arg       Number to format
+	 * @param  {String} delimiter [Optional] String to delimit the Number with
+	 * @param  {String} every     [Optional] Position to insert the delimiter, default is 3
+	 * @return {String}           Number represented as a comma delimited String
+	 */
+	format : function ( arg, delimiter, every ) {
+		if ( isNaN( arg ) ) {
+			throw new Error( label.error.expectedNumber );
+		}
+
+		arg       = arg.toString();
+		delimiter = delimiter || ",";
+		every     = every     || 3;
+
+		var d = arg.indexOf( "." ) > -1 ? "." + arg.replace( regex.number_format_1, "" ) : "",
+		    a = arg.replace( regex.number_format_2, "" ).split( "" ).reverse(),
+		    p = Math.floor( a.length / every ),
+		    i = 1, n, b;
+
+		for ( b = 0; b < p; b++ ) {
+			n = i === 1 ? every : ( every * i ) + ( i === 2 ? 1 : ( i - 1 ) );
+			a.splice( n, 0, delimiter );
+			i++;
+		}
+
+		a = a.reverse().join( "" );
+
+		if ( a.charAt( 0 ) === delimiter ) {
+			a = a.substring( 1 );
+		}
+
+		return a + d;
 	},
 
 	/**
@@ -6666,7 +6767,7 @@ function xhr () {
 	    XMLHttpRequest, headers, handler, handlerError, state;
 
 	headers = {
-		"User-Agent"   : "keigai/0.2.1 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"User-Agent"   : "keigai/0.2.3 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"Content-Type" : "text/plain",
 		"Accept"       : "*/*"
 	};
@@ -7317,7 +7418,30 @@ return {
 	list    : list.factory,
 	grid    : grid.factory,
 	store   : store.factory,
-	version : "0.2.1"
+	util    : {
+		$        : utility.$,
+		array    : array,
+		clone    : utility.clone,
+		coerce   : utility.coerce,
+		defer    : deferred.factory,
+		el       : element,
+		extend   : utility.extend,
+		iterate  : utility.iterate,
+		jsonp    : client.jsonp,
+		log      : utility.log,
+		merge    : utility.merge,
+		number   : number,
+		observer : Observable,
+		parse    : utility.parse,
+		prevent  : utility.prevent,
+		request  : client.request,
+		stop     : utility.stop,
+		target   : utility.target,
+		uuid     : utility.uuid,
+		walk     : utility.walk,
+		when     : utility.when
+	},
+	version : "0.2.3"
 };
 
 } )();
