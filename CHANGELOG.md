@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.1
+- Setting `key` argument in `DataStore.setComplete()` to correct an erroneous PUT to an API
+
 ## 0.2.0
 - Created `MutationObserver` on `DataList`.`mutation`, which dispatches `change` events
 - Created `DataGrid` `change` event, also dispatches from `DataGrid.element`
