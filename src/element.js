@@ -168,6 +168,29 @@ var element = {
 	},
 
 	/**
+	 * Gets or sets a CSS style attribute on an Element
+	 *
+	 * @method css
+	 * @param  {Mixed}  obj   Element
+	 * @param  {String} key   CSS to put in a style tag
+	 * @param  {String} value [Optional] Value to set
+	 * @return {Object}       Element
+	 */
+	css : function ( obj, key, value ) {
+		if ( !regex.caps.test( key ) ) {
+			key = string.toCamelCase( key );
+		}
+
+		if ( value !== undefined ) {
+			obj.style[key] = value;
+			return obj;
+		}
+		else {
+			return obj.style[key];
+		}
+	},
+
+	/**
 	 * Data attribute facade acting as a getter (with coercion) & setter
 	 *
 	 * @method data
@@ -180,6 +203,7 @@ var element = {
 	data : function ( obj, key, value ) {
 		if ( value !== undefined ) {
 			obj.setAttribute( "data-" + key, regex.json_wrap.test( value ) ? json.encode( value ) : value );
+
 			return obj;
 		}
 		else {
@@ -282,6 +306,43 @@ var element = {
 	 */
 	hasClass : function ( obj, klass ) {
 		return obj.classList.contains( klass );
+	},
+
+	/**
+	 * Gets or sets an Elements innerHTML
+	 *
+	 * @method html
+	 * @param  {Object} obj Element
+	 * @param  {String} arg [Optional] innerHTML value
+	 * @return {Object}     Element
+	 */
+	html : function ( obj, arg ) {
+		if ( arg === undefined ) {
+			return obj.innerHTML;
+		}
+		else {
+			 obj.innerHTML = arg;
+			 return obj;
+		}
+	},
+
+	/**
+	 * Determines if Element is equal to arg, supports nodeNames & CSS2+ selectors
+	 *
+	 * @method is
+	 * @param  {Mixed}   obj Element
+	 * @param  {String}  arg Property to query
+	 * @return {Boolean}     True if a match
+	 */
+	is : function ( obj, arg ) {
+		if ( regex.selector_is.test( arg ) ) {
+			return ( element.find( obj.parentNode, obj.nodeName.toLowerCase() + arg ).filter( function ( i ) {
+				return i.id === obj.id;
+			} ).length === 1 );
+		}
+		else {
+			return new RegExp( arg, "i" ).test( obj.nodeName );
+		}
 	},
 
 	/**

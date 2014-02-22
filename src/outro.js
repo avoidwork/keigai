@@ -22,6 +22,7 @@ return {
 		jsonp    : client.jsonp,
 		log      : utility.log,
 		merge    : utility.merge,
+		number   : number,
 		observer : Observable,
 		parse    : utility.parse,
 		prevent  : utility.prevent,

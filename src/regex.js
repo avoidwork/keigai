@@ -15,6 +15,7 @@ var regex = {
 	args                 : /\((.*)\)/,
 	auth                 : /\/\/(.*)\@/,
 	bool                 : /^(true|false)?$/,
+	caps                 : /[A-Z]/,
 	cdata                : /\&|<|>|\"|\'|\t|\r|\n|\@|\$/,
 	checked_disabled     : /checked|disabled/i,
 	complete_loaded      : /^(complete|loaded)$/i,
