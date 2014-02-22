@@ -1,5 +1,5 @@
 /**
- * @namespace number
+ * @namespace array
  * @private
  */
 var number = {
@@ -20,6 +20,18 @@ var number = {
 	},
 
 	/**
+	 * Tests if an number is even
+	 *
+	 * @method even
+	 * @memberOf number
+	 * @param {Number} arg Number to test
+	 * @return {Boolean}   True if even, or undefined
+	 */
+	even : function ( arg ) {
+		return arg % 2 === 0;
+	},
+
+	/**
 	 * Formats a Number to a delimited String
 	 *
 	 * @method format
@@ -31,7 +43,7 @@ var number = {
 	 */
 	format : function ( arg, delimiter, every ) {
 		if ( isNaN( arg ) ) {
-			throw new Error( label.error.expectedNumber );
+			throw new Error( label.expectedNumber );
 		}
 
 		arg       = arg.toString();
@@ -59,6 +71,31 @@ var number = {
 	},
 
 	/**
+	 * Returns half of a, or true if a is half of b
+	 *
+	 * @method half
+	 * @memberOf number
+	 * @param  {Number} a Number to divide
+	 * @param  {Number} b [Optional] Number to test a against
+	 * @return {Mixed}    Boolean if b is passed, Number if b is undefined
+	 */
+	half : function ( a, b ) {
+		return b ? ( ( a / b ) === 0.5 ) : ( a / 2 );
+	},
+
+	/**
+	 * Tests if a number is odd
+	 *
+	 * @method odd
+	 * @memberOf number
+	 * @param  {Number} arg Number to test
+	 * @return {Boolean}    True if odd, or undefined
+	 */
+	odd : function ( arg ) {
+		return !number.even( arg );
+	},
+
+	/**
 	 * Parses the number
 	 *
 	 * @method parse
@@ -69,5 +106,42 @@ var number = {
 	 */
 	parse : function ( arg, base ) {
 		return ( base === undefined ) ? parseFloat( arg ) : parseInt( arg, base );
+	},
+
+	/**
+	 * Generates a random number between 0 and `arg`
+	 *
+	 * @method random
+	 * @memberOf number
+	 * @param  {Number} arg Ceiling for random number, default is 100
+	 * @return {Number}     Random number
+	 */
+	random : function ( arg ) {
+		arg = arg || 100;
+
+		return Math.floor( Math.random() * ( arg + 1 ) );
+	},
+
+	/**
+	 * Rounds a number up or down
+	 *
+	 * @method round
+	 * @memberOf number
+	 * @param  {Number} arg       Number to round
+	 * @param  {String} direction [Optional] "up" or "down"
+	 * @return {Number}           Rounded interger
+	 */
+	round : function ( arg, direction ) {
+		arg = number.parse( arg );
+
+		if ( direction === undefined || string.isEmpty( direction ) ) {
+			return number.parse( arg.toFixed( 0 ) );
+		}
+		else if ( regex.down.test( direction ) ) {
+			return ~~( arg );
+		}
+		else {
+			return Math.ceil( arg );
+		}
 	}
 };

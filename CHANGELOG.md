@@ -1,5 +1,16 @@
 # Change Log
 
+## 0.2.4
+- Implemented all `abaaso.array` methods
+- Implemented `abaaso.math`
+- Added `client.script()`, `client.scroll()`, `client.scrollTo()`, `client.scrollPos()`, `client.size()`, & `client.stylesheet()`
+- Added `element.appendTo()`, `element.clear()`, `element.disable()`, `element.enable()`, `element.has()`, `element.hidden()`, `element.position()`, `element.removeAttr()`, `element.scrollTo()`, `element.serialize()`, `element.size()`, & `element.toggleClass()`
+- Added `number.even()`, `number.half()`, `number.odd()`, `number.random()`, & `number.round()`
+- Added `string.hyphenate()`, `string.singular()`, `string.toFunction()`, & `string.uncapitalize()`
+- Updated `keigai.utils`
+- Fixed some `label` reference errors
+- Added `nodeunit` unit tests
+
 ## 0.2.3
 - Fixing `client.headers()` by trimming values
 - Created `el.css(obj, key, value)`, & `el.html( obj[, arg] )` to manipulate CSS attributes of DOM Elements

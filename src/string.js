@@ -57,6 +57,25 @@ var string = {
 	},
 
 	/**
+	 * Replaces all spaces in a string with dashes
+	 *
+	 * @method hyphenate
+	 * @memberOf string
+	 * @param  {String} obj   String to hyphenate
+	 * @param {Boolean} camel [Optional] Hyphenate camelCase
+	 * @return {String}       String with dashes instead of spaces
+	 */
+	hyphenate : function ( obj, camel ) {
+		var result = string.trim( obj ).replace( /\s+/g, "-" );
+
+		if ( camel === true ) {
+			result = result.replace( /([A-Z])/g, "-$1" ).toLowerCase();
+		}
+
+		return result;
+	},
+
+	/**
 	 * Creates a String representation of an Object, preserving Functions
 	 *
 	 * Nested Objects are not supported
@@ -147,6 +166,33 @@ var string = {
 	},
 
 	/**
+	 * Returns singular form of the string
+	 *
+	 * @method singular
+	 * @memberOf string
+	 * @param  {String} obj String to transform
+	 * @return {String}     Transformed string
+	 */
+	singular : function ( obj ) {
+		return obj.replace( /oe?s$/, "o" ).replace( /ies$/, "y" ).replace( /ses$/, "se" ).replace( /s$/, "" );
+	},
+
+	/**
+	 * Casts a String to a Function
+	 *
+	 * @method toFunction
+	 * @memberOf string
+	 * @param  {String} obj String to cast
+	 * @return {Function}   Function
+	 */
+	toFunction : function ( obj ) {
+		var args = string.trim( obj.replace( /^.*\(/, "" ).replace( /[\t|\r|\n|\"|\']+/g, "" ).replace( /\).*/, "" ) ),
+		    body = string.trim( obj.replace( /^.*\{/, "" ).replace( /\}$/, "" ) );
+
+		return Function.apply( Function, string.explode( args ).concat( [body] ) );
+	},
+
+	/**
 	 * Trims the whitespace around a String
 	 *
 	 * @method trim
@@ -168,6 +214,20 @@ var string = {
 	 */
 	unCamelCase : function ( obj ) {
 		return string.trim( obj.replace( /([A-Z])/g, " $1" ).toLowerCase() );
+	},
+
+	/**
+	 * Uncapitalizes the String
+	 *
+	 * @method uncapitalize
+	 * @memberOf string
+	 * @param  {String} obj String to uncapitalize
+	 * @return {String}     Uncapitalized String
+	 */
+	uncapitalize : function ( obj ) {
+		obj = string.trim( obj );
+
+		return obj.charAt( 0 ).toLowerCase() + obj.slice( 1 );
 	},
 
 	/**

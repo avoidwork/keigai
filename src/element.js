@@ -4,6 +4,21 @@
  */
 var element = {
 	/**
+	 * Appends `a` in `b`
+	 *
+	 * @memberOf appendTo
+	 * @memberOf element
+	 * @param  {Object} a Element being appended
+	 * @param  {Object} b Element being appended to
+	 * @return {Object}   Element being appended to
+	 */
+	appendTo : function ( a, b ) {
+		b.appendChild( a );
+
+		return b;
+	},
+
+	/**
 	 * Gets or sets an Element attribute
 	 *
 	 * @method attr
@@ -72,6 +87,28 @@ var element = {
 			else {
 				obj.setAttribute( key, value );
 			}
+		}
+
+		return obj;
+	},
+
+	/**
+	 * Clears an object's innerHTML, or resets it's state
+	 *
+	 * @method clear
+	 * @memberOf element
+	 * @param  {Mixed} obj Element
+	 * @return {Object}    Element
+	 */
+	clear : function ( obj ) {
+		if ( typeof obj.reset == "function" ) {
+			obj.reset();
+		}
+		else if ( obj.value !== undefined ) {
+			element.update( obj, {innerHTML: "", value: ""} );
+		}
+		else {
+			element.update( obj, {innerHTML: ""} );
 		}
 
 		return obj;
@@ -228,6 +265,22 @@ var element = {
 	},
 
 	/**
+	 * Disables an Element
+	 *
+	 * @method disable
+	 * @memberOf element
+	 * @param  {Mixed} obj Element
+	 * @return {Object}    Element
+	 */
+	disable : function ( obj ) {
+		if ( typeof obj.disabled == "boolean" && !obj.disabled ) {
+			obj.disabled = true;
+		}
+
+		return obj;
+	},
+
+	/**
 	 * Dispatches a DOM Event from an Element
 	 *
 	 * `data` will appear as `Event.detail`
@@ -249,6 +302,22 @@ var element = {
 
 		ev.initCustomEvent( type, bubbles, cancelable, data || {} );
 		obj.dispatchEvent( ev );
+
+		return obj;
+	},
+
+	/**
+	 * Enables an Element
+	 *
+	 * @method enable
+	 * @memberOf element
+	 * @param  {Mixed} obj Element
+	 * @return {Object}    Element
+	 */
+	enable : function ( obj ) {
+		if ( typeof obj.disabled == "boolean" && obj.disabled ) {
+			obj.disabled = false;
+		}
 
 		return obj;
 	},
@@ -297,6 +366,21 @@ var element = {
 	},
 
 	/**
+	 * Determines if Element has descendants matching arg
+	 *
+	 * @method has
+	 * @memberOf element
+	 * @param  {Mixed}   obj Element or Array of Elements or $ queries
+	 * @param  {String}  arg Type of Element to find
+	 * @return {Boolean}     True if 1 or more Elements are found
+	 */
+	has : function ( obj, arg ) {
+		var result = element.find( obj, arg );
+
+		return ( !isNaN( result.length ) && result.length > 0 );
+	},
+
+	/**
 	 * Determines if obj has a specific CSS class
 	 *
 	 * @method hasClass
@@ -306,6 +390,18 @@ var element = {
 	 */
 	hasClass : function ( obj, klass ) {
 		return obj.classList.contains( klass );
+	},
+
+	/**
+	 * Returns a Boolean indidcating if the Object is hidden
+	 *
+	 * @method hidden
+	 * @memberOf element
+	 * @param  {Mixed} obj Element
+	 * @return {Boolean}   `true` if hidden
+	 */
+	hidden : function ( obj ) {
+		return obj.style.display === "none" || ( typeof obj.hidden == "boolean" && obj.hidden );
 	},
 
 	/**
@@ -383,6 +479,42 @@ var element = {
 	},
 
 	/**
+	 * Finds the position of an Element
+	 *
+	 * @method position
+	 * @memberOf element
+	 * @param  {Mixed} obj Element
+	 * @return {Array}     Coordinates [left, top, right, bottom]
+	 */
+	position : function ( obj ) {
+		obj = obj || document.body;
+		var left, top, right, bottom, height, width;
+
+		left   = top = 0;
+		width  = obj.offsetWidth;
+		height = obj.offsetHeight;
+
+		if ( obj.offsetParent ) {
+			top    = obj.offsetTop;
+			left   = obj.offsetLeft;
+
+			while ( obj = obj.offsetParent ) {
+				left += obj.offsetLeft;
+				top  += obj.offsetTop;
+			}
+
+			right  = document.body.offsetWidth  - ( left + width );
+			bottom = document.body.offsetHeight - ( top  + height );
+		}
+		else {
+			right  = width;
+			bottom = height;
+		}
+
+		return [left, top, right, bottom];
+	},
+
+	/**
 	 * Prepends an Element to an Element
 	 *
 	 * @method prependChild
@@ -393,6 +525,122 @@ var element = {
 	 */
 	prependChild : function ( obj, child ) {
 		return obj.childNodes.length === 0 ? obj.appendChild( child ) : obj.insertBefore( child, obj.childNodes[0] );
+	},
+
+	/**
+	 * Removes an Element attribute
+	 *
+	 * @method removeAttr
+	 * @memberOf element
+	 * @param  {Mixed}  obj Element
+	 * @param  {String} key Attribute name
+	 * @return {Object}     Element
+	 */
+	removeAttr : function ( obj, key ) {
+		var target;
+
+		if ( regex.svg.test( obj.namespaceURI ) ) {
+			obj.removeAttributeNS( obj.namespaceURI, key );
+		}
+		else {
+			if ( obj.nodeName === "SELECT" && key === "selected") {
+				target = utility.dom( "#" + obj.id + " option[selected=\"selected\"]" )[0];
+
+				if ( target ) {
+					target.selected = false;
+					target.removeAttribute( "selected" );
+				}
+			}
+			else {
+				obj.removeAttribute( key );
+			}
+		}
+
+		return obj;
+	},
+
+	/**
+	 * Scrolls to the position of an Element
+	 *
+	 * @method scrollTo
+	 * @memberOf element
+	 * @param  {Object} obj        Element to scroll to
+	 * @param  {Number} ms         [Optional] Milliseconds to scroll, default is 250, min is 100
+	 * @param  {Number} offsetTop  [Optional] Offset from top of Element
+	 * @param  {Number} offsetLeft [Optional] Offset from left of Element
+	 * @return {Object} {@link Deferred}
+	 */
+	scrollTo : function ( obj, ms, offsetTop, offsetLeft ) {
+		var pos = array.remove( element.position( obj ), 2, 3 );
+
+		if ( !isNaN( offsetTop ) ) {
+			pos[0] += offsetTop;
+		}
+
+		if ( !isNaN( offsetLeft ) ) {
+			pos[1] += offsetLeft;
+		}
+
+		return client.scroll( pos, ms );
+	},
+
+	/**
+	 * Serializes the elements of an Element
+	 *
+	 * @method serialize
+	 * @memberOf element
+	 * @param  {Object}  obj    Element
+	 * @param  {Boolean} string [Optional] true if you want a query string, default is false ( JSON )
+	 * @param  {Boolean} encode [Optional] true if you want to URI encode the value, default is true
+	 * @return {Mixed}          String or Object
+	 */
+	serialize : function ( obj, string, encode ) {
+		string       = ( string === true );
+		encode       = ( encode !== false );
+		var children = [],
+		    registry = {},
+		    result;
+
+		children = obj.nodeName === "FORM" ? ( obj.elements ? array.cast( obj.elements ) : obj.find( "button, input, select, textarea" ) ) : [obj];
+
+		array.each( children, function ( i ) {
+			if ( i.nodeName === "FORM" ) {
+				utility.merge( registry, json.decode( element.serialize( i ) ) );
+			}
+			else if ( !registry[i.name] ) {
+				registry[i.name] = element.val( i );
+			}
+		} );
+
+		if ( !string ) {
+			result = json.encode( registry );
+		}
+		else {
+			result = "";
+
+			utility.iterate( registry, function ( v, k ) {
+				encode ? result += "&" + encodeURIComponent( k ) + "=" + encodeURIComponent( v ) : result += "&" + k + "=" + v;
+			} );
+
+			result = result.replace( regex.and, "?" );
+		}
+
+		return result;
+	},
+
+	/**
+	 * Returns the size of the Object
+	 *
+	 * @method size
+	 * @memberOf element
+	 * @param  {Mixed} obj Element
+	 * @return {Object}    Size {height: n, width:n}
+	 */
+	size : function ( obj ) {
+		return {
+			height : obj.offsetHeight + number.parse( obj.style.paddingTop  || 0 ) + number.parse( obj.style.paddingBottom || 0 ) + number.parse( obj.style.borderTop  || 0 ) + number.parse( obj.style.borderBottom || 0 ),
+			width  : obj.offsetWidth  + number.parse( obj.style.paddingLeft || 0 ) + number.parse( obj.style.paddingRight  || 0 ) + number.parse( obj.style.borderLeft || 0 ) + number.parse( obj.style.borderRight  || 0 )
+		};
 	},
 
 	/**
@@ -415,6 +663,21 @@ var element = {
 		}
 
 		return set ? element.update( obj, payload ) : obj[key];
+	},
+
+	/**
+	 * Toggles a CSS class
+	 *
+	 * @method toggleClass
+	 * @memberOf element
+	 * @param  {Object} obj Element, or $ query
+	 * @param  {String} arg CSS class to toggle
+	 * @return {Object}     Element
+	 */
+	toggleClass : function ( obj, arg ) {
+		obj.classList.toggle( arg );
+
+		return obj;
 	},
 
 	/**

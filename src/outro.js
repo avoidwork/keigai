@@ -19,8 +19,13 @@ return {
 		el       : element,
 		extend   : utility.extend,
 		iterate  : utility.iterate,
+		json     : json,
 		jsonp    : client.jsonp,
 		log      : utility.log,
+		lru      : function ( arg ) {
+			return new LRU( arg );
+		},
+		math     : math,
 		merge    : utility.merge,
 		number   : number,
 		observer : Observable,
@@ -28,6 +33,7 @@ return {
 		prevent  : utility.prevent,
 		request  : client.request,
 		stop     : utility.stop,
+		string   : string,
 		target   : utility.target,
 		uuid     : utility.uuid,
 		walk     : utility.walk,

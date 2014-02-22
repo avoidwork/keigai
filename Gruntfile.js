@@ -29,6 +29,7 @@ module.exports = function (grunt) {
 					"src/json.js",
 					"src/label.js",
 					"src/lru.js",
+					"src/math.js",
 					"src/number.js",
 					"src/observable.js",
 					"src/promise.js",
@@ -108,7 +109,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-contrib-sass");
 
 	// aliases
-	grunt.registerTask("test", [/*"nodeunit",*/ "jshint"]);
+	grunt.registerTask("test", ["jshint", "nodeunit"]);
 	grunt.registerTask("build", ["concat", "sed", "exec", "sass"]);
 	grunt.registerTask("default", ["build", "test", "jsdoc"]);
 };
