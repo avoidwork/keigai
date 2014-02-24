@@ -60,6 +60,11 @@ a small {
   margin:0 auto;
 }
 
+.gist-container,
+.demo {
+  margin-bottom: 40px;
+}
+
 blockquote {
   border-left:1px solid #e5e5e5;
   margin:0;
@@ -169,6 +174,10 @@ header ul.buttons a strong {
   color:#222;
 }
 
+header ul.blank li {
+  margin: 0 0 1px 0 !important;
+}
+
 section {
   width:500px;
   float:right;
@@ -200,17 +209,23 @@ ul.blank {
 
 ul.blank li {
   list-style-type: none !important;
-  margin: 0 0 10px 0 !important;
+  margin: 0 0 20px 0 !important;
   padding: 0 !important;
 }
 
-section.objects h2 {
+ul.blank li strong {
+  display: block;
+}
+
+section.objects h2,
+section.util h2 {
   border-top: 1px solid #e5e5e5;
   margin-top: 20px;
   padding-top: 20px;
 }
 
-section.objects h2.blank {
+section.objects h2.blank,
+section.util h2.blank {
   border-top: 0px !important;
   margin-top: 0px !important;
   padding-top: 0px !important;

@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
-		<title>keigai - lightweight data stores</title>
+		<title>keigai - lightweight data stores &amp; reactive components</title>
 		<link rel="stylesheet" href="stylesheets/styles.css">
 		<link rel="stylesheet" href="stylesheets/keigai.css">
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -19,9 +19,10 @@
 				<p>keigai is a lightweight data store library, providing a powerful model &amp; reactive UI components, with 1-n relationships.</p>
 				<p>keigai data stores have MVCC inspired record versioning, for an easy "undo", &amp; they can be wired to APIs.</p>
 				<p>keigai can be installed from npm &amp; bower, and supports AMD loaders or script tags.</p>
-				<p>Full API documentation is included, and available at <a href="http://api.keigai.io">http://api.keigai.io</a></p>
+				<p>API documentation is included, and available at <a href="http://api.keigai.io">http://api.keigai.io</a></p>
 				<!-- <p class="examples"><a href="examples.html" title="Advanced Examples">Advanced Examples</a></p> -->
-				<p class="objects"><a href="objects.html" title="keigai Objects">keigai Objects</a></p>
+				<p><a href="objects.html" title="keigai Objects">keigai Objects</a><br />
+					<a href="util.html" title="keigai utility functions">keigai.util</a></p>
 				<ul class="buttons">
 					<li><a href="https://github.com/avoidwork/keigai/zipball/master" title="Download zip file">Download <strong>ZIP File</strong></a></li>
 					<li><a href="https://github.com/avoidwork/keigai/tarball/master" title="Download tar file">Download <strong>TAR Ball</strong></a></li>
@@ -34,27 +35,37 @@
 
 				<h3><a name="create-store" class="anchor" href="#create-store"><span class="octicon octicon-link"></span></a>Creating a data store</h3>
 				<p>This example batch loads an Array of records into the data store, which becomes available from the returned Deferred.</p>
-				<script src="https://gist.github.com/avoidwork/8762643.js"></script>
+				<div class="gist-container">
+					<script src="https://gist.github.com/avoidwork/8762643.js"></script>
+				</div>
 
 				<h3><a name="wire-store" class="anchor" href="#wire-store"><span class="octicon octicon-link"></span></a>Wiring a data store</h3>
 				<p>This example retrieves a data set from a URI, which becomes available from the returned Deferred. Changes to the records via `store.set()`, or `store.del()` will be reconciled with the API/URI before updating the local record(s).</p>
-				<script src="https://gist.github.com/avoidwork/8762599.js"></script>
+				<div class="gist-container">
+					<script src="https://gist.github.com/avoidwork/8762599.js"></script>
+				</div>
 
 				<h3><a name="wire-store" class="anchor" href="#wire-store"><span class="octicon octicon-link"></span></a>Selecting records</h3>
 				<p>Now that our data store has some records, lets find everyone that's over 21.</p>
-				<script src="https://gist.github.com/avoidwork/8771035.js"></script>
+				<div class="gist-container">
+					<script src="https://gist.github.com/avoidwork/8771035.js"></script>
+				</div>
 
 				<h3><a name="create-list" class="anchor" href="#create-list"><span class="octicon octicon-link"></span></a>Creating a data list</h3>
 				<p>This example retrieves a data set from a URI, and displays it with a data list. Data lists can be customized with CSS, and the `options` parameter.</p>
-				<script src="https://gist.github.com/avoidwork/8762735.js"></script>
+				<div class="gist-container">
+					<script src="https://gist.github.com/avoidwork/8762735.js"></script>
+				</div>
 				<h4>Result:</h4>
-				<div id="create-list"></div>
+				<div id="create-list" class="demo"></div>
 
 				<h3><a name="create-grid" class="anchor" href="#create-grid"><span class="octicon octicon-link"></span></a>Creating a data grid</h3>
 				<p>This example retrieves a data set from a URI, and displays it with a data grid. Data grids can be customized with CSS, and the `options` parameter.</p>
-				<script src="https://gist.github.com/avoidwork/8762924.js"></script>
+				<div class="gist-container">
+					<script src="https://gist.github.com/avoidwork/8762924.js"></script>
+				</div>
 				<h4>Result:</h4>
-				<div id="create-grid"></div>
+				<div id="create-grid" class="demo"></div>
 			</section>
 			<footer>
 				<p>This project is maintained by <a href="https://github.com/avoidwork">Jason Mulligan</a></p>
