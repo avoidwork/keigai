@@ -13,12 +13,12 @@ function xhr () {
 	    DONE             = 4,
 	    ERR_REFUSED      = /ECONNREFUSED/,
 	    ready            = new RegExp( HEADERS_RECEIVED + "|" + LOADING ),
-	    XMLHttpRequest, headers, handler, handlerError, state;
+	    XMLHttpRequest, headers, success, failure, state;
 
 	headers = {
-		"User-Agent"   : "keigai/{{VERSION}} node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
-		"Content-Type" : "text/plain",
-		"Accept"       : "*/*"
+		"user-agent"   : "keigai/{{VERSION}} node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"content-type" : "text/plain",
+		"accept"       : "*/*"
 	};
 
 	/**
@@ -46,12 +46,12 @@ function xhr () {
 	/**
 	 * Response handler
 	 *
-	 * @method handler
+	 * @method success
 	 * @memberOf xhr
 	 * @param  {Object} res HTTP(S) Response Object
 	 * @return {Undefined}  undefined
 	 */
-	handler = function ( res ) {
+	success = function ( res ) {
 		var self = this;
 
 		state.call( this, HEADERS_RECEIVED );
@@ -86,12 +86,12 @@ function xhr () {
 	/**
 	 * Response error handler
 	 *
-	 * @method handlerError
+	 * @method failure
 	 * @memberOf xhr
 	 * @param  {Object} e Error
 	 * @return {Undefined} undefined
 	 */
-	handlerError = function ( e ) {
+	failure = function ( e ) {
 		this.status       = ERR_REFUSED.test( e.message ) ? 503 : 500;
 		this.statusText   = "";
 		this.responseText = e.message;
@@ -296,7 +296,7 @@ function xhr () {
 	 * @return {Object}      XMLHttpRequest instance
 	 */
 	XMLHttpRequest.prototype.overrideMimeType = function ( mime ) {
-		this._headers["Content-Type"] = mime;
+		this._headers["content-type"] = mime;
 
 		return this;
 	};
@@ -349,10 +349,10 @@ function xhr () {
 
 		// Specifying Content-Length accordingly
 		if ( regex.put_post.test( this._params.method ) ) {
-			this._headers["Content-Length"] = data !== null ? Buffer.byteLength( data ) : 0;
+			this._headers["content-length"] = data !== null ? Buffer.byteLength( data ) : 0;
 		}
 
-		this._headers.Host = parsed.hostname + ( !regex.http_ports.test( parsed.port ) ? ":" + parsed.port : "" );
+		this._headers.host = parsed.hostname + ( !regex.http_ports.test( parsed.port ) ? ":" + parsed.port : "" );
 
 		options = {
 			hostname : parsed.hostname,
@@ -377,12 +377,12 @@ function xhr () {
 		obj = parsed.protocol === "http:" ? http : https;
 
 		request = obj.request( options, function ( arg ) {
-			handler.call( self, arg );
+			success.call( self, arg );
 		} ).on( "error", function ( e ) {
-			handlerError.call( self, e );
+			failure.call( self, e );
 		} );
 
-		data === null ? request.setSocketKeepAlive( true, 10000 ) : request.write( data, "utf8" );
+		data === null ? request.setSocketKeepAlive( true ) : request.write( data, "utf8" );
 		this._request = request;
 		request.end();
 
@@ -408,7 +408,7 @@ function xhr () {
 			throw new Error( label.invalidStateNotSending );
 		}
 
-		this._headers[header] = value;
+		this._headers[header.toLowerCase()] = value;
 
 		return this;
 	};

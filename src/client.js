@@ -318,7 +318,7 @@ var client = {
 	 * @return {Object}   {@link Deferred}
 	 */
 	request : function ( uri, type, success, failure, args, headers, timeout ) {
-		var cors, xhr, payload, cached, typed, contentType, doc, ab, blob, defer;
+		var cors, xhr, payload, cached, contentType, doc, ab, blob, defer;
 
 		if ( ( regex.put_post.test( type ) || regex.patch.test( type ) ) && args === undefined ) {
 			throw new Error( label.invalidArguments );
@@ -332,7 +332,6 @@ var client = {
 		xhr         = !client.ie || ( !cors || client.version > 9 ) ? new XMLHttpRequest() : new XDomainRequest();
 		payload     = ( regex.put_post.test( type ) || regex.patch.test( type ) ) && args ? args : null;
 		cached      = type === "get" ? cache.get( uri ) : false;
-		typed       = string.capitalize( type );
 		contentType = null;
 		doc         = typeof Document != "undefined";
 		ab          = typeof ArrayBuffer != "undefined";
