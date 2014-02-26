@@ -33,7 +33,7 @@
  * @license BSD-3 &lt;https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.2.4
+ * @version 0.2.5
  */
 ( function ( global ) {
 
@@ -1854,7 +1854,7 @@ var client = {
 	 * @return {Object}   {@link Deferred}
 	 */
 	request : function ( uri, type, success, failure, args, headers, timeout ) {
-		var cors, xhr, payload, cached, typed, contentType, doc, ab, blob, defer;
+		var cors, xhr, payload, cached, contentType, doc, ab, blob, defer;
 
 		if ( ( regex.put_post.test( type ) || regex.patch.test( type ) ) && args === undefined ) {
 			throw new Error( label.invalidArguments );
@@ -1868,7 +1868,6 @@ var client = {
 		xhr         = !client.ie || ( !cors || client.version > 9 ) ? new XMLHttpRequest() : new XDomainRequest();
 		payload     = ( regex.put_post.test( type ) || regex.patch.test( type ) ) && args ? args : null;
 		cached      = type === "get" ? cache.get( uri ) : false;
-		typed       = string.capitalize( type );
 		contentType = null;
 		doc         = typeof Document != "undefined";
 		ab          = typeof ArrayBuffer != "undefined";
@@ -6508,23 +6507,12 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 
 	// Setting key
 	if ( !key ) {
-		if ( this.source === null ) {
-			if ( this.key === null ) {
-				key = utility.uuid();
-			}
-			else {
-				key = data[this.key] || utility.uuid();
-			}
-		}
-		else if ( data[this.source] === undefined ) {
-			key = utility.uuid();
+		if ( this.key !== null && data[this.key] ) {
+			key = data[this.key];
 		}
 		else {
-			key = data[this.source][this.key];
+			key = utility.uuid();
 		}
-	}
-	else {
-		key = utility.uuid();
 	}
 
 	// Removing primary key from data
@@ -8249,12 +8237,12 @@ function xhr () {
 	    DONE             = 4,
 	    ERR_REFUSED      = /ECONNREFUSED/,
 	    ready            = new RegExp( HEADERS_RECEIVED + "|" + LOADING ),
-	    XMLHttpRequest, headers, handler, handlerError, state;
+	    XMLHttpRequest, headers, success, failure, state;
 
 	headers = {
-		"User-Agent"   : "keigai/0.2.4 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
-		"Content-Type" : "text/plain",
-		"Accept"       : "*/*"
+		"user-agent"   : "keigai/0.2.5 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"content-type" : "text/plain",
+		"accept"       : "*/*"
 	};
 
 	/**
@@ -8282,12 +8270,12 @@ function xhr () {
 	/**
 	 * Response handler
 	 *
-	 * @method handler
+	 * @method success
 	 * @memberOf xhr
 	 * @param  {Object} res HTTP(S) Response Object
 	 * @return {Undefined}  undefined
 	 */
-	handler = function ( res ) {
+	success = function ( res ) {
 		var self = this;
 
 		state.call( this, HEADERS_RECEIVED );
@@ -8322,12 +8310,12 @@ function xhr () {
 	/**
 	 * Response error handler
 	 *
-	 * @method handlerError
+	 * @method failure
 	 * @memberOf xhr
 	 * @param  {Object} e Error
 	 * @return {Undefined} undefined
 	 */
-	handlerError = function ( e ) {
+	failure = function ( e ) {
 		this.status       = ERR_REFUSED.test( e.message ) ? 503 : 500;
 		this.statusText   = "";
 		this.responseText = e.message;
@@ -8532,7 +8520,7 @@ function xhr () {
 	 * @return {Object}      XMLHttpRequest instance
 	 */
 	XMLHttpRequest.prototype.overrideMimeType = function ( mime ) {
-		this._headers["Content-Type"] = mime;
+		this._headers["content-type"] = mime;
 
 		return this;
 	};
@@ -8585,10 +8573,10 @@ function xhr () {
 
 		// Specifying Content-Length accordingly
 		if ( regex.put_post.test( this._params.method ) ) {
-			this._headers["Content-Length"] = data !== null ? Buffer.byteLength( data ) : 0;
+			this._headers["content-length"] = data !== null ? Buffer.byteLength( data ) : 0;
 		}
 
-		this._headers.Host = parsed.hostname + ( !regex.http_ports.test( parsed.port ) ? ":" + parsed.port : "" );
+		this._headers.host = parsed.hostname + ( !regex.http_ports.test( parsed.port ) ? ":" + parsed.port : "" );
 
 		options = {
 			hostname : parsed.hostname,
@@ -8613,12 +8601,12 @@ function xhr () {
 		obj = parsed.protocol === "http:" ? http : https;
 
 		request = obj.request( options, function ( arg ) {
-			handler.call( self, arg );
+			success.call( self, arg );
 		} ).on( "error", function ( e ) {
-			handlerError.call( self, e );
+			failure.call( self, e );
 		} );
 
-		data === null ? request.setSocketKeepAlive( true, 10000 ) : request.write( data, "utf8" );
+		data === null ? request.setSocketKeepAlive( true ) : request.write( data, "utf8" );
 		this._request = request;
 		request.end();
 
@@ -8644,7 +8632,7 @@ function xhr () {
 			throw new Error( label.invalidStateNotSending );
 		}
 
-		this._headers[header] = value;
+		this._headers[header.toLowerCase()] = value;
 
 		return this;
 	};
@@ -8932,7 +8920,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.2.4"
+	version : "0.2.5"
 };
 
 } )();
@@ -8966,7 +8954,7 @@ else {
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Feb 22 2014 15:41:51 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Wed Feb 26 2014 07:23:18 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>
