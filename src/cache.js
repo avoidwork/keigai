@@ -19,11 +19,11 @@ var cache = {
 	 * @return {Undefined} undefined
 	 */
 	clean : function () {
-        array.each( array.keys( cache.lru.cache ), function ( i ) {
-            if ( cache.expired( i ) ) {
-                cache.expire( i );
-            }
-        } );
+		array.each( array.keys( cache.lru.cache ), function ( i ) {
+			if ( cache.expired( i ) ) {
+				cache.expire( i );
+			}
+		} );
 	},
 
 	/**
@@ -72,8 +72,8 @@ var cache = {
 	 * @return {Mixed}          URI Object {headers, response} or False
 	 */
 	get : function ( uri, expire ) {
-        uri      = utility.parse( uri ).href;
-        var item = cache.lru.get( uri );
+		uri      = utility.parse( uri ).href;
+		var item = cache.lru.get( uri );
 
 		if ( !item ) {
 			return false;
@@ -99,13 +99,13 @@ var cache = {
 	 * @return {Mixed}           URI Object {headers, response} or undefined
 	 */
 	set : function ( uri, property, value ) {
-        uri      = utility.parse( uri ).href;
-        var item = cache.lru.get( uri );
+		uri      = utility.parse( uri ).href;
+		var item = cache.lru.get( uri );
 
 		if ( !item ) {
-            item = {
-                permission : 0
-            };
+			item = {
+				permission : 0
+			};
 		}
 
 		if ( property === "permission" ) {
@@ -115,10 +115,10 @@ var cache = {
 			item.permission &= ~value;
 		}
 		else {
-            item[property] = value;
+			item[property] = value;
 		}
 
-        cache.lru.set( uri, item );
+		cache.lru.set( uri, item );
 
 		return item;
 	}
