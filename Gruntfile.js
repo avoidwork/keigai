@@ -3,7 +3,7 @@ module.exports = function (grunt) {
 		pkg : grunt.file.readJSON("package.json"),
 		concat : {
 			options : {
-				banner : "/**\n" + 
+				banner : "/**\n" +
 				         " * <%= pkg.name %>\n" +
 				         " *\n" +
 				         " * @author <%= pkg.author.name %> <<%= pkg.author.email %>>\n" +
@@ -18,6 +18,7 @@ module.exports = function (grunt) {
 				src : [
 					"src/intro.js",
 					"src/regex.js",
+					"src/lru.js",
 					"src/array.js",
 					"src/cache.js",
 					"src/client.js",
@@ -28,7 +29,6 @@ module.exports = function (grunt) {
 					"src/element.js",
 					"src/json.js",
 					"src/label.js",
-					"src/lru.js",
 					"src/math.js",
 					"src/number.js",
 					"src/observable.js",

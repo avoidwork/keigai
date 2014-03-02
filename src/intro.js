@@ -7,6 +7,7 @@ var document  = global.document,
     webWorker = typeof Blob != "undefined" && typeof Worker != "undefined",
     MAX       = 10,
     VERSIONS  = 100,
+    CACHE     = 500,
     http, https, lib, url, WORKER;
 
 if ( server ) {
