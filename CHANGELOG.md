@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.2.6
+- Refactored `cache{}` to be an abstraction around an `LRU` instance, with a max size of 500
+
+## 0.2.5
+- Fixing `DataStore.setComplete()` handling of key
+- Removing an unneeded variable from `client.request()`
+- Removing timeout on `setSocketKeepAlive()` within node.js XHR shim
+- Made other minor changes to the XHR shim
+
 ## 0.2.4
 - Implemented all `abaaso.array` methods
 - Implemented `abaaso.math`
