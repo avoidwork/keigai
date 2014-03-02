@@ -33,7 +33,7 @@
  * @license BSD-3 &lt;https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.2.5
+ * @version 0.2.6
  */
 ( function ( global ) {
 
@@ -44,6 +44,7 @@ var document  = global.document,
     webWorker = typeof Blob != "undefined" && typeof Worker != "undefined",
     MAX       = 10,
     VERSIONS  = 100,
+    CACHE     = 500,
     http, https, lib, url, WORKER;
 
 if ( server ) {
@@ -138,6 +139,163 @@ var regex = {
 	xdomainrequest       : /^(get|post)$/i,
 	xml                  : /xml/i
 };
+
+/**
+ * Creates a new Least Recently Used cache
+ *
+ * @constructor
+ * @memberOf keigai
+ * @param  {Number} max [Optional] Max size of cache, default is 1000
+ */
+function LRU ( max ) {
+	this.cache  = {};
+	this.max    = max || 1000;
+	this.first  = null;
+	this.last   = null;
+	this.length = 0;
+}
+
+/**
+ * Setting constructor loop
+ *
+ * @method constructor
+ * @memberOf keigai.LRU
+ * @type {Function}
+ */
+LRU.prototype.constructor = LRU;
+
+/**
+ * Evicts the least recently used item from cache
+ *
+ * @method evict
+ * @memberOf keigai.LRU
+ * @return {Object} {@link keigai.LRU}
+ */
+LRU.prototype.evict = function () {
+	if ( this.last !== null ) {
+		this.remove( this.last );
+	}
+
+	return this;
+};
+
+/**
+ * Gets cached item and moves it to the front
+ *
+ * @method get
+ * @memberOf keigai.LRU
+ * @param  {String} key Item key
+ * @return {Object} {@link keigai.LRUItem}
+ */
+LRU.prototype.get = function ( key ) {
+	var item = this.cache[key];
+
+	if ( item === undefined ) {
+		return;
+	}
+
+	this.set( key, item.value );
+
+	return item.value;
+};
+
+/**
+ * Removes item from cache
+ *
+ * @method remove
+ * @memberOf keigai.LRU
+ * @param  {String} key Item key
+ * @return {Object} {@link keigai.LRUItem}
+ */
+LRU.prototype.remove = function ( key ) {
+	var item = this.cache[ key ];
+
+	if ( item ) {
+		delete this.cache[key];
+
+		this.length--;
+
+		if ( item.previous !== null ) {
+			this.cache[item.previous].next = item.next;
+		}
+
+		if ( item.next !== null ) {
+			this.cache[item.next].previous = item.previous;
+		}
+
+		if ( this.first === key ) {
+			this.first = item.previous;
+		}
+
+		if ( this.last === key ) {
+			this.last = item.next;
+		}
+	}
+
+	return item;
+};
+
+/**
+ * Sets item in cache as `first`
+ *
+ * @method set
+ * @memberOf keigai.LRU
+ * @param  {String} key   Item key
+ * @param  {Mixed}  value Item value
+ * @return {Object} {@link keigai.LRU}
+ */
+LRU.prototype.set = function ( key, value ) {
+	var item = this.remove( key );
+
+	if ( item === undefined ) {
+		item = new LRUItem( value );
+	}
+	else {
+		item.value = value;
+	}
+
+	item.next       = null;
+	item.previous   = this.first;
+	this.cache[key] = item;
+
+	if ( this.first !== null ) {
+		this.cache[this.first].next = key;
+	}
+
+	this.first = key;
+
+	if ( this.last === null ) {
+		this.last = key;
+	}
+
+	if ( ++this.length > this.max ) {
+		this.evict();
+	}
+
+	return this;
+};
+
+/**
+ * Creates a new LRUItem
+ *
+ * @constructor
+ * @memberOf keigai
+ * @param {Mixed} value Item value
+ */
+function LRUItem ( value ) {
+	this.next     = null;
+	this.previous = null;
+	this.value    = value;
+}
+
+/**
+ * Setting constructor loop
+ *
+ * @method constructor
+ * @memberOf keigai.LRUItem
+ * @type {Function}
+ */
+LRUItem.prototype.constructor = LRUItem;
 
 /**
  * @namespace array
@@ -1424,7 +1582,7 @@ var cache = {
 	 * @memberOf cache
 	 * @type {Object}
 	 */
-	items : {},
+	lru : new LRU( CACHE ),
 
 	/**
 	 * Garbage collector for the cached items
@@ -1434,11 +1592,11 @@ var cache = {
 	 * @return {Undefined} undefined
 	 */
 	clean : function () {
-		return utility.iterate( cache.items, function ( v, k ) {
-			if ( cache.expired( k ) ) {
-				cache.expire( k, true );
-			}
-		} );
+        array.each( array.keys( cache.lru.cache ), function ( i ) {
+            if ( cache.expired( i ) ) {
+                cache.expire( i );
+            }
+        } );
 	},
 
 	/**
@@ -1452,8 +1610,8 @@ var cache = {
 	 * @return {Boolean} `true` if successful
 	 */
 	expire : function ( uri ) {
-		if ( cache.items[uri] ) {
-			delete cache.items[uri];
+		if ( cache.lru.cache[uri] ) {
+			cache.lru.remove( uri );
 
 			return true;
 		}
@@ -1471,9 +1629,9 @@ var cache = {
 	 * @return {Boolean}    True if the URI has expired
 	 */
 	expired : function ( uri ) {
-		var item = cache.items[uri];
+		var item = cache.lru.cache[uri];
 
-		return item && item.expires &lt; new Date();
+		return item && item.value.expires &lt; new Date().getTime();
 	},
 
 	/**
@@ -1487,9 +1645,10 @@ var cache = {
 	 * @return {Mixed}          URI Object {headers, response} or False
 	 */
 	get : function ( uri, expire ) {
-		uri = utility.parse( uri ).href;
+        uri      = utility.parse( uri ).href;
+        var item = cache.lru.get( uri );
 
-		if ( !cache.items[uri] ) {
+		if ( !item ) {
 			return false;
 		}
 
@@ -1499,7 +1658,7 @@ var cache = {
 			return false;
 		}
 
-		return utility.clone( cache.items[uri], true );
+		return utility.clone( item, true );
 	},
 
 	/**
@@ -1513,24 +1672,28 @@ var cache = {
 	 * @return {Mixed}           URI Object {headers, response} or undefined
 	 */
 	set : function ( uri, property, value ) {
-		uri = utility.parse( uri ).href;
+        uri      = utility.parse( uri ).href;
+        var item = cache.lru.get( uri );
 
-		if ( !cache.items[uri] ) {
-			cache.items[uri] = {};
-			cache.items[uri].permission = 0;
+		if ( !item ) {
+            item = {
+                permission : 0
+            };
 		}
 
 		if ( property === "permission" ) {
-			cache.items[uri].permission |= value;
+			item.permission |= value;
 		}
 		else if ( property === "!permission" ) {
-			cache.items[uri].permission &= ~value;
+			item.permission &= ~value;
 		}
 		else {
-			cache.items[uri][property] = value;
+            item[property] = value;
 		}
 
-		return cache.items[uri];
+        cache.lru.set( uri, item );
+
+		return item;
 	}
 };
 
@@ -4632,163 +4795,6 @@ var label = {
 	 */
 	upgrade : "Your browser is too old to use keigai, please upgrade"
 };
-
-/**
- * Creates a new Least Recently Used cache
- *
- * @constructor
- * @memberOf keigai
- * @param  {Number} max [Optional] Max size of cache, default is 1000
- */
-function LRU ( max ) {
-	this.cache  = {};
-	this.max    = max || 1000;
-	this.first  = null;
-	this.last   = null;
-	this.length = 0;
-}
-
-/**
- * Setting constructor loop
- *
- * @method constructor
- * @memberOf keigai.LRU
- * @type {Function}
- */
-LRU.prototype.constructor = LRU;
-
-/**
- * Evicts the least recently used item from cache
- *
- * @method evict
- * @memberOf keigai.LRU
- * @return {Object} {@link keigai.LRU}
- */
-LRU.prototype.evict = function () {
-	if ( this.last !== null ) {
-		this.remove( this.last );
-	}
-
-	return this;
-};
-
-/**
- * Gets cached item and moves it to the front
- *
- * @method get
- * @memberOf keigai.LRU
- * @param  {String} key Item key
- * @return {Object} {@link keigai.LRUItem}
- */
-LRU.prototype.get = function ( key ) {
-	var item = this.cache[key];
-
-	if ( item === undefined ) {
-		return;
-	}
-
-	this.set( key, item.value );
-
-	return item.value;
-};
-
-/**
- * Removes item from cache
- *
- * @method remove
- * @memberOf keigai.LRU
- * @param  {String} key Item key
- * @return {Object} {@link keigai.LRUItem}
- */
-LRU.prototype.remove = function ( key ) {
-	var item = this.cache[ key ];
-
-	if ( item ) {
-		delete this.cache[key];
-
-		this.length--;
-
-		if ( item.previous !== null ) {
-			this.cache[item.previous].next = item.next;
-		}
-
-		if ( item.next !== null ) {
-			this.cache[item.next].previous = item.previous;
-		}
-
-		if ( this.first === key ) {
-			this.first = item.previous;
-		}
-
-		if ( this.last === key ) {
-			this.last = item.next;
-		}
-	}
-
-	return item;
-};
-
-/**
- * Sets item in cache as `first`
- *
- * @method set
- * @memberOf keigai.LRU
- * @param  {String} key   Item key
- * @param  {Mixed}  value Item value
- * @return {Object} {@link keigai.LRU}
- */
-LRU.prototype.set = function ( key, value ) {
-	var item = this.remove( key );
-
-	if ( item === undefined ) {
-		item = new LRUItem( value );
-	}
-	else {
-		item.value = value;
-	}
-
-	item.next       = null;
-	item.previous   = this.first;
-	this.cache[key] = item;
-
-	if ( this.first !== null ) {
-		this.cache[this.first].next = key;
-	}
-
-	this.first = key;
-
-	if ( this.last === null ) {
-		this.last = key;
-	}
-
-	if ( ++this.length > this.max ) {
-		this.evict();
-	}
-
-	return this;
-};
-
-/**
- * Creates a new LRUItem
- *
- * @constructor
- * @memberOf keigai
- * @param {Mixed} value Item value
- */
-function LRUItem ( value ) {
-	this.next     = null;
-	this.previous = null;
-	this.value    = value;
-}
-
-/**
- * Setting constructor loop
- *
- * @method constructor
- * @memberOf keigai.LRUItem
- * @type {Function}
- */
-LRUItem.prototype.constructor = LRUItem;
 
 /**
  * @namespace array
@@ -8240,7 +8246,7 @@ function xhr () {
 	    XMLHttpRequest, headers, success, failure, state;
 
 	headers = {
-		"user-agent"   : "keigai/0.2.5 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"user-agent"   : "keigai/0.2.6 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
 	};
@@ -8920,7 +8926,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.2.5"
+	version : "0.2.6"
 };
 
 } )();
@@ -8954,7 +8960,7 @@ else {
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Wed Feb 26 2014 07:23:18 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Mar 02 2014 14:56:45 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

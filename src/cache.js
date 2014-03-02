@@ -9,7 +9,7 @@ var cache = {
 	 * @memberOf cache
 	 * @type {Object}
 	 */
-	items : {},
+	lru : new LRU( CACHE ),
 
 	/**
 	 * Garbage collector for the cached items
@@ -19,11 +19,11 @@ var cache = {
 	 * @return {Undefined} undefined
 	 */
 	clean : function () {
-		return utility.iterate( cache.items, function ( v, k ) {
-			if ( cache.expired( k ) ) {
-				cache.expire( k, true );
-			}
-		} );
+        array.each( array.keys( cache.lru.cache ), function ( i ) {
+            if ( cache.expired( i ) ) {
+                cache.expire( i );
+            }
+        } );
 	},
 
 	/**
@@ -37,8 +37,8 @@ var cache = {
 	 * @return {Boolean} `true` if successful
 	 */
 	expire : function ( uri ) {
-		if ( cache.items[uri] ) {
-			delete cache.items[uri];
+		if ( cache.lru.cache[uri] ) {
+			cache.lru.remove( uri );
 
 			return true;
 		}
@@ -56,9 +56,9 @@ var cache = {
 	 * @return {Boolean}    True if the URI has expired
 	 */
 	expired : function ( uri ) {
-		var item = cache.items[uri];
+		var item = cache.lru.cache[uri];
 
-		return item && item.expires < new Date();
+		return item && item.value.expires < new Date().getTime();
 	},
 
 	/**
@@ -72,9 +72,10 @@ var cache = {
 	 * @return {Mixed}          URI Object {headers, response} or False
 	 */
 	get : function ( uri, expire ) {
-		uri = utility.parse( uri ).href;
+        uri      = utility.parse( uri ).href;
+        var item = cache.lru.get( uri );
 
-		if ( !cache.items[uri] ) {
+		if ( !item ) {
 			return false;
 		}
 
@@ -84,7 +85,7 @@ var cache = {
 			return false;
 		}
 
-		return utility.clone( cache.items[uri], true );
+		return utility.clone( item, true );
 	},
 
 	/**
@@ -98,23 +99,27 @@ var cache = {
 	 * @return {Mixed}           URI Object {headers, response} or undefined
 	 */
 	set : function ( uri, property, value ) {
-		uri = utility.parse( uri ).href;
+        uri      = utility.parse( uri ).href;
+        var item = cache.lru.get( uri );
 
-		if ( !cache.items[uri] ) {
-			cache.items[uri] = {};
-			cache.items[uri].permission = 0;
+		if ( !item ) {
+            item = {
+                permission : 0
+            };
 		}
 
 		if ( property === "permission" ) {
-			cache.items[uri].permission |= value;
+			item.permission |= value;
 		}
 		else if ( property === "!permission" ) {
-			cache.items[uri].permission &= ~value;
+			item.permission &= ~value;
 		}
 		else {
-			cache.items[uri][property] = value;
+            item[property] = value;
 		}
 
-		return cache.items[uri];
+        cache.lru.set( uri, item );
+
+		return item;
 	}
 };
