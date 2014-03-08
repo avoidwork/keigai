@@ -1,41 +1,230 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>JSDoc: Class: Promise</title>
-    
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+	<meta charset="utf-8">
+	<title>keigai Class: Promise</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	
+	<link type="text/css" rel="stylesheet" href="styles/site.cerulean.css">
+	
 </head>
 
 <body>
+<div class="container-fluid">
+	<div class="navbar navbar-fixed-top ">
+		<div class="navbar-inner">
+			<a class="brand" href="index.html">keigai</a>
+			<ul class="nav">
+				
+				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
 
-<div id="main">
-    
-    <h1 class="page-title">Class: Promise</h1>
-    
-    
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="array.html">array</a>
+						</li>
+						
+						<li>
+							<a href="cache.html">cache</a>
+						</li>
+						
+						<li>
+							<a href="client.html">client</a>
+						</li>
+						
+						<li>
+							<a href="deferred.html">deferred</a>
+						</li>
+						
+						<li>
+							<a href="element.html">element</a>
+						</li>
+						
+						<li>
+							<a href="filter.html">filter</a>
+						</li>
+						
+						<li>
+							<a href="grid.html">grid</a>
+						</li>
+						
+						<li>
+							<a href="json.html">json</a>
+						</li>
+						
+						<li>
+							<a href="label.html">label</a>
+						</li>
+						
+						<li>
+							<a href="list.html">list</a>
+						</li>
+						
+						<li>
+							<a href="math.html">math</a>
+						</li>
+						
+						<li>
+							<a href="number.html">number</a>
+						</li>
+						
+						<li>
+							<a href="promise.html">promise</a>
+						</li>
+						
+						<li>
+							<a href="regex.html">regex</a>
+						</li>
+						
+						<li>
+							<a href="store.html">store</a>
+						</li>
+						
+						<li>
+							<a href="string.html">string</a>
+						</li>
+						
+						<li>
+							<a href="utility.html">utility</a>
+						</li>
+						
+						<li>
+							<a href="xml.html">xml</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="module-keigai.html">keigai</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="keigai.DataGrid.html">DataGrid</a>
+						</li>
+						
+						<li>
+							<a href="keigai.DataList.html">DataList</a>
+						</li>
+						
+						<li>
+							<a href="keigai.DataListFilter.html">DataListFilter</a>
+						</li>
+						
+						<li>
+							<a href="keigai.DataStore.html">DataStore</a>
+						</li>
+						
+						<li>
+							<a href="keigai.Deferred.html">Deferred</a>
+						</li>
+						
+						<li>
+							<a href="keigai.LRU.html">LRU</a>
+						</li>
+						
+						<li>
+							<a href="keigai.LRUItem.html">LRUItem</a>
+						</li>
+						
+						<li>
+							<a href="keigai.Observable.html">Observable</a>
+						</li>
+						
+						<li>
+							<a href="keigai.Promise.html">Promise</a>
+						</li>
+						
+						<li>
+							<a href="xhr.XMLHttpRequest.html">XMLHttpRequest</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="global.html#bootstrap">bootstrap</a>
+						</li>
+						
+						<li>
+							<a href="global.html#css">css</a>
+						</li>
+						
+						<li>
+							<a href="global.html#html">html</a>
+						</li>
+						
+						<li>
+							<a href="global.html#is">is</a>
+						</li>
+						
+						<li>
+							<a href="global.html#xhr">xhr</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+			</ul>
+		</div>
+	</div>
+
+	<div class="row-fluid">
+
+		
+		<div class="span8">
+			
+				<div id="main">
+					
 
 
-
+	<h1 class="page-title">Class: Promise</h1>
 <section>
-    
+
 <header>
     <h2>
     Promise
     </h2>
     
-</header>  
+</header>
 
 <article>
     <div class="container-overview">
     
-    
+
     
         
 <dt>
@@ -47,7 +236,7 @@
     
     
     <div class="description">
-        Creates a new Promise
+        <p>Creates a new Promise</p>
     </div>
     
 
@@ -60,34 +249,34 @@
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5260">line 5260</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5260">line 5260</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -107,22 +296,22 @@
 
     
     </div>
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
+
     
         <h3 class="subsection-title">Methods</h3>
-        
+
         <dl>
             
 <dt>
@@ -134,7 +323,7 @@
     
     
     <div class="description">
-        Setting constructor loop
+        <p>Setting constructor loop</p>
     </div>
     
 
@@ -147,34 +336,34 @@
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5267">line 5267</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5267">line 5267</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -204,6 +393,7 @@
 
 	</dd>
 </dl>
+
 
         
     
@@ -221,7 +411,7 @@
     
     
     <div class="description">
-        Processes `handlers` queue
+        <p>Processes <code>handlers</code> queue</p>
     </div>
     
 
@@ -234,34 +424,34 @@
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5277">line 5277</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5277">line 5277</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -279,7 +469,7 @@
     
             
 <div class="param-desc">
-    Promise
+    <p>Promise</p>
 </div>
 
 
@@ -295,6 +485,7 @@
 
 	</dd>
 </dl>
+
 
         
     
@@ -312,7 +503,7 @@
     
     
     <div class="description">
-        Breaks a Promise
+        <p>Breaks a Promise</p>
     </div>
     
 
@@ -324,31 +515,31 @@
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -357,50 +548,51 @@
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Promise value</td>
+
+            <td class="description last"><p>Promise value</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5335">line 5335</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5335">line 5335</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -418,7 +610,7 @@
     
             
 <div class="param-desc">
-    Promise
+    <p>Promise</p>
 </div>
 
 
@@ -434,6 +626,7 @@
 
 	</dd>
 </dl>
+
 
         
     
@@ -451,7 +644,7 @@
     
     
     <div class="description">
-        Resolves a Promise
+        <p>Resolves a Promise</p>
     </div>
     
 
@@ -463,31 +656,31 @@
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -496,50 +689,51 @@
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Promise value</td>
+
+            <td class="description last"><p>Promise value</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5347">line 5347</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5347">line 5347</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -557,7 +751,7 @@
     
             
 <div class="param-desc">
-    Promise
+    <p>Promise</p>
 </div>
 
 
@@ -573,6 +767,7 @@
 
 	</dd>
 </dl>
+
 
         
     
@@ -590,7 +785,7 @@
     
     
     <div class="description">
-        Registers handler(s) for a Promise
+        <p>Registers handler(s) for a Promise</p>
     </div>
     
 
@@ -602,31 +797,31 @@
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>success</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -635,21 +830,21 @@
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Success handler for eventual value</td>
+
+            <td class="description last"><p>[Optional] Success handler for eventual value</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>failure</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -658,50 +853,51 @@
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Failure handler for eventual value</td>
+
+            <td class="description last"><p>[Optional] Failure handler for eventual value</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5359">line 5359</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5359">line 5359</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -719,7 +915,7 @@
     
             
 <div class="param-desc">
-    Promise
+    <p>Promise</p>
 </div>
 
 
@@ -736,6 +932,7 @@
 	</dd>
 </dl>
 
+
         
     
     
@@ -743,30 +940,72 @@
 
         </dl>
     
+
     
-    
-    
+
     
 </article>
 
-</section>  
+</section>
 
 
 
 
-</div>
+				</div>
 
-<nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataListFilter.html">DataListFilter</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="keigai.Deferred.html">Deferred</a></li><li><a href="keigai.LRU.html">LRU</a></li><li><a href="keigai.LRUItem.html">LRUItem</a></li><li><a href="keigai.Observable.html">Observable</a></li><li><a href="keigai.Promise.html">Promise</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="deferred.html">deferred</a></li><li><a href="element.html">element</a></li><li><a href="filter.html">filter</a></li><li><a href="grid.html">grid</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="list.html">list</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="store.html">store</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#css">css</a></li><li><a href="global.html#html">html</a></li><li><a href="global.html#is">is</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
-</nav>
+				<div class="clearfix"></div>
+				<footer>
+					
+					
+		<span class="copyright">
+		Copyright &copy; 2014 Jason Mulligan
+		</span>
+					<br />
+					
+		<span class="jsdoc-message">
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
+		on Sat Mar 08 2014 11:28:39 GMT-0500 (EST) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		</span>
+				</footer>
+			</div>
 
-<br clear="both">
+			
+			<div class="span3">
+				<div id="toc"></div>
+			</div>
+			
+			<br clear="both">
+		</div>
 
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Mar 02 2014 15:13:46 GMT-0500 (EST)
-</footer>
+	</div>
+	<script src="scripts/sunlight.js"></script>
+	<script src="scripts/sunlight.javascript.js"></script>
+	<script src="scripts/sunlight-plugin.doclinks.js"></script>
+	<script src="scripts/sunlight-plugin.linenumbers.js"></script>
+	<script src="scripts/sunlight-plugin.menu.js"></script>
+	<script src="scripts/jquery.min.js"></script>
+	<script src="scripts/jquery.scrollTo.js"></script>
+	<script src="scripts/jquery.localScroll.js"></script>
+	<script src="scripts/bootstrap-dropdown.js"></script>
+	<script src="scripts/toc.js"></script>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+
+	<script>  Sunlight.highlightAll({lineNumbers:true,  showMenu: true, enableDoclinks :true}); </script>
+
+	<script>
+		$( function () {
+			$( "#toc" ).toc( {
+				selectors   : "h1,h2,h3,h4",
+				showAndHide : false,
+				scrollTo    : 60
+			} );
+			$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
+			$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+
+		} );
+	</script>
+
+	
+
 </body>
 </html>

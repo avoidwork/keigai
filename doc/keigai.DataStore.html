@@ -1,41 +1,230 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>JSDoc: Class: DataStore</title>
-    
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+	<meta charset="utf-8">
+	<title>keigai Class: DataStore</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	
+	<link type="text/css" rel="stylesheet" href="styles/site.cerulean.css">
+	
 </head>
 
 <body>
+<div class="container-fluid">
+	<div class="navbar navbar-fixed-top ">
+		<div class="navbar-inner">
+			<a class="brand" href="index.html">keigai</a>
+			<ul class="nav">
+				
+				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
 
-<div id="main">
-    
-    <h1 class="page-title">Class: DataStore</h1>
-    
-    
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="array.html">array</a>
+						</li>
+						
+						<li>
+							<a href="cache.html">cache</a>
+						</li>
+						
+						<li>
+							<a href="client.html">client</a>
+						</li>
+						
+						<li>
+							<a href="deferred.html">deferred</a>
+						</li>
+						
+						<li>
+							<a href="element.html">element</a>
+						</li>
+						
+						<li>
+							<a href="filter.html">filter</a>
+						</li>
+						
+						<li>
+							<a href="grid.html">grid</a>
+						</li>
+						
+						<li>
+							<a href="json.html">json</a>
+						</li>
+						
+						<li>
+							<a href="label.html">label</a>
+						</li>
+						
+						<li>
+							<a href="list.html">list</a>
+						</li>
+						
+						<li>
+							<a href="math.html">math</a>
+						</li>
+						
+						<li>
+							<a href="number.html">number</a>
+						</li>
+						
+						<li>
+							<a href="promise.html">promise</a>
+						</li>
+						
+						<li>
+							<a href="regex.html">regex</a>
+						</li>
+						
+						<li>
+							<a href="store.html">store</a>
+						</li>
+						
+						<li>
+							<a href="string.html">string</a>
+						</li>
+						
+						<li>
+							<a href="utility.html">utility</a>
+						</li>
+						
+						<li>
+							<a href="xml.html">xml</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="module-keigai.html">keigai</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="keigai.DataGrid.html">DataGrid</a>
+						</li>
+						
+						<li>
+							<a href="keigai.DataList.html">DataList</a>
+						</li>
+						
+						<li>
+							<a href="keigai.DataListFilter.html">DataListFilter</a>
+						</li>
+						
+						<li>
+							<a href="keigai.DataStore.html">DataStore</a>
+						</li>
+						
+						<li>
+							<a href="keigai.Deferred.html">Deferred</a>
+						</li>
+						
+						<li>
+							<a href="keigai.LRU.html">LRU</a>
+						</li>
+						
+						<li>
+							<a href="keigai.LRUItem.html">LRUItem</a>
+						</li>
+						
+						<li>
+							<a href="keigai.Observable.html">Observable</a>
+						</li>
+						
+						<li>
+							<a href="keigai.Promise.html">Promise</a>
+						</li>
+						
+						<li>
+							<a href="xhr.XMLHttpRequest.html">XMLHttpRequest</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="global.html#bootstrap">bootstrap</a>
+						</li>
+						
+						<li>
+							<a href="global.html#css">css</a>
+						</li>
+						
+						<li>
+							<a href="global.html#html">html</a>
+						</li>
+						
+						<li>
+							<a href="global.html#is">is</a>
+						</li>
+						
+						<li>
+							<a href="global.html#xhr">xhr</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+			</ul>
+		</div>
+	</div>
+
+	<div class="row-fluid">
+
+		
+		<div class="span8">
+			
+				<div id="main">
+					
 
 
-
+	<h1 class="page-title">Class: DataStore</h1>
 <section>
-    
+
 <header>
     <h2>
     DataStore
     </h2>
     
-</header>  
+</header>
 
 <article>
     <div class="container-overview">
     
-    
+
     
         
 <dt>
@@ -47,7 +236,7 @@
     
     
     <div class="description">
-        Creates a new DataStore
+        <p>Creates a new DataStore</p>
     </div>
     
 
@@ -60,34 +249,34 @@
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5484">line 5484</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5484">line 5484</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -107,22 +296,22 @@
 
     
     </div>
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
+
     
         <h3 class="subsection-title">Methods</h3>
-        
+
         <dl>
             
 <dt>
@@ -134,7 +323,7 @@
     
     
     <div class="description">
-        Adds an event listener
+        <p>Adds an event listener</p>
     </div>
     
 
@@ -146,31 +335,31 @@
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>ev</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -179,21 +368,21 @@
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Event name</td>
+
+            <td class="description last"><p>Event name</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>listener</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -202,21 +391,21 @@
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Function to execute</td>
+
+            <td class="description last"><p>Function to execute</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>id</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -225,21 +414,21 @@
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Listener ID</td>
+
+            <td class="description last"><p>[Optional] Listener ID</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>scope</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -248,50 +437,51 @@
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Listener scope, default is `this`</td>
+
+            <td class="description last"><p>[Optional] Listener scope, default is <code>this</code></p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5521">line 5521</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5521">line 5521</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -309,7 +499,7 @@
     
             
 <div class="param-desc">
-    <a href="keigai.DataStore.html">keigai.DataStore</a>
+    <p><a href="keigai.DataStore.html">keigai.DataStore</a></p>
 </div>
 
 
@@ -325,6 +515,7 @@
 
 	</dd>
 </dl>
+
 
         
     
@@ -342,11 +533,10 @@
     
     
     <div class="description">
-        Batch sets or deletes data in the store
-
-Events: beforeBatch  Fires before the batch is queued
+        <p>Batch sets or deletes data in the store</p>
+<p>Events: beforeBatch  Fires before the batch is queued
         afterBatch   Fires after the batch is queued
-        failedBatch  Fires when an exception occurs
+        failedBatch  Fires when an exception occurs</p>
     </div>
     
 
@@ -358,31 +548,31 @@ Events: beforeBatch  Fires before the batch is queued
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>type</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -391,21 +581,21 @@ Events: beforeBatch  Fires before the batch is queued
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Type of action to perform ( set/del/delete )</td>
+
+            <td class="description last"><p>Type of action to perform ( set/del/delete )</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>data</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -414,21 +604,21 @@ Events: beforeBatch  Fires before the batch is queued
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Array of keys or indices to delete, or Object containing multiple records to set</td>
+
+            <td class="description last"><p>Array of keys or indices to delete, or Object containing multiple records to set</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>sync</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -437,50 +627,51 @@ Events: beforeBatch  Fires before the batch is queued
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Syncs store with data, if true everything is erased</td>
+
+            <td class="description last"><p>[Optional] Syncs store with data, if true everything is erased</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5538">line 5538</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5538">line 5538</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -498,7 +689,7 @@ Events: beforeBatch  Fires before the batch is queued
     
             
 <div class="param-desc">
-    <a href="keigai.Deferred.html">keigai.Deferred</a>
+    <p><a href="keigai.Deferred.html">keigai.Deferred</a></p>
 </div>
 
 
@@ -514,6 +705,7 @@ Events: beforeBatch  Fires before the batch is queued
 
 	</dd>
 </dl>
+
 
         
     
@@ -531,7 +723,7 @@ Events: beforeBatch  Fires before the batch is queued
     
     
     <div class="description">
-        Builds a URI
+        <p>Builds a URI</p>
     </div>
     
 
@@ -543,31 +735,31 @@ Events: beforeBatch  Fires before the batch is queued
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>key</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -576,50 +768,51 @@ Events: beforeBatch  Fires before the batch is queued
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Record key</td>
+
+            <td class="description last"><p>Record key</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5624">line 5624</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5624">line 5624</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -637,7 +830,7 @@ Events: beforeBatch  Fires before the batch is queued
     
             
 <div class="param-desc">
-    URI
+    <p>URI</p>
 </div>
 
 
@@ -653,6 +846,7 @@ Events: beforeBatch  Fires before the batch is queued
 
 	</dd>
 </dl>
+
 
         
     
@@ -670,10 +864,9 @@ Events: beforeBatch  Fires before the batch is queued
     
     
     <div class="description">
-        Clears the data object, unsets the uri property
-
-Events: beforeClear Fires before the data is cleared
-        afterClear  Fires after the data is cleared
+        <p>Clears the data object, unsets the uri property</p>
+<p>Events: beforeClear Fires before the data is cleared
+        afterClear  Fires after the data is cleared</p>
     </div>
     
 
@@ -685,31 +878,31 @@ Events: beforeClear Fires before the data is cleared
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>sync</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -718,50 +911,51 @@ Events: beforeClear Fires before the data is cleared
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Boolean to limit clearing of properties</td>
+
+            <td class="description last"><p>[Optional] Boolean to limit clearing of properties</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5638">line 5638</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5638">line 5638</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -779,7 +973,7 @@ Events: beforeClear Fires before the data is cleared
     
             
 <div class="param-desc">
-    <a href="keigai.DataStore.html">keigai.DataStore</a>
+    <p><a href="keigai.DataStore.html">keigai.DataStore</a></p>
 </div>
 
 
@@ -795,6 +989,7 @@ Events: beforeClear Fires before the data is cleared
 
 	</dd>
 </dl>
+
 
         
     
@@ -812,7 +1007,7 @@ Events: beforeClear Fires before the data is cleared
     
     
     <div class="description">
-        Setting constructor loop
+        <p>Setting constructor loop</p>
     </div>
     
 
@@ -825,34 +1020,34 @@ Events: beforeClear Fires before the data is cleared
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5512">line 5512</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5512">line 5512</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -882,6 +1077,7 @@ Events: beforeClear Fires before the data is cleared
 
 	</dd>
 </dl>
+
 
         
     
@@ -899,11 +1095,10 @@ Events: beforeClear Fires before the data is cleared
     
     
     <div class="description">
-        Crawls a record's properties and creates DataStores when URIs are detected
-
-Events: beforeRetrieve Fires before crawling a record
+        <p>Crawls a record's properties and creates DataStores when URIs are detected</p>
+<p>Events: beforeRetrieve Fires before crawling a record
         afterRetrieve  Fires after the store has retrieved all data from crawling
-        failedRetrieve Fires if an exception occurs
+        failedRetrieve Fires if an exception occurs</p>
     </div>
     
 
@@ -915,31 +1110,31 @@ Events: beforeRetrieve Fires before crawling a record
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -948,50 +1143,51 @@ Events: beforeRetrieve Fires before crawling a record
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Record, key or index</td>
+
+            <td class="description last"><p>Record, key or index</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5706">line 5706</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5706">line 5706</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1009,7 +1205,7 @@ Events: beforeRetrieve Fires before crawling a record
     
             
 <div class="param-desc">
-    <a href="keigai.Deferred.html">keigai.Deferred</a>
+    <p><a href="keigai.Deferred.html">keigai.Deferred</a></p>
 </div>
 
 
@@ -1025,6 +1221,7 @@ Events: beforeRetrieve Fires before crawling a record
 
 	</dd>
 </dl>
+
 
         
     
@@ -1042,11 +1239,10 @@ Events: beforeRetrieve Fires before crawling a record
     
     
     <div class="description">
-        Deletes a record based on key or index
-
-Events: beforeDelete  Fires before the record is deleted
+        <p>Deletes a record based on key or index</p>
+<p>Events: beforeDelete  Fires before the record is deleted
         afterDelete   Fires after the record is deleted
-        failedDelete  Fires if the store is RESTful and the action is denied
+        failedDelete  Fires if the store is RESTful and the action is denied</p>
     </div>
     
 
@@ -1058,31 +1254,31 @@ Events: beforeDelete  Fires before the record is deleted
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>record</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1091,21 +1287,21 @@ Events: beforeDelete  Fires before the record is deleted
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Record, key or index</td>
+
+            <td class="description last"><p>Record, key or index</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>reindex</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1114,21 +1310,21 @@ Events: beforeDelete  Fires before the record is deleted
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] `true` if DataStore should be reindexed</td>
+
+            <td class="description last"><p>[Optional] <code>true</code> if DataStore should be reindexed</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>batch</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1137,50 +1333,51 @@ Events: beforeDelete  Fires before the record is deleted
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] `true` if part of a batch operation</td>
+
+            <td class="description last"><p>[Optional] <code>true</code> if part of a batch operation</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5796">line 5796</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5796">line 5796</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1198,7 +1395,7 @@ Events: beforeDelete  Fires before the record is deleted
     
             
 <div class="param-desc">
-    <a href="keigai.Deferred.html">keigai.Deferred</a>
+    <p><a href="keigai.Deferred.html">keigai.Deferred</a></p>
 </div>
 
 
@@ -1214,6 +1411,7 @@ Events: beforeDelete  Fires before the record is deleted
 
 	</dd>
 </dl>
+
 
         
     
@@ -1231,7 +1429,7 @@ Events: beforeDelete  Fires before the record is deleted
     
     
     <div class="description">
-        Delete completion
+        <p>Delete completion</p>
     </div>
     
 
@@ -1243,31 +1441,31 @@ Events: beforeDelete  Fires before the record is deleted
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>record</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1276,21 +1474,21 @@ Events: beforeDelete  Fires before the record is deleted
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">DataStore record</td>
+
+            <td class="description last"><p>DataStore record</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>reindex</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1299,21 +1497,21 @@ Events: beforeDelete  Fires before the record is deleted
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">`true` if DataStore should be reindexed</td>
+
+            <td class="description last"><p><code>true</code> if DataStore should be reindexed</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>batch</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1322,21 +1520,21 @@ Events: beforeDelete  Fires before the record is deleted
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">`true` if part of a batch operation</td>
+
+            <td class="description last"><p><code>true</code> if part of a batch operation</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>defer</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1345,50 +1543,51 @@ Events: beforeDelete  Fires before the record is deleted
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Deferred instance</td>
+
+            <td class="description last"><p>Deferred instance</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5841">line 5841</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5841">line 5841</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1406,7 +1605,7 @@ Events: beforeDelete  Fires before the record is deleted
     
             
 <div class="param-desc">
-    <a href="keigai.DataStore.html">keigai.DataStore</a>
+    <p><a href="keigai.DataStore.html">keigai.DataStore</a></p>
 </div>
 
 
@@ -1422,6 +1621,7 @@ Events: beforeDelete  Fires before the record is deleted
 
 	</dd>
 </dl>
+
 
         
     
@@ -1439,7 +1639,7 @@ Events: beforeDelete  Fires before the record is deleted
     
     
     <div class="description">
-        Exports a subset or complete record set of DataStore
+        <p>Exports a subset or complete record set of DataStore</p>
     </div>
     
 
@@ -1451,31 +1651,31 @@ Events: beforeDelete  Fires before the record is deleted
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>args</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1484,21 +1684,21 @@ Events: beforeDelete  Fires before the record is deleted
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Sub-data set of DataStore</td>
+
+            <td class="description last"><p>[Optional] Sub-data set of DataStore</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>fields</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1507,50 +1707,51 @@ Events: beforeDelete  Fires before the record is deleted
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Fields to export, defaults to all</td>
+
+            <td class="description last"><p>[Optional] Fields to export, defaults to all</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5901">line 5901</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5901">line 5901</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1568,7 +1769,7 @@ Events: beforeDelete  Fires before the record is deleted
     
             
 <div class="param-desc">
-    Records
+    <p>Records</p>
 </div>
 
 
@@ -1585,96 +1786,6 @@ Events: beforeDelete  Fires before the record is deleted
 	</dd>
 </dl>
 
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="emit"><span class="type-signature">&lt;static> </span>emit<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Dispatches an event, with optional arguments
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5888">line 5888</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <a href="keigai.DataStore.html">keigai.DataStore</a>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Object</span>
-
-
-	</dd>
-</dl>
 
         
     
@@ -1692,7 +1803,7 @@ Events: beforeDelete  Fires before the record is deleted
     
     
     <div class="description">
-        Dispatches an event, with optional arguments
+        <p>Dispatches an event, with optional arguments</p>
     </div>
     
 
@@ -1705,34 +1816,34 @@ Events: beforeDelete  Fires before the record is deleted
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5947">line 5947</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5888">line 5888</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1750,7 +1861,7 @@ Events: beforeDelete  Fires before the record is deleted
     
             
 <div class="param-desc">
-    <a href="keigai.DataStore.html">keigai.DataStore</a>
+    <p><a href="keigai.DataStore.html">keigai.DataStore</a></p>
 </div>
 
 
@@ -1766,6 +1877,99 @@ Events: beforeDelete  Fires before the record is deleted
 
 	</dd>
 </dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="emit"><span class="type-signature">&lt;static> </span>emit<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Dispatches an event, with optional arguments</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5947">line 5947</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><a href="keigai.DataStore.html">keigai.DataStore</a></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
 
         
     
@@ -1783,9 +1987,8 @@ Events: beforeDelete  Fires before the record is deleted
     
     
     <div class="description">
-        Retrieves a record based on key or index
-
-If the key is an integer, cast to a string before sending as an argument!
+        <p>Retrieves a record based on key or index</p>
+<p>If the key is an integer, cast to a string before sending as an argument!</p>
     </div>
     
 
@@ -1797,31 +2000,31 @@ If the key is an integer, cast to a string before sending as an argument!
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>record</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1830,21 +2033,21 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Key, index or Array of pagination start & end; or comma delimited String of keys or indices</td>
+
+            <td class="description last"><p>Key, index or Array of pagination start &amp; end; or comma delimited String of keys or indices</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>offset</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1853,50 +2056,51 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Offset from `record` for pagination</td>
+
+            <td class="description last"><p>[Optional] Offset from <code>record</code> for pagination</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line5960">line 5960</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5960">line 5960</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1914,7 +2118,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
             
 <div class="param-desc">
-    Individual record, or Array of records
+    <p>Individual record, or Array of records</p>
 </div>
 
 
@@ -1930,6 +2134,7 @@ If the key is an integer, cast to a string before sending as an argument!
 
 	</dd>
 </dl>
+
 
         
     
@@ -1947,7 +2152,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
     
     <div class="description">
-        Performs an (INNER/LEFT/RIGHT) JOIN on two DataStores
+        <p>Performs an (INNER/LEFT/RIGHT) JOIN on two DataStores</p>
     </div>
     
 
@@ -1959,31 +2164,31 @@ If the key is an integer, cast to a string before sending as an argument!
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1992,21 +2197,21 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">DataStore to join</td>
+
+            <td class="description last"><p>DataStore to join</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>field</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2015,21 +2220,21 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Field in both DataStores</td>
+
+            <td class="description last"><p>Field in both DataStores</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>join</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2038,50 +2243,51 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Type of JOIN to perform, defaults to `inner`</td>
+
+            <td class="description last"><p>Type of JOIN to perform, defaults to <code>inner</code></p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6007">line 6007</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6007">line 6007</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2099,7 +2305,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
             
 <div class="param-desc">
-    <a href="keigai.Deferred.html">keigai.Deferred</a>
+    <p><a href="keigai.Deferred.html">keigai.Deferred</a></p>
 </div>
 
 
@@ -2115,6 +2321,7 @@ If the key is an integer, cast to a string before sending as an argument!
 
 	</dd>
 </dl>
+
 
         
     
@@ -2132,7 +2339,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
     
     <div class="description">
-        Gets listeners
+        <p>Gets listeners</p>
     </div>
     
 
@@ -2144,31 +2351,31 @@ If the key is an integer, cast to a string before sending as an argument!
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>ev</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2177,50 +2384,51 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Event name</td>
+
+            <td class="description last"><p>[Optional] Event name</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6125">line 6125</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6125">line 6125</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2238,7 +2446,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
             
 <div class="param-desc">
-    Listeners
+    <p>Listeners</p>
 </div>
 
 
@@ -2254,6 +2462,7 @@ If the key is an integer, cast to a string before sending as an argument!
 
 	</dd>
 </dl>
+
 
         
     
@@ -2271,7 +2480,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
     
     <div class="description">
-        Removes an event listener
+        <p>Removes an event listener</p>
     </div>
     
 
@@ -2283,31 +2492,31 @@ If the key is an integer, cast to a string before sending as an argument!
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>ev</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2316,21 +2525,21 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Event name</td>
+
+            <td class="description last"><p>Event name</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>id</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2339,50 +2548,51 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Listener ID</td>
+
+            <td class="description last"><p>[Optional] Listener ID</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6137">line 6137</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6137">line 6137</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2400,7 +2610,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
             
 <div class="param-desc">
-    <a href="keigai.DataStore.html">keigai.DataStore</a>
+    <p><a href="keigai.DataStore.html">keigai.DataStore</a></p>
 </div>
 
 
@@ -2416,6 +2626,7 @@ If the key is an integer, cast to a string before sending as an argument!
 
 	</dd>
 </dl>
+
 
         
     
@@ -2433,7 +2644,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
     
     <div class="description">
-        Adds an event listener
+        <p>Adds an event listener</p>
     </div>
     
 
@@ -2445,31 +2656,31 @@ If the key is an integer, cast to a string before sending as an argument!
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>ev</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2478,21 +2689,21 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Event name</td>
+
+            <td class="description last"><p>Event name</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>listener</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2501,21 +2712,21 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Function to execute</td>
+
+            <td class="description last"><p>Function to execute</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>id</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2524,21 +2735,21 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Listener ID</td>
+
+            <td class="description last"><p>[Optional] Listener ID</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>scope</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2547,50 +2758,51 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Listener scope, default is `this`</td>
+
+            <td class="description last"><p>[Optional] Listener scope, default is <code>this</code></p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6152">line 6152</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6152">line 6152</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2608,7 +2820,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
             
 <div class="param-desc">
-    <a href="keigai.DataStore.html">keigai.DataStore</a>
+    <p><a href="keigai.DataStore.html">keigai.DataStore</a></p>
 </div>
 
 
@@ -2624,6 +2836,7 @@ If the key is an integer, cast to a string before sending as an argument!
 
 	</dd>
 </dl>
+
 
         
     
@@ -2641,7 +2854,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
     
     <div class="description">
-        Adds a short lived event listener
+        <p>Adds a short lived event listener</p>
     </div>
     
 
@@ -2653,31 +2866,31 @@ If the key is an integer, cast to a string before sending as an argument!
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>ev</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2686,21 +2899,21 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Event name</td>
+
+            <td class="description last"><p>Event name</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>listener</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2709,21 +2922,21 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Function to execute</td>
+
+            <td class="description last"><p>Function to execute</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>id</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2732,21 +2945,21 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Listener ID</td>
+
+            <td class="description last"><p>[Optional] Listener ID</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>scope</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2755,50 +2968,51 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Listener scope, default is `this`</td>
+
+            <td class="description last"><p>[Optional] Listener scope, default is <code>this</code></p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6169">line 6169</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6169">line 6169</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2816,7 +3030,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
             
 <div class="param-desc">
-    <a href="keigai.DataStore.html">keigai.DataStore</a>
+    <p><a href="keigai.DataStore.html">keigai.DataStore</a></p>
 </div>
 
 
@@ -2832,6 +3046,7 @@ If the key is an integer, cast to a string before sending as an argument!
 
 	</dd>
 </dl>
+
 
         
     
@@ -2849,7 +3064,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
     
     <div class="description">
-        Retrieves only 1 field/property
+        <p>Retrieves only 1 field/property</p>
     </div>
     
 
@@ -2861,31 +3076,31 @@ If the key is an integer, cast to a string before sending as an argument!
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2894,50 +3109,51 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Field/property to retrieve</td>
+
+            <td class="description last"><p>Field/property to retrieve</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6186">line 6186</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6186">line 6186</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2955,7 +3171,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
             
 <div class="param-desc">
-    Array of values
+    <p>Array of values</p>
 </div>
 
 
@@ -2971,6 +3187,7 @@ If the key is an integer, cast to a string before sending as an argument!
 
 	</dd>
 </dl>
+
 
         
     
@@ -2988,7 +3205,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
     
     <div class="description">
-        Purges DataStore or record from localStorage
+        <p>Purges DataStore or record from localStorage</p>
     </div>
     
 
@@ -3000,31 +3217,31 @@ If the key is an integer, cast to a string before sending as an argument!
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3033,50 +3250,51 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] String or Number for record</td>
+
+            <td class="description last"><p>[Optional] String or Number for record</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6207">line 6207</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6207">line 6207</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3094,7 +3312,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
             
 <div class="param-desc">
-    Record or store
+    <p>Record or store</p>
 </div>
 
 
@@ -3110,6 +3328,7 @@ If the key is an integer, cast to a string before sending as an argument!
 
 	</dd>
 </dl>
+
 
         
     
@@ -3127,7 +3346,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
     
     <div class="description">
-        Reindexes the DataStore
+        <p>Reindexes the DataStore</p>
     </div>
     
 
@@ -3140,34 +3359,34 @@ If the key is an integer, cast to a string before sending as an argument!
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6219">line 6219</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6219">line 6219</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3185,7 +3404,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
             
 <div class="param-desc">
-    <a href="keigai.DataStore.html">keigai.DataStore</a>
+    <p><a href="keigai.DataStore.html">keigai.DataStore</a></p>
 </div>
 
 
@@ -3201,6 +3420,7 @@ If the key is an integer, cast to a string before sending as an argument!
 
 	</dd>
 </dl>
+
 
         
     
@@ -3218,7 +3438,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
     
     <div class="description">
-        Removes an event listener
+        <p>Removes an event listener</p>
     </div>
     
 
@@ -3230,31 +3450,31 @@ If the key is an integer, cast to a string before sending as an argument!
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>ev</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3263,21 +3483,21 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Event name</td>
+
+            <td class="description last"><p>Event name</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>id</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3286,50 +3506,51 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Listener ID</td>
+
+            <td class="description last"><p>[Optional] Listener ID</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6242">line 6242</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6242">line 6242</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3347,7 +3568,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
             
 <div class="param-desc">
-    <a href="keigai.DataStore.html">keigai.DataStore</a>
+    <p><a href="keigai.DataStore.html">keigai.DataStore</a></p>
 </div>
 
 
@@ -3363,6 +3584,7 @@ If the key is an integer, cast to a string before sending as an argument!
 
 	</dd>
 </dl>
+
 
         
     
@@ -3380,7 +3602,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
     
     <div class="description">
-        Restores DataStore or record frome localStorage
+        <p>Restores DataStore or record frome localStorage</p>
     </div>
     
 
@@ -3392,31 +3614,31 @@ If the key is an integer, cast to a string before sending as an argument!
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3425,50 +3647,51 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] String or Number for record</td>
+
+            <td class="description last"><p>[Optional] String or Number for record</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6257">line 6257</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6257">line 6257</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3486,7 +3709,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
             
 <div class="param-desc">
-    Record or store
+    <p>Record or store</p>
 </div>
 
 
@@ -3502,6 +3725,7 @@ If the key is an integer, cast to a string before sending as an argument!
 
 	</dd>
 </dl>
+
 
         
     
@@ -3519,7 +3743,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
     
     <div class="description">
-        Saves DataStore or record to localStorage, sessionStorage or MongoDB (node.js only)
+        <p>Saves DataStore or record to localStorage, sessionStorage or MongoDB (node.js only)</p>
     </div>
     
 
@@ -3531,31 +3755,31 @@ If the key is an integer, cast to a string before sending as an argument!
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3564,50 +3788,51 @@ If the key is an integer, cast to a string before sending as an argument!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] String or Number for record</td>
+
+            <td class="description last"><p>[Optional] String or Number for record</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6269">line 6269</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6269">line 6269</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3625,7 +3850,7 @@ If the key is an integer, cast to a string before sending as an argument!
     
             
 <div class="param-desc">
-    <a href="keigai.Deferred.html">keigai.Deferred</a>
+    <p><a href="keigai.Deferred.html">keigai.Deferred</a></p>
 </div>
 
 
@@ -3641,6 +3866,7 @@ If the key is an integer, cast to a string before sending as an argument!
 
 	</dd>
 </dl>
+
 
         
     
@@ -3658,9 +3884,8 @@ If the key is an integer, cast to a string before sending as an argument!
     
     
     <div class="description">
-        Selects records based on an explcit description
-
-Note: Records are not by reference!
+        <p>Selects records based on an explcit description</p>
+<p>Note: Records are not by reference!</p>
     </div>
     
 
@@ -3672,31 +3897,31 @@ Note: Records are not by reference!
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>where</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3705,50 +3930,51 @@ Note: Records are not by reference!
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Object describing the WHERE clause</td>
+
+            <td class="description last"><p>Object describing the WHERE clause</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6281">line 6281</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6281">line 6281</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3766,7 +3992,7 @@ Note: Records are not by reference!
     
             
 <div class="param-desc">
-    <a href="keigai.Deferred.html">keigai.Deferred</a>
+    <p><a href="keigai.Deferred.html">keigai.Deferred</a></p>
 </div>
 
 
@@ -3782,6 +4008,7 @@ Note: Records are not by reference!
 
 	</dd>
 </dl>
+
 
         
     
@@ -3799,11 +4026,10 @@ Note: Records are not by reference!
     
     
     <div class="description">
-        Creates or updates an existing record
-
-Events: beforeSet  Fires before the record is set
+        <p>Creates or updates an existing record</p>
+<p>Events: beforeSet  Fires before the record is set
         afterSet   Fires after the record is set, the record is the argument for listeners
-        failedSet  Fires if the store is RESTful and the action is denied
+        failedSet  Fires if the store is RESTful and the action is denied</p>
     </div>
     
 
@@ -3815,31 +4041,31 @@ Events: beforeSet  Fires before the record is set
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>key</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3848,21 +4074,21 @@ Events: beforeSet  Fires before the record is set
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Integer or String to use as a Primary Key</td>
+
+            <td class="description last"><p>[Optional] Integer or String to use as a Primary Key</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>data</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3871,21 +4097,21 @@ Events: beforeSet  Fires before the record is set
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Key:Value pairs to set as field values</td>
+
+            <td class="description last"><p>Key:Value pairs to set as field values</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>batch</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3894,50 +4120,51 @@ Events: beforeSet  Fires before the record is set
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] True if called by data.batch</td>
+
+            <td class="description last"><p>[Optional] True if called by data.batch</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6367">line 6367</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6367">line 6367</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3955,7 +4182,7 @@ Events: beforeSet  Fires before the record is set
     
             
 <div class="param-desc">
-    <a href="keigai.Deferred.html">keigai.Deferred</a>
+    <p><a href="keigai.Deferred.html">keigai.Deferred</a></p>
 </div>
 
 
@@ -3971,6 +4198,7 @@ Events: beforeSet  Fires before the record is set
 
 	</dd>
 </dl>
+
 
         
     
@@ -3988,7 +4216,7 @@ Events: beforeSet  Fires before the record is set
     
     
     <div class="description">
-        Set completion
+        <p>Set completion</p>
     </div>
     
 
@@ -4000,31 +4228,31 @@ Events: beforeSet  Fires before the record is set
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>record</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4033,21 +4261,21 @@ Events: beforeSet  Fires before the record is set
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">DataStore record, or `null` if new</td>
+
+            <td class="description last"><p>DataStore record, or <code>null</code> if new</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>key</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4056,21 +4284,21 @@ Events: beforeSet  Fires before the record is set
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Record key</td>
+
+            <td class="description last"><p>Record key</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>data</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4079,21 +4307,21 @@ Events: beforeSet  Fires before the record is set
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Record data</td>
+
+            <td class="description last"><p>Record data</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>batch</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4102,21 +4330,21 @@ Events: beforeSet  Fires before the record is set
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">`true` if part of a batch operation</td>
+
+            <td class="description last"><p><code>true</code> if part of a batch operation</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>defer</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4125,50 +4353,51 @@ Events: beforeSet  Fires before the record is set
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Deferred instance</td>
+
+            <td class="description last"><p>Deferred instance</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6468">line 6468</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6468">line 6468</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -4186,7 +4415,7 @@ Events: beforeSet  Fires before the record is set
     
             
 <div class="param-desc">
-    <a href="keigai.DataStore.html">keigai.DataStore</a>
+    <p><a href="keigai.DataStore.html">keigai.DataStore</a></p>
 </div>
 
 
@@ -4202,6 +4431,7 @@ Events: beforeSet  Fires before the record is set
 
 	</dd>
 </dl>
+
 
         
     
@@ -4219,7 +4449,7 @@ Events: beforeSet  Fires before the record is set
     
     
     <div class="description">
-        Gets or sets an explicit expiration of data
+        <p>Gets or sets an explicit expiration of data</p>
     </div>
     
 
@@ -4231,31 +4461,31 @@ Events: beforeSet  Fires before the record is set
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4264,50 +4494,51 @@ Events: beforeSet  Fires before the record is set
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Milliseconds until data is stale</td>
+
+            <td class="description last"><p>Milliseconds until data is stale</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6558">line 6558</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6558">line 6558</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -4325,7 +4556,7 @@ Events: beforeSet  Fires before the record is set
     
             
 <div class="param-desc">
-    <a href="keigai.DataStore.html">keigai.DataStore</a>
+    <p><a href="keigai.DataStore.html">keigai.DataStore</a></p>
 </div>
 
 
@@ -4341,6 +4572,7 @@ Events: beforeSet  Fires before the record is set
 
 	</dd>
 </dl>
+
 
         
     
@@ -4358,7 +4590,7 @@ Events: beforeSet  Fires before the record is set
     
     
     <div class="description">
-        Sets the RESTful API end point
+        <p>Sets the RESTful API end point</p>
     </div>
     
 
@@ -4370,31 +4602,31 @@ Events: beforeSet  Fires before the record is set
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4403,50 +4635,51 @@ Events: beforeSet  Fires before the record is set
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">API collection end point</td>
+
+            <td class="description last"><p>API collection end point</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6603">line 6603</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6603">line 6603</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -4464,7 +4697,7 @@ Events: beforeSet  Fires before the record is set
     
             
 <div class="param-desc">
-    Deferred
+    <p>Deferred</p>
 </div>
 
 
@@ -4480,6 +4713,7 @@ Events: beforeSet  Fires before the record is set
 
 	</dd>
 </dl>
+
 
         
     
@@ -4497,9 +4731,8 @@ Events: beforeSet  Fires before the record is set
     
     
     <div class="description">
-        Returns a view, or creates a view and returns it
-
-Records in a view are not by reference, they are clones
+        <p>Returns a view, or creates a view and returns it</p>
+<p>Records in a view are not by reference, they are clones</p>
     </div>
     
 
@@ -4511,31 +4744,31 @@ Records in a view are not by reference, they are clones
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>query</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4544,21 +4777,21 @@ Records in a view are not by reference, they are clones
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">SQL ( style ) order by</td>
+
+            <td class="description last"><p>SQL ( style ) order by</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>create</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4567,21 +4800,21 @@ Records in a view are not by reference, they are clones
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional, default behavior is true, value is false] Boolean determines whether to recreate a view if it exists</td>
+
+            <td class="description last"><p>[Optional, default behavior is true, value is false] Boolean determines whether to recreate a view if it exists</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>where</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4590,50 +4823,51 @@ Records in a view are not by reference, they are clones
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Object describing the WHERE clause</td>
+
+            <td class="description last"><p>[Optional] Object describing the WHERE clause</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6659">line 6659</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6659">line 6659</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -4651,7 +4885,7 @@ Records in a view are not by reference, they are clones
     
             
 <div class="param-desc">
-    <a href="keigai.Deferred.html">keigai.Deferred</a>
+    <p><a href="keigai.Deferred.html">keigai.Deferred</a></p>
 </div>
 
 
@@ -4667,6 +4901,7 @@ Records in a view are not by reference, they are clones
 
 	</dd>
 </dl>
+
 
         
     
@@ -4684,9 +4919,8 @@ Records in a view are not by reference, they are clones
     
     
     <div class="description">
-        Storage interface
-
-SQL/NoSQL backends will be used if configured in lieu of localStorage (node.js only)
+        <p>Storage interface</p>
+<p>SQL/NoSQL backends will be used if configured in lieu of localStorage (node.js only)</p>
     </div>
     
 
@@ -4698,31 +4932,31 @@ SQL/NoSQL backends will be used if configured in lieu of localStorage (node.js o
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>obj</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4731,21 +4965,21 @@ SQL/NoSQL backends will be used if configured in lieu of localStorage (node.js o
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Record ( Object, key or index ) or store</td>
+
+            <td class="description last"><p>Record ( Object, key or index ) or store</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>op</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4754,21 +4988,21 @@ SQL/NoSQL backends will be used if configured in lieu of localStorage (node.js o
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Operation to perform ( get, remove or set )</td>
+
+            <td class="description last"><p>Operation to perform ( get, remove or set )</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>type</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4777,50 +5011,51 @@ SQL/NoSQL backends will be used if configured in lieu of localStorage (node.js o
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Type of Storage to use ( local, session [local] )</td>
+
+            <td class="description last"><p>[Optional] Type of Storage to use ( local, session [local] )</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6719">line 6719</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6719">line 6719</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -4838,7 +5073,7 @@ SQL/NoSQL backends will be used if configured in lieu of localStorage (node.js o
     
             
 <div class="param-desc">
-    <a href="keigai.Deferred.html">keigai.Deferred</a>
+    <p><a href="keigai.Deferred.html">keigai.Deferred</a></p>
 </div>
 
 
@@ -4854,6 +5089,7 @@ SQL/NoSQL backends will be used if configured in lieu of localStorage (node.js o
 
 	</dd>
 </dl>
+
 
         
     
@@ -4871,11 +5107,10 @@ SQL/NoSQL backends will be used if configured in lieu of localStorage (node.js o
     
     
     <div class="description">
-        Syncs the DataStore with a URI representation
-
-Events: beforeSync  Fires before syncing the DataStore
+        <p>Syncs the DataStore with a URI representation</p>
+<p>Events: beforeSync  Fires before syncing the DataStore
         afterSync   Fires after syncing the DataStore
-        failedSync  Fires when an exception occurs
+        failedSync  Fires when an exception occurs</p>
     </div>
     
 
@@ -4888,34 +5123,34 @@ Events: beforeSync  Fires before syncing the DataStore
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line6970">line 6970</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-6970">line 6970</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -4933,7 +5168,7 @@ Events: beforeSync  Fires before syncing the DataStore
     
             
 <div class="param-desc">
-    <a href="keigai.Deferred.html">keigai.Deferred</a>
+    <p><a href="keigai.Deferred.html">keigai.Deferred</a></p>
 </div>
 
 
@@ -4949,6 +5184,7 @@ Events: beforeSync  Fires before syncing the DataStore
 
 	</dd>
 </dl>
+
 
         
     
@@ -4966,7 +5202,7 @@ Events: beforeSync  Fires before syncing the DataStore
     
     
     <div class="description">
-        Tears down a store & expires all records associated to an API
+        <p>Tears down a store &amp; expires all records associated to an API</p>
     </div>
     
 
@@ -4979,34 +5215,34 @@ Events: beforeSync  Fires before syncing the DataStore
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7058">line 7058</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7058">line 7058</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -5024,7 +5260,7 @@ Events: beforeSync  Fires before syncing the DataStore
     
             
 <div class="param-desc">
-    <a href="keigai.DataStore.html">keigai.DataStore</a>
+    <p><a href="keigai.DataStore.html">keigai.DataStore</a></p>
 </div>
 
 
@@ -5040,6 +5276,7 @@ Events: beforeSync  Fires before syncing the DataStore
 
 	</dd>
 </dl>
+
 
         
     
@@ -5057,7 +5294,7 @@ Events: beforeSync  Fires before syncing the DataStore
     
     
     <div class="description">
-        Undoes the last modification to a record, if it exists
+        <p>Undoes the last modification to a record, if it exists</p>
     </div>
     
 
@@ -5069,31 +5306,31 @@ Events: beforeSync  Fires before syncing the DataStore
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>key</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -5102,21 +5339,21 @@ Events: beforeSync  Fires before syncing the DataStore
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Key or index</td>
+
+            <td class="description last"><p>Key or index</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>version</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -5125,50 +5362,51 @@ Events: beforeSync  Fires before syncing the DataStore
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Version to restore</td>
+
+            <td class="description last"><p>[Optional] Version to restore</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7102">line 7102</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7102">line 7102</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -5186,7 +5424,7 @@ Events: beforeSync  Fires before syncing the DataStore
     
             
 <div class="param-desc">
-    Deferred
+    <p>Deferred</p>
 </div>
 
 
@@ -5202,6 +5440,7 @@ Events: beforeSync  Fires before syncing the DataStore
 
 	</dd>
 </dl>
+
 
         
     
@@ -5219,7 +5458,7 @@ Events: beforeSync  Fires before syncing the DataStore
     
     
     <div class="description">
-        Returns Array of unique values of `key`
+        <p>Returns Array of unique values of <code>key</code></p>
     </div>
     
 
@@ -5231,31 +5470,31 @@ Events: beforeSync  Fires before syncing the DataStore
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>key</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -5264,50 +5503,51 @@ Events: beforeSync  Fires before syncing the DataStore
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Field to compare</td>
+
+            <td class="description last"><p>Field to compare</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7142">line 7142</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7142">line 7142</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -5325,7 +5565,7 @@ Events: beforeSync  Fires before syncing the DataStore
     
             
 <div class="param-desc">
-    Array of values
+    <p>Array of values</p>
 </div>
 
 
@@ -5341,6 +5581,7 @@ Events: beforeSync  Fires before syncing the DataStore
 
 	</dd>
 </dl>
+
 
         
     
@@ -5358,9 +5599,8 @@ Events: beforeSync  Fires before syncing the DataStore
     
     
     <div class="description">
-        Applies a difference to a record
-
-Use `data.set()` if `data` is the complete field set
+        <p>Applies a difference to a record</p>
+<p>Use <code>data.set()</code> if <code>data</code> is the complete field set</p>
     </div>
     
 
@@ -5372,31 +5612,31 @@ Use `data.set()` if `data` is the complete field set
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>key</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -5405,21 +5645,21 @@ Use `data.set()` if `data` is the complete field set
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Key or index</td>
+
+            <td class="description last"><p>Key or index</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>data</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -5428,50 +5668,51 @@ Use `data.set()` if `data` is the complete field set
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Key:Value pairs to set as field values</td>
+
+            <td class="description last"><p>Key:Value pairs to set as field values</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7156">line 7156</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7156">line 7156</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -5489,7 +5730,7 @@ Use `data.set()` if `data` is the complete field set
     
             
 <div class="param-desc">
-    <a href="keigai.Deferred.html">keigai.Deferred</a>
+    <p><a href="keigai.Deferred.html">keigai.Deferred</a></p>
 </div>
 
 
@@ -5506,6 +5747,7 @@ Use `data.set()` if `data` is the complete field set
 	</dd>
 </dl>
 
+
         
     
     
@@ -5513,30 +5755,72 @@ Use `data.set()` if `data` is the complete field set
 
         </dl>
     
+
     
-    
-    
+
     
 </article>
 
-</section>  
+</section>
 
 
 
 
-</div>
+				</div>
 
-<nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataListFilter.html">DataListFilter</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="keigai.Deferred.html">Deferred</a></li><li><a href="keigai.LRU.html">LRU</a></li><li><a href="keigai.LRUItem.html">LRUItem</a></li><li><a href="keigai.Observable.html">Observable</a></li><li><a href="keigai.Promise.html">Promise</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="deferred.html">deferred</a></li><li><a href="element.html">element</a></li><li><a href="filter.html">filter</a></li><li><a href="grid.html">grid</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="list.html">list</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="store.html">store</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#css">css</a></li><li><a href="global.html#html">html</a></li><li><a href="global.html#is">is</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
-</nav>
+				<div class="clearfix"></div>
+				<footer>
+					
+					
+		<span class="copyright">
+		Copyright &copy; 2014 Jason Mulligan
+		</span>
+					<br />
+					
+		<span class="jsdoc-message">
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
+		on Sat Mar 08 2014 11:28:38 GMT-0500 (EST) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		</span>
+				</footer>
+			</div>
 
-<br clear="both">
+			
+			<div class="span3">
+				<div id="toc"></div>
+			</div>
+			
+			<br clear="both">
+		</div>
 
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Mar 02 2014 15:13:46 GMT-0500 (EST)
-</footer>
+	</div>
+	<script src="scripts/sunlight.js"></script>
+	<script src="scripts/sunlight.javascript.js"></script>
+	<script src="scripts/sunlight-plugin.doclinks.js"></script>
+	<script src="scripts/sunlight-plugin.linenumbers.js"></script>
+	<script src="scripts/sunlight-plugin.menu.js"></script>
+	<script src="scripts/jquery.min.js"></script>
+	<script src="scripts/jquery.scrollTo.js"></script>
+	<script src="scripts/jquery.localScroll.js"></script>
+	<script src="scripts/bootstrap-dropdown.js"></script>
+	<script src="scripts/toc.js"></script>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+
+	<script>  Sunlight.highlightAll({lineNumbers:true,  showMenu: true, enableDoclinks :true}); </script>
+
+	<script>
+		$( function () {
+			$( "#toc" ).toc( {
+				selectors   : "h1,h2,h3,h4",
+				showAndHide : false,
+				scrollTo    : 60
+			} );
+			$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
+			$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+
+		} );
+	</script>
+
+	
+
 </body>
 </html>
