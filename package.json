@@ -1,7 +1,7 @@
 {
   "name": "keigai",
   "description": "Lightweight data store library",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "homepage": "http://keigai.io",
   "author": {
     "name": "Jason Mulligan",
@@ -41,7 +41,8 @@
     "grunt-contrib-nodeunit": "~0.1.2",
     "grunt-contrib-watch": "~0.2",
     "grunt-contrib-sass": "~0.4.0",
-    "grunt-jsdoc": "~0.4.0"
+    "grunt-jsdoc": "~0.5.1",
+    "ink-docstrap" : "~0.3.0"
   },
   "keywords": [
     "data",

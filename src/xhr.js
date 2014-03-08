@@ -106,6 +106,7 @@ function xhr () {
 	 *
 	 * @constructor
 	 * @private
+	 * @memberOf xhr
 	 * @return {Object} XMLHttpRequest instance
 	 */
 	XMLHttpRequest = function () {

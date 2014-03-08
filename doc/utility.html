@@ -1,96 +1,285 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>JSDoc: Namespace: utility</title>
-    
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+	<meta charset="utf-8">
+	<title>keigai Namespace: utility</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	
+	<link type="text/css" rel="stylesheet" href="styles/site.cerulean.css">
+	
 </head>
 
 <body>
+<div class="container-fluid">
+	<div class="navbar navbar-fixed-top ">
+		<div class="navbar-inner">
+			<a class="brand" href="index.html">keigai</a>
+			<ul class="nav">
+				
+				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
 
-<div id="main">
-    
-    <h1 class="page-title">Namespace: utility</h1>
-    
-    
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="array.html">array</a>
+						</li>
+						
+						<li>
+							<a href="cache.html">cache</a>
+						</li>
+						
+						<li>
+							<a href="client.html">client</a>
+						</li>
+						
+						<li>
+							<a href="deferred.html">deferred</a>
+						</li>
+						
+						<li>
+							<a href="element.html">element</a>
+						</li>
+						
+						<li>
+							<a href="filter.html">filter</a>
+						</li>
+						
+						<li>
+							<a href="grid.html">grid</a>
+						</li>
+						
+						<li>
+							<a href="json.html">json</a>
+						</li>
+						
+						<li>
+							<a href="label.html">label</a>
+						</li>
+						
+						<li>
+							<a href="list.html">list</a>
+						</li>
+						
+						<li>
+							<a href="math.html">math</a>
+						</li>
+						
+						<li>
+							<a href="number.html">number</a>
+						</li>
+						
+						<li>
+							<a href="promise.html">promise</a>
+						</li>
+						
+						<li>
+							<a href="regex.html">regex</a>
+						</li>
+						
+						<li>
+							<a href="store.html">store</a>
+						</li>
+						
+						<li>
+							<a href="string.html">string</a>
+						</li>
+						
+						<li>
+							<a href="utility.html">utility</a>
+						</li>
+						
+						<li>
+							<a href="xml.html">xml</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="module-keigai.html">keigai</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="keigai.DataGrid.html">DataGrid</a>
+						</li>
+						
+						<li>
+							<a href="keigai.DataList.html">DataList</a>
+						</li>
+						
+						<li>
+							<a href="keigai.DataListFilter.html">DataListFilter</a>
+						</li>
+						
+						<li>
+							<a href="keigai.DataStore.html">DataStore</a>
+						</li>
+						
+						<li>
+							<a href="keigai.Deferred.html">Deferred</a>
+						</li>
+						
+						<li>
+							<a href="keigai.LRU.html">LRU</a>
+						</li>
+						
+						<li>
+							<a href="keigai.LRUItem.html">LRUItem</a>
+						</li>
+						
+						<li>
+							<a href="keigai.Observable.html">Observable</a>
+						</li>
+						
+						<li>
+							<a href="keigai.Promise.html">Promise</a>
+						</li>
+						
+						<li>
+							<a href="xhr.XMLHttpRequest.html">XMLHttpRequest</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="global.html#bootstrap">bootstrap</a>
+						</li>
+						
+						<li>
+							<a href="global.html#css">css</a>
+						</li>
+						
+						<li>
+							<a href="global.html#html">html</a>
+						</li>
+						
+						<li>
+							<a href="global.html#is">is</a>
+						</li>
+						
+						<li>
+							<a href="global.html#xhr">xhr</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+			</ul>
+		</div>
+	</div>
+
+	<div class="row-fluid">
+
+		
+		<div class="span8">
+			
+				<div id="main">
+					
 
 
-
+	<h1 class="page-title">Namespace: utility</h1>
 <section>
-    
+
 <header>
     <h2>
     utility
     </h2>
     
-</header>  
+</header>
 
 <article>
     <div class="container-overview">
     
-    
+
     
         
-        
+
         
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7441">line 7441</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7441">line 7441</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
-        
+
         
     
     </div>
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
+
     
         <h3 class="subsection-title">Members</h3>
-        
+
         <dl>
             
 <dt>
@@ -101,7 +290,7 @@
 <dd>
     
     <div class="description">
-        Collection of repeating functions
+        <p>Collection of repeating functions</p>
     </div>
     
     
@@ -120,34 +309,34 @@
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7460">line 7460</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7460">line 7460</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -165,7 +354,7 @@
 <dd>
     
     <div class="description">
-        Collection of timers
+        <p>Collection of timers</p>
     </div>
     
     
@@ -184,34 +373,34 @@
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7452">line 7452</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7452">line 7452</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -221,10 +410,10 @@
 
         </dl>
     
-    
+
     
         <h3 class="subsection-title">Methods</h3>
-        
+
         <dl>
             
 <dt>
@@ -236,7 +425,7 @@
     
     
     <div class="description">
-        Queries the DOM using CSS selectors and returns an Element or Array of Elements
+        <p>Queries the DOM using CSS selectors and returns an Element or Array of Elements</p>
     </div>
     
 
@@ -248,31 +437,31 @@
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -281,50 +470,51 @@
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Element, HTML, or Comma delimited string of CSS selectors</td>
+
+            <td class="description last"><p>Element, HTML, or Comma delimited string of CSS selectors</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7462">line 7462</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7462">line 7462</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -342,7 +532,7 @@
     
             
 <div class="param-desc">
-    Element or Array of Elements
+    <p>Element or Array of Elements</p>
 </div>
 
 
@@ -358,6 +548,7 @@
 
 	</dd>
 </dl>
+
 
         
     
@@ -375,7 +566,7 @@
     
     
     <div class="description">
-        Clears deferred & repeating functions
+        <p>Clears deferred &amp; repeating functions</p>
     </div>
     
 
@@ -387,31 +578,31 @@
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>id</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -420,50 +611,51 @@
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">ID of timer( s )</td>
+
+            <td class="description last"><p>ID of timer( s )</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7519">line 7519</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7519">line 7519</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -481,7 +673,7 @@
     
             
 <div class="param-desc">
-    undefined
+    <p>undefined</p>
 </div>
 
 
@@ -497,6 +689,7 @@
 
 	</dd>
 </dl>
+
 
         
     
@@ -514,7 +707,7 @@
     
     
     <div class="description">
-        Clones an Object
+        <p>Clones an Object</p>
     </div>
     
 
@@ -526,31 +719,31 @@
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>obj</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -559,21 +752,21 @@
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Object to clone</td>
+
+            <td class="description last"><p>Object to clone</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>shallow</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -582,50 +775,51 @@
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Create a shallow clone, which doesn't maintain prototypes, default is `false`</td>
+
+            <td class="description last"><p>[Optional] Create a shallow clone, which doesn't maintain prototypes, default is <code>false</code></p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7545">line 7545</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7545">line 7545</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -643,7 +837,7 @@
     
             
 <div class="param-desc">
-    Clone of obj
+    <p>Clone of obj</p>
 </div>
 
 
@@ -659,6 +853,7 @@
 
 	</dd>
 </dl>
+
 
         
     
@@ -676,7 +871,7 @@
     
     
     <div class="description">
-        Coerces a String to a Type
+        <p>Coerces a String to a Type</p>
     </div>
     
 
@@ -688,31 +883,31 @@
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>value</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -721,50 +916,51 @@
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">String to coerce</td>
+
+            <td class="description last"><p>String to coerce</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7597">line 7597</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7597">line 7597</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -782,7 +978,7 @@
     
             
 <div class="param-desc">
-    Primitive version of the String
+    <p>Primitive version of the String</p>
 </div>
 
 
@@ -798,6 +994,7 @@
 
 	</dd>
 </dl>
+
 
         
     
@@ -815,9 +1012,8 @@
     
     
     <div class="description">
-        Recompiles a RegExp by reference
-
-This is ideal when you need to recompile a regex for use within a conditional statement
+        <p>Recompiles a RegExp by reference</p>
+<p>This is ideal when you need to recompile a regex for use within a conditional statement</p>
     </div>
     
 
@@ -829,31 +1025,31 @@ This is ideal when you need to recompile a regex for use within a conditional st
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>regex</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -862,21 +1058,21 @@ This is ideal when you need to recompile a regex for use within a conditional st
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">RegExp</td>
+
+            <td class="description last"><p>RegExp</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>pattern</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -885,21 +1081,21 @@ This is ideal when you need to recompile a regex for use within a conditional st
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Regular expression pattern</td>
+
+            <td class="description last"><p>Regular expression pattern</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>modifiers</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -908,50 +1104,51 @@ This is ideal when you need to recompile a regex for use within a conditional st
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Modifiers to apply to the pattern</td>
+
+            <td class="description last"><p>Modifiers to apply to the pattern</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7637">line 7637</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7637">line 7637</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -969,7 +1166,7 @@ This is ideal when you need to recompile a regex for use within a conditional st
     
             
 <div class="param-desc">
-    true
+    <p>true</p>
 </div>
 
 
@@ -985,6 +1182,7 @@ This is ideal when you need to recompile a regex for use within a conditional st
 
 	</dd>
 </dl>
+
 
         
     
@@ -1002,8 +1200,8 @@ This is ideal when you need to recompile a regex for use within a conditional st
     
     
     <div class="description">
-        Defers the execution of Function by at least the supplied milliseconds.
-Timing may vary under "heavy load" relative to the CPU & client JavaScript engine.
+        <p>Defers the execution of Function by at least the supplied milliseconds.
+Timing may vary under &quot;heavy load&quot; relative to the CPU &amp; client JavaScript engine.</p>
     </div>
     
 
@@ -1015,31 +1213,31 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>fn</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1048,21 +1246,21 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Function to defer execution of</td>
+
+            <td class="description last"><p>Function to defer execution of</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>ms</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1071,21 +1269,21 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Milliseconds to defer execution</td>
+
+            <td class="description last"><p>Milliseconds to defer execution</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>id</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1094,21 +1292,21 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] ID of the deferred function</td>
+
+            <td class="description last"><p>[Optional] ID of the deferred function</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>repeat</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1117,50 +1315,51 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Describes the execution, default is `false`</td>
+
+            <td class="description last"><p>[Optional] Describes the execution, default is <code>false</code></p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7655">line 7655</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7655">line 7655</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1178,7 +1377,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
     
             
 <div class="param-desc">
-    ID of the timer
+    <p>ID of the timer</p>
 </div>
 
 
@@ -1194,6 +1393,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
 	</dd>
 </dl>
+
 
         
     
@@ -1211,7 +1411,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
     
     
     <div class="description">
-        Queries DOM with fastest method
+        <p>Queries DOM with fastest method</p>
     </div>
     
 
@@ -1223,31 +1423,31 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1256,50 +1456,51 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">DOM query</td>
+
+            <td class="description last"><p>DOM query</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7690">line 7690</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7690">line 7690</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1317,7 +1518,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
     
             
 <div class="param-desc">
-    undefined, Element, or Array of Elements
+    <p>undefined, Element, or Array of Elements</p>
 </div>
 
 
@@ -1333,6 +1534,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
 	</dd>
 </dl>
+
 
         
     
@@ -1350,7 +1552,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
     
     
     <div class="description">
-        Encodes a UUID to a DOM friendly ID
+        <p>Encodes a UUID to a DOM friendly ID</p>
     </div>
     
 
@@ -1362,31 +1564,31 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>UUID</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1395,50 +1597,51 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
             
             </td>
+
             
+
             
-            
-            
-            
+
             <td class="description last"></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7722">line 7722</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7722">line 7722</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1456,7 +1659,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
     
             
 <div class="param-desc">
-    DOM friendly ID
+    <p>DOM friendly ID</p>
 </div>
 
 
@@ -1472,6 +1675,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
 	</dd>
 </dl>
+
 
         
     
@@ -1489,7 +1693,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
     
     
     <div class="description">
-        Error handling, with history in `error.log`
+        <p>Error handling, with history in <code>error.log</code></p>
     </div>
     
 
@@ -1501,31 +1705,31 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>e</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1534,21 +1738,21 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Error object or message to display</td>
+
+            <td class="description last"><p>Error object or message to display</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>args</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1557,21 +1761,21 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Array of arguments from the callstack</td>
+
+            <td class="description last"><p>Array of arguments from the callstack</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>scope</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1580,21 +1784,21 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Entity that was "this"</td>
+
+            <td class="description last"><p>Entity that was &quot;this&quot;</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>warning</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1603,50 +1807,51 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Will display as console warning if true</td>
+
+            <td class="description last"><p>[Optional] Will display as console warning if true</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7734">line 7734</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7734">line 7734</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1664,7 +1869,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
     
             
 <div class="param-desc">
-    undefined
+    <p>undefined</p>
 </div>
 
 
@@ -1680,6 +1885,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
 	</dd>
 </dl>
+
 
         
     
@@ -1697,7 +1903,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
     
     
     <div class="description">
-        Creates a "class" extending Object, with optional decoration
+        <p>Creates a &quot;class&quot; extending Object, with optional decoration</p>
     </div>
     
 
@@ -1709,31 +1915,31 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>obj</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1742,21 +1948,21 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Object to extend</td>
+
+            <td class="description last"><p>Object to extend</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1765,50 +1971,51 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Object for decoration</td>
+
+            <td class="description last"><p>[Optional] Object for decoration</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7761">line 7761</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7761">line 7761</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1826,7 +2033,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
     
             
 <div class="param-desc">
-    Decorated obj
+    <p>Decorated obj</p>
 </div>
 
 
@@ -1842,6 +2049,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
 	</dd>
 </dl>
+
 
         
     
@@ -1859,7 +2067,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
     
     
     <div class="description">
-        Generates an ID value
+        <p>Generates an ID value</p>
     </div>
     
 
@@ -1871,31 +2079,31 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>obj</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1904,21 +2112,21 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Object to receive id</td>
+
+            <td class="description last"><p>[Optional] Object to receive id</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>dom</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1927,50 +2135,51 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Verify the ID is unique in the DOM, default is false</td>
+
+            <td class="description last"><p>[Optional] Verify the ID is unique in the DOM, default is false</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7786">line 7786</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7786">line 7786</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1988,7 +2197,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
     
             
 <div class="param-desc">
-    Object or id
+    <p>Object or id</p>
 </div>
 
 
@@ -2004,6 +2213,7 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
 
 	</dd>
 </dl>
+
 
         
     
@@ -2021,8 +2231,8 @@ Timing may vary under "heavy load" relative to the CPU & client JavaScript engin
     
     
     <div class="description">
-        Iterates an Object and executes a function against the properties.
-Returning `false` halts iteration.
+        <p>Iterates an Object and executes a function against the properties.
+Returning <code>false</code> halts iteration.</p>
     </div>
     
 
@@ -2034,31 +2244,31 @@ Returning `false` halts iteration.
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>obj</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2067,21 +2277,21 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Object to iterate</td>
+
+            <td class="description last"><p>Object to iterate</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>fn</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2090,50 +2300,51 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Function to execute against properties</td>
+
+            <td class="description last"><p>Function to execute against properties</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7823">line 7823</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7823">line 7823</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2151,7 +2362,7 @@ Returning `false` halts iteration.
     
             
 <div class="param-desc">
-    Object
+    <p>Object</p>
 </div>
 
 
@@ -2167,6 +2378,7 @@ Returning `false` halts iteration.
 
 	</dd>
 </dl>
+
 
         
     
@@ -2184,7 +2396,7 @@ Returning `false` halts iteration.
     
     
     <div class="description">
-        Writes argument to the console
+        <p>Writes argument to the console</p>
     </div>
     
 
@@ -2196,31 +2408,31 @@ Returning `false` halts iteration.
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2229,21 +2441,21 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">String to write to the console</td>
+
+            <td class="description last"><p>String to write to the console</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>target</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2252,50 +2464,51 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Target console, default is "log"</td>
+
+            <td class="description last"><p>[Optional] Target console, default is &quot;log&quot;</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7845">line 7845</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7845">line 7845</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2313,7 +2526,7 @@ Returning `false` halts iteration.
     
             
 <div class="param-desc">
-    undefined
+    <p>undefined</p>
 </div>
 
 
@@ -2329,6 +2542,7 @@ Returning `false` halts iteration.
 
 	</dd>
 </dl>
+
 
         
     
@@ -2346,7 +2560,7 @@ Returning `false` halts iteration.
     
     
     <div class="description">
-        Merges obj with arg
+        <p>Merges obj with arg</p>
     </div>
     
 
@@ -2358,31 +2572,31 @@ Returning `false` halts iteration.
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>obj</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2391,21 +2605,21 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Object to decorate</td>
+
+            <td class="description last"><p>Object to decorate</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2414,50 +2628,51 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Decoration</td>
+
+            <td class="description last"><p>Decoration</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7864">line 7864</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7864">line 7864</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2475,7 +2690,7 @@ Returning `false` halts iteration.
     
             
 <div class="param-desc">
-    Decorated Object
+    <p>Decorated Object</p>
 </div>
 
 
@@ -2491,6 +2706,7 @@ Returning `false` halts iteration.
 
 	</dd>
 </dl>
+
 
         
     
@@ -2508,7 +2724,7 @@ Returning `false` halts iteration.
     
     
     <div class="description">
-        Parses a URI into an Object
+        <p>Parses a URI into an Object</p>
     </div>
     
 
@@ -2520,31 +2736,31 @@ Returning `false` halts iteration.
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>uri</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2553,50 +2769,51 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">URI to parse</td>
+
+            <td class="description last"><p>URI to parse</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7891">line 7891</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7891">line 7891</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2614,7 +2831,7 @@ Returning `false` halts iteration.
     
             
 <div class="param-desc">
-    Parsed URI
+    <p>Parsed URI</p>
 </div>
 
 
@@ -2630,6 +2847,7 @@ Returning `false` halts iteration.
 
 	</dd>
 </dl>
+
 
         
     
@@ -2647,7 +2865,7 @@ Returning `false` halts iteration.
     
     
     <div class="description">
-        Prevents default behavior of an Event
+        <p>Prevents default behavior of an Event</p>
     </div>
     
 
@@ -2659,31 +2877,31 @@ Returning `false` halts iteration.
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>e</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2692,50 +2910,51 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Event</td>
+
+            <td class="description last"><p>Event</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7963">line 7963</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7963">line 7963</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2753,7 +2972,7 @@ Returning `false` halts iteration.
     
             
 <div class="param-desc">
-    Event
+    <p>Event</p>
 </div>
 
 
@@ -2769,6 +2988,7 @@ Returning `false` halts iteration.
 
 	</dd>
 </dl>
+
 
         
     
@@ -2786,7 +3006,7 @@ Returning `false` halts iteration.
     
     
     <div class="description">
-        Parses a query string & coerces values
+        <p>Parses a query string &amp; coerces values</p>
     </div>
     
 
@@ -2798,31 +3018,31 @@ Returning `false` halts iteration.
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2831,21 +3051,21 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Key to find in the querystring</td>
+
+            <td class="description last"><p>[Optional] Key to find in the querystring</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>qstring</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2854,50 +3074,51 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Query string to parse</td>
+
+            <td class="description last"><p>[Optional] Query string to parse</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line7979">line 7979</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-7979">line 7979</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2915,7 +3136,7 @@ Returning `false` halts iteration.
     
             
 <div class="param-desc">
-    Value or Object of key:value pairs
+    <p>Value or Object of key:value pairs</p>
 </div>
 
 
@@ -2931,6 +3152,7 @@ Returning `false` halts iteration.
 
 	</dd>
 </dl>
+
 
         
     
@@ -2948,7 +3170,7 @@ Returning `false` halts iteration.
     
     
     <div class="description">
-        Creates a recursive function. Return false from the function to halt recursion.
+        <p>Creates a recursive function. Return false from the function to halt recursion.</p>
     </div>
     
 
@@ -2960,31 +3182,31 @@ Returning `false` halts iteration.
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>fn</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2993,21 +3215,21 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Function to execute repeatedly</td>
+
+            <td class="description last"><p>Function to execute repeatedly</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>ms</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3016,21 +3238,21 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Milliseconds to stagger the execution</td>
+
+            <td class="description last"><p>Milliseconds to stagger the execution</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>id</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3039,21 +3261,21 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Timeout ID</td>
+
+            <td class="description last"><p>[Optional] Timeout ID</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>now</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3062,50 +3284,51 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Executes `fn` and then setup repetition, default is `true`</td>
+
+            <td class="description last"><p>Executes <code>fn</code> and then setup repetition, default is <code>true</code></p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line8032">line 8032</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8032">line 8032</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3123,7 +3346,7 @@ Returning `false` halts iteration.
     
             
 <div class="param-desc">
-    Timeout ID
+    <p>Timeout ID</p>
 </div>
 
 
@@ -3139,6 +3362,7 @@ Returning `false` halts iteration.
 
 	</dd>
 </dl>
+
 
         
     
@@ -3156,7 +3380,7 @@ Returning `false` halts iteration.
     
     
     <div class="description">
-        Stops an Event from bubbling, & prevents default behavior
+        <p>Stops an Event from bubbling, &amp; prevents default behavior</p>
     </div>
     
 
@@ -3168,31 +3392,31 @@ Returning `false` halts iteration.
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>e</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3201,50 +3425,51 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Event</td>
+
+            <td class="description last"><p>Event</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line8074">line 8074</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8074">line 8074</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3262,7 +3487,7 @@ Returning `false` halts iteration.
     
             
 <div class="param-desc">
-    Event
+    <p>Event</p>
 </div>
 
 
@@ -3278,6 +3503,7 @@ Returning `false` halts iteration.
 
 	</dd>
 </dl>
+
 
         
     
@@ -3295,7 +3521,7 @@ Returning `false` halts iteration.
     
     
     <div class="description">
-        Returns the Event target
+        <p>Returns the Event target</p>
     </div>
     
 
@@ -3307,31 +3533,31 @@ Returning `false` halts iteration.
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>e</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3340,50 +3566,51 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Event</td>
+
+            <td class="description last"><p>Event</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line8095">line 8095</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8095">line 8095</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3401,7 +3628,7 @@ Returning `false` halts iteration.
     
             
 <div class="param-desc">
-    Event target
+    <p>Event target</p>
 </div>
 
 
@@ -3417,6 +3644,7 @@ Returning `false` halts iteration.
 
 	</dd>
 </dl>
+
 
         
     
@@ -3434,7 +3662,7 @@ Returning `false` halts iteration.
     
     
     <div class="description">
-        Generates a version 4 UUID
+        <p>Generates a version 4 UUID</p>
     </div>
     
 
@@ -3446,31 +3674,31 @@ Returning `false` halts iteration.
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>safe</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3479,50 +3707,51 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">[Optional] Strips - from UUID</td>
+
+            <td class="description last"><p>[Optional] Strips - from UUID</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line8107">line 8107</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8107">line 8107</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3540,7 +3769,7 @@ Returning `false` halts iteration.
     
             
 <div class="param-desc">
-    UUID
+    <p>UUID</p>
 </div>
 
 
@@ -3556,6 +3785,7 @@ Returning `false` halts iteration.
 
 	</dd>
 </dl>
+
 
         
     
@@ -3573,7 +3803,7 @@ Returning `false` halts iteration.
     
     
     <div class="description">
-        Walks `obj` and returns `arg`
+        <p>Walks <code>obj</code> and returns <code>arg</code></p>
     </div>
     
 
@@ -3585,31 +3815,31 @@ Returning `false` halts iteration.
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>obj</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3618,21 +3848,21 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">Object or Array</td>
+
+            <td class="description last"><p>Object or Array</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>arg</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3641,50 +3871,51 @@ Returning `false` halts iteration.
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">String describing the property to return</td>
+
+            <td class="description last"><p>String describing the property to return</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line8129">line 8129</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8129">line 8129</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3702,7 +3933,7 @@ Returning `false` halts iteration.
     
             
 <div class="param-desc">
-    arg
+    <p>arg</p>
 </div>
 
 
@@ -3718,6 +3949,7 @@ Returning `false` halts iteration.
 
 	</dd>
 </dl>
+
 
         
     
@@ -3735,7 +3967,7 @@ Returning `false` halts iteration.
     
     
     <div class="description">
-        Accepts Deferreds or Promises as arguments, or an Array of either
+        <p>Accepts Deferreds or Promises as arguments, or an Array of either</p>
     </div>
     
 
@@ -3748,34 +3980,34 @@ Returning `false` halts iteration.
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#line8146">line 8146</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8146">line 8146</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3793,7 +4025,7 @@ Returning `false` halts iteration.
     
             
 <div class="param-desc">
-    <a href="keigai.Deferred.html">keigai.Deferred</a>
+    <p><a href="keigai.Deferred.html">keigai.Deferred</a></p>
 </div>
 
 
@@ -3810,6 +4042,7 @@ Returning `false` halts iteration.
 	</dd>
 </dl>
 
+
         
     
     
@@ -3817,30 +4050,72 @@ Returning `false` halts iteration.
 
         </dl>
     
+
     
-    
-    
+
     
 </article>
 
-</section>  
+</section>
 
 
 
 
-</div>
+				</div>
 
-<nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-keigai.html">keigai</a></li></ul><h3>Classes</h3><ul><li><a href="keigai.DataGrid.html">DataGrid</a></li><li><a href="keigai.DataList.html">DataList</a></li><li><a href="keigai.DataListFilter.html">DataListFilter</a></li><li><a href="keigai.DataStore.html">DataStore</a></li><li><a href="keigai.Deferred.html">Deferred</a></li><li><a href="keigai.LRU.html">LRU</a></li><li><a href="keigai.LRUItem.html">LRUItem</a></li><li><a href="keigai.Observable.html">Observable</a></li><li><a href="keigai.Promise.html">Promise</a></li><li><a href="module-keigai-XMLHttpRequest.html">XMLHttpRequest</a></li></ul><h3>Namespaces</h3><ul><li><a href="array.html">array</a></li><li><a href="cache.html">cache</a></li><li><a href="client.html">client</a></li><li><a href="deferred.html">deferred</a></li><li><a href="element.html">element</a></li><li><a href="filter.html">filter</a></li><li><a href="grid.html">grid</a></li><li><a href="json.html">json</a></li><li><a href="label.html">label</a></li><li><a href="list.html">list</a></li><li><a href="promise.html">promise</a></li><li><a href="regex.html">regex</a></li><li><a href="store.html">store</a></li><li><a href="string.html">string</a></li><li><a href="utility.html">utility</a></li><li><a href="xml.html">xml</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bootstrap">bootstrap</a></li><li><a href="global.html#css">css</a></li><li><a href="global.html#html">html</a></li><li><a href="global.html#is">is</a></li><li><a href="global.html#xhr">xhr</a></li></ul>
-</nav>
+				<div class="clearfix"></div>
+				<footer>
+					
+					
+		<span class="copyright">
+		Copyright &copy; 2014 Jason Mulligan
+		</span>
+					<br />
+					
+		<span class="jsdoc-message">
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
+		on Sat Mar 08 2014 11:28:39 GMT-0500 (EST) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		</span>
+				</footer>
+			</div>
 
-<br clear="both">
+			
+			<div class="span3">
+				<div id="toc"></div>
+			</div>
+			
+			<br clear="both">
+		</div>
 
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Mar 02 2014 14:56:47 GMT-0500 (EST)
-</footer>
+	</div>
+	<script src="scripts/sunlight.js"></script>
+	<script src="scripts/sunlight.javascript.js"></script>
+	<script src="scripts/sunlight-plugin.doclinks.js"></script>
+	<script src="scripts/sunlight-plugin.linenumbers.js"></script>
+	<script src="scripts/sunlight-plugin.menu.js"></script>
+	<script src="scripts/jquery.min.js"></script>
+	<script src="scripts/jquery.scrollTo.js"></script>
+	<script src="scripts/jquery.localScroll.js"></script>
+	<script src="scripts/bootstrap-dropdown.js"></script>
+	<script src="scripts/toc.js"></script>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+
+	<script>  Sunlight.highlightAll({lineNumbers:true,  showMenu: true, enableDoclinks :true}); </script>
+
+	<script>
+		$( function () {
+			$( "#toc" ).toc( {
+				selectors   : "h1,h2,h3,h4",
+				showAndHide : false,
+				scrollTo    : 60
+			} );
+			$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
+			$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+
+		} );
+	</script>
+
+	
+
 </body>
 </html>

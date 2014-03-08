@@ -1,5 +1,5 @@
 /**
- * @namespace array
+ * @namespace number
  * @private
  */
 var number = {

@@ -16,7 +16,7 @@ return {
 		clone    : utility.clone,
 		coerce   : utility.coerce,
 		defer    : deferred.factory,
-		el       : element,
+		element  : element,
 		extend   : utility.extend,
 		iterate  : utility.iterate,
 		json     : json,
