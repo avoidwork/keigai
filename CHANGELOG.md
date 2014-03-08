@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.2.7
+- Fixed alignment mistakes
+- Fixed docblocks
+- Added a JSDoc3 template for documentation
+
 ## 0.2.6
 - Refactored `cache{}` to be an abstraction around an `LRU` instance, with a max size of 500
 
