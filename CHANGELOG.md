@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.8
+- Fixed `array.split()`
+- Added examples to docblocks
+- Removed `client.script()`, `client.size()`, & `client.stylesheet()`
+- Defaulting second parameter of `client.request()` to `GET`
+
 ## 0.2.7
 - Fixed alignment mistakes
 - Fixed docblocks

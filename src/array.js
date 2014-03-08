@@ -1,6 +1,5 @@
 /**
  * @namespace array
- * @private
  */
 var array = {
 	/**
@@ -8,6 +7,11 @@ var array = {
 	 *
 	 * @method add
 	 * @memberOf array
+	 * @example
+	 * var myArray = [1, 2];
+	 *
+	 * keigai.util.array.add( myArray, 3 ); // [1, 2, 3]
+	 * keigai.util.array.add( myArray, 1 ); // [1, 2, 3]
 	 * @param  {Array} obj Array to receive 'arg'
 	 * @param  {Mixed} arg Argument to set in 'obj'
 	 * @return {Array}     Array that was queried
@@ -28,6 +32,10 @@ var array = {
 	 * @param  {Array} obj Array to search
 	 * @param  {Mixed} arg Value to find index of
 	 * @return {Number}    Index of `arg` within `obj`
+	 * @example
+	 * var myArray = [1, 5, 10, 15, 20, 25, ...];
+	 *
+	 * keigai.util.array.binIndex( myArray, 5 ); // 1
 	 */
 	binIndex : function ( obj, arg ) {
 		var min = 0,
@@ -60,6 +68,8 @@ var array = {
 	 * @param  {Object}  obj Object to cast
 	 * @param  {Boolean} key [Optional] Returns key or value, only applies to Objects without a length property
 	 * @return {Array}       Object as an Array
+	 * @example
+	 * keigai.util.array.cast( document.querySelectorAll( "..." ) );
 	 */
 	cast : function ( obj, key ) {
 		key   = ( key === true );
@@ -85,9 +95,11 @@ var array = {
 	 *
 	 * @method chunk
 	 * @memberOf array
-	 * @param  {Array}  obj  Array to parse
+	 * @param  {Array}  obj  Array to process
 	 * @param  {Number} size Chunk size ( integer )
 	 * @return {Array}       Chunked Array
+	 * @example
+	 * keigai.util.array.chunk( [0, 1, 2, 3], 2 ); // [[0, 1], [2, 3]]
 	 */
 	chunk : function ( obj, size ) {
 		var result = [],
@@ -110,6 +122,11 @@ var array = {
 	 * @memberOf array
 	 * @param  {Array} obj Array to clear
 	 * @return {Array}     Cleared Array
+	 * @example
+	 * var myArray = [1, 2, 3, 4, 5];
+	 *
+	 * keigai.util.array.clear( myArray );
+	 * myArray.length; // 0
 	 */
 	clear : function ( obj ) {
 		return obj.length > 0 ? array.remove( obj, 0, obj.length ) : obj;
@@ -122,6 +139,14 @@ var array = {
 	 * @memberOf array
 	 * @param  {Array} obj Array to clone
 	 * @return {Array}     Clone of Array
+	 * @example
+	 * var myArray      = [1, 2, 3, 4, 5],
+	 *     myArrayClone = keigai.util.array.clone( myArray );
+	 *
+	 * myArrayClone.push( 6 );
+	 *
+	 * myArray.length;      // 5
+	 * myArrayClone.length; // 6
 	 */
 	clone : function ( obj ) {
 		return obj.slice();
@@ -135,6 +160,8 @@ var array = {
 	 * @param  {Array} obj Array to search
 	 * @param  {Mixed} arg Value to look for
 	 * @return {Boolean}   True if found, false if not
+	 * @example
+	 * if ( keigai.util.array.contains( [1], 1 ) ) { ... }
 	 */
 	contains : function ( obj, arg ) {
 		return obj.indexOf( arg ) > -1;
@@ -148,6 +175,8 @@ var array = {
 	 * @param  {Array}    obj Array to iterate
 	 * @param  {Function} fn  Function to execute against indices
 	 * @return {Array}        New Array
+	 * @example
+	 * var results = keigai.util.array.collect( [...], function ( ... ) { ... } );
 	 */
 	collect : function ( obj, fn ) {
 		var result = [];
@@ -164,9 +193,12 @@ var array = {
 	 *
 	 * @method compact
 	 * @memberOf array
-	 * @param  {Array} obj    Array to compact
+	 * @param  {Array}   obj  Array to compact
 	 * @param  {Boolean} diff Indicates to return resulting Array only if there's a difference
 	 * @return {Array}        Compacted copy of `obj`, or null ( if `diff` is passed & no diff is found )
+	 * @example
+	 * keigai.util.array.compact( [null, "a", "b", "c", null, "d"] ); // ["a", "b", "c", "d"]
+	 * keigai.util.array.compact( ["a", "b", "c", "d"], true );       // null
 	 */
 	compact : function ( obj, diff ) {
 		var result = [];
@@ -186,6 +218,8 @@ var array = {
 	 * @param  {Array} obj   Array to search
 	 * @param  {Mixed} value Value to compare
 	 * @return {Array}       Array of counts
+	 * @example
+	 * keigai.util.array.count( ["apple", "banana", "orange", "apple"], "apple" ); // 2
 	 */
 	count : function ( obj, value ) {
 		return obj.filter( function ( i ) {
@@ -194,25 +228,27 @@ var array = {
 	},
 
 	/**
-	 * Finds the difference between array1 and array2
+	 * Finds the difference between two Arrays
 	 *
 	 * @method diff
 	 * @memberOf array
-	 * @param  {Array} array1 Source Array
-	 * @param  {Array} array2 Comparison Array
-	 * @return {Array}        Array of the differences
+	 * @param  {Array} obj1 Source Array
+	 * @param  {Array} obj2 Comparison Array
+	 * @return {Array}      Array of the differences
+	 * @example
+	 * keigai.util.array.diff( ["a"], ["a", "b"] ); // ["b"]
 	 */
-	diff : function ( array1, array2 ) {
+	diff : function ( obj1, obj2 ) {
 		var result = [];
 
-		array.each( array1, function ( i ) {
-			if ( !array.contains( array2, i ) ) {
+		array.each( obj1, function ( i ) {
+			if ( !array.contains( obj2, i ) ) {
 				array.add( result, i );
 			}
 		} );
 
-		array.each( array2, function ( i ) {
-			if ( !array.contains( array1, i ) ) {
+		array.each( obj2, function ( i ) {
+			if ( !array.contains( obj1, i ) ) {
 				array.add( result, i );
 			}
 		} );
@@ -231,6 +267,9 @@ var array = {
 	 * @param  {Boolean}  async [Optional] Asynchronous iteration
 	 * @param  {Number}   size  [Optional] Batch size for async iteration, default is 10
 	 * @return {Array}          Array
+	 * @example
+	 * keigai.util.array.each( [ ... ], function ( ... ) { ... } );
+	 * keigai.util.array.each( [ ... ], function ( ... ) { ... }, true, 100 ); // processing batches of a 100
 	 */
 	each : function ( obj, fn, async, size ) {
 		var nth = obj.length,
@@ -282,22 +321,28 @@ var array = {
 	 * @memberOf array
 	 * @param  {Array} obj Array to inspect
 	 * @return {Boolean}   `true` if there's no indices
+	 * @example
+	 * keigai.util.array.empty( [] );    // true
+	 * keigai.util.array.empty( ["a"] ); // false
 	 */
 	empty : function ( obj ) {
 		return ( obj.length === 0 );
 	},
 
 	/**
-	 * Determines if `a` is equal to `b`
+	 * Determines if two Arrays are equal
 	 *
 	 * @method equal
 	 * @memberOf array
-	 * @param  {Array} a Array to compare
-	 * @param  {Array} b Array to compare
+	 * @param  {Array} obj1 Array to compare
+	 * @param  {Array} obj2 Array to compare
 	 * @return {Boolean} `true` if the Arrays match
+	 * @example
+	 * keigai.util.array.equal( ["a"], ["a"] );      // true
+	 * keigai.util.array.equal( ["a"], ["a", "b"] ); // false
 	 */
-	equal : function ( a, b ) {
-		return ( json.encode( a ) === json.encode( b ) );
+	equal : function ( obj1, obj2 ) {
+		return ( json.encode( obj1 ) === json.encode( obj2 ) );
 	},
 
 	/**
@@ -307,6 +352,9 @@ var array = {
 	 * @memberOf array
 	 * @param  {Number} arg [Optional] Amount of numbers to generate, default is 100
 	 * @return {Array}      Array of numbers
+	 * @example
+	 * keigai.util.array.fib( 5 ) // [1, 1, 2, 3, 5];
+	 * keigai.util.array.fib( 6 ) // [1, 1, 2, 3, 5, 8];
 	 */
 	fib : function ( arg ) {
 		var result = [1, 1],
@@ -341,6 +389,11 @@ var array = {
 	 * @param  {Number} start [Optional] Index to begin filling at
 	 * @param  {Number} end   [Optional] Offset from start to stop filling at
 	 * @return {Array}        Filled Array
+	 * @example
+	 * var myArray = ["a", "b", "c"];
+	 *
+	 * keigai.util.array.fill( myArray, function ( i ) { return i + "a"; } );
+	 * myArray[0]; // "aa"
 	 */
 	fill : function ( obj, arg, start, offset ) {
 		var fn  = typeof arg == "function",
@@ -361,15 +414,37 @@ var array = {
 	},
 
 	/**
-	 * Returns the first Array node
+	 * Returns the first Array index
 	 *
 	 * @method first
 	 * @memberOf array
 	 * @param  {Array} obj The array
 	 * @return {Mixed}     The first node of the array
+	 * @example
+	 * keigai.util.array.first( ["a", "b"] ); // "a"
 	 */
 	first : function ( obj ) {
 		return obj[0];
+	},
+
+	/**
+	 * Flattens a 2D Array
+	 *
+	 * @method flat
+	 * @memberOf array
+	 * @param  {Array} obj 2D Array to flatten
+	 * @return {Array}     Flatten Array
+	 * @example
+	 * keigai.util.array.flat( [[0, 1], [2, 3]] ); // [0, 1, 2, 3]
+	 */
+	flat : function ( obj ) {
+		var result = [];
+
+		result = obj.reduce( function ( a, b ) {
+			return a.concat( b );
+		}, result );
+
+		return result;
 	},
 
 	/**
@@ -384,27 +459,12 @@ var array = {
 	 * @param  {Boolean}  async [Optional] Asynchronous iteration
 	 * @param  {Number}   size  [Optional] Batch size for async iteration, default is 10
 	 * @return {Array}          Array
+	 * @example
+	 * keigai.util.array.forEach( [ ... ], function ( ... ) { ... } );
+	 * keigai.util.array.forEach( [ ... ], function ( ... ) { ... }, true, 100 ); // processing batches of a 100
 	 */
 	forEach : function ( obj, fn, async, size ) {
 		return array.each( obj, fn, async, size );
-	},
-
-	/**
-	 * Flattens a 2D Array
-	 *
-	 * @method flat
-	 * @memberOf array
-	 * @param  {Array} obj 2D Array to flatten
-	 * @return {Array}     Flatten Array
-	 */
-	flat : function ( obj ) {
-		var result = [];
-
-		result = obj.reduce( function ( a, b ) {
-			return a.concat( b );
-		}, result );
-
-		return result;
 	},
 
 	/**
@@ -414,19 +474,23 @@ var array = {
 	 * @memberOf array
 	 * @param  {Object} obj Object to convert
 	 * @return {Array}      2D Array
+	 * @example
+	 * keigai.util.array.fromObject( {name: "John", sex: "male"} ); // [["name", "John"], ["sex", "male"]]
 	 */
 	fromObject : function ( obj ) {
 		return array.mingle( array.keys( obj ), array.cast( obj ) );
 	},
 
 	/**
-	 * Facade to indexOf for shorter syntax
+	 * Facade of indexOf
 	 *
 	 * @method index
 	 * @memberOf array
 	 * @param  {Array} obj Array to search
 	 * @param  {Mixed} arg Value to find index of
 	 * @return {Number}    The position of arg in instance
+	 * @example
+	 * keigai.util.array.index( ["a", "b", "c"], "b" ); // 1
 	 */
 	index : function ( obj, arg ) {
 		return obj.indexOf( arg );
@@ -439,6 +503,11 @@ var array = {
 	 * @memberOf array
 	 * @param  {Array} obj Array to index
 	 * @return {Array}     Indexed Array
+	 * @example
+	 * var myArray = ["a", "b", "c"];
+	 *
+	 * myArray.prop = "d";
+	 * keigai.util.array.indexed( myArray ); ["a", "b", "c", "d"];
 	 */
 	indexed : function ( obj ) {
 		var indexed = [];
@@ -451,17 +520,19 @@ var array = {
 	},
 
 	/**
-	 * Finds the intersections between array1 and array2
+	 * Finds the intersections between obj1 and obj2
 	 *
 	 * @method intersect
 	 * @memberOf array
-	 * @param  {Array} array1 Source Array
-	 * @param  {Array} array2 Comparison Array
-	 * @return {Array}        Array of the intersections
+	 * @param  {Array} obj1 Source Array
+	 * @param  {Array} obj2 Comparison Array
+	 * @return {Array}      Array of the intersections
+	 * @example
+	 * keigai.util.array.intersect( ["a", "b", "d"], ["b", "c", "d"] ); // ["b", "d"]
 	 */
-	intersect : function ( array1, array2 ) {
-		var a = array1.length > array2.length ? array1 : array2,
-		    b = ( a === array1 ? array2 : array1 );
+	intersect : function ( obj1, obj2 ) {
+		var a = obj1.length > obj2.length ? obj1 : obj2,
+		    b = ( a === obj1 ? obj2 : obj1 );
 
 		return a.filter( function ( key ) {
 			return array.contains( b, key );
@@ -476,6 +547,11 @@ var array = {
 	 * @param  {Array}    obj Array to iterate
 	 * @param  {Function} fn  Function to test indices against
 	 * @return {Array}        Array
+	 * @example
+	 * var myArray = ["a", "b", "c"];
+	 *
+	 * keigai.util.array.keepIf( myArray, function ( i ) { return /a|c/.test( i ); } );
+	 * myArray[1]; // "c"
 	 */
 	keepIf : function ( obj, fn ) {
 		if ( typeof fn != "function" ) {
@@ -496,14 +572,33 @@ var array = {
 	},
 
 	/**
+	 * Returns the keys in an "Associative Array"
+	 *
+	 * @method keys
+	 * @memberOf array
+	 * @param  {Mixed} obj Array or Object to extract keys from
+	 * @return {Array}     Array of the keys
+	 * @example
+	 * keigai.util.array.keys( {abc: true, xyz: false} ); // ["abc", "xyz"]
+	 */
+	keys : function ( obj ) {
+		return Object.keys( obj );
+	},
+
+	/**
 	 * Sorts an Array based on key values, like an SQL ORDER BY clause
 	 *
-	 * @method sort
+	 * @method keySort
 	 * @memberOf array
 	 * @param  {Array}  obj   Array to sort
 	 * @param  {String} query Sort query, e.g. "name, age desc, country"
 	 * @param  {String} sub   [Optional] Key which holds data, e.g. "{data: {}}" = "data"
 	 * @return {Array}        Sorted Array
+	 * @example
+	 * var myArray = [{abc: 123124, xyz: 5}, {abc: 123124, xyz: 6}, {abc: 2, xyz: 5}];
+	 *
+	 * keigai.util.array.keySort( myArray, "abc" );           // [{abc: 2, xyz: 5}, {abc: 123124, xyz: 5}, {abc: 123124, xyz: 6}];
+	 * keigai.util.array.keySort( myArray, "abc, xyz desc" ); // [{abc: 2, xyz: 5}, {abc: 123124, xyz: 6}, {abc: 123124, xyz: 5}];
 	 */
 	keySort : function ( obj, query, sub ) {
 		query       = query.replace( /\s*asc/ig, "" ).replace( /\s*desc/ig, " desc" );
@@ -534,18 +629,6 @@ var array = {
 	},
 
 	/**
-	 * Returns the keys in an "Associative Array"
-	 *
-	 * @method keys
-	 * @memberOf array
-	 * @param  {Mixed} obj Array or Object to extract keys from
-	 * @return {Array}     Array of the keys
-	 */
-	keys : function ( obj ) {
-		return Object.keys( obj );
-	},
-
-	/**
 	 * Returns the last index of the Array
 	 *
 	 * @method last
@@ -553,6 +636,11 @@ var array = {
 	 * @param  {Array}  obj Array
 	 * @param  {Number} arg [Optional] Negative offset from last index to return
 	 * @return {Mixed}      Last index( s ) of Array
+	 * @example
+	 * var myArray = [1, 2, 3, 4];
+	 *
+	 * keigai.util.array.last( myArray );    // 4
+	 * keigai.util.array.last( myArray, 2 ); // [3, 4]
 	 */
 	last : function ( obj, arg ) {
 		var n = obj.length - 1;
@@ -577,6 +665,11 @@ var array = {
 	 * @param  {Number} start  Starting index
 	 * @param  {Number} offset Number of indices to return
 	 * @return {Array}         Array of indices
+	 * @example
+	 * var myArray = [1, 2, 3, 4];
+	 *
+	 * keigai.util.array.limit( myArray, 0, 2 ); // [1, 2]
+	 * keigai.util.array.limit( myArray, 2, 2 ); // [3, 4]
 	 */
 	limit : function ( obj, start, offset ) {
 		var result = [],
@@ -598,8 +691,10 @@ var array = {
 	 *
 	 * @method max
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Mixed}     Number, String, etc.
+	 * @example
+	 * keigai.util.array.max( [5, 3, 9, 1, 4] ); // 9
 	 */
 	max : function ( obj ) {
 		return array.last( obj.sort( array.sort ) );
@@ -610,8 +705,10 @@ var array = {
 	 *
 	 * @method mean
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Number}    Mean of the Array ( float or integer )
+	 * @example
+	 * keigai.util.array.mean( [1, 3, 5] ); // 3
 	 */
 	mean : function ( obj ) {
 		return obj.length > 0 ? ( array.sum( obj ) / obj.length ) : undefined;
@@ -622,8 +719,11 @@ var array = {
 	 *
 	 * @method median
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Number}    Median number of the Array ( float or integer )
+	 * @example
+	 * keigai.util.array.median( [5, 1, 3, 8] ); // 4
+	 * keigai.util.array.median( [5, 1, 3] );    // 3
 	 */
 	median : function ( obj ) {
 		var nth    = obj.length,
@@ -638,16 +738,22 @@ var array = {
 	 *
 	 * @method merge
 	 * @memberOf array
-	 * @param  {Array} obj Array to receive indices
-	 * @param  {Array} arg Array to merge
-	 * @return {Array}     obj
+	 * @param  {Array} obj1 Array to receive indices
+	 * @param  {Array} obj2 Array to merge
+	 * @return {Array}      First argument
+	 * @example
+	 * var a = ["a", "b", "c"],
+	 *     b = ["d"];
+	 *
+	 * keigai.util.array.merge( a, b );
+	 * a[3]; // "d"
 	 */
-	merge : function ( obj, arg ) {
-		array.each( arg, function ( i ) {
-			array.add( obj, i );
+	merge : function ( obj1, obj2 ) {
+		array.each( obj2, function ( i ) {
+			array.add( obj1, i );
 		} );
 
-		return obj;
+		return obj1;
 	},
 
 	/**
@@ -655,8 +761,10 @@ var array = {
 	 *
 	 * @method min
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Mixed}     Number, String, etc.
+	 * @example
+	 * keigai.util.array.min( [5, 3, 9, 1, 4] ); // 1
 	 */
 	min : function ( obj ) {
 		return obj.sort( array.sort )[0];
@@ -670,6 +778,11 @@ var array = {
 	 * @param  {Array} obj1 Array to mingle
 	 * @param  {Array} obj2 Array to mingle
 	 * @return {Array}      2D Array
+	 * @example
+	 * var a = ["a", "b"],
+	 *     b = ["c", "d"];
+	 *
+	 * keigai.util.array.mingle( a, b ); // [["a", "c"], ["b", "d"]]
 	 */
 	mingle : function ( obj1, obj2 ) {
 		var result;
@@ -686,8 +799,11 @@ var array = {
 	 *
 	 * @method mode
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Mixed}     Mode value of the Array
+	 * @example
+	 * keigai.util.array.mode( [1, 3, 7, 1, 2, 10, 7, 7, 3, 10] );     // 7
+	 * keigai.util.array.mode( [1, 3, 7, 1, 2, 10, 7, 7, 3, 10, 10] ); // [7, 10]
 	 */
 	mode : function ( obj ) {
 		var values = {},
@@ -735,6 +851,8 @@ var array = {
 	 * @param  {Number} precision [Optional] Rounding precision
 	 * @param  {Number} total     [Optional] Value to compare against
 	 * @return {Array}            Array of percents
+	 * @example
+	 * keigai.util.array.percents( [1, 2, 3, 37] ); // [2, 5, 7, 86]
 	 */
 	percents : function ( obj, precision, total ) {
 		var result = [],
@@ -778,8 +896,10 @@ var array = {
 	 *
 	 * @method range
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Number}    Range of the array ( float or integer )
+	 * @example
+	 * keigai.util.array.range( [5, 1, 3, 8] ); // 7
 	 */
 	range : function ( obj ) {
 		return array.max( obj ) - array.min( obj );
@@ -793,6 +913,8 @@ var array = {
 	 * @param  {Array} obj 2D Array to search
 	 * @param  {Mixed} arg Primitive to find
 	 * @return {Mixed}     Array or undefined
+	 * @example
+	 * keigai.util.array.rassoc( [[1, 3], [7, 2], [4, 3]], 3 ); // [1, 3]
 	 */
 	rassoc : function ( obj, arg ) {
 		var result;
@@ -816,27 +938,11 @@ var array = {
 	 * @param  {Array}    obj Array to iterate
 	 * @param  {Function} fn  Function to execute against `obj` indices
 	 * @return {Array}        Array of indices which fn() is not true
+	 * @example
+	 * keigai.util.array.reject( [0, 1, 2, 3, 4, 5], function ( i ) { return i % 2 > 0; } ); // [0, 2, 4]
 	 */
 	reject : function ( obj, fn ) {
 		return array.diff( obj, obj.filter( fn ) );
-	},
-	
-	/**
-	 * Replaces the contents of `obj` with `arg`
-	 *
-	 * @method replace
-	 * @memberOf array
-	 * @param  {Array} obj Array to modify
-	 * @param  {Array} arg Array to become `obj`
-	 * @return {Array}     New version of `obj`
-	 */
-	replace : function ( obj, arg ) {
-		array.remove( obj, 0, obj.length );
-		array.each( arg, function ( i ) {
-			obj.push( i );
-		} );
-
-		return obj;
 	},
 
 	/**
@@ -848,6 +954,11 @@ var array = {
 	 * @param  {Mixed}  start Starting index, or value to find within obj
 	 * @param  {Number} end   [Optional] Ending index
 	 * @return {Array}        Modified Array
+	 * @example
+	 * var myArray = ["a", "b", "c", "d", "e"];
+	 *
+	 * keigai.util.array.remove( myArray, 2, 3 );
+	 * myArray[2]; // "e"
 	 */
 	remove : function ( obj, start, end ) {
 		if ( isNaN( start ) ) {
@@ -878,6 +989,11 @@ var array = {
 	 * @param  {Array}    obj Array to iterate
 	 * @param  {Function} fn  Function to test indices against
 	 * @return {Array}        Array
+	 * @example
+	 * var myArray = ["a", "b", "c"];
+	 *
+	 * keigai.util.array.removeIf( myArray, function ( i ) { return /a|c/.test( i ); } );
+	 * myArray[0]; // "b"
 	 */
 	removeIf : function ( obj, fn ) {
 		var remove;
@@ -903,6 +1019,12 @@ var array = {
 	 * @param  {Array}    obj Array to iterate
 	 * @param  {Function} fn  Function to test indices against
 	 * @return {Array}        Array
+	 * @example
+	 * var myArray = ["a", "b", "c"];
+	 *
+	 * keigai.util.array.removeWhile( myArray, function ( i ) { return /a|c/.test( i ); } );
+	 * myArray[0];     // "b"
+	 * myArray.length; // 2
 	 */
 	removeWhile : function ( obj, fn ) {
 		if ( typeof fn != "function" ) {
@@ -928,13 +1050,40 @@ var array = {
 	},
 
 	/**
+	 * Replaces the contents of `obj` with `arg`
+	 *
+	 * @method replace
+	 * @memberOf array
+	 * @param  {Array} obj1 Array to modify
+	 * @param  {Array} obj2 Array to values to push into `obj1`
+	 * @return {Array}      Array to modify
+	 * @example
+	 * var myArray = ["a", "b", "c"];
+	 *
+	 * keigai.util.array.replace( myArray, [true, false] );
+	 * myArray[0];     // true
+	 * myArray.length; // 2
+	 */
+	replace : function ( obj1, obj2 ) {
+		array.remove( obj1, 0, obj1.length );
+		array.each( obj2, function ( i ) {
+			obj1.push( i );
+		} );
+
+		return obj1;
+	},
+
+	/**
 	 * Returns the "rest" of `obj` from `arg`
 	 *
 	 * @method rest
 	 * @memberOf array
-	 * @param  {Array}  obj Array to parse
+	 * @param  {Array}  obj Array to process
 	 * @param  {Number} arg [Optional] Start position of subset of `obj` ( positive number only )
 	 * @return {Array}      Array of a subset of `obj`
+	 * @example
+	 * keigai.util.array.rest( [1, 2, 3, 4, 5, 6] );    // [2, 3, 4, 5, 6]
+	 * keigai.util.array.rest( [1, 2, 3, 4, 5, 6], 3 ); // [4, 5, 6]
 	 */
 	rest : function ( obj, arg ) {
 		arg = arg || 1;
@@ -954,6 +1103,8 @@ var array = {
 	 * @param  {Array} obj Array to search
 	 * @param  {Mixed} arg Primitive to find
 	 * @return {Mixed}     Index or undefined
+	 * @example
+	 * keigai.util.array.rindex( [1, 2, 3, 2, 1], 2 ); // 3
 	 */
 	rindex : function ( obj, arg ) {
 		var result = -1;
@@ -975,6 +1126,9 @@ var array = {
 	 * @param  {Array}  obj Array to rotate
 	 * @param  {Number} arg Index to become the first index, if negative the rotation is in the opposite direction
 	 * @return {Array}      Newly rotated Array
+	 * @example
+	 * keigai.util.array.rotate( [0, 1, 2, 3, 4],  3 )[0] // 2;
+	 * keigai.util.array.rotate( [0, 1, 2, 3, 4], -2 )[0] // 3;
 	 */
 	rotate : function ( obj, arg ) {
 		var nth = obj.length,
@@ -1007,6 +1161,9 @@ var array = {
 	 * @param  {Number} end    [Optional] The end of the series
 	 * @param  {Number} offset [Optional] Offset for indices, default is 1
 	 * @return {Array}         Array of new series
+	 * @example
+	 * keigai.util.array.series( 0, 5 );     // [0, 1, 2, 3, 4]
+	 * keigai.util.array.series( 0, 25, 5 ); // [0, 5, 10, 15, 20]
 	 */
 	series : function ( start, end, offset ) {
 		start      = start  || 0;
@@ -1025,46 +1182,6 @@ var array = {
 	},
 
 	/**
-	 * Splits an Array by divisor
-	 *
-	 * @method split
-	 * @memberOf array
-	 * @param  {Array}  obj     Array to parse
-	 * @param  {Number} divisor Integer to divide the Array by
-	 * @return {Array}          Split Array
-	 */
-	split : function ( obj, divisor ) {
-		var result  = [],
-		    total   = obj.length,
-		    nth     = Math.ceil( total / divisor ),
-		    low     = Math.floor( total / divisor ),
-		    lower   = Math.ceil( total / nth ),
-		    lowered = false,
-		    start   = 0,
-		    i       = -1;
-
-		// Finding the fold
-		if ( number.diff( total, ( divisor * nth ) ) > nth ) {
-			lower = total - ( low * divisor ) + low - 1;
-		}
-
-		while ( ++i < divisor ) {
-			if ( !lowered && lower < divisor && i === lower ) {
-				--nth;
-				lowered = true;
-			}
-
-			if ( i > 0 ) {
-				start = start + nth;
-			}
-
-			result.push( array.limit( obj, start, nth ) );
-		}
-
-		return result;
-	},
-
-	/**
 	 * Sorts the Array by parsing values
 	 *
 	 * @method sort
@@ -1072,6 +1189,8 @@ var array = {
 	 * @param  {Mixed} a Argument to compare
 	 * @param  {Mixed} b Argument to compare
 	 * @return {Number}  Number indicating sort order
+	 * @example
+	 * keigai.util.array.sort( 2, 3 ); // -1
 	 */
 	sort : function ( a, b ) {
 		var types = {a: typeof a, b: typeof b},
@@ -1111,9 +1230,87 @@ var array = {
 	 * @memberOf array
 	 * @param  {Array} obj Array to sort
 	 * @return {Array}     Sorted Array
+	 * @example
+	 * var myArray = [5, 9, 2, 4];
+	 *
+	 * keigai.util.array.sorted( myArray );
+	 * myArray[0]; // 2
 	 */
 	sorted : function ( obj ) {
 		return obj.sort( array.sort );
+	},
+
+	/**
+	 * Splits an Array by divisor
+	 *
+	 * @method split
+	 * @memberOf array
+	 * @param  {Array}  obj     Array to process
+	 * @param  {Number} divisor Integer to divide the Array by
+	 * @return {Array}          Split Array
+	 * @example
+	 * var myArray = [],
+	 *     i       = -1,
+	 *     results;
+	 *
+	 * while ( ++i < 100 ) {
+	 *   myArray.push( i + 1 );
+	 * }
+	 *
+	 * results = keigai.util.array.split( myArray, 21 );
+	 * results.length;     // 21
+	 * results[0].length;  // 5
+	 * results[19].length; // 4
+	 * results[19][0];     // 99
+	 * results[20].length; // 1
+	 * results[20][0];     // 100
+	 */
+	split : function ( obj, divisor ) {
+		var result  = [],
+		    total   = obj.length,
+		    nth     = Math.ceil( total / divisor ),
+		    low     = Math.floor( total / divisor ),
+		    lower   = Math.ceil( total / nth ),
+		    lowered = false,
+		    start   = 0,
+		    i       = -1;
+
+		// Finding the fold
+		if ( number.diff( total, ( divisor * nth ) ) > nth ) {
+			lower = total - ( low * divisor ) + low - 1;
+		}
+		else if ( total % divisor > 0 && lower * nth >= total ) {
+			lower--;
+		}
+
+		while ( ++i < divisor ) {
+			if ( i > 0 ) {
+				start = start + nth;
+			}
+
+			if ( !lowered && lower < divisor && i === lower ) {
+				--nth;
+				lowered = true;
+			}
+
+			result.push( array.limit( obj, start, nth ) );
+		}
+
+		return result;
+	},
+
+	/**
+	 * Finds the standard deviation of an Array ( of numbers )
+	 *
+	 * @method stddev
+	 * @memberOf array
+	 * @param  {Array} obj Array to process
+	 * @return {Number}    Standard deviation of the Array ( float or integer )
+	 * @example
+	 * keigai.util.array.stddev( [1, 3, 5] ); // 1.632993161855452
+	 */
+	stddev : function ( obj ) {
+		return Math.sqrt( array.variance( obj ) );
 	},
 
 	/**
@@ -1123,6 +1320,8 @@ var array = {
 	 * @memberOf array
 	 * @param  {Array} obj Array to sum
 	 * @return {Number}    Summation of Array
+	 * @example
+	 * keigai.util.array.sum( [2, 4, 3, 1] ); // 10
 	 */
 	sum : function ( obj ) {
 		var result = 0;
@@ -1137,40 +1336,18 @@ var array = {
 	},
 
 	/**
-	 * Finds the standard deviation of an Array ( of numbers )
-	 *
-	 * @method stddev
-	 * @memberOf array
-	 * @param  {Array} obj Array to parse
-	 * @return {Number}    Standard deviation of the Array ( float or integer )
-	 */
-	stddev : function ( obj ) {
-		return Math.sqrt( array.variance( obj ) );
-	},
-
-	/**
-	 * Takes the first `arg` indices from `obj`
+	 * Takes the first `n` indices from `obj`
 	 *
 	 * @method take
 	 * @memberOf array
-	 * @param  {Array}  obj Array to parse
-	 * @param  {Number} arg Offset from 0 to return
+	 * @param  {Array}  obj Array to process
+	 * @param  {Number} n   Offset from 0 to return
 	 * @return {Array}      Subset of `obj`
+	 * @example
+	 * keigai.util.array.take( [1, 2, 3, 4], 2 ); // [1, 2]
 	 */
-	take : function ( obj, arg ) {
-		return array.limit( obj, 0, arg );
-	},
-
-	/**
-	 * Gets the total keys in an Array
-	 *
-	 * @method total
-	 * @memberOf array
-	 * @param  {Array} obj Array to find the length of
-	 * @return {Number}    Number of keys in Array
-	 */
-	total : function ( obj ) {
-		return array.indexed( obj ).length;
+	take : function ( obj, n ) {
+		return array.limit( obj, 0, n );
 	},
 
 	/**
@@ -1180,6 +1357,8 @@ var array = {
 	 * @memberOf array
 	 * @param  {Array} ar Array to transform
 	 * @return {Object}   New object
+	 * @example
+	 * keigai.util.array.toObject( ["abc", "def"] ); // {0: "abc", 1: "def"}
 	 */
 	toObject : function ( ar ) {
 		var obj = {},
@@ -1193,12 +1372,31 @@ var array = {
 	},
 
 	/**
+	 * Gets the total keys in an Array
+	 *
+	 * @method total
+	 * @memberOf array
+	 * @param  {Array} obj Array to find the length of
+	 * @return {Number}    Number of keys in Array
+	 * @example
+	 * var myArray = [true, true, false];
+	 *
+	 * myArray.extra = true;
+	 * keigai.util.array.total( myArray ); // 4
+	 */
+	total : function ( obj ) {
+		return array.indexed( obj ).length;
+	},
+
+	/**
 	 * Returns an Array of unique indices of `obj`
 	 *
 	 * @method unique
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Array}     Array of unique indices
+	 * @example
+	 * keigai.util.array.unique( ["a", "b", "a", "c", "b", "d"] ); // ["a", "b", "c", "d"]
 	 */
 	unique : function ( obj ) {
 		var result = [];
@@ -1215,8 +1413,10 @@ var array = {
 	 *
 	 * @method variance
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Number}    Variance of the Array ( float or integer )
+	 * @example
+	 * keigai.util.array.variance( [1, 3, 5] ); // 2.6666666666666665
 	 */
 	variance : function ( obj ) {
 		var nth = obj.length,
@@ -1245,6 +1445,8 @@ var array = {
 	 * @param  {Array} obj  Array to transform
 	 * @param  {Mixed} args Argument instance or Array to merge
 	 * @return {Array}      Array
+	 * @example
+	 * keigai.util.array.zip( [0, 1], 1 ); // [[0, 1], [1, null]]
 	 */
 	zip : function ( obj, args ) {
 		var result = [];
