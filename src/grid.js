@@ -149,6 +149,7 @@ function DataGrid ( target, store, fields, sortable, options, filtered ) {
  * @method constructor
  * @memberOf keigai.DataGrid
  * @type {Function}
+ * @private
  */
 DataGrid.prototype.constructor = DataGrid;
 

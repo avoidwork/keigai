@@ -10,6 +10,8 @@ var store = {
 	 * @param  {Mixed}  recs [Optional] Data to set with this.batch
 	 * @param  {Object} args [Optional] Arguments to set on the store
 	 * @return {Object} {@link keigai.DataStore}
+	 * @example
+	 * var store = keigai.store();
 	 */
 	factory : function ( recs, args ) {
 		var obj = new DataStore();
@@ -32,6 +34,7 @@ var store = {
 	 * @memberOf store
 	 * @param  {Object} ev Event
 	 * @return {Undefined} undefined
+	 * @private
 	 */
 	worker : function ( ev ) {
 		var cmd = ev.data.cmd,
@@ -91,6 +94,8 @@ var store = {
  *
  * @constructor
  * @memberOf keigai
+ * @example
+ * var store = keigai.store();
  */
 function DataStore () {
 	this.autosave    = false;
@@ -126,6 +131,7 @@ function DataStore () {
  * @method constructor
  * @memberOf keigai.DataStore
  * @type {Function}
+ * @private
  */
 DataStore.prototype.constructor = DataStore;
 

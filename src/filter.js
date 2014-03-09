@@ -66,6 +66,7 @@ function DataListFilter ( element, list, debounce ) {
  * @method constructor
  * @memberOf keigai.DataListFilter
  * @type {Function}
+ * @private
  */
 DataListFilter.prototype.constructor = DataListFilter;
 

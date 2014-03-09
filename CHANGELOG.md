@@ -1,15 +1,14 @@
 # Change Log
 
 ## 0.2.8
-- Updated docblocks, and added examples
-- Fixed `array.split()`
-- Removed `client.script()`, `client.size()`, & `client.stylesheet()`
+- Updated docblocks, & added examples
+- Fixed `array.split()`, & `Observable.unhook()`
 - Defaulting second parameter of `client.request()` to `GET`
-- Exposed `keigai.util.repeat()`
+- Removed `client.script()`, `client.size()`, & `client.stylesheet()`
 - Added `addEventListener()`, `removeEventListener()`, & `removeListener()` facades on prototypes for consistent APIs
 - Created `DataGrid.add()`, `DataGrid.remove()`, & `DataGrid.update()` as a simple abstraction of the underlying `DataStore`
 - Created `DataList.add()`, `DataList.remove()`, & `DataList.update()` as a simple abstraction of the underlying `DataStore`
-- Created `DataStore.addEventListener()`, & `DataStore.removeEventListener()`
+- Exposed `keigai.util.repeat()`
 
 ## 0.2.7
 - Fixed alignment mistakes
