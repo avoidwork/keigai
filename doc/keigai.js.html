@@ -174,7 +174,7 @@
     <section>
         <article>
             <pre class="sunlight-highlight-javascript linenums">/**
- * Lightweight data store library
+ * Lightweight data store library, with a utility belt
  *
  * @author Jason Mulligan &lt;jason.mulligan@avoidwork.com>
  * @copyright 2014 Jason Mulligan
@@ -3056,6 +3056,15 @@ var grid = {
 	 * @param  {Boolean} filtered    [Optional] Create an input to filter the data grid
 	 * @param  {Number}  debounce    [Optional] DataListFilter input debounce, default is 250
 	 * @return {Object} {@link keigai.DataGrid}
+	 * @example
+	 * var fields  = ["name", "age"],
+	 *     options = {pageSize: 5, order: "age desc, name"},
+	 *     store   = keigai.store(),
+	 *     grid    = keigai.grid( document.querySelector( "#grid" ), store, fields, fields, options, true );
+	 *
+	 * store.setUri( "data.json" ).then( null, function ( e ) {
+	 *   ...
+	 * } );
 	 */
 	factory : function ( target, store, fields, sortable, options, filtered, debounce ) {
 		var ref = [store],
@@ -3147,6 +3156,11 @@ var grid = {
  * @param  {Array}   sortable [Optional] Array of sortable columns/fields
  * @param  {Object}  options  [Optional] DataList options
  * @param  {Boolean} filtered [Optional] Create an input to filter the DataGrid
+ * @example
+ * var fields  = ["name", "age"],
+ *     options = {pageSize: 5, order: "age desc, name"},
+ *     store   = keigai.store( [...] ),
+ *     grid    = keigai.grid( document.querySelector( "#grid" ), store, fields, fields, options, true );
  */
 function DataGrid ( target, store, fields, sortable, options, filtered ) {
 	var sortOrder;
@@ -3185,6 +3199,8 @@ DataGrid.prototype.constructor = DataGrid;
  * @memberOf keigai.DataGrid
  * @param {Object} record New DataStore record (shapes should match)
  * @return {Object}       {@link keigai.DataGrid}
+ * @example
+ * grid.add( {name: "John Doe", age: 34} );
  */
 DataGrid.prototype.add = function ( record ) {
 	var self = this;
@@ -3207,6 +3223,10 @@ DataGrid.prototype.add = function ( record ) {
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.addEventListener( "afterFilter", function ( ev ) {
+ *   ...
+ * }, "newFilter" );
  */
 DataGrid.prototype.addEventListener = function ( ev, listener, id, scope ) {
 	this.observer.on( ev, listener, id, scope || this );
@@ -3224,6 +3244,10 @@ DataGrid.prototype.addEventListener = function ( ev, listener, id, scope ) {
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.addEventListener( "afterFilter", function ( ev ) {
+ *   ...
+ * }, "newFilter" );
  */
 DataGrid.prototype.addListener = function ( ev, listener, id, scope ) {
 	this.observer.on( ev, listener, id, scope || this );
@@ -3237,6 +3261,8 @@ DataGrid.prototype.addListener = function ( ev, listener, id, scope ) {
  * @method emit
  * @memberOf keigai.DataGrid
  * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.dispatch( "event", ... );
  */
 DataGrid.prototype.dispatch = function () {
 	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
@@ -3250,6 +3276,8 @@ DataGrid.prototype.dispatch = function () {
  * @method dump
  * @memberOf keigai.DataGrid
  * @return {Array} Record set
+ * @example
+ * var data = grid.dump();
  */
 DataGrid.prototype.dump = function () {
 	return this.store.dump( this.list.records, this.fields );
@@ -3261,6 +3289,8 @@ DataGrid.prototype.dump = function () {
  * @method emit
  * @memberOf keigai.DataGrid
  * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.emit( "event", ... );
  */
 DataGrid.prototype.emit = function () {
 	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
@@ -3275,6 +3305,10 @@ DataGrid.prototype.emit = function () {
  * @memberOf keigai.DataGrid
  * @param  {String} ev [Optional] Event name
  * @return {Object} Listeners
+ * @example
+ * keigai.util.iterate( grid.listeners(), function ( fn, id ) {
+ *   ...
+ * } );
  */
 DataGrid.prototype.listeners = function ( ev ) {
 	return ev ? this.observer.listeners[ev] : this.listeners;
@@ -3288,6 +3322,8 @@ DataGrid.prototype.listeners = function ( ev ) {
  * @param  {String} ev Event name
  * @param  {String} id [Optional] Listener ID
  * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.off( "afterFilter", "newFilter" );
  */
 DataGrid.prototype.off = function ( ev, id ) {
 	this.observer.off( ev, id );
@@ -3305,6 +3341,10 @@ DataGrid.prototype.off = function ( ev, id ) {
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.on( "afterFilter", function ( ev ) {
+ *   ...
+ * }, "newFilter" );
  */
 DataGrid.prototype.on = function ( ev, listener, id, scope ) {
 	this.observer.on( ev, listener, id, scope || this );
@@ -3322,6 +3362,10 @@ DataGrid.prototype.on = function ( ev, listener, id, scope ) {
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.once( "afterFilter", function ( ev ) {
+ *   ...
+ * } );
  */
 DataGrid.prototype.once = function ( ev, listener, id, scope ) {
 	this.observer.once( ev, listener, id, scope || this );
@@ -3337,6 +3381,8 @@ DataGrid.prototype.once = function ( ev, listener, id, scope ) {
  * @fires keigai.DataGrid#beforeRefresh Fires before refresh
  * @fires keigai.DataGrid#afterRefresh Fires after refresh
  * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.refresh();
  */
 DataGrid.prototype.refresh = function () {
 	var sort = [],
@@ -3370,6 +3416,8 @@ DataGrid.prototype.refresh = function () {
  * @memberOf keigai.DataGrid
  * @param {Mixed} record Record, key or index
  * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.remove( "key" );
  */
 DataGrid.prototype.remove = function ( record ) {
 	var self = this;
@@ -3390,6 +3438,8 @@ DataGrid.prototype.remove = function ( record ) {
  * @param  {String} ev Event name
  * @param  {String} id [Optional] Listener ID
  * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.removeListener( "afterFilter", "newFilter" );
  */
 DataGrid.prototype.removeEventListener = function ( ev, id ) {
 	this.observer.off( ev, id );
@@ -3405,6 +3455,8 @@ DataGrid.prototype.removeEventListener = function ( ev, id ) {
  * @param  {String} ev Event name
  * @param  {String} id [Optional] Listener ID
  * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.removeListener( "afterFilter", "newFilter" );
  */
 DataGrid.prototype.removeListener = function ( ev, id ) {
 	this.observer.off( ev, id );
@@ -3417,15 +3469,15 @@ DataGrid.prototype.removeListener = function ( ev, id ) {
  *
  * @method sort
  * @memberOf keigai.DataGrid
- * @param  {Object} e Event
+ * @param  {Object} ev Event
  * @return {Object} {@link keigai.DataGrid}
  */
-DataGrid.prototype.sort = function ( e ) {
-	var target = utility.target( e ),
+DataGrid.prototype.sort = function ( ev ) {
+	var target = utility.target( ev ),
 	    field;
 
 	// Stopping event propogation
-	utility.stop( e );
+	utility.stop( ev );
 
 	// Refreshing list if target is sortable
 	if ( element.hasClass( target, "sortable" ) ) {
@@ -3445,6 +3497,8 @@ DataGrid.prototype.sort = function ( e ) {
  * @method teardown
  * @memberOf keigai.DataGrid
  * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.teardown();
  */
 DataGrid.prototype.teardown = function () {
 	if ( this.filter !== null ) {
@@ -3468,6 +3522,8 @@ DataGrid.prototype.teardown = function () {
  * @param {Mixed}  record Record, key or index
  * @param {Object} data   New property values
  * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.update( "key", {name: "Jim Smith"} );
  */
 DataGrid.prototype.update = function ( record, data ) {
 	record   = record.key ? record : this.store.get ( record );
@@ -3500,6 +3556,9 @@ var list = {
 	 * @param  {Mixed}  template Record field, template ( $.tpl ), or String, e.g. "&lt;p>this is a {{field}} sample.&lt;/p>", fields are marked with {{ }}
 	 * @param  {Object} options  Optional parameters to set on the DataList
 	 * @return {Object} {@link keigai.DataList}
+	 * @example
+	 * var store = keigai.store( [...] ),
+	 *     list  = keigai.list( document.querySelector("#list"), store, "{{name}}", {order: "name"} );
 	 */
 	factory : function ( target, store, template, options ) {
 		var ref = [store],
@@ -3568,6 +3627,7 @@ var list = {
 	 * @method pages
 	 * @memberOf list
 	 * @return {Number} Total pages
+	 * @private
 	 */
 	pages : function () {
 		if ( isNaN( this.pageSize ) ) {
@@ -3583,6 +3643,7 @@ var list = {
 	 * @method range
 	 * @memberOf list
 	 * @return {Array}  Array of start & end numbers
+	 * @private
 	 */
 	range : function () {
 		var start = ( this.pageIndex * this.pageSize ) - this.pageSize,
@@ -3597,6 +3658,9 @@ var list = {
  *
  * @constructor
  * @memberOf keigai
+ * @example
+ * var store = keigai.store( [...] ),
+ *     list  = keigai.list( document.querySelector("#list"), store, "{{name}}", {order: "name"} );
  */
 function DataList ( element, store, template ) {
 	this.callback    = null;
@@ -3637,6 +3701,8 @@ DataList.prototype.constructor = DataList;
  * @memberOf keigai.DataList
  * @param {Object} record New DataStore record (shapes should match)
  * @return {Object}       {@link keigai.DataList}
+ * @example
+ * list.add( {name: "John Doe", age: 34} );
  */
 DataList.prototype.add = function ( record ) {
 	var self = this;
@@ -3659,6 +3725,10 @@ DataList.prototype.add = function ( record ) {
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.addEventListener( "afterRefresh", function ( ev ) {
+ *   ...
+ * }, "refreshed" );
  */
 DataList.prototype.addEventListener = function ( ev, listener, id, scope ) {
 	this.observer.on( ev, listener, id, scope || this );
@@ -3676,6 +3746,10 @@ DataList.prototype.addEventListener = function ( ev, listener, id, scope ) {
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.addListener( "afterRefresh", function ( ev ) {
+ *   ...
+ * }, "refreshed" );
  */
 DataList.prototype.addListener = function ( ev, listener, id, scope ) {
 	this.observer.on( ev, listener, id, scope || this );
@@ -3689,6 +3763,8 @@ DataList.prototype.addListener = function ( ev, listener, id, scope ) {
  * @method dispatch
  * @memberOf keigai.DataList
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.dispatch( "event", ... );
  */
 DataList.prototype.dispatch = function () {
 	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
@@ -3702,6 +3778,8 @@ DataList.prototype.dispatch = function () {
  * @method dump
  * @memberOf keigai.DataList
  * @return {Array} Record set
+ * @example
+ * var data = list.dump();
  */
 DataList.prototype.dump = function () {
 	return this.store.dump( this.records );
@@ -3713,6 +3791,8 @@ DataList.prototype.dump = function () {
  * @method emit
  * @memberOf keigai.DataList
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.emit( "event", ... );
  */
 DataList.prototype.emit = function () {
 	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
@@ -3727,6 +3807,10 @@ DataList.prototype.emit = function () {
  * @memberOf keigai.DataList
  * @param  {String} ev [Optional] Event name
  * @return {Object} Listeners
+ * @example
+ * keigai.util.iterate( list.listeners(), function ( fn, id ) {
+ *   ...
+ * } );
  */
 DataList.prototype.listeners = function ( ev ) {
 	return ev ? this.observer.listeners[ev] : this.listeners;
@@ -3740,6 +3824,8 @@ DataList.prototype.listeners = function ( ev ) {
  * @param  {String} ev Event name
  * @param  {String} id [Optional] Listener ID
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.off( "afterRefresh", "refreshed" );
  */
 DataList.prototype.off = function ( ev, id ) {
 	this.observer.off( ev, id );
@@ -3757,6 +3843,10 @@ DataList.prototype.off = function ( ev, id ) {
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.on( "afterRefresh", function ( ev ) {
+ *   ...
+ * }, "refreshed" );
  */
 DataList.prototype.on = function ( ev, listener, id, scope ) {
 	this.observer.on( ev, listener, id, scope || this );
@@ -3774,6 +3864,10 @@ DataList.prototype.on = function ( ev, listener, id, scope ) {
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.once( "afterRefresh", function ( ev ) {
+ *   ...
+ * } );
  */
 DataList.prototype.once = function ( ev, listener, id, scope ) {
 	this.observer.once( ev, listener, id, scope || this );
@@ -3788,6 +3882,8 @@ DataList.prototype.once = function ( ev, listener, id, scope ) {
  * @memberOf keigai.DataList
  * @param  {Number} page Page to view
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.page( 2 );
  */
 DataList.prototype.page = function ( page ) {
 	this.pageIndex = page;
@@ -3796,11 +3892,13 @@ DataList.prototype.page = function ( page ) {
 };
 
 /**
- * Adds pagination Elements to the View
+ * Adds pagination Elements to the View, executed from `DataList.refresh()`
  *
  * @method pages
  * @memberOf keigai.DataList
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.pages();
  */
 DataList.prototype.pages = function () {
 	var self  = this,
@@ -3900,6 +3998,8 @@ DataList.prototype.pages = function () {
  * @param  {Boolean} redraw [Optional] Boolean to force clearing the DataList ( default ), false toggles "hidden" class of items
  * @param  {Boolean} create [Optional] Recreates cached View of data
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.refresh();
  */
 DataList.prototype.refresh = function ( redraw, create ) {
 	var self     = this,
@@ -4104,6 +4204,15 @@ DataList.prototype.refresh = function ( redraw, create ) {
  * @memberOf keigai.DataList
  * @param {Mixed} record Record, key or index
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * // Adding a click handler to 'trash' Elements
+ * keigai.util.array.cast( document.querySelectorAll( ".list .trash" ) ).forEach( function ( i ) {
+ *   i.addEventListener( "click", function ( ev ) {
+ *     var key = keigai.util.element.data( keigai.util.target( ev ).parentNode, "key" );
+ *
+ *     list.remove( key );
+ *   }, false );
+ * } );
  */
 DataList.prototype.remove = function ( record ) {
 	var self = this;
@@ -4124,6 +4233,8 @@ DataList.prototype.remove = function ( record ) {
  * @param  {String} ev Event name
  * @param  {String} id [Optional] Listener ID
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.removeEventListener( "afterRefresh", "refreshed" );
  */
 DataList.prototype.removeEventListener = function ( ev, id ) {
 	this.observer.off( ev, id );
@@ -4139,6 +4250,8 @@ DataList.prototype.removeEventListener = function ( ev, id ) {
  * @param  {String} ev Event name
  * @param  {String} id [Optional] Listener ID
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.removeListener( "afterRefresh", "refreshed" );
  */
 DataList.prototype.removeListener = function ( ev, id ) {
 	this.observer.off( ev, id );
@@ -4153,6 +4266,8 @@ DataList.prototype.removeListener = function ( ev, id ) {
  * @memberOf keigai.DataList
  * @param  {String} order SQL "ORDER BY" clause
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.sort( "age, name" );
  */
 DataList.prototype.sort = function ( order ) {
 	this.order = order;
@@ -4167,6 +4282,8 @@ DataList.prototype.sort = function ( order ) {
  * @memberOf keigai.DataList
  * @param  {Boolean} destroy [Optional] `true` will remove the DataList from the DOM
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.teardown();
  */
 DataList.prototype.teardown = function ( destroy ) {
 	destroy  = ( destroy === true );
@@ -4198,6 +4315,8 @@ DataList.prototype.teardown = function ( destroy ) {
  * @param {Mixed}  record Record, key or index
  * @param {Object} data   New property values
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.update( "key", {name: "Jim Smith"} );
  */
 DataList.prototype.update = function ( record, data ) {
 	record   = record.key ? record : this.store.get ( record );
@@ -5378,10 +5497,16 @@ var json = {
 	 *
 	 * @method csv
 	 * @memberOf json
-	 * @param  {String}  arg JSON  string to transform
+	 * @param  {Mixed}   arg       JSON, Array or Object
 	 * @param  {String}  delimiter [Optional] Character to separate fields
 	 * @param  {Boolean} header    [Optional] False to not include field names as first row
 	 * @return {String}            CSV string
+	 * @example
+	 * var csv = keigai.util.json.csv("[{\"prop\":\"value\"},{\"prop\":\"value2\"}]");
+	 * csv;
+	 * "prop
+	 *  value
+	 *  value2"
 	 */
 	csv : function ( arg, delimiter, header ) {
 		var obj    = json.decode( arg, true ) || arg,
@@ -5448,6 +5573,15 @@ var json = {
 	 * @param  {String}  arg    String to parse
 	 * @param  {Boolean} silent [Optional] Silently fail
 	 * @return {Mixed}          Entity resulting from parsing JSON, or undefined
+	 * @example
+	 * var x = keigai.util.json.decode( ..., true );
+	 *
+	 * if ( x ) {
+	 *   ...
+	 * }
+	 * else {
+	 *   ... // invalid JSON, with `Error` suppressed by `silent`
+	 * }
 	 */
 	decode : function ( arg, silent ) {
 		try {
@@ -5463,13 +5597,22 @@ var json = {
 	},
 
 	/**
-	 * Encodes the argument as JSON
+	 * Encodes `arg` as JSON
 	 *
 	 * @method encode
 	 * @memberOf json
-	 * @param  {Mixed}   arg    Entity to encode
+	 * @param  {Mixed}   arg    Primative
 	 * @param  {Boolean} silent [Optional] Silently fail
 	 * @return {String}         JSON, or undefined
+	 * @example
+	 * var x = keigai.util.json.encode( ..., true );
+	 *
+	 * if ( x ) {
+	 *   ...
+	 * }
+	 * else {
+	 *   ... // invalid JSON, with `Error` suppressed by `silent`
+	 * }
 	 */
 	encode : function ( arg, silent ) {
 		try {
@@ -9841,7 +9984,7 @@ else {
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Sun Mar 09 2014 11:31:04 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Sun Mar 09 2014 12:20:02 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

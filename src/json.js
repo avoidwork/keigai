@@ -7,10 +7,16 @@ var json = {
 	 *
 	 * @method csv
 	 * @memberOf json
-	 * @param  {String}  arg JSON  string to transform
+	 * @param  {Mixed}   arg       JSON, Array or Object
 	 * @param  {String}  delimiter [Optional] Character to separate fields
 	 * @param  {Boolean} header    [Optional] False to not include field names as first row
 	 * @return {String}            CSV string
+	 * @example
+	 * var csv = keigai.util.json.csv("[{\"prop\":\"value\"},{\"prop\":\"value2\"}]");
+	 * csv;
+	 * "prop
+	 *  value
+	 *  value2"
 	 */
 	csv : function ( arg, delimiter, header ) {
 		var obj    = json.decode( arg, true ) || arg,
@@ -77,6 +83,15 @@ var json = {
 	 * @param  {String}  arg    String to parse
 	 * @param  {Boolean} silent [Optional] Silently fail
 	 * @return {Mixed}          Entity resulting from parsing JSON, or undefined
+	 * @example
+	 * var x = keigai.util.json.decode( ..., true );
+	 *
+	 * if ( x ) {
+	 *   ...
+	 * }
+	 * else {
+	 *   ... // invalid JSON, with `Error` suppressed by `silent`
+	 * }
 	 */
 	decode : function ( arg, silent ) {
 		try {
@@ -92,13 +107,22 @@ var json = {
 	},
 
 	/**
-	 * Encodes the argument as JSON
+	 * Encodes `arg` as JSON
 	 *
 	 * @method encode
 	 * @memberOf json
-	 * @param  {Mixed}   arg    Entity to encode
+	 * @param  {Mixed}   arg    Primative
 	 * @param  {Boolean} silent [Optional] Silently fail
 	 * @return {String}         JSON, or undefined
+	 * @example
+	 * var x = keigai.util.json.encode( ..., true );
+	 *
+	 * if ( x ) {
+	 *   ...
+	 * }
+	 * else {
+	 *   ... // invalid JSON, with `Error` suppressed by `silent`
+	 * }
 	 */
 	encode : function ( arg, silent ) {
 		try {

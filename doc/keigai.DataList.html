@@ -227,7 +227,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3426">line 3426</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3490">line 3490</a>
     </li></ul></dd>
     
 
@@ -249,6 +249,13 @@
     
     
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var store = keigai.store( [...] ),
+    list  = keigai.list( document.querySelector("#list"), store, "{{name}}", {order: "name"} );</pre>
+
+
     
 </dd>
 
@@ -363,7 +370,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3458">line 3458</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3522">line 3522</a>
     </li></ul></dd>
     
 
@@ -408,6 +415,12 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.add( {name: "John Doe", age: 34} );</pre>
+
+
     
 </dd>
 
@@ -573,7 +586,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3477">line 3477</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3543">line 3543</a>
     </li></ul></dd>
     
 
@@ -618,6 +631,14 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.addEventListener( "afterRefresh", function ( ev ) {
+  ...
+}, "refreshed" );</pre>
+
+
     
 </dd>
 
@@ -783,7 +804,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3494">line 3494</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3564">line 3564</a>
     </li></ul></dd>
     
 
@@ -828,6 +849,14 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.addListener( "afterRefresh", function ( ev ) {
+  ...
+}, "refreshed" );</pre>
+
+
     
 </dd>
 
@@ -875,7 +904,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3449">line 3449</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3513">line 3513</a>
     </li></ul></dd>
     
 
@@ -963,7 +992,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3511">line 3511</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3585">line 3585</a>
     </li></ul></dd>
     
 
@@ -1008,6 +1037,12 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.dispatch( "event", ... );</pre>
+
+
     
 </dd>
 
@@ -1055,7 +1090,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3524">line 3524</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3600">line 3600</a>
     </li></ul></dd>
     
 
@@ -1100,6 +1135,12 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var data = list.dump();</pre>
+
+
     
 </dd>
 
@@ -1147,7 +1188,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3535">line 3535</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3613">line 3613</a>
     </li></ul></dd>
     
 
@@ -1192,6 +1233,12 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.emit( "event", ... );</pre>
+
+
     
 </dd>
 
@@ -1288,7 +1335,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3548">line 3548</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3628">line 3628</a>
     </li></ul></dd>
     
 
@@ -1333,6 +1380,14 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.iterate( list.listeners(), function ( fn, id ) {
+  ...
+} );</pre>
+
+
     
 </dd>
 
@@ -1452,7 +1507,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3560">line 3560</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3644">line 3644</a>
     </li></ul></dd>
     
 
@@ -1497,6 +1552,12 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.off( "afterRefresh", "refreshed" );</pre>
+
+
     
 </dd>
 
@@ -1662,7 +1723,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3575">line 3575</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3661">line 3661</a>
     </li></ul></dd>
     
 
@@ -1707,6 +1768,14 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.on( "afterRefresh", function ( ev ) {
+  ...
+}, "refreshed" );</pre>
+
+
     
 </dd>
 
@@ -1872,7 +1941,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3592">line 3592</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3682">line 3682</a>
     </li></ul></dd>
     
 
@@ -1917,6 +1986,14 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.once( "afterRefresh", function ( ev ) {
+  ...
+} );</pre>
+
+
     
 </dd>
 
@@ -2013,7 +2090,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3609">line 3609</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3703">line 3703</a>
     </li></ul></dd>
     
 
@@ -2059,6 +2136,12 @@
         
     
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.page( 2 );</pre>
+
+
+    
 </dd>
 
         
@@ -2072,7 +2155,7 @@
     
     
     <div class="description">
-        <p>Adds pagination Elements to the View</p>
+        <p>Adds pagination Elements to the View, executed from <code>DataList.refresh()</code></p>
     </div>
     
 
@@ -2105,7 +2188,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3623">line 3623</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3719">line 3719</a>
     </li></ul></dd>
     
 
@@ -2150,6 +2233,12 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.pages();</pre>
+
+
     
 </dd>
 
@@ -2269,7 +2358,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3717">line 3717</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3815">line 3815</a>
     </li></ul></dd>
     
 
@@ -2323,6 +2412,12 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.refresh();</pre>
+
+
     
 </dd>
 
@@ -2419,7 +2514,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3925">line 3925</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4025">line 4025</a>
     </li></ul></dd>
     
 
@@ -2464,6 +2559,19 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Adding a click handler to 'trash' Elements
+keigai.util.array.cast( document.querySelectorAll( ".list .trash" ) ).forEach( function ( i ) {
+  i.addEventListener( "click", function ( ev ) {
+    var key = keigai.util.element.data( keigai.util.target( ev ).parentNode, "key" );
+
+    list.remove( key );
+  }, false );
+} );</pre>
+
+
     
 </dd>
 
@@ -2583,7 +2691,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3944">line 3944</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4053">line 4053</a>
     </li></ul></dd>
     
 
@@ -2628,6 +2736,12 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.removeEventListener( "afterRefresh", "refreshed" );</pre>
+
+
     
 </dd>
 
@@ -2747,7 +2861,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3959">line 3959</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4070">line 4070</a>
     </li></ul></dd>
     
 
@@ -2792,6 +2906,12 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.removeListener( "afterRefresh", "refreshed" );</pre>
+
+
     
 </dd>
 
@@ -2888,7 +3008,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3974">line 3974</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4087">line 4087</a>
     </li></ul></dd>
     
 
@@ -2933,6 +3053,12 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.sort( "age, name" );</pre>
+
+
     
 </dd>
 
@@ -3029,7 +3155,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3988">line 3988</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4103">line 4103</a>
     </li></ul></dd>
     
 
@@ -3074,6 +3200,12 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.teardown();</pre>
+
+
     
 </dd>
 
@@ -3193,7 +3325,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4018">line 4018</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4135">line 4135</a>
     </li></ul></dd>
     
 
@@ -3239,6 +3371,12 @@
         
     
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">list.update( "key", {name: "Jim Smith"} );</pre>
+
+
+    
 </dd>
 
         </dl>
@@ -3267,7 +3405,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Sun Mar 09 2014 11:31:05 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Sun Mar 09 2014 12:20:03 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
