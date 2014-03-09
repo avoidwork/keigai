@@ -145,6 +145,10 @@ DataStore.prototype.constructor = DataStore;
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.addEventListener( "afterBatch", function ( ev ) {
+ *   ...
+ * }, "batch" );
  */
 DataStore.prototype.addEventListener = function ( ev, listener, id, scope ) {
 	this.observer.on( ev, listener, id, scope || this );
@@ -162,6 +166,10 @@ DataStore.prototype.addEventListener = function ( ev, listener, id, scope ) {
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.addListener( "afterBatch", function ( ev ) {
+ *   ...
+ * }, "batch" );
  */
 DataStore.prototype.addListener = function ( ev, listener, id, scope ) {
 	this.observer.on( ev, listener, id, scope || this );
@@ -182,6 +190,12 @@ DataStore.prototype.addListener = function ( ev, listener, id, scope ) {
  * @param  {Array}   data Array of keys or indices to delete, or Object containing multiple records to set
  * @param  {Boolean} sync [Optional] Syncs store with data, if true everything is erased
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * store.batch( "set", [...] ).then( function ( records ) {
+ *   ...
+ * }, function ( err ) {
+ *   ...
+ * } );
  */
 DataStore.prototype.batch = function ( type, data, sync ) {
 	if ( !regex.set_del.test( type ) || ( sync && regex.del.test( type ) ) || typeof data != "object" ) {
@@ -262,6 +276,8 @@ DataStore.prototype.batch = function ( type, data, sync ) {
  * @memberOf keigai.DataStore
  * @param  {String} key Record key
  * @return {String}     URI
+ * @example
+ * var uri = store.buildUri( "key" );
  */
 DataStore.prototype.buildUri = function ( key ) {
 	var parsed = utility.parse( this.uri );
@@ -279,6 +295,12 @@ DataStore.prototype.buildUri = function ( key ) {
  * @memberOf keigai.DataStore
  * @param  {Boolean} sync [Optional] Boolean to limit clearing of properties
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * // Resyncing the records, if wired to an API
+ * store.clear( true );
+ *
+ * // Resetting the store
+ * store.clear();
  */
 DataStore.prototype.clear = function ( sync ) {
 	sync       = ( sync === true );
@@ -340,14 +362,19 @@ DataStore.prototype.clear = function ( sync ) {
 /**
  * Crawls a record's properties and creates DataStores when URIs are detected
  *
- * Events: beforeRetrieve Fires before crawling a record
- *         afterRetrieve  Fires after the store has retrieved all data from crawling
- *         failedRetrieve Fires if an exception occurs
- *
  * @method crawl
  * @memberOf keigai.DataStore
  * @param  {Mixed}  arg Record, key or index
  * @return {Object} {@link keigai.Deferred}
+ * @fires keigai.DataStore#beforeRetrieve Fires before crawling a record
+ * @fires keigai.DataStore#afterRetrieve Fires after the store has retrieved all data from crawling
+ * @fires keigai.DataStore#failedRetrieve Fires if an exception occurs
+ * @example
+ * store.crawl( "key" ).then( function () {
+ *   ...
+ * }, function ( err ) {
+ *   ...
+ * } );
  */
 DataStore.prototype.crawl = function ( arg ) {
 	var self      = this,
@@ -430,16 +457,21 @@ DataStore.prototype.crawl = function ( arg ) {
 /**
  * Deletes a record based on key or index
  *
- * Events: beforeDelete  Fires before the record is deleted
- *         afterDelete   Fires after the record is deleted
- *         failedDelete  Fires if the store is RESTful and the action is denied
- *
  * @method del
  * @memberOf keigai.DataStore
  * @param  {Mixed}   record  Record, key or index
  * @param  {Boolean} reindex [Optional] `true` if DataStore should be reindexed
  * @param  {Boolean} batch   [Optional] `true` if part of a batch operation
  * @return {Object} {@link keigai.Deferred}
+ * @fires keigai.DataStore#beforeDelete Fires before the record is deleted
+ * @fires keigai.DataStore#afterDelete Fires after the record is deleted
+ * @fires keigai.DataStore#failedDelete Fires if the store is RESTful and the action is denied
+ * @example
+ * store.del( "key" ).then( function () {
+ *   console.log( "Successfully deleted " + key );
+ * }, function ( err ) {
+ *   console.warn( "Failed to delete " + key + ": " + err.message );
+ * } );
  */
 DataStore.prototype.del = function ( record, reindex, batch ) {
 	record    = record.key ? record : this.get ( record );
@@ -482,6 +514,7 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
  * @param  {Boolean} batch   `true` if part of a batch operation
  * @param  {Object}  defer   Deferred instance
  * @return {Object} {@link keigai.DataStore}
+ * @private
  */
 DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 	delete this.keys[record.key];
@@ -522,9 +555,11 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 /**
  * Dispatches an event, with optional arguments
  *
- * @method emit
+ * @method dispatch
  * @memberOf keigai.DataStore
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.dispatch( "event", ... );
  */
 DataStore.prototype.dispatch = function () {
 	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
@@ -540,6 +575,8 @@ DataStore.prototype.dispatch = function () {
  * @param  {Array} args   [Optional] Sub-data set of DataStore
  * @param  {Array} fields [Optional] Fields to export, defaults to all
  * @return {Array}        Records
+ * @example
+ * var data = store.dump();
  */
 DataStore.prototype.dump = function ( args, fields ) {
 	args       = args || this.records;
@@ -584,6 +621,8 @@ DataStore.prototype.dump = function ( args, fields ) {
  * @method emit
  * @memberOf keigai.DataStore
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.emit( "event", ... );
  */
 DataStore.prototype.emit = function () {
 	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
@@ -601,6 +640,8 @@ DataStore.prototype.emit = function () {
  * @param  {Mixed}  record Key, index or Array of pagination start & end; or comma delimited String of keys or indices
  * @param  {Number} offset [Optional] Offset from `record` for pagination
  * @return {Mixed}         Individual record, or Array of records
+ * @example
+ * var record = store.get( "key" );
  */
 DataStore.prototype.get = function ( record, offset ) {
 	var records = this.records,
@@ -647,6 +688,7 @@ DataStore.prototype.get = function ( record, offset ) {
  * @param  {String} field Field in both DataStores
  * @param  {String} join  Type of JOIN to perform, defaults to `inner`
  * @return {Object} {@link keigai.Deferred}
+ * var data = store.join( otherStore, "commonField" );
  */
 DataStore.prototype.join = function ( arg, field, join ) {
 	join          = join || "inner";
@@ -763,6 +805,10 @@ DataStore.prototype.join = function ( arg, field, join ) {
  * @memberOf keigai.DataStore
  * @param  {String} ev [Optional] Event name
  * @return {Object} Listeners
+ * @example
+ * keigai.util.iterate( store.listeners(), function ( fn, id ) {
+ *   ...
+ * } );
  */
 DataStore.prototype.listeners = function ( ev ) {
 	return ev ? this.observer.listeners[ev] : this.listeners;
@@ -776,6 +822,8 @@ DataStore.prototype.listeners = function ( ev ) {
  * @param  {String} ev Event name
  * @param  {String} id [Optional] Listener ID
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.off( "afterBatch", "batch" );
  */
 DataStore.prototype.off = function ( ev, id ) {
 	this.observer.off( ev, id );
@@ -793,6 +841,10 @@ DataStore.prototype.off = function ( ev, id ) {
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.on( "afterBatch", function ( ev ) {
+ *   ...
+ * }, "batch" );
  */
 DataStore.prototype.on = function ( ev, listener, id, scope ) {
 	this.observer.on( ev, listener, id, scope || this );
@@ -810,6 +862,10 @@ DataStore.prototype.on = function ( ev, listener, id, scope ) {
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.once( "afterBatch", function ( ev ) {
+ *   ...
+ * } );
  */
 DataStore.prototype.once = function ( ev, listener, id, scope ) {
 	this.observer.once( ev, listener, id, scope || this );
@@ -824,6 +880,8 @@ DataStore.prototype.once = function ( ev, listener, id, scope ) {
  * @memberOf keigai.DataStore
  * @param  {String} arg Field/property to retrieve
  * @return {Array}      Array of values
+ * @example
+ * var ages = store.only( "age" );
  */
 DataStore.prototype.only = function ( arg ) {
 	if ( arg === this.key ) {
@@ -839,12 +897,14 @@ DataStore.prototype.only = function ( arg ) {
 };
 
 /**
- * Purges DataStore or record from localStorage
+ * Purges DataStore or record from persistant storage
  *
  * @method purge
  * @memberOf keigai.DataStore
  * @param  {Mixed} arg  [Optional] String or Number for record
  * @return {Object}     Record or store
+ * @example
+ * store.purge();
  */
 DataStore.prototype.purge = function ( arg ) {
 	return this.storage( arg || this, "remove" );
@@ -856,6 +916,8 @@ DataStore.prototype.purge = function ( arg ) {
  * @method reindex
  * @memberOf keigai.DataStore
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.reindex();
  */
 DataStore.prototype.reindex = function () {
 	var nth = this.total,
@@ -881,6 +943,8 @@ DataStore.prototype.reindex = function () {
  * @param  {String} ev Event name
  * @param  {String} id [Optional] Listener ID
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.removeEventListener( "afterBatch", "batch" );
  */
 DataStore.prototype.removeEventListener = function ( ev, id ) {
 	this.observer.off( ev, id );
@@ -896,6 +960,8 @@ DataStore.prototype.removeEventListener = function ( ev, id ) {
  * @param  {String} ev Event name
  * @param  {String} id [Optional] Listener ID
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.removeListener( "afterBatch", "batch" );
  */
 DataStore.prototype.removeListener = function ( ev, id ) {
 	this.observer.off( ev, id );
@@ -904,38 +970,48 @@ DataStore.prototype.removeListener = function ( ev, id ) {
 };
 
 /**
- * Restores DataStore or record frome localStorage
+ * Restores DataStore or record persistant storage
  *
  * @method restore
  * @memberOf keigai.DataStore
  * @param  {Mixed} arg  [Optional] String or Number for record
  * @return {Object}     Record or store
+ * @example
+ * store.restore();
  */
 DataStore.prototype.restore = function ( arg ) {
 	return this.storage( arg || this, "get" );
 };
 
 /**
- * Saves DataStore or record to localStorage, sessionStorage or MongoDB (node.js only)
+ * Saves DataStore or record to persistant storage, or sessionStorage
  *
  * @method save
  * @memberOf keigai.DataStore
  * @param  {Mixed} arg  [Optional] String or Number for record
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * store.save();
  */
 DataStore.prototype.save = function ( arg ) {
 	return this.storage( arg || this, "set" );
 };
 
 /**
- * Selects records based on an explcit description
- *
- * Note: Records are not by reference!
+ * Selects records (not by reference) based on an explicit description
  *
  * @method select
  * @memberOf keigai.DataStore
  * @param  {Object} where Object describing the WHERE clause
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * var adults;
+ *
+ * store.select( {age: function ( i ) { return i >= 21; } } ).then( function ( records ) {
+ *   adults = records;
+ * }, function ( err ) {
+ *   ...
+ * } );
  */
 DataStore.prototype.select = function ( where ) {
 	var defer = deferred.factory(),
@@ -1026,6 +1102,12 @@ DataStore.prototype.select = function ( where ) {
  * @param  {Object}  data  Key:Value pairs to set as field values
  * @param  {Boolean} batch [Optional] True if called by data.batch
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * // Creating a new record
+ * store.set( null, {...} );
+ *
+ * // Updating a record
+ * store.set( "key", {...} );
  */
 DataStore.prototype.set = function ( key, data, batch ) {
 	data       = utility.clone( data, true );
@@ -1125,6 +1207,7 @@ DataStore.prototype.set = function ( key, data, batch ) {
  * @param  {Boolean} batch  `true` if part of a batch operation
  * @param  {Object}  defer  Deferred instance
  * @return {Object} {@link keigai.DataStore}
+ * @private
  */
 DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 	var self      = this,
@@ -1211,6 +1294,8 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
  * @memberOf keigai.DataStore
  * @param  {Number} arg Milliseconds until data is stale
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.setExpires( 5 * 60 * 1000 ); // Resyncs every 5 minutes
  */
 DataStore.prototype.setExpires = function ( arg ) {
 	// Expiry cannot be less than a second, and must be a valid scenario for consumption; null will disable repetitive expiration
@@ -1256,6 +1341,12 @@ DataStore.prototype.setExpires = function ( arg ) {
  * @memberOf keigai.DataStore
  * @param  {String} arg API collection end point
  * @return {Object}     Deferred
+ * @example
+ * store.setUri( "..." ).then( function ( records ) {
+ *   ...
+ * }, function ( err ) {
+ *   ...
+ * } );
  */
 DataStore.prototype.setUri = function ( arg ) {
 	var defer = deferred.factory(),
@@ -1306,9 +1397,7 @@ DataStore.prototype.setUri = function ( arg ) {
 };
 
 /**
- * Returns a view, or creates a view and returns it
- *
- * Records in a view are not by reference, they are clones
+ * Creates, or returns a cached view of the records (not by reference)
  *
  * @method sort
  * @memberOf keigai.DataStore
@@ -1316,6 +1405,12 @@ DataStore.prototype.setUri = function ( arg ) {
  * @param  {String} create [Optional, default behavior is true, value is false] Boolean determines whether to recreate a view if it exists
  * @param  {Object} where  [Optional] Object describing the WHERE clause
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * store.sort( "age desc, name" ).then( function ( records ) {
+ *   ...
+ * }, function ( err ) {
+ *   ...
+ * } );
  */
 DataStore.prototype.sort = function ( query, create, where ) {
 	create      = ( create === true || ( where instanceof Object ) );
@@ -1376,6 +1471,8 @@ DataStore.prototype.sort = function ( query, create, where ) {
  * @param  {Object} op   Operation to perform ( get, remove or set )
  * @param  {String} type [Optional] Type of Storage to use ( local, session [local] )
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * store.storage( store, "set" );
  */
 DataStore.prototype.storage = function ( obj, op, type ) {
 	var self    = this,
@@ -1626,6 +1723,12 @@ DataStore.prototype.storage = function ( obj, op, type ) {
  * @method sync
  * @memberOf keigai.DataStore
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * store.sync().then( function ( records ) {
+ *   ...
+ * }, function ( err ) {
+ *   ...
+ * } );
  */
 DataStore.prototype.sync = function () {
 	if ( this.uri === null || string.isEmpty( this.uri ) ) {
@@ -1710,6 +1813,8 @@ DataStore.prototype.sync = function () {
  * @method teardown
  * @memberOf keigai.DataStore
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.teardown();
  */
 DataStore.prototype.teardown = function () {
 	var uri = this.uri,
@@ -1756,6 +1861,9 @@ DataStore.prototype.teardown = function () {
  * @param  {Mixed}  key     Key or index
  * @param  {String} version [Optional] Version to restore
  * @return {Object}         Deferred
+ * @example
+ * // Didn't like the new version, so undo the change
+ * store.undo( "key", "v1" );
  */
 DataStore.prototype.undo = function ( key, version ) {
 	var record   = this.get( key ),
@@ -1795,6 +1903,8 @@ DataStore.prototype.undo = function ( key, version ) {
  * @memberOf keigai.DataStore
  * @param  {String} key Field to compare
  * @return {Array}      Array of values
+ * @example
+ * var ages = store.unique( "age" );
  */
 DataStore.prototype.unique = function ( key ) {
 	return array.unique( this.records.map( function ( i ) {
@@ -1812,6 +1922,8 @@ DataStore.prototype.unique = function ( key ) {
  * @param  {Mixed}  key  Key or index
  * @param  {Object} data Key:Value pairs to set as field values
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * store.update( "key", {age: 34} );
  */
 DataStore.prototype.update = function ( key, data ) {
 	var record = this.get( key ),
@@ -1821,11 +1933,7 @@ DataStore.prototype.update = function ( key, data ) {
 		throw new Error( label.invalidArguments );
 	}
 
-	utility.iterate( record.data, function ( v, k ) {
-		data[v] = k;
-	} );
-	
-	this.set( key, data ).then( function ( arg ) {
+	this.set( key, utility.merge( record.data, data ) ).then( function ( arg ) {
 		defer.resolve( arg );
 	}, function ( e ) {
 		defer.reject( e );

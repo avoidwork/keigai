@@ -7,14 +7,14 @@ var array = {
 	 *
 	 * @method add
 	 * @memberOf array
+	 * @param  {Array} obj Array to receive 'arg'
+	 * @param  {Mixed} arg Argument to set in 'obj'
+	 * @return {Array}     Array that was queried
 	 * @example
 	 * var myArray = [1, 2];
 	 *
 	 * keigai.util.array.add( myArray, 3 ); // [1, 2, 3]
 	 * keigai.util.array.add( myArray, 1 ); // [1, 2, 3]
-	 * @param  {Array} obj Array to receive 'arg'
-	 * @param  {Mixed} arg Argument to set in 'obj'
-	 * @return {Array}     Array that was queried
 	 */
 	add : function ( obj, arg ) {
 		if ( !array.contains( obj, arg ) ) {

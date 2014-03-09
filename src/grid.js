@@ -480,21 +480,16 @@ DataGrid.prototype.teardown = function () {
  *
  * @method update
  * @memberOf keigai.DataGrid
- * @param {Mixed}  record Record, key or index
- * @param {Object} data   New property values
- * @return {Object} {@link keigai.DataGrid}
+ * @param {Mixed}  key  Key or index
+ * @param {Object} data New property values
+ * @return {Object}     {@link keigai.DataGrid}
  * @example
  * grid.update( "key", {name: "Jim Smith"} );
  */
-DataGrid.prototype.update = function ( record, data ) {
-	record   = record.key ? record : this.store.get ( record );
+DataGrid.prototype.update = function ( key, data ) {
 	var self = this;
 
-	if ( record === undefined ) {
-		throw new Error( label.error.invalidArguments );
-	}
-
-	this.store.set( record.key, utility.merge( record.data, data ) ).then( null, function ( e ) {
+	this.store.update( key, data ).then( null, function ( e ) {
 		utility.error( e );
 		self.dispatch( "error", e );
 	} );

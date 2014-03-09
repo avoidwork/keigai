@@ -10,6 +10,8 @@ var string = {
 	 * @param  {String}  obj String to capitalize
 	 * @param  {Boolean} all [Optional] Capitalize each word
 	 * @return {String}      Capitalized String
+	 * @example
+	 * keigai.util.string.capitalize( "hello" ); // "Hello"
 	 */
 	capitalize : function ( obj, all ) {
 		all = ( all === true );
@@ -35,6 +37,8 @@ var string = {
 	 * @memberOf string
 	 * @param  {String} obj String to escape
 	 * @return {String}     Escaped string
+	 * @example
+	 * keigai.util.string.escape( "{hello}" ); // "\{hello\}"
 	 */
 	escape : function ( obj ) {
 		return obj.replace( /[\-\[\]{}()*+?.,\\\^\$|#\s]/g, "\\$&" );
@@ -48,30 +52,15 @@ var string = {
 	 * @param  {String} obj String to capitalize
 	 * @param  {String} arg String to split on
 	 * @return {Array}      Array of the exploded String
+	 * @example
+	 * keigai.util.array.each( keigai.util.string.explode( "abc, def" ), function ( i ) {
+	 *   ...
+	 * } );
 	 */
 	explode : function ( obj, arg ) {
 		arg = arg || ",";
 
 		return string.trim( obj ).split( new RegExp( "\\s*" + arg + "\\s*" ) );
-	},
-
-	/**
-	 * Replaces all spaces in a string with dashes
-	 *
-	 * @method hyphenate
-	 * @memberOf string
-	 * @param  {String} obj   String to hyphenate
-	 * @param {Boolean} camel [Optional] Hyphenate camelCase
-	 * @return {String}       String with dashes instead of spaces
-	 */
-	hyphenate : function ( obj, camel ) {
-		var result = string.trim( obj ).replace( /\s+/g, "-" );
-
-		if ( camel === true ) {
-			result = result.replace( /([A-Z])/g, "-$1" ).toLowerCase();
-		}
-
-		return result;
 	},
 
 	/**
@@ -84,6 +73,8 @@ var string = {
 	 * @param  {Object} obj  Object to convert
 	 * @param  {String} name [Optional] Name of Object
 	 * @return {String}      String representation
+	 * @example
+	 * keigai.util.string.fromObject( {a: true, b: false}, "stats" ); // "stats = {'a': true,'b':false}"
 	 */
 	fromObject : function ( obj, name ) {
 		var result = ( name ? name + " = {" : "{" ) + "\n";
@@ -98,12 +89,37 @@ var string = {
 	},
 
 	/**
+	 * Replaces all spaces in a string with dashes
+	 *
+	 * @method hyphenate
+	 * @memberOf string
+	 * @param  {String} obj   String to hyphenate
+	 * @param {Boolean} camel [Optional] Hyphenate camelCase
+	 * @return {String}       String with dashes instead of spaces
+	 * @example
+	 * keigai.util.string.hyphenate( "hello world" ); // "hello-world"
+	 */
+	hyphenate : function ( obj, camel ) {
+		var result = string.trim( obj ).replace( /\s+/g, "-" );
+
+		if ( camel === true ) {
+			result = result.replace( /([A-Z])/g, "-$1" ).toLowerCase();
+		}
+
+		return result;
+	},
+
+	/**
 	 * Tests if a string is a boolean
 	 *
 	 * @method isBoolean
 	 * @memberOf string
 	 * @param  {String}  obj String to test
 	 * @return {Boolean}     Result of test
+	 * @example
+	 * if ( keigai.util.string.isBoolean( ... ) {
+	 *   ...
+	 * } );
 	 */
 	isBoolean : function ( obj ) {
 		return regex.bool.test( obj );
@@ -116,6 +132,10 @@ var string = {
 	 * @memberOf string
 	 * @param  {String}  obj String to test
 	 * @return {Boolean}     Result of test
+	 * @example
+	 * if ( !keigai.util.string.isEmpty( ... ) {
+	 *   ...
+	 * } );
 	 */
 	isEmpty : function ( obj ) {
 		return string.trim( obj ) === "";
@@ -128,6 +148,10 @@ var string = {
 	 * @memberOf string
 	 * @param  {String}  obj String to test
 	 * @return {Boolean}     Result of test
+	 * @example
+	 * if ( keigai.util.string.isNumber( ... ) {
+	 *   ...
+	 * } );
 	 */
 	isNumber : function ( obj ) {
 		return regex.number.test( obj );
@@ -140,6 +164,10 @@ var string = {
 	 * @memberOf string
 	 * @param  {String}  obj String to test
 	 * @return {Boolean}     Result of test
+	 * @example
+	 * if ( keigai.util.string.isUrl( ... ) {
+	 *   ...
+	 * } );
 	 */
 	isUrl : function ( obj ) {
 		return regex.url.test( obj );
@@ -152,6 +180,8 @@ var string = {
 	 * @memberOf string
 	 * @param  {String} obj String to capitalize
 	 * @return {String}     Camel case String
+	 * @example
+	 * keigai.util.string.toCamelCase( "hello world" ); // "helloWorld"
 	 */
 	toCamelCase : function ( obj ) {
 		var s = string.trim( obj ).replace( /\.|_|-|\@|\[|\]|\(|\)|\#|\$|\%|\^|\&|\*|\s+/g, " " ).toLowerCase().split( regex.space_hyphen ),
@@ -171,6 +201,8 @@ var string = {
 	 * @memberOf string
 	 * @param  {String} obj String to transform
 	 * @return {String}     Transformed string
+	 * @example
+	 * keigai.util.string.singular( "cans" ); // "can"
 	 */
 	singular : function ( obj ) {
 		return obj.replace( /oe?s$/, "o" ).replace( /ies$/, "y" ).replace( /ses$/, "se" ).replace( /s$/, "" );
@@ -183,6 +215,12 @@ var string = {
 	 * @memberOf string
 	 * @param  {String} obj String to cast
 	 * @return {Function}   Function
+	 * @example
+	 * var fn = someFunction.toString();
+	 *
+	 * ...
+	 *
+	 * var func = keigai.util.string.toFunction( fn );
 	 */
 	toFunction : function ( obj ) {
 		var args = string.trim( obj.replace( /^.*\(/, "" ).replace( /[\t|\r|\n|\"|\']+/g, "" ).replace( /\).*/, "" ) ),
@@ -198,6 +236,8 @@ var string = {
 	 * @memberOf string
 	 * @param  {String} obj String to capitalize
 	 * @return {String}     Trimmed String
+	 * @example
+	 * keigai.util.string.trim( "  hello world " ); // "hello world"
 	 */
 	trim : function ( obj ) {
 		return obj.replace( /^(\s+|\t+)|(\s+|\t+)$/g, "" );
@@ -222,6 +262,8 @@ var string = {
 	 * @memberOf string
 	 * @param  {String} obj String to uncapitalize
 	 * @return {String}     Uncapitalized String
+	 * @example
+	 * keigai.util.string.uncapitalize( "Hello" ); // "hello"
 	 */
 	uncapitalize : function ( obj ) {
 		obj = string.trim( obj );
@@ -237,6 +279,9 @@ var string = {
 	 * @param  {String}  obj  String to unhypenate
 	 * @param  {Boolean} caps [Optional] True to capitalize each word
 	 * @return {String}       Unhyphenated String
+	 * @example
+	 * keigai.util.string.unhyphenate( "hello-world" );       // "hello world"
+	 * keigai.util.string.unhyphenate( "hello-world", true ); // "Hello World"
 	 */
 	unhyphenate : function ( obj, caps ) {
 		if ( caps !== true ) {

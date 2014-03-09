@@ -197,7 +197,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8384">line 8384</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8527">line 8527</a>
     </li></ul></dd>
     
 
@@ -231,7 +231,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="$"><span class="type-signature">&lt;static> </span>$<span class="signature">(arg)</span><span class="type-signature"> &rarr; {Mixed}</span></h4>
+    <h4 class="name" id="$"><span class="type-signature">&lt;static> </span>$<span class="signature">(arg)</span><span class="type-signature"> &rarr; {Array}</span></h4>
     
     
 </dt>
@@ -239,7 +239,7 @@
     
     
     <div class="description">
-        <p>Queries the DOM using CSS selectors and returns an Element or Array of Elements</p>
+        <p>Creates Elements or Queries the DOM using CSS selectors</p>
     </div>
     
 
@@ -289,7 +289,7 @@
 
             
 
-            <td class="description last"><p>Element, HTML, or Comma delimited string of CSS selectors</p></td>
+            <td class="description last"><p>HTML, or Comma delimited string of CSS selectors</p></td>
         </tr>
 
 	
@@ -321,7 +321,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8406">line 8406</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8549">line 8549</a>
     </li></ul></dd>
     
 
@@ -346,7 +346,7 @@
     
             
 <div class="param-desc">
-    <p>Element or Array of Elements</p>
+    <p>Array of matching Elements</p>
 </div>
 
 
@@ -357,7 +357,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type">Mixed</span>
+<span class="param-type">Array</span>
 
 
 	</dd>
@@ -366,6 +366,22 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var $ = keigai.util.$;
+
+// Looking for Elements
+$( ".someClass" ).forEach( function ( i ) {
+  ...
+} );
+
+// Creating an H1 Element
+$( "&lt;h1&gt;" ).forEach( function ( i ) {
+  ...
+} );</pre>
+
+
     
 </dd>
 
@@ -485,7 +501,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8490">line 8490</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8641">line 8641</a>
     </li></ul></dd>
     
 
@@ -530,6 +546,15 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var x = {a: true, b: false},
+    y = keigai.util.clone( x, true );
+
+y.a; // true</pre>
+
+
     
 </dd>
 
@@ -626,7 +651,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8542">line 8542</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8698">line 8698</a>
     </li></ul></dd>
     
 
@@ -672,216 +697,11 @@
         
     
     
-</dd>
-
+        <h5>Example</h5>
         
-            
-<dt>
-    <h4 class="name" id="defer"><span class="type-signature">&lt;static> </span>defer<span class="signature">(fn, ms, id, repeat)</span><span class="type-signature"> &rarr; {String}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Defers the execution of Function by at least the supplied milliseconds.
-Timing may vary under &quot;heavy load&quot; relative to the CPU &amp; client JavaScript engine.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>fn</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
+    <pre class="sunlight-highlight-javascript">keigai.util.coerce( "1" ); // 1</pre>
 
 
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Function to defer execution of</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>ms</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Milliseconds to defer execution</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>[Optional] ID of the deferred function</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>repeat</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>[Optional] Describes the execution, default is <code>false</code></p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8601">line 8601</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>ID of the timer</p>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">String</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
     
 </dd>
 
@@ -1001,7 +821,7 @@ Timing may vary under &quot;heavy load&quot; relative to the CPU &amp; client Ja
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8710">line 8710</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8869">line 8869</a>
     </li></ul></dd>
     
 
@@ -1046,6 +866,12 @@ Timing may vary under &quot;heavy load&quot; relative to the CPU &amp; client Ja
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var extendObj = keigai.util.extend( someObj, {newProperty: value} );</pre>
+
+
     
 </dd>
 
@@ -1166,7 +992,7 @@ Returning <code>false</code> halts iteration.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8773">line 8773</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8934">line 8934</a>
     </li></ul></dd>
     
 
@@ -1211,6 +1037,14 @@ Returning <code>false</code> halts iteration.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.iterate( {...}, function ( value, key ) {
+  ...
+} );</pre>
+
+
     
 </dd>
 
@@ -1330,7 +1164,7 @@ Returning <code>false</code> halts iteration.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8795">line 8795</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8960">line 8960</a>
     </li></ul></dd>
     
 
@@ -1375,6 +1209,12 @@ Returning <code>false</code> halts iteration.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.log( "Something bad happened", "warn" );</pre>
+
+
     
 </dd>
 
@@ -1494,7 +1334,7 @@ Returning <code>false</code> halts iteration.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8814">line 8814</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8981">line 8981</a>
     </li></ul></dd>
     
 
@@ -1539,6 +1379,15 @@ Returning <code>false</code> halts iteration.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var obj = {a: true};
+
+keigai.util.merge( obj, {b: false} )
+obj.b; // false</pre>
+
+
     
 </dd>
 
@@ -1635,7 +1484,7 @@ Returning <code>false</code> halts iteration.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8841">line 8841</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-9013">line 9013</a>
     </li></ul></dd>
     
 
@@ -1681,12 +1530,31 @@ Returning <code>false</code> halts iteration.</p>
         
     
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var parsed = keigai.util.parse( location.href );
+
+parsed;
+{
+  auth     : "",
+  hash     : "",
+  host     : "",
+  hostname : "",
+  query    : {},
+  pathname : "",
+  port     : n,
+  protocol : "",
+  search   : "",
+}</pre>
+
+
+    
 </dd>
 
         
             
 <dt>
-    <h4 class="name" id="prevent"><span class="type-signature">&lt;static> </span>prevent<span class="signature">(e)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="prevent"><span class="type-signature">&lt;static> </span>prevent<span class="signature">(ev)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
     
 </dt>
@@ -1728,7 +1596,7 @@ Returning <code>false</code> halts iteration.</p>
 
         <tr>
             
-                <td class="name"><code>e</code></td>
+                <td class="name"><code>ev</code></td>
             
 
             <td class="type">
@@ -1776,7 +1644,7 @@ Returning <code>false</code> halts iteration.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8913">line 8913</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-9100">line 9100</a>
     </li></ul></dd>
     
 
@@ -1821,6 +1689,12 @@ Returning <code>false</code> halts iteration.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.prevent( Event );</pre>
+
+
     
 </dd>
 
@@ -1986,7 +1860,7 @@ Returning <code>false</code> halts iteration.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8983">line 8983</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-9172">line 9172</a>
     </li></ul></dd>
     
 
@@ -2032,12 +1906,25 @@ Returning <code>false</code> halts iteration.</p>
         
     
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.repeat( function () {
+  ...
+
+  // Cancelling repetition at some point in the future
+  if ( someCondition ) {
+    return false;
+  }
+}, 1000, "repeating" );</pre>
+
+
+    
 </dd>
 
         
             
 <dt>
-    <h4 class="name" id="stop"><span class="type-signature">&lt;static> </span>stop<span class="signature">(e)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="stop"><span class="type-signature">&lt;static> </span>stop<span class="signature">(ev)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
     
 </dt>
@@ -2079,7 +1966,7 @@ Returning <code>false</code> halts iteration.</p>
 
         <tr>
             
-                <td class="name"><code>e</code></td>
+                <td class="name"><code>ev</code></td>
             
 
             <td class="type">
@@ -2127,7 +2014,7 @@ Returning <code>false</code> halts iteration.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-9025">line 9025</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-9223">line 9223</a>
     </li></ul></dd>
     
 
@@ -2173,12 +2060,18 @@ Returning <code>false</code> halts iteration.</p>
         
     
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.stop( Event );</pre>
+
+
+    
 </dd>
 
         
             
 <dt>
-    <h4 class="name" id="target"><span class="type-signature">&lt;static> </span>target<span class="signature">(e)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="target"><span class="type-signature">&lt;static> </span>target<span class="signature">(ev)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
     
 </dt>
@@ -2220,7 +2113,7 @@ Returning <code>false</code> halts iteration.</p>
 
         <tr>
             
-                <td class="name"><code>e</code></td>
+                <td class="name"><code>ev</code></td>
             
 
             <td class="type">
@@ -2268,7 +2161,7 @@ Returning <code>false</code> halts iteration.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-9046">line 9046</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-9243">line 9243</a>
     </li></ul></dd>
     
 
@@ -2314,12 +2207,18 @@ Returning <code>false</code> halts iteration.</p>
         
     
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var target = keigai.util.target( Event );</pre>
+
+
+    
 </dd>
 
         
             
 <dt>
-    <h4 class="name" id="uuid"><span class="type-signature">&lt;static> </span>uuid<span class="signature">(safe)</span><span class="type-signature"> &rarr; {String}</span></h4>
+    <h4 class="name" id="uuid"><span class="type-signature">&lt;static> </span>uuid<span class="signature">(strip)</span><span class="type-signature"> &rarr; {String}</span></h4>
     
     
 </dt>
@@ -2361,7 +2260,7 @@ Returning <code>false</code> halts iteration.</p>
 
         <tr>
             
-                <td class="name"><code>safe</code></td>
+                <td class="name"><code>strip</code></td>
             
 
             <td class="type">
@@ -2409,7 +2308,7 @@ Returning <code>false</code> halts iteration.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-9058">line 9058</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-9257">line 9257</a>
     </li></ul></dd>
     
 
@@ -2455,6 +2354,12 @@ Returning <code>false</code> halts iteration.</p>
         
     
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var uuid4 = keigai.util.uuid();</pre>
+
+
+    
 </dd>
 
         
@@ -2468,7 +2373,7 @@ Returning <code>false</code> halts iteration.</p>
     
     
     <div class="description">
-        <p>Walks <code>obj</code> and returns <code>arg</code></p>
+        <p>Walks <code>obj</code> and returns <code>arg</code>, for when you can't easily access <code>arg</code></p>
     </div>
     
 
@@ -2573,7 +2478,7 @@ Returning <code>false</code> halts iteration.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-9080">line 9080</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-9281">line 9281</a>
     </li></ul></dd>
     
 
@@ -2618,6 +2523,14 @@ Returning <code>false</code> halts iteration.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var obj = {a: [{b: true}]};
+
+keigai.util.walk( obj, "a[0].b" ); // true</pre>
+
+
     
 </dd>
 
@@ -2665,7 +2578,7 @@ Returning <code>false</code> halts iteration.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-9097">line 9097</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-9302">line 9302</a>
     </li></ul></dd>
     
 
@@ -2711,6 +2624,29 @@ Returning <code>false</code> halts iteration.</p>
         
     
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var deferreds = [],
+    defer1    = keigai.util.defer(),
+    defer2    = keigai.util.defer();
+
+deferreds.push( defer1 );
+deferreds.push( defer2 );
+
+// Executes when both deferreds have resolved or one has rejected
+$.when( deferreds ).then( function ( args ) ) {
+  ...
+}, function ( err ) {
+  ...
+} );
+
+...
+
+defer1.resolve( true );
+defer2.resolve( true );</pre>
+
+
+    
 </dd>
 
         </dl>
@@ -2739,7 +2675,7 @@ Returning <code>false</code> halts iteration.</p>
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Sun Mar 09 2014 13:02:02 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Sun Mar 09 2014 14:29:51 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
