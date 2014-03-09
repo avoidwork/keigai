@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.2.9
+- Created `Base` & `base.factory()`
+- Refactored `DataGrid`, `DataList`, `DataListFilter`, & `DataStore` to extend `Base`
+- Marking `DataList.constructor` as @private
+
 ## 0.2.8
 - Updated docblocks, & added examples
 - Fixed `array.split()`, & `Observable.unhook()`

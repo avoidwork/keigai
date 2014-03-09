@@ -4,28 +4,6 @@
  */
 var promise = {
 	/**
-	 * Async delay strategy
-	 *
-	 * @method delay
-	 * @memberOf promise
-	 * @return {Function} Delay method
-	 * @private
-	 */
-	delay : function () {
-		if ( typeof setImmediate != "undefined" ) {
-			return setImmediate;
-		}
-		else if ( typeof process != "undefined" ) {
-			return process.nextTick;
-		}
-		else {
-			return function ( arg ) {
-				setTimeout( arg, 0 );
-			};
-		}
-	}(),
-
-	/**
 	 * Promise factory
 	 *
 	 * @method factory
@@ -72,7 +50,7 @@ var promise = {
 		obj.state = state;
 
 		if ( !obj.deferred ) {
-			promise.delay( function () {
+			utility.delay( function () {
 				obj.process();
 			} );
 
@@ -220,7 +198,7 @@ Promise.prototype.then = function ( success, failure ) {
 	} );
 
 	if ( this.state > promise.state.PENDING && !this.deferred ) {
-		promise.delay( function () {
+		utility.delay( function () {
 			self.process();
 		} );
 

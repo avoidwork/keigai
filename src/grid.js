@@ -110,6 +110,7 @@ var grid = {
  *
  * @constructor
  * @memberOf keigai
+ * @extends {keigai.Base}
  * @param  {Object}  target   Element to receive DataGrid
  * @param  {Object}  store    DataStore
  * @param  {Array}   fields   Array of fields to display
@@ -136,12 +137,19 @@ function DataGrid ( target, store, fields, sortable, options, filtered ) {
 	this.filter    = null;
 	this.filtered  = filtered === true;
 	this.list      = null;
-	this.observer  = new Observable();
 	this.options   = options   || {};
 	this.store     = store;
 	this.sortable  = sortable  || [];
 	this.sortOrder = sortOrder || sortable || [];
 }
+
+/**
+ * Extending Base
+ *
+ * @memberOf keigai.DataGrid
+ * @type {Object} {@link keigai.Base}
+ */
+DataGrid.prototype = base.factory();
 
 /**
  * Setting constructor loop
@@ -175,63 +183,6 @@ DataGrid.prototype.add = function ( record ) {
 };
 
 /**
- * Adds an event listener
- *
- * @method addEventListener
- * @memberOf keigai.DataGrid
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.addEventListener( "afterFilter", function ( ev ) {
- *   ...
- * }, "newFilter" );
- */
-DataGrid.prototype.addEventListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method addListener
- * @memberOf keigai.DataGrid
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.addEventListener( "afterFilter", function ( ev ) {
- *   ...
- * }, "newFilter" );
- */
-DataGrid.prototype.addListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataGrid
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.dispatch( "event", ... );
- */
-DataGrid.prototype.dispatch = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
  * Exports data grid records
  *
  * @method dump
@@ -242,96 +193,6 @@ DataGrid.prototype.dispatch = function () {
  */
 DataGrid.prototype.dump = function () {
 	return this.store.dump( this.list.records, this.fields );
-};
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataGrid
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.emit( "event", ... );
- */
-DataGrid.prototype.emit = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
- * Gets listeners
- *
- * @method listeners
- * @memberOf keigai.DataGrid
- * @param  {String} ev [Optional] Event name
- * @return {Object} Listeners
- * @example
- * keigai.util.iterate( grid.listeners(), function ( fn, id ) {
- *   ...
- * } );
- */
-DataGrid.prototype.listeners = function ( ev ) {
-	return ev ? this.observer.listeners[ev] : this.listeners;
-};
-
-/**
- * Removes an event listener
- *
- * @method off
- * @memberOf keigai.DataGrid
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.off( "afterFilter", "newFilter" );
- */
-DataGrid.prototype.off = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method on
- * @memberOf keigai.DataGrid
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.on( "afterFilter", function ( ev ) {
- *   ...
- * }, "newFilter" );
- */
-DataGrid.prototype.on = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds a short lived event listener
- *
- * @method once
- * @memberOf keigai.DataGrid
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.once( "afterFilter", function ( ev ) {
- *   ...
- * } );
- */
-DataGrid.prototype.once = function ( ev, listener, id, scope ) {
-	this.observer.once( ev, listener, id, scope || this );
-
-	return this;
 };
 
 /**
@@ -387,40 +248,6 @@ DataGrid.prototype.remove = function ( record ) {
 		utility.error( e );
 		self.dispatch( "error", e );
 	} );
-
-	return this;
-};
-
-/**
- * Removes an event listener
- *
- * @method removeEventListener
- * @memberOf keigai.DataGrid
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.removeListener( "afterFilter", "newFilter" );
- */
-DataGrid.prototype.removeEventListener = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Removes an event listener
- *
- * @method removeListener
- * @memberOf keigai.DataGrid
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.removeListener( "afterFilter", "newFilter" );
- */
-DataGrid.prototype.removeListener = function ( ev, id ) {
-	this.observer.off( ev, id );
 
 	return this;
 };

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>keigai Namespace: number</title>
+	<title>keigai Class: Base</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -161,12 +161,12 @@
 					
 
 
-	<h1 class="page-title">Namespace: number</h1>
+	<h1 class="page-title">Class: Base</h1>
 <section>
 
 <header>
     <h2>
-    number
+    Base
     </h2>
     
 </header>
@@ -177,8 +177,26 @@
 
     
         
+<dt>
+    <h4 class="name" id="Base"><span class="type-signature"></span>new Base<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Base Object</p>
+    </div>
+    
 
-        
+    
+    
+    
+    
+    
+    
+    
 <dl class="details">
     
 
@@ -201,7 +219,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5583">line 5583</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-521">line 521</a>
     </li></ul></dd>
     
 
@@ -212,8 +230,20 @@
     
 </dl>
 
+    
+    
 
-        
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
     
     </div>
 
@@ -235,7 +265,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="diff"><span class="type-signature">&lt;static> </span>diff<span class="signature">(arg)</span><span class="type-signature"> &rarr; {Number}</span></h4>
+    <h4 class="name" id="addEventListener"><span class="type-signature">&lt;static> </span>addEventListener<span class="signature">(ev, listener, id, scope)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
     
 </dt>
@@ -243,7 +273,7 @@
     
     
     <div class="description">
-        <p>Returns the difference of arg</p>
+        <p>Adds an event listener</p>
     </div>
     
 
@@ -277,13 +307,13 @@
 
         <tr>
             
-                <td class="name"><code>arg</code></td>
+                <td class="name"><code>ev</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Number</span>
+<span class="param-type">String</span>
 
 
             
@@ -293,144 +323,20 @@
 
             
 
-            <td class="description last"><p>Number to compare</p></td>
+            <td class="description last"><p>Event name</p></td>
         </tr>
 
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5587">line 5587</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>The absolute difference</p>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Number</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">keigai.util.number.diff( -3, 8 ); // 11</pre>
-
-
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="even"><span class="type-signature">&lt;static> </span>even<span class="signature">(arg)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Tests if an number is even</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
 	
 
         <tr>
             
-                <td class="name"><code>arg</code></td>
+                <td class="name"><code>listener</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Number</span>
+<span class="param-type">function</span>
 
 
             
@@ -440,7 +346,53 @@
 
             
 
-            <td class="description last"><p>Number to test</p></td>
+            <td class="description last"><p>Function to execute</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[Optional] Listener ID</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>scope</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[Optional] Listener scope, default is <code>this</code></p></td>
         </tr>
 
 	
@@ -472,7 +424,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5605">line 5605</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-535">line 535</a>
     </li></ul></dd>
     
 
@@ -497,7 +449,7 @@
     
             
 <div class="param-desc">
-    <p>True if even, or undefined</p>
+    <p><a href="keigai.Base.html">keigai.Base</a></p>
 </div>
 
 
@@ -508,7 +460,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type">Boolean</span>
+<span class="param-type">Object</span>
 
 
 	</dd>
@@ -520,11 +472,9 @@
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">var n = keigai.util.number.random( 10 );
-
-if ( keigai.util.number.even( n ) ) {
+    <pre class="sunlight-highlight-javascript">obj.addEventListener( "event", function ( ev ) {
   ...
-}</pre>
+}, "myHook" );</pre>
 
 
     
@@ -533,7 +483,7 @@ if ( keigai.util.number.even( n ) ) {
         
             
 <dt>
-    <h4 class="name" id="format"><span class="type-signature">&lt;static> </span>format<span class="signature">(arg, delimiter, every)</span><span class="type-signature"> &rarr; {String}</span></h4>
+    <h4 class="name" id="addListener"><span class="type-signature">&lt;static> </span>addListener<span class="signature">(ev, listener, id, scope)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
     
 </dt>
@@ -541,7 +491,7 @@ if ( keigai.util.number.even( n ) ) {
     
     
     <div class="description">
-        <p>Formats a Number to a delimited String</p>
+        <p>Adds an event listener</p>
     </div>
     
 
@@ -575,30 +525,7 @@ if ( keigai.util.number.even( n ) ) {
 
         <tr>
             
-                <td class="name"><code>arg</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Number to format</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>delimiter</code></td>
+                <td class="name"><code>ev</code></td>
             
 
             <td class="type">
@@ -614,14 +541,37 @@ if ( keigai.util.number.even( n ) ) {
 
             
 
-            <td class="description last"><p>[Optional] String to delimit the Number with</p></td>
+            <td class="description last"><p>Event name</p></td>
         </tr>
 
 	
 
         <tr>
             
-                <td class="name"><code>every</code></td>
+                <td class="name"><code>listener</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Function to execute</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
             
 
             <td class="type">
@@ -637,7 +587,30 @@ if ( keigai.util.number.even( n ) ) {
 
             
 
-            <td class="description last"><p>[Optional] Position to insert the delimiter, default is 3</p></td>
+            <td class="description last"><p>[Optional] Listener ID</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>scope</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[Optional] Listener scope, default is <code>this</code></p></td>
         </tr>
 
 	
@@ -669,7 +642,7 @@ if ( keigai.util.number.even( n ) ) {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5623">line 5623</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-556">line 556</a>
     </li></ul></dd>
     
 
@@ -694,7 +667,7 @@ if ( keigai.util.number.even( n ) ) {
     
             
 <div class="param-desc">
-    <p>Number represented as a comma delimited String</p>
+    <p><a href="keigai.Base.html">keigai.Base</a></p>
 </div>
 
 
@@ -705,7 +678,7 @@ if ( keigai.util.number.even( n ) ) {
 	</dt>
 	<dd>
 		
-<span class="param-type">String</span>
+<span class="param-type">Object</span>
 
 
 	</dd>
@@ -717,7 +690,9 @@ if ( keigai.util.number.even( n ) ) {
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">keigai.util.number.format( 1000 ); // "1,000"</pre>
+    <pre class="sunlight-highlight-javascript">obj.addEventListener( "event", function ( ev ) {
+  ...
+}, "myHook" );</pre>
 
 
     
@@ -726,7 +701,7 @@ if ( keigai.util.number.even( n ) ) {
         
             
 <dt>
-    <h4 class="name" id="half"><span class="type-signature">&lt;static> </span>half<span class="signature">(a, b)</span><span class="type-signature"> &rarr; {Mixed}</span></h4>
+    <h4 class="name" id="dispatch"><span class="type-signature">&lt;static> </span>dispatch<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
     
 </dt>
@@ -734,7 +709,203 @@ if ( keigai.util.number.even( n ) ) {
     
     
     <div class="description">
-        <p>Returns half of a, or true if a is half of b</p>
+        <p>Dispatches an event, with optional arguments</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-577">line 577</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><a href="keigai.Base.html">keigai.Base</a></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">obj.dispatch( "event", ... );</pre>
+
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="emit"><span class="type-signature">&lt;static> </span>emit<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Dispatches an event, with optional arguments</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-592">line 592</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><a href="keigai.Base.html">keigai.Base</a></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">obj.emit( "event", ... );</pre>
+
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="listeners"><span class="type-signature">&lt;static> </span>listeners<span class="signature">(ev)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Gets listeners</p>
     </div>
     
 
@@ -768,13 +939,13 @@ if ( keigai.util.number.even( n ) ) {
 
         <tr>
             
-                <td class="name"><code>a</code></td>
+                <td class="name"><code>ev</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Number</span>
+<span class="param-type">String</span>
 
 
             
@@ -784,30 +955,7 @@ if ( keigai.util.number.even( n ) ) {
 
             
 
-            <td class="description last"><p>Number to divide</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>b</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>[Optional] Number to test a against</p></td>
+            <td class="description last"><p>[Optional] Event name</p></td>
         </tr>
 
 	
@@ -839,7 +987,7 @@ if ( keigai.util.number.even( n ) ) {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5664">line 5664</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-607">line 607</a>
     </li></ul></dd>
     
 
@@ -864,7 +1012,7 @@ if ( keigai.util.number.even( n ) ) {
     
             
 <div class="param-desc">
-    <p>Boolean if b is passed, Number if b is undefined</p>
+    <p>Listeners</p>
 </div>
 
 
@@ -875,7 +1023,7 @@ if ( keigai.util.number.even( n ) ) {
 	</dt>
 	<dd>
 		
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
 	</dd>
@@ -887,7 +1035,7 @@ if ( keigai.util.number.even( n ) ) {
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">if ( keigai.util.number.half( 2, 4 ) ) {
+    <pre class="sunlight-highlight-javascript">keigai.util.iterate( obj.listeners(), function ( fn, id ) {
   ...
 } );</pre>
 
@@ -898,7 +1046,7 @@ if ( keigai.util.number.even( n ) ) {
         
             
 <dt>
-    <h4 class="name" id="odd"><span class="type-signature">&lt;static> </span>odd<span class="signature">(arg)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+    <h4 class="name" id="off"><span class="type-signature">&lt;static> </span>off<span class="signature">(ev, id)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
     
 </dt>
@@ -906,7 +1054,7 @@ if ( keigai.util.number.even( n ) ) {
     
     
     <div class="description">
-        <p>Tests if a number is odd</p>
+        <p>Removes an event listener</p>
     </div>
     
 
@@ -940,499 +1088,7 @@ if ( keigai.util.number.even( n ) ) {
 
         <tr>
             
-                <td class="name"><code>arg</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Number to test</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5681">line 5681</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>True if odd, or undefined</p>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Boolean</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">var n = keigai.util.number.random( 10 );
-
-if ( keigai.util.number.odd( n ) ) {
-  ...
-}</pre>
-
-
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="parse"><span class="type-signature">&lt;static> </span>parse<span class="signature">(arg, base)</span><span class="type-signature"> &rarr; {Number}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Parses the number</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>arg</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Mixed</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Number to parse</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>base</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Integer representing the base or radix</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5699">line 5699</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>Integer or float</p>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Number</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">// Unsure if `n` is an int or a float
-keigai.util.number.parse( n );</pre>
-
-
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="random"><span class="type-signature">&lt;static> </span>random<span class="signature">(arg)</span><span class="type-signature"> &rarr; {Number}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Generates a random number between 0 and <code>arg</code></p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>arg</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Ceiling for random number, default is 100</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5715">line 5715</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>Random number</p>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Number</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">var n = keigai.util.math.random( 10 );</pre>
-
-
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="round"><span class="type-signature">&lt;static> </span>round<span class="signature">(arg, direction)</span><span class="type-signature"> &rarr; {Number}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Rounds a number up or down</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>arg</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Number to round</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>direction</code></td>
+                <td class="name"><code>ev</code></td>
             
 
             <td class="type">
@@ -1448,7 +1104,30 @@ keigai.util.number.parse( n );</pre>
 
             
 
-            <td class="description last"><p>[Optional] &quot;up&quot; or &quot;down&quot;</p></td>
+            <td class="description last"><p>Event name</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[Optional] Listener ID</p></td>
         </tr>
 
 	
@@ -1480,7 +1159,7 @@ keigai.util.number.parse( n );</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-5731">line 5731</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-623">line 623</a>
     </li></ul></dd>
     
 
@@ -1505,7 +1184,7 @@ keigai.util.number.parse( n );</pre>
     
             
 <div class="param-desc">
-    <p>Rounded interger</p>
+    <p><a href="keigai.Base.html">keigai.Base</a></p>
 </div>
 
 
@@ -1516,7 +1195,7 @@ keigai.util.number.parse( n );</pre>
 	</dt>
 	<dd>
 		
-<span class="param-type">Number</span>
+<span class="param-type">Object</span>
 
 
 	</dd>
@@ -1528,7 +1207,783 @@ keigai.util.number.parse( n );</pre>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">keigai.util.math.round( n, "down" );</pre>
+    <pre class="sunlight-highlight-javascript">obj.off( "event", "myHook" );</pre>
+
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="on"><span class="type-signature">&lt;static> </span>on<span class="signature">(ev, listener, id, scope)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Adds an event listener</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>ev</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Event name</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>listener</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Function to execute</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[Optional] Listener ID</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>scope</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[Optional] Listener scope, default is <code>this</code></p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-640">line 640</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><a href="keigai.Base.html">keigai.Base</a></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">obj.on( "event", function ( ev ) {
+  ...
+}, "myHook" );</pre>
+
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="once"><span class="type-signature">&lt;static> </span>once<span class="signature">(ev, listener, id, scope)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Adds a short lived event listener</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>ev</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Event name</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>listener</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Function to execute</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[Optional] Listener ID</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>scope</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[Optional] Listener scope, default is <code>this</code></p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-661">line 661</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><a href="keigai.Base.html">keigai.Base</a></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">obj.once( "event", function ( ev ) {
+  ...
+} );</pre>
+
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="removeEventListener"><span class="type-signature">&lt;static> </span>removeEventListener<span class="signature">(ev, id)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Removes an event listener</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>ev</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Event name</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[Optional] Listener ID</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-682">line 682</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><a href="keigai.Base.html">keigai.Base</a></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">obj.removeListener( "event", "myHook" );</pre>
+
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="removeListener"><span class="type-signature">&lt;static> </span>removeListener<span class="signature">(ev, id)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Removes an event listener</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>ev</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Event name</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[Optional] Listener ID</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-699">line 699</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><a href="keigai.Base.html">keigai.Base</a></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">obj.removeListener( "event", "myHook" );</pre>
 
 
     
