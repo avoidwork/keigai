@@ -1,6 +1,6 @@
 {
   "name": "keigai",
-  "description": "Lightweight data store library",
+  "description": "Lightweight data store library, with a utility belt",
   "version": "0.2.8",
   "homepage": "http://keigai.io",
   "author": {
