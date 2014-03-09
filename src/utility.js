@@ -267,6 +267,28 @@ var utility = {
 	},
 
 	/**
+	 * Async delay strategy
+	 *
+	 * @method delay
+	 * @memberOf promise
+	 * @return {Function} Delay method
+	 * @private
+	 */
+	delay : function () {
+		if ( typeof setImmediate != "undefined" ) {
+			return setImmediate;
+		}
+		else if ( typeof process != "undefined" ) {
+			return process.nextTick;
+		}
+		else {
+			return function ( arg ) {
+				setTimeout( arg, 0 );
+			};
+		}
+	}(),
+
+	/**
 	 * Queries DOM with fastest method
 	 *
 	 * @method dom

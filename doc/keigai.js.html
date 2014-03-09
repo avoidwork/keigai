@@ -113,6 +113,10 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
+							<a href="keigai.Base.html">Base</a>
+						</li>
+						
+						<li>
 							<a href="keigai.DataGrid.html">DataGrid</a>
 						</li>
 						
@@ -169,7 +173,7 @@
  * @license BSD-3 &lt;https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.2.8
+ * @version 0.2.9
  */
 ( function ( global ) {
 
@@ -462,6 +466,419 @@ function LRUItem ( value ) {
  * @type {Function}
  */
 LRUItem.prototype.constructor = LRUItem;
+
+/**
+ * @namespace observable
+ */
+var observable = {
+	/**
+	 * Observable factory
+	 *
+	 * @method factory
+	 * @memberOf observable
+	 * @return {Object} {@link keigai.Observable}
+	 * @example
+	 * var observer = keigai.util.observer( 50 );
+	 */
+	 factory : function ( arg ) {
+		return new Observable( arg );
+	}
+};
+
+/**
+ * Creates a new Observable
+ *
+ * @constructor
+ * @memberOf keigai
+ * @param  {Number} arg Maximum listeners, default is 10
+ * @example
+ * var observer = keigai.util.observer( 50 );
+ */
+function Observable ( arg ) {
+	this.limit     = arg || MAX;
+	this.listeners = {};
+	this.hooks     = {};
+}
+
+/**
+ * Setting constructor loop
+ *
+ * @method constructor
+ * @memberOf keigai.Observable
+ * @type {Function}
+ * @private
+ */
+Observable.prototype.constructor = Observable;
+
+/**
+ * Dispatches an event, with optional arguments
+ *
+ * @method dispatch
+ * @memberOf keigai.Observable
+ * @return {Object} {@link keigai.Observable}
+ * @example
+ * observer.dispatch( "event", ... );
+ */
+Observable.prototype.dispatch = function () {
+	var args = array.cast( arguments ),
+	    ev   = args.shift();
+
+	if ( ev && this.listeners[ev] ) {
+		utility.iterate( this.listeners[ev], function ( i ) {
+			i.handler.apply( i.scope, args );
+		} );
+	}
+
+	return this;
+};
+
+/**
+ * Hooks into `target` for a DOM event
+ *
+ * @method hook
+ * @memberOf keigai.Observable
+ * @param  {Object} target Element
+ * @param  {String} ev     Event
+ * @return {Object}        Element
+ * @example
+ * observer.hook( document.querySelector( "a" ), "click" );
+ */
+Observable.prototype.hook = function ( target, ev ) {
+	var self = this;
+
+	if ( typeof target.addEventListener != "function" ) {
+		throw new Error( label.invalidArguments );
+	}
+
+	utility.genId( target, true );
+
+	this.hooks[target.id] = function ( arg ) {
+		self.dispatch( ev, arg );
+	};
+
+	target.addEventListener( ev, this.hooks[target.id], false );
+
+	return target;
+};
+
+/**
+ * Removes all, or a specific listener for an event
+ *
+ * @method off
+ * @memberOf keigai.Observable
+ * @param {String} ev Event name
+ * @param {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.Observable}
+ * @example
+ * observer.off( "click", "myHook" );
+ */
+Observable.prototype.off = function ( ev, id ) {
+	if ( this.listeners[ev] ) {
+		if ( id ) {
+			delete this.listeners[ev][id];
+		}
+		else {
+			delete this.listeners[ev];
+		}
+	}
+
+	return this;
+};
+
+/**
+ * Adds a listener for an event
+ *
+ * @method on
+ * @memberOf keigai.Observable
+ * @param  {String}   ev      Event name
+ * @param  {Function} handler Handler
+ * @param  {String}   id      [Optional] Handler ID
+ * @param  {String}   scope   [Optional] Handler scope, default is `this`
+ * @return {Object} {@link keigai.Observable}
+ * @example
+ * observer.on( "click", function ( ev ) {
+ *   ...
+ * }, "myHook" );
+ */
+Observable.prototype.on = function ( ev, handler, id, scope ) {
+	id    = id    || utility.uuid();
+	scope = scope || this;
+
+	if ( !this.listeners[ev] ) {
+		this.listeners[ev] = {};
+	}
+
+	if ( array.keys( this.listeners[ev] ).length >= this.limit ) {
+		throw( new Error( "Possible memory leak, more than " + this.limit + " listeners for event: " + ev ) );
+	}
+
+	this.listeners[ev][id] = {scope: scope, handler: handler};
+
+	return this;
+};
+
+/**
+ * Adds a short lived listener for an event
+ *
+ * @method once
+ * @memberOf keigai.Observable
+ * @param  {String}   ev      Event name
+ * @param  {Function} handler Handler
+ * @param  {String}   id      [Optional] Handler ID
+ * @param  {String}   scope   [Optional] Handler scope, default is `this`
+ * @return {Object} {@link keigai.Observable}
+ * @example
+ * observer.once( "click", function ( ev ) {
+ *   ...
+ * } );
+ */
+Observable.prototype.once = function ( ev, handler, id, scope  ) {
+	var self = this;
+
+	id    = id    || utility.uuid();
+	scope = scope || this;
+
+	return this.on( ev, function () {
+		handler.apply( scope, [].concat( array.cast( arguments ) ) );
+		self.off( ev, id );
+	}, id, scope );
+};
+
+/**
+ * Unhooks from `target` for a DOM event
+ *
+ * @method unhook
+ * @memberOf keigai.Observable
+ * @param  {Object} target Element
+ * @param  {String} ev     Event
+ * @return {Object}        Element
+ * @example
+ * observer.unhook( document.querySelector( "a" ), "click" );
+ */
+Observable.prototype.unhook = function ( target, ev ) {
+	target.removeEventListener( ev, this.hooks[target.id], false );
+	delete this.hooks[target.id];
+
+	return target;
+};
+
+/**
+ * @namespace base
+ * @private
+ */
+var base = {
+	/**
+	 * Base factory
+	 *
+	 * @memberOf base
+	 * @method factory
+	 * @return {Object} {@link keigai.Base}
+	 */
+	factory : function () {
+		return new Base();
+	}
+};
+
+/**
+ * Base Object
+ *
+ * @constructor
+ * @memberOf keigai
+ */
+function Base () {
+	this.observer = observable.factory();
+}
+
+/**
+ * Setting constructor loop
+ *
+ * @method constructor
+ * @memberOf keigai.Base
+ * @type {Function}
+ * @private
+ */
+Base.prototype.constructor = Base;
+
+/**
+ * Adds an event listener
+ *
+ * @method addEventListener
+ * @memberOf keigai.Base
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.addEventListener( "event", function ( ev ) {
+ *   ...
+ * }, "myHook" );
+ */
+Base.prototype.addEventListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Adds an event listener
+ *
+ * @method addListener
+ * @memberOf keigai.Base
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.addEventListener( "event", function ( ev ) {
+ *   ...
+ * }, "myHook" );
+ */
+Base.prototype.addListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Dispatches an event, with optional arguments
+ *
+ * @method dispatch
+ * @memberOf keigai.Base
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.dispatch( "event", ... );
+ */
+Base.prototype.dispatch = function () {
+	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
+
+	return this;
+};
+
+/**
+ * Dispatches an event, with optional arguments
+ *
+ * @method emit
+ * @memberOf keigai.Base
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.emit( "event", ... );
+ */
+Base.prototype.emit = function () {
+	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
+
+	return this;
+};
+
+/**
+ * Gets listeners
+ *
+ * @method listeners
+ * @memberOf keigai.Base
+ * @param  {String} ev [Optional] Event name
+ * @return {Object} Listeners
+ * @example
+ * keigai.util.iterate( obj.listeners(), function ( fn, id ) {
+ *   ...
+ * } );
+ */
+Base.prototype.listeners = function ( ev ) {
+	return ev ? this.observer.listeners[ev] : this.listeners;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method off
+ * @memberOf keigai.Base
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.off( "event", "myHook" );
+ */
+Base.prototype.off = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
+ * Adds an event listener
+ *
+ * @method on
+ * @memberOf keigai.Base
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.on( "event", function ( ev ) {
+ *   ...
+ * }, "myHook" );
+ */
+Base.prototype.on = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Adds a short lived event listener
+ *
+ * @method once
+ * @memberOf keigai.Base
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.once( "event", function ( ev ) {
+ *   ...
+ * } );
+ */
+Base.prototype.once = function ( ev, listener, id, scope ) {
+	this.observer.once( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeEventListener
+ * @memberOf keigai.Base
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.removeListener( "event", "myHook" );
+ */
+Base.prototype.removeEventListener = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeListener
+ * @memberOf keigai.Base
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.removeListener( "event", "myHook" );
+ */
+Base.prototype.removeListener = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
 
 /**
  * @namespace array
@@ -2741,6 +3158,7 @@ var filter = {
  *
  * @constructor
  * @memberOf keigai
+ * @extends {keigai.Base}
  * @param  {Object} obj      Element to receive the filter
  * @param  {Object} list     {@link keigai.DataList}
  * @param  {Number} debounce [Optional] Milliseconds to debounce
@@ -2758,6 +3176,14 @@ function DataListFilter ( element, list, debounce ) {
 }
 
 /**
+ * Extending Base
+ *
+ * @memberOf keigai.DataListFilter
+ * @type {Object} {@link keigai.Base}
+ */
+DataListFilter.prototype = base.factory();
+
+/**
  * Setting constructor loop
  *
  * @method constructor
@@ -2766,187 +3192,6 @@ function DataListFilter ( element, list, debounce ) {
  * @private
  */
 DataListFilter.prototype.constructor = DataListFilter;
-
-/**
- * Adds an event listener
- *
- * @method addEventListener
- * @memberOf keigai.DataListFilter
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataListFilter}
- * @example
- * filter.addEventListener( "input", function ( ev ) {
- *   ...
- * }, "myHook" );
- */
-DataListFilter.prototype.addEventListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method addListener
- * @memberOf keigai.DataListFilter
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataListFilter}
- * @example
- * filter.addListener( "input", function ( ev ) {
- *   ...
- * }, "myHook" );
- */
-DataListFilter.prototype.addListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method dispatch
- * @memberOf keigai.DataListFilter
- * @return {Object} {@link keigai.DataListFilter}
- * @example
- * filter.dipatch( "input", ... );
- */
-DataListFilter.prototype.dispatch = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataListFilter
- * @return {Object} {@link keigai.DataListFilter}
- * @example
- * filter.emit( "input", ... );
- */
-DataListFilter.prototype.emit = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
- * Gets listeners
- *
- * @method listeners
- * @memberOf keigai.DataListFilter
- * @param  {String} ev [Optional] Event name
- * @return {Object} Listeners
- * @example
- * keigai.util.iterate( filter.listeners(), function ( fn, id ) {
- *   ...
- * } );
- */
-DataListFilter.prototype.listeners = function ( ev ) {
-	return ev ? this.observer.listeners[ev] : this.listeners;
-};
-
-/**
- * Removes an event listener
- *
- * @method off
- * @memberOf keigai.DataListFilter
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataListFilter}
- * @example
- * filter.off( "input", "myHook" );
- */
-DataListFilter.prototype.off = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method on
- * @memberOf keigai.DataListFilter
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataListFilter}
- * @example
- * filter.on( "input", function ( ev ) {
- *   ...
- * }, "myHook" );
- */
-DataListFilter.prototype.on = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds a short lived event listener
- *
- * @method once
- * @memberOf keigai.DataListFilter
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataListFilter}
- * @example
- * filter.once( "input", function ( ev ) {
- *   ...
- * } );
- */
-DataListFilter.prototype.once = function ( ev, listener, id, scope ) {
-	this.observer.once( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Removes an event listener
- *
- * @method removeEventListener
- * @memberOf keigai.DataListFilter
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataListFilter}
- * @example
- * filter.removeEventListener( "input", "myHook" );
- */
-DataListFilter.prototype.removeEventListener = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Removes an event listener
- *
- * @method removeListener
- * @memberOf keigai.DataListFilter
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataListFilter}
- * @example
- * filter.removeListener( "input", "myHook" );
- */
-DataListFilter.prototype.removeListener = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
 
 /**
  * Set the filters
@@ -3151,6 +3396,7 @@ var grid = {
  *
  * @constructor
  * @memberOf keigai
+ * @extends {keigai.Base}
  * @param  {Object}  target   Element to receive DataGrid
  * @param  {Object}  store    DataStore
  * @param  {Array}   fields   Array of fields to display
@@ -3177,12 +3423,19 @@ function DataGrid ( target, store, fields, sortable, options, filtered ) {
 	this.filter    = null;
 	this.filtered  = filtered === true;
 	this.list      = null;
-	this.observer  = new Observable();
 	this.options   = options   || {};
 	this.store     = store;
 	this.sortable  = sortable  || [];
 	this.sortOrder = sortOrder || sortable || [];
 }
+
+/**
+ * Extending Base
+ *
+ * @memberOf keigai.DataGrid
+ * @type {Object} {@link keigai.Base}
+ */
+DataGrid.prototype = base.factory();
 
 /**
  * Setting constructor loop
@@ -3216,63 +3469,6 @@ DataGrid.prototype.add = function ( record ) {
 };
 
 /**
- * Adds an event listener
- *
- * @method addEventListener
- * @memberOf keigai.DataGrid
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.addEventListener( "afterFilter", function ( ev ) {
- *   ...
- * }, "newFilter" );
- */
-DataGrid.prototype.addEventListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method addListener
- * @memberOf keigai.DataGrid
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.addEventListener( "afterFilter", function ( ev ) {
- *   ...
- * }, "newFilter" );
- */
-DataGrid.prototype.addListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataGrid
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.dispatch( "event", ... );
- */
-DataGrid.prototype.dispatch = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
  * Exports data grid records
  *
  * @method dump
@@ -3283,96 +3479,6 @@ DataGrid.prototype.dispatch = function () {
  */
 DataGrid.prototype.dump = function () {
 	return this.store.dump( this.list.records, this.fields );
-};
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataGrid
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.emit( "event", ... );
- */
-DataGrid.prototype.emit = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
- * Gets listeners
- *
- * @method listeners
- * @memberOf keigai.DataGrid
- * @param  {String} ev [Optional] Event name
- * @return {Object} Listeners
- * @example
- * keigai.util.iterate( grid.listeners(), function ( fn, id ) {
- *   ...
- * } );
- */
-DataGrid.prototype.listeners = function ( ev ) {
-	return ev ? this.observer.listeners[ev] : this.listeners;
-};
-
-/**
- * Removes an event listener
- *
- * @method off
- * @memberOf keigai.DataGrid
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.off( "afterFilter", "newFilter" );
- */
-DataGrid.prototype.off = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method on
- * @memberOf keigai.DataGrid
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.on( "afterFilter", function ( ev ) {
- *   ...
- * }, "newFilter" );
- */
-DataGrid.prototype.on = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds a short lived event listener
- *
- * @method once
- * @memberOf keigai.DataGrid
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.once( "afterFilter", function ( ev ) {
- *   ...
- * } );
- */
-DataGrid.prototype.once = function ( ev, listener, id, scope ) {
-	this.observer.once( ev, listener, id, scope || this );
-
-	return this;
 };
 
 /**
@@ -3428,40 +3534,6 @@ DataGrid.prototype.remove = function ( record ) {
 		utility.error( e );
 		self.dispatch( "error", e );
 	} );
-
-	return this;
-};
-
-/**
- * Removes an event listener
- *
- * @method removeEventListener
- * @memberOf keigai.DataGrid
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.removeListener( "afterFilter", "newFilter" );
- */
-DataGrid.prototype.removeEventListener = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Removes an event listener
- *
- * @method removeListener
- * @memberOf keigai.DataGrid
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataGrid}
- * @example
- * grid.removeListener( "afterFilter", "newFilter" );
- */
-DataGrid.prototype.removeListener = function ( ev, id ) {
-	this.observer.off( ev, id );
 
 	return this;
 };
@@ -3543,7 +3615,7 @@ DataGrid.prototype.update = function ( key, data ) {
  */
 var list = {
 	/**
-	 * Creates an instance of datalist
+	 * Creates an instance of DataList
 	 *
 	 * @method factory
 	 * @memberOf list
@@ -3655,6 +3727,7 @@ var list = {
  *
  * @constructor
  * @memberOf keigai
+ * @extends {keigai.Base}
  * @example
  * var store = keigai.store( [...] ),
  *     list  = keigai.list( document.querySelector("#list"), store, "{{name}}", {order: "name"} );
@@ -3683,11 +3756,20 @@ function DataList ( element, store, template ) {
 }
 
 /**
+ * Extending Base
+ *
+ * @memberOf keigai.DataList
+ * @type {Object} {@link keigai.Base}
+ */
+DataList.prototype = base.factory();
+
+/**
  * Setting constructor loop
  *
  * @method constructor
  * @memberOf keigai.DataList
  * @type {Function}
+ * @private
  */
 DataList.prototype.constructor = DataList;
 
@@ -3713,63 +3795,6 @@ DataList.prototype.add = function ( record ) {
 };
 
 /**
- * Adds an event listener
- *
- * @method addEventListener
- * @memberOf keigai.DataList
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataList}
- * @example
- * list.addEventListener( "afterRefresh", function ( ev ) {
- *   ...
- * }, "refreshed" );
- */
-DataList.prototype.addEventListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method addListener
- * @memberOf keigai.DataList
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataList}
- * @example
- * list.addListener( "afterRefresh", function ( ev ) {
- *   ...
- * }, "refreshed" );
- */
-DataList.prototype.addListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method dispatch
- * @memberOf keigai.DataList
- * @return {Object} {@link keigai.DataList}
- * @example
- * list.dispatch( "event", ... );
- */
-DataList.prototype.dispatch = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
  * Exports data list records
  *
  * @method dump
@@ -3783,107 +3808,17 @@ DataList.prototype.dump = function () {
 };
 
 /**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataList
- * @return {Object} {@link keigai.DataList}
- * @example
- * list.emit( "event", ... );
- */
-DataList.prototype.emit = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
- * Gets listeners
- *
- * @method listeners
- * @memberOf keigai.DataList
- * @param  {String} ev [Optional] Event name
- * @return {Object} Listeners
- * @example
- * keigai.util.iterate( list.listeners(), function ( fn, id ) {
- *   ...
- * } );
- */
-DataList.prototype.listeners = function ( ev ) {
-	return ev ? this.observer.listeners[ev] : this.listeners;
-};
-
-/**
- * Removes an event listener
- *
- * @method off
- * @memberOf keigai.DataList
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataList}
- * @example
- * list.off( "afterRefresh", "refreshed" );
- */
-DataList.prototype.off = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method on
- * @memberOf keigai.DataList
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataList}
- * @example
- * list.on( "afterRefresh", function ( ev ) {
- *   ...
- * }, "refreshed" );
- */
-DataList.prototype.on = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds a short lived event listener
- *
- * @method once
- * @memberOf keigai.DataList
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataList}
- * @example
- * list.once( "afterRefresh", function ( ev ) {
- *   ...
- * } );
- */
-DataList.prototype.once = function ( ev, listener, id, scope ) {
-	this.observer.once( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
  * Changes the page index of the DataList
  *
  * @method page
  * @memberOf keigai.DataList
- * @param  {Number} page Page to view
- * @return {Object} {@link keigai.DataList}
+ * @param  {Number} n Page to view
+ * @return {Object}   {@link keigai.DataList}
  * @example
  * list.page( 2 );
  */
-DataList.prototype.page = function ( page ) {
-	this.pageIndex = page;
+DataList.prototype.page = function ( n ) {
+	this.pageIndex = n;
 
 	return this.refresh();
 };
@@ -3989,6 +3924,7 @@ DataList.prototype.pages = function () {
  *
  * @method refresh
  * @memberOf keigai.DataList
+ * @extends {keigai.Base}
  * @fires keigai.DataList#beforeRefresh Fires before refresh
  * @fires keigai.DataList#afterRefresh Fires after refresh
  * @fires keigai.DataList#error Fires on error
@@ -4218,40 +4154,6 @@ DataList.prototype.remove = function ( record ) {
 		utility.error( e );
 		self.dispatch( "error", e );
 	} );
-
-	return this;
-};
-
-/**
- * Removes an event listener
- *
- * @method removeEventListener
- * @memberOf keigai.DataList
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataList}
- * @example
- * list.removeEventListener( "afterRefresh", "refreshed" );
- */
-DataList.prototype.removeEventListener = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Removes an event listener
- *
- * @method removeListener
- * @memberOf keigai.DataList
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataList}
- * @example
- * list.removeListener( "afterRefresh", "refreshed" );
- */
-DataList.prototype.removeListener = function ( ev, id ) {
-	this.observer.off( ev, id );
 
 	return this;
 };
@@ -6020,227 +5922,10 @@ var number = {
 };
 
 /**
- * @namespace observable
- */
-var observable = {
-	/**
-	 * Observable factory
-	 *
-	 * @method factory
-	 * @memberOf observable
-	 * @return {Object} {@link keigai.Observable}
-	 * @example
-	 * var observer = keigai.util.observer( 50 );
-	 */
-	 factory : function ( arg ) {
-		return new Observable( arg );
-	}
-};
-
-/**
- * Creates a new Observable
- *
- * @constructor
- * @memberOf keigai
- * @param  {Number} arg Maximum listeners, default is 10
- * @example
- * var observer = keigai.util.observer( 50 );
- */
-function Observable ( arg ) {
-	this.limit     = arg || MAX;
-	this.listeners = {};
-	this.hooks     = {};
-}
-
-/**
- * Setting constructor loop
- *
- * @method constructor
- * @memberOf keigai.Observable
- * @type {Function}
- * @private
- */
-Observable.prototype.constructor = Observable;
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method dispatch
- * @memberOf keigai.Observable
- * @return {Object} {@link keigai.Observable}
- * @example
- * observer.dispatch( "event", ... );
- */
-Observable.prototype.dispatch = function () {
-	var args = array.cast( arguments ),
-	    ev   = args.shift();
-
-	if ( ev && this.listeners[ev] ) {
-		utility.iterate( this.listeners[ev], function ( i ) {
-			i.handler.apply( i.scope, args );
-		} );
-	}
-
-	return this;
-};
-
-/**
- * Hooks into `target` for a DOM event
- *
- * @method hook
- * @memberOf keigai.Observable
- * @param  {Object} target Element
- * @param  {String} ev     Event
- * @return {Object}        Element
- * @example
- * observer.hook( document.querySelector( "a" ), "click" );
- */
-Observable.prototype.hook = function ( target, ev ) {
-	var self = this;
-
-	if ( typeof target.addEventListener != "function" ) {
-		throw new Error( label.invalidArguments );
-	}
-
-	utility.genId( target, true );
-
-	this.hooks[target.id] = function ( arg ) {
-		self.dispatch( ev, arg );
-	};
-
-	target.addEventListener( ev, this.hooks[target.id], false );
-
-	return target;
-};
-
-/**
- * Removes all, or a specific listener for an event
- *
- * @method off
- * @memberOf keigai.Observable
- * @param {String} ev Event name
- * @param {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.Observable}
- * @example
- * observer.off( "click", "myHook" );
- */
-Observable.prototype.off = function ( ev, id ) {
-	if ( this.listeners[ev] ) {
-		if ( id ) {
-			delete this.listeners[ev][id];
-		}
-		else {
-			delete this.listeners[ev];
-		}
-	}
-
-	return this;
-};
-
-/**
- * Adds a listener for an event
- *
- * @method on
- * @memberOf keigai.Observable
- * @param  {String}   ev      Event name
- * @param  {Function} handler Handler
- * @param  {String}   id      [Optional] Handler ID
- * @param  {String}   scope   [Optional] Handler scope, default is `this`
- * @return {Object} {@link keigai.Observable}
- * @example
- * observer.on( "click", function ( ev ) {
- *   ...
- * }, "myHook" );
- */
-Observable.prototype.on = function ( ev, handler, id, scope ) {
-	id    = id    || utility.uuid();
-	scope = scope || this;
-
-	if ( !this.listeners[ev] ) {
-		this.listeners[ev] = {};
-	}
-
-	if ( array.keys( this.listeners[ev] ).length >= this.limit ) {
-		throw( new Error( "Possible memory leak, more than " + this.limit + " listeners for event: " + ev ) );
-	}
-
-	this.listeners[ev][id] = {scope: scope, handler: handler};
-
-	return this;
-};
-
-/**
- * Adds a short lived listener for an event
- *
- * @method once
- * @memberOf keigai.Observable
- * @param  {String}   ev      Event name
- * @param  {Function} handler Handler
- * @param  {String}   id      [Optional] Handler ID
- * @param  {String}   scope   [Optional] Handler scope, default is `this`
- * @return {Object} {@link keigai.Observable}
- * @example
- * observer.once( "click", function ( ev ) {
- *   ...
- * } );
- */
-Observable.prototype.once = function ( ev, handler, id, scope  ) {
-	var self = this;
-
-	id    = id    || utility.uuid();
-	scope = scope || this;
-
-	return this.on( ev, function () {
-		handler.apply( scope, [].concat( array.cast( arguments ) ) );
-		self.off( ev, id );
-	}, id, scope );
-};
-
-/**
- * Unhooks from `target` for a DOM event
- *
- * @method unhook
- * @memberOf keigai.Observable
- * @param  {Object} target Element
- * @param  {String} ev     Event
- * @return {Object}        Element
- * @example
- * observer.unhook( document.querySelector( "a" ), "click" );
- */
-Observable.prototype.unhook = function ( target, ev ) {
-	target.removeEventListener( ev, this.hooks[target.id], false );
-	delete this.hooks[target.id];
-
-	return target;
-};
-
-/**
  * @namespace promise
  * @private
  */
 var promise = {
-	/**
-	 * Async delay strategy
-	 *
-	 * @method delay
-	 * @memberOf promise
-	 * @return {Function} Delay method
-	 * @private
-	 */
-	delay : function () {
-		if ( typeof setImmediate != "undefined" ) {
-			return setImmediate;
-		}
-		else if ( typeof process != "undefined" ) {
-			return process.nextTick;
-		}
-		else {
-			return function ( arg ) {
-				setTimeout( arg, 0 );
-			};
-		}
-	}(),
-
 	/**
 	 * Promise factory
 	 *
@@ -6288,7 +5973,7 @@ var promise = {
 		obj.state = state;
 
 		if ( !obj.deferred ) {
-			promise.delay( function () {
+			utility.delay( function () {
 				obj.process();
 			} );
 
@@ -6436,7 +6121,7 @@ Promise.prototype.then = function ( success, failure ) {
 	} );
 
 	if ( this.state > promise.state.PENDING && !this.deferred ) {
-		promise.delay( function () {
+		utility.delay( function () {
 			self.process();
 		} );
 
@@ -6542,6 +6227,7 @@ var store = {
  *
  * @constructor
  * @memberOf keigai
+ * @extends {keigai.Base}
  * @example
  * var store = keigai.store();
  */
@@ -6562,7 +6248,6 @@ function DataStore () {
 	this.loaded      = false;
 	this.maxDepth    = 0;
 	this.mongodb     = "";
-	this.observer    = new Observable();
 	this.records     = [];
 	this.retrieve    = false;
 	this.source      = null;
@@ -6574,6 +6259,14 @@ function DataStore () {
 }
 
 /**
+ * Extending Base
+ *
+ * @memberOf keigai.DataGrid
+ * @type {Object} {@link keigai.Base}
+ */
+DataStore.prototype = base.factory();
+
+/**
  * Setting constructor loop
  *
  * @method constructor
@@ -6582,48 +6275,6 @@ function DataStore () {
  * @private
  */
 DataStore.prototype.constructor = DataStore;
-
-/**
- * Adds an event listener
- *
- * @method addEventListener
- * @memberOf keigai.DataStore
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.addEventListener( "afterBatch", function ( ev ) {
- *   ...
- * }, "batch" );
- */
-DataStore.prototype.addEventListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method addListener
- * @memberOf keigai.DataStore
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.addListener( "afterBatch", function ( ev ) {
- *   ...
- * }, "batch" );
- */
-DataStore.prototype.addListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
 
 /**
  * Batch sets or deletes data in the store
@@ -7001,21 +6652,6 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 };
 
 /**
- * Dispatches an event, with optional arguments
- *
- * @method dispatch
- * @memberOf keigai.DataStore
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.dispatch( "event", ... );
- */
-DataStore.prototype.dispatch = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
  * Exports a subset or complete record set of DataStore
  *
  * @method dump
@@ -7061,21 +6697,6 @@ DataStore.prototype.dump = function ( args, fields ) {
 	}
 
 	return args.map( fn );
-};
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataStore
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.emit( "event", ... );
- */
-DataStore.prototype.emit = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
 };
 
 /**
@@ -7247,81 +6868,6 @@ DataStore.prototype.join = function ( arg, field, join ) {
 };
 
 /**
- * Gets listeners
- *
- * @method listeners
- * @memberOf keigai.DataStore
- * @param  {String} ev [Optional] Event name
- * @return {Object} Listeners
- * @example
- * keigai.util.iterate( store.listeners(), function ( fn, id ) {
- *   ...
- * } );
- */
-DataStore.prototype.listeners = function ( ev ) {
-	return ev ? this.observer.listeners[ev] : this.listeners;
-};
-
-/**
- * Removes an event listener
- *
- * @method off
- * @memberOf keigai.DataStore
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.off( "afterBatch", "batch" );
- */
-DataStore.prototype.off = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method on
- * @memberOf keigai.DataStore
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.on( "afterBatch", function ( ev ) {
- *   ...
- * }, "batch" );
- */
-DataStore.prototype.on = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds a short lived event listener
- *
- * @method once
- * @memberOf keigai.DataStore
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.once( "afterBatch", function ( ev ) {
- *   ...
- * } );
- */
-DataStore.prototype.once = function ( ev, listener, id, scope ) {
-	this.observer.once( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
  * Retrieves only 1 field/property
  *
  * @method only
@@ -7379,40 +6925,6 @@ DataStore.prototype.reindex = function () {
 			this.keys[this.records[i].key] = i;
 		}
 	}
-
-	return this;
-};
-
-/**
- * Removes an event listener
- *
- * @method removeEventListener
- * @memberOf keigai.DataStore
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.removeEventListener( "afterBatch", "batch" );
- */
-DataStore.prototype.removeEventListener = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Removes an event listener
- *
- * @method removeListener
- * @memberOf keigai.DataStore
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.removeListener( "afterBatch", "batch" );
- */
-DataStore.prototype.removeListener = function ( ev, id ) {
-	this.observer.off( ev, id );
 
 	return this;
 };
@@ -8956,6 +8468,28 @@ var utility = {
 	},
 
 	/**
+	 * Async delay strategy
+	 *
+	 * @method delay
+	 * @memberOf promise
+	 * @return {Function} Delay method
+	 * @private
+	 */
+	delay : function () {
+		if ( typeof setImmediate != "undefined" ) {
+			return setImmediate;
+		}
+		else if ( typeof process != "undefined" ) {
+			return process.nextTick;
+		}
+		else {
+			return function ( arg ) {
+				setTimeout( arg, 0 );
+			};
+		}
+	}(),
+
+	/**
 	 * Queries DOM with fastest method
 	 *
 	 * @method dom
@@ -9557,7 +9091,7 @@ function xhr () {
 	    XMLHttpRequest, headers, success, failure, state;
 
 	headers = {
-		"user-agent"   : "keigai/0.2.8 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"user-agent"   : "keigai/0.2.9 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
 	};
@@ -10237,7 +9771,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.2.8"
+	version : "0.2.9"
 };
 
 } )();
@@ -10276,7 +9810,7 @@ else {
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Sun Mar 09 2014 14:29:49 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Sun Mar 09 2014 19:09:30 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

@@ -94,6 +94,7 @@ var store = {
  *
  * @constructor
  * @memberOf keigai
+ * @extends {keigai.Base}
  * @example
  * var store = keigai.store();
  */
@@ -114,7 +115,6 @@ function DataStore () {
 	this.loaded      = false;
 	this.maxDepth    = 0;
 	this.mongodb     = "";
-	this.observer    = new Observable();
 	this.records     = [];
 	this.retrieve    = false;
 	this.source      = null;
@@ -126,6 +126,14 @@ function DataStore () {
 }
 
 /**
+ * Extending Base
+ *
+ * @memberOf keigai.DataGrid
+ * @type {Object} {@link keigai.Base}
+ */
+DataStore.prototype = base.factory();
+
+/**
  * Setting constructor loop
  *
  * @method constructor
@@ -134,48 +142,6 @@ function DataStore () {
  * @private
  */
 DataStore.prototype.constructor = DataStore;
-
-/**
- * Adds an event listener
- *
- * @method addEventListener
- * @memberOf keigai.DataStore
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.addEventListener( "afterBatch", function ( ev ) {
- *   ...
- * }, "batch" );
- */
-DataStore.prototype.addEventListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method addListener
- * @memberOf keigai.DataStore
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.addListener( "afterBatch", function ( ev ) {
- *   ...
- * }, "batch" );
- */
-DataStore.prototype.addListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
 
 /**
  * Batch sets or deletes data in the store
@@ -553,21 +519,6 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 };
 
 /**
- * Dispatches an event, with optional arguments
- *
- * @method dispatch
- * @memberOf keigai.DataStore
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.dispatch( "event", ... );
- */
-DataStore.prototype.dispatch = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
  * Exports a subset or complete record set of DataStore
  *
  * @method dump
@@ -613,21 +564,6 @@ DataStore.prototype.dump = function ( args, fields ) {
 	}
 
 	return args.map( fn );
-};
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataStore
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.emit( "event", ... );
- */
-DataStore.prototype.emit = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
 };
 
 /**
@@ -799,81 +735,6 @@ DataStore.prototype.join = function ( arg, field, join ) {
 };
 
 /**
- * Gets listeners
- *
- * @method listeners
- * @memberOf keigai.DataStore
- * @param  {String} ev [Optional] Event name
- * @return {Object} Listeners
- * @example
- * keigai.util.iterate( store.listeners(), function ( fn, id ) {
- *   ...
- * } );
- */
-DataStore.prototype.listeners = function ( ev ) {
-	return ev ? this.observer.listeners[ev] : this.listeners;
-};
-
-/**
- * Removes an event listener
- *
- * @method off
- * @memberOf keigai.DataStore
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.off( "afterBatch", "batch" );
- */
-DataStore.prototype.off = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method on
- * @memberOf keigai.DataStore
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.on( "afterBatch", function ( ev ) {
- *   ...
- * }, "batch" );
- */
-DataStore.prototype.on = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds a short lived event listener
- *
- * @method once
- * @memberOf keigai.DataStore
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.once( "afterBatch", function ( ev ) {
- *   ...
- * } );
- */
-DataStore.prototype.once = function ( ev, listener, id, scope ) {
-	this.observer.once( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
  * Retrieves only 1 field/property
  *
  * @method only
@@ -931,40 +792,6 @@ DataStore.prototype.reindex = function () {
 			this.keys[this.records[i].key] = i;
 		}
 	}
-
-	return this;
-};
-
-/**
- * Removes an event listener
- *
- * @method removeEventListener
- * @memberOf keigai.DataStore
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.removeEventListener( "afterBatch", "batch" );
- */
-DataStore.prototype.removeEventListener = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Removes an event listener
- *
- * @method removeListener
- * @memberOf keigai.DataStore
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataStore}
- * @example
- * store.removeListener( "afterBatch", "batch" );
- */
-DataStore.prototype.removeListener = function ( ev, id ) {
-	this.observer.off( ev, id );
 
 	return this;
 };
