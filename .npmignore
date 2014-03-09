@@ -8,4 +8,5 @@
 .gitignore
 .jshintrc
 .travis.yml
+docstrap.json
 Gruntfile.js
