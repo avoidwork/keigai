@@ -33,10 +33,6 @@
 						</li>
 						
 						<li>
-							<a href="cache.html">cache</a>
-						</li>
-						
-						<li>
 							<a href="client.html">client</a>
 						</li>
 						
@@ -61,11 +57,11 @@
 						</li>
 						
 						<li>
-							<a href="label.html">label</a>
+							<a href="list.html">list</a>
 						</li>
 						
 						<li>
-							<a href="list.html">list</a>
+							<a href="lru.html">lru</a>
 						</li>
 						
 						<li>
@@ -77,11 +73,11 @@
 						</li>
 						
 						<li>
-							<a href="promise.html">promise</a>
+							<a href="observable.html">observable</a>
 						</li>
 						
 						<li>
-							<a href="regex.html">regex</a>
+							<a href="promise.html">promise</a>
 						</li>
 						
 						<li>
@@ -94,10 +90,6 @@
 						
 						<li>
 							<a href="utility.html">utility</a>
-						</li>
-						
-						<li>
-							<a href="xml.html">xml</a>
 						</li>
 						
 
@@ -160,10 +152,6 @@
 							<a href="keigai.Promise.html">Promise</a>
 						</li>
 						
-						<li>
-							<a href="xhr.XMLHttpRequest.html">XMLHttpRequest</a>
-						</li>
-						
 
 					</ul>
 				</li>
@@ -175,10 +163,6 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="global.html#bootstrap">bootstrap</a>
-						</li>
-						
-						<li>
 							<a href="global.html#css">css</a>
 						</li>
 						
@@ -188,10 +172,6 @@
 						
 						<li>
 							<a href="global.html#is">is</a>
-						</li>
-						
-						<li>
-							<a href="global.html#xhr">xhr</a>
 						</li>
 						
 
@@ -278,98 +258,6 @@
         <h3 class="subsection-title">Methods</h3>
 
         <dl>
-            
-<dt>
-    <h4 class="name" id="bootstrap"><span class="type-signature">&lt;private> </span>bootstrap<span class="signature">()</span><span class="type-signature"> &rarr; {Undefined}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Bootstraps environment</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8725">line 8725</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>undefined</p>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Undefined</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
-        
             
 <dt>
     <h4 class="name" id="css"><span class="type-signature"></span>css<span class="signature">(obj, key, value)</span><span class="type-signature"> &rarr; {Object}</span></h4>
@@ -508,7 +396,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3932">line 3932</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4210">line 4210</a>
     </li></ul></dd>
     
 
@@ -553,6 +441,13 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.css( document.querySelector( "#something" ), "font-weight", "bold" );
+keigai.util.element.css( document.querySelector( "#something" ), "font-weight" ); // "bold"</pre>
+
+
     
 </dd>
 
@@ -672,7 +567,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4132">line 4132</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4440">line 4440</a>
     </li></ul></dd>
     
 
@@ -717,6 +612,13 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.html( document.querySelector( "#something" ), "Hello World!" );
+keigai.util.element.html( document.querySelector( "#something" ) ); // "Hello World!"</pre>
+
+
     
 </dd>
 
@@ -836,7 +738,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4150">line 4150</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4461">line 4461</a>
     </li></ul></dd>
     
 
@@ -884,98 +786,6 @@
     
 </dd>
 
-        
-            
-<dt>
-    <h4 class="name" id="xhr"><span class="type-signature">&lt;private> </span>xhr<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>XMLHttpRequest shim for node.js</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-8204">line 8204</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>XMLHttpRequest instance</p>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Object</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
         </dl>
     
 
@@ -1002,7 +812,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Sat Mar 08 2014 11:28:37 GMT-0500 (EST) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Sat Mar 08 2014 16:47:25 GMT-0500 (EST) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

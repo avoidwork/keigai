@@ -1,6 +1,5 @@
 /**
  * @namespace math
- * @private
  */
 var math = {
 	/**
@@ -11,6 +10,13 @@ var math = {
 	 * @method bezier
 	 * @memberOf math
 	 * @return {Array} Coordinates
+	 * @example
+	 * // Moving straight down
+	 * var p1 = keigai.util.math.bezier( 0, 10, 2000, 10, 0 ),
+	 *     p2 = keigai.util.math.bezier( 0, 10, 2000, 10, 0.5 ),
+	 *     p3 = keigai.util.math.bezier( 0, 10, 2000, 10, 0.75 ),
+	 *     p4 = keigai.util.math.bezier( 0, 10, 2000, 10, 0.9 ),
+	 *     p5 = keigai.util.math.bezier( 0, 10, 2000, 10, 1 );
 	 */
 	bezier : function () {
 		var a = array.cast( arguments ),
@@ -61,6 +67,8 @@ var math = {
 	 * @param  {Array} a Coordinates [x, y]
 	 * @param  {Array} b Coordinates [x, y]
 	 * @return {Number}  Distance between `a` & `b`
+	 * @example
+	 * var dist = keigai.util.math.dist( [4, 40], [-10, 12] );
 	 */
 	dist : function ( a, b ) {
 		return Math.sqrt( math.sqr( b[0] - a[0] ) + math.sqr( b[1] - a[1] ) );
@@ -73,6 +81,8 @@ var math = {
 	 * @memberOf math
 	 * @param  {Number} n Number to square
 	 * @return {Number}   Squared value
+	 * @example
+	 * var sqr = keigai.util.math.sqr( 23 );
 	 */
 	sqr : function ( n ) {
 		return Math.pow( n, 2 );

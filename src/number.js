@@ -1,6 +1,5 @@
 /**
  * @namespace number
- * @private
  */
 var number = {
 	/**
@@ -10,6 +9,8 @@ var number = {
 	 * @memberOf number
 	 * @param {Number} arg Number to compare
 	 * @return {Number}    The absolute difference
+	 * @example
+	 * keigai.util.number.diff( -3, 8 ); // 11
 	 */
 	diff : function ( num1, num2 ) {
 		if ( isNaN( num1 ) || isNaN( num2 ) ) {
@@ -26,6 +27,12 @@ var number = {
 	 * @memberOf number
 	 * @param {Number} arg Number to test
 	 * @return {Boolean}   True if even, or undefined
+	 * @example
+	 * var n = keigai.util.number.random( 10 );
+	 *
+	 * if ( keigai.util.number.even( n ) ) {
+	 *   ...
+	 * }
 	 */
 	even : function ( arg ) {
 		return arg % 2 === 0;
@@ -40,6 +47,8 @@ var number = {
 	 * @param  {String} delimiter [Optional] String to delimit the Number with
 	 * @param  {String} every     [Optional] Position to insert the delimiter, default is 3
 	 * @return {String}           Number represented as a comma delimited String
+	 * @example
+	 * keigai.util.number.format( 1000 ); // "1,000"
 	 */
 	format : function ( arg, delimiter, every ) {
 		if ( isNaN( arg ) ) {
@@ -78,6 +87,10 @@ var number = {
 	 * @param  {Number} a Number to divide
 	 * @param  {Number} b [Optional] Number to test a against
 	 * @return {Mixed}    Boolean if b is passed, Number if b is undefined
+	 * @example
+	 * if ( keigai.util.number.half( 2, 4 ) ) {
+	 *   ...
+	 * } );
 	 */
 	half : function ( a, b ) {
 		return b ? ( ( a / b ) === 0.5 ) : ( a / 2 );
@@ -90,6 +103,12 @@ var number = {
 	 * @memberOf number
 	 * @param  {Number} arg Number to test
 	 * @return {Boolean}    True if odd, or undefined
+	 * @example
+	 * var n = keigai.util.number.random( 10 );
+	 *
+	 * if ( keigai.util.number.odd( n ) ) {
+	 *   ...
+	 * }
 	 */
 	odd : function ( arg ) {
 		return !number.even( arg );
@@ -103,6 +122,9 @@ var number = {
 	 * @param  {Mixed}  arg  Number to parse
 	 * @param  {Number} base Integer representing the base or radix
 	 * @return {Number}      Integer or float
+	 * @example
+	 * // Unsure if `n` is an int or a float
+	 * keigai.util.number.parse( n );
 	 */
 	parse : function ( arg, base ) {
 		return ( base === undefined ) ? parseFloat( arg ) : parseInt( arg, base );
@@ -115,6 +137,8 @@ var number = {
 	 * @memberOf number
 	 * @param  {Number} arg Ceiling for random number, default is 100
 	 * @return {Number}     Random number
+	 * @example
+	 * var n = keigai.util.math.random( 10 );
 	 */
 	random : function ( arg ) {
 		arg = arg || 100;
@@ -130,6 +154,8 @@ var number = {
 	 * @param  {Number} arg       Number to round
 	 * @param  {String} direction [Optional] "up" or "down"
 	 * @return {Number}           Rounded interger
+	 * @example
+	 * keigai.util.math.round( n, "down" );
 	 */
 	round : function ( arg, direction ) {
 		arg = number.parse( arg );

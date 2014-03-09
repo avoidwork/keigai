@@ -1,9 +1,29 @@
 /**
+ * @namespace lru
+ */
+var lru = {
+	/**
+	 * LRU factory
+	 *
+	 * @method factory
+	 * @memberOf lru
+	 * @return {Object} {@link keigai.LRU}
+	 * @example
+	 * var lru = keigai.util.lru( 50 );
+	 */
+	 factory : function ( max ) {
+		return new LRU( max );
+	}
+};
+
+/**
  * Creates a new Least Recently Used cache
  *
  * @constructor
  * @memberOf keigai
  * @param  {Number} max [Optional] Max size of cache, default is 1000
+ * @example
+ * var lru = keigai.util.lru( 50 );
  */
 function LRU ( max ) {
 	this.cache  = {};
@@ -19,6 +39,7 @@ function LRU ( max ) {
  * @method constructor
  * @memberOf keigai.LRU
  * @type {Function}
+ * @private
  */
 LRU.prototype.constructor = LRU;
 
@@ -28,6 +49,8 @@ LRU.prototype.constructor = LRU;
  * @method evict
  * @memberOf keigai.LRU
  * @return {Object} {@link keigai.LRU}
+ * @example
+ * lru.evict();
  */
 LRU.prototype.evict = function () {
 	if ( this.last !== null ) {
@@ -44,6 +67,8 @@ LRU.prototype.evict = function () {
  * @memberOf keigai.LRU
  * @param  {String} key Item key
  * @return {Object} {@link keigai.LRUItem}
+ * @example
+ * var item = lru.get( "key" );
  */
 LRU.prototype.get = function ( key ) {
 	var item = this.cache[key];
@@ -64,6 +89,8 @@ LRU.prototype.get = function ( key ) {
  * @memberOf keigai.LRU
  * @param  {String} key Item key
  * @return {Object} {@link keigai.LRUItem}
+ * @example
+ * lru.remove( "key" );
  */
 LRU.prototype.remove = function ( key ) {
 	var item = this.cache[ key ];
@@ -101,6 +128,8 @@ LRU.prototype.remove = function ( key ) {
  * @param  {String} key   Item key
  * @param  {Mixed}  value Item value
  * @return {Object} {@link keigai.LRU}
+ * @example
+ * lru.set( "key", {x: true} );
  */
 LRU.prototype.set = function ( key, value ) {
 	var item = this.remove( key );
@@ -139,6 +168,7 @@ LRU.prototype.set = function ( key, value ) {
  * @constructor
  * @memberOf keigai
  * @param {Mixed} value Item value
+ * @private
  */
 function LRUItem ( value ) {
 	this.next     = null;

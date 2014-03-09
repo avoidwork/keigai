@@ -22,15 +22,14 @@ return {
 		json     : json,
 		jsonp    : client.jsonp,
 		log      : utility.log,
-		lru      : function ( arg ) {
-			return new LRU( arg );
-		},
+		lru      : lru.factory,
 		math     : math,
 		merge    : utility.merge,
 		number   : number,
-		observer : Observable,
+		observer : observable.factory,
 		parse    : utility.parse,
 		prevent  : utility.prevent,
+		repeat   : utility.repeat,
 		request  : client.request,
 		stop     : utility.stop,
 		string   : string,

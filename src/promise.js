@@ -9,6 +9,7 @@ var promise = {
 	 * @method delay
 	 * @memberOf promise
 	 * @return {Function} Delay method
+	 * @private
 	 */
 	delay : function () {
 		if ( typeof setImmediate != "undefined" ) {
@@ -99,6 +100,7 @@ var promise = {
  *
  * @constructor
  * @memberOf keigai
+ * @private
  */
 function Promise () {
 	this.deferred = false;
@@ -112,7 +114,6 @@ function Promise () {
  *
  * @method constructor
  * @memberOf keigai.Promise
- * @private
  * @type {Function}
  */
 Promise.prototype.constructor = Promise;

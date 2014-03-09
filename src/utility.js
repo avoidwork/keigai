@@ -1,6 +1,5 @@
 /**
  * @namespace utility
- * @private
  */
 var utility = {
 	/**
@@ -8,6 +7,7 @@ var utility = {
 	 *
 	 * @memberOf utility
 	 * @type {Object}
+	 * @private
 	 */
 	timer : {},
 
@@ -16,26 +16,35 @@ var utility = {
 	 *
 	 * @memberOf utility
 	 * @type {Object}
+	 * @private
 	 */
 	repeating: {},
 
 	/**
-	 * Queries the DOM using CSS selectors and returns an Element or Array of Elements
+	 * Creates Elements or Queries the DOM using CSS selectors
 	 *
 	 * @method $
 	 * @memberOf utility
-	 * @param  {Mixed} arg Element, HTML, or Comma delimited string of CSS selectors
-	 * @return {Mixed}     Element or Array of Elements
+	 * @param  {Mixed} arg HTML, or Comma delimited string of CSS selectors
+	 * @return {Array}     Array of matching Elements
+	 * @example
+	 * var $ = keigai.util.$;
+	 *
+	 * // Looking for Elements
+	 * $( ".someClass" ).forEach( function ( i ) {
+	 *   ...
+	 * } );
+	 *
+	 * // Creating an H1 Element
+	 * $( "&lt;h1&gt;" ).forEach( function ( i ) {
+	 *   ...
+	 * } );
 	 */
 	$ : function ( arg ) {
 		var result;
 
 		// Nothing
 		if ( !arg ) {
-		}
-		// Element
-		else if ( arg.nodeName ) {
-			result = [arg];
 		}
 		// HTML
 		else if ( regex.html.test( arg ) ) {
@@ -83,6 +92,7 @@ var utility = {
 	 * @memberOf utility
 	 * @param  {String} id ID of timer( s )
 	 * @return {Undefined} undefined
+	 * @private
 	 */
 	clearTimers : function ( id ) {
 		if ( id === undefined || string.isEmpty( id ) ) {
@@ -110,6 +120,11 @@ var utility = {
 	 * @param  {Object}  obj     Object to clone
 	 * @param  {Boolean} shallow [Optional] Create a shallow clone, which doesn't maintain prototypes, default is `false`
 	 * @return {Object}          Clone of obj
+	 * @example
+	 * var x = {a: true, b: false},
+	 *     y = keigai.util.clone( x, true );
+	 *
+	 * y.a; // true
 	 */
 	clone : function ( obj, shallow ) {
 		var clone;
@@ -161,6 +176,8 @@ var utility = {
 	 * @memberOf utility
 	 * @param  {String} value String to coerce
 	 * @return {Mixed}        Primitive version of the String
+	 * @example
+	 * keigai.util.coerce( "1" ); // 1
 	 */
 	coerce : function ( value ) {
 		var tmp;
@@ -205,6 +222,7 @@ var utility = {
 	 * @param  {String} pattern   Regular expression pattern
 	 * @param  {String} modifiers Modifiers to apply to the pattern
 	 * @return {Boolean}          true
+	 * @private
 	 */
 	compile : function ( reg, pattern, modifiers ) {
 		reg.compile( pattern, modifiers );
@@ -223,6 +241,7 @@ var utility = {
 	 * @param  {Number}   id     [Optional] ID of the deferred function
 	 * @param  {Boolean}  repeat [Optional] Describes the execution, default is `false`
 	 * @return {String}          ID of the timer
+	 * @private
 	 */
 	defer : function ( fn, ms, id, repeat ) {
 		var op;
@@ -254,6 +273,7 @@ var utility = {
 	 * @memberOf utility
 	 * @param  {String} arg DOM query
 	 * @return {Mixed}      undefined, Element, or Array of Elements
+	 * @private
 	 */
 	dom : function ( arg ) {
 		var result;
@@ -286,6 +306,7 @@ var utility = {
 	 * @memberOf utility
 	 * @param  {String} UUID
 	 * @return {String} DOM friendly ID
+	 * @private
 	 */
 	domId : function ( arg ) {
 		return "a" + arg.replace( /-/g, "" ).slice( 1 );
@@ -301,6 +322,7 @@ var utility = {
 	 * @param  {Mixed}   scope   Entity that was "this"
 	 * @param  {Boolean} warning [Optional] Will display as console warning if true
 	 * @return {Undefined}       undefined
+	 * @private
 	 */
 	error : function ( e, args, scope, warning ) {
 		var o = {
@@ -326,6 +348,8 @@ var utility = {
 	 * @param  {Object} obj Object to extend
 	 * @param  {Object} arg [Optional] Object for decoration
 	 * @return {Object}     Decorated obj
+	 * @example
+	 * var extendObj = keigai.util.extend( someObj, {newProperty: value} );
 	 */
 	extend : function ( obj, arg ) {
 		var o;
@@ -351,6 +375,7 @@ var utility = {
 	 * @param  {Mixed}   obj [Optional] Object to receive id
 	 * @param  {Boolean} dom [Optional] Verify the ID is unique in the DOM, default is false
 	 * @return {Mixed}       Object or id
+	 * @private
 	 */
 	genId : function ( obj, dom ) {
 		dom = ( dom === true );
@@ -389,6 +414,10 @@ var utility = {
 	 * @param  {Object}   obj Object to iterate
 	 * @param  {Function} fn  Function to execute against properties
 	 * @return {Object}       Object
+	 * @example
+	 * keigai.util.iterate( {...}, function ( value, key ) {
+	 *   ...
+	 * } );
 	 */
 	iterate : function ( obj, fn ) {
 		if ( typeof fn != "function" ) {
@@ -410,6 +439,8 @@ var utility = {
 	 * @param  {String} arg    String to write to the console
 	 * @param  {String} target [Optional] Target console, default is "log"
 	 * @return {Undefined}     undefined
+	 * @example
+	 * keigai.util.log( "Something bad happened", "warn" );
 	 */
 	log : function ( arg, target ) {
 		var ts, msg;
@@ -429,6 +460,11 @@ var utility = {
 	 * @param  {Object} obj Object to decorate
 	 * @param  {Object} arg Decoration
 	 * @return {Object}     Decorated Object
+	 * @example
+	 * var obj = {a: true};
+	 *
+	 * keigai.util.merge( obj, {b: false} )
+	 * obj.b; // false
 	 */
 	merge : function ( obj, arg ) {
 		utility.iterate( arg, function ( v, k ) {
@@ -455,6 +491,21 @@ var utility = {
 	 * @memberOf utility
 	 * @param  {String} uri URI to parse
 	 * @return {Object}     Parsed URI
+	 * @example
+	 * var parsed = keigai.util.parse( location.href );
+	 *
+	 * parsed;
+	 * {
+	 *   auth     : "",
+	 *   hash     : "",
+	 *   host     : "",
+	 *   hostname : "",
+	 *   query    : {},
+	 *   pathname : "",
+	 *   port     : n,
+	 *   protocol : "",
+	 *   search   : "",
+	 * }
 	 */
 	parse : function ( uri ) {
 		var obj    = {},
@@ -525,15 +576,17 @@ var utility = {
 	 *
 	 * @method prevent
 	 * @memberOf utility
-	 * @param  {Object} e Event
-	 * @return {Object}   Event
+	 * @param  {Object} ev Event
+	 * @return {Object}    Event
+	 * @example
+	 * keigai.util.prevent( Event );
 	 */
-	prevent : function ( e ) {
-		if ( typeof e.preventDefault == "function" ) {
-			e.preventDefault();
+	prevent : function ( ev ) {
+		if ( typeof ev.preventDefault == "function" ) {
+			ev.preventDefault();
 		}
 
-		return e;
+		return ev;
 	},
 
 	/**
@@ -544,6 +597,7 @@ var utility = {
 	 * @param  {String} arg     [Optional] Key to find in the querystring
 	 * @param  {String} qstring [Optional] Query string to parse
 	 * @return {Mixed}          Value or Object of key:value pairs
+	 * @private
 	 */
 	queryString : function ( arg, qstring ) {
 		var obj    = {},
@@ -599,6 +653,15 @@ var utility = {
 	 * @param  {String}   id  [Optional] Timeout ID
 	 * @param  {Boolean}  now Executes `fn` and then setup repetition, default is `true`
 	 * @return {String}       Timeout ID
+	 * @example
+	 * keigai.util.repeat( function () {
+	 *   ...
+	 *
+	 *   // Cancelling repetition at some point in the future
+	 *   if ( someCondition ) {
+	 *     return false;
+	 *   }
+	 * }, 1000, "repeating" );
 	 */
 	repeat : function ( fn, ms, id, now ) {
 		ms  = ms || 10;
@@ -636,20 +699,19 @@ var utility = {
 	 *
 	 * @method stop
 	 * @memberOf utility
-	 * @param  {Object} e Event
-	 * @return {Object}   Event
+	 * @param  {Object} ev Event
+	 * @return {Object}    Event
+	 * @example
+	 * keigai.util.stop( Event );
 	 */
-	stop : function ( e ) {
-		if ( typeof e.stopPropagation == "function" ) {
-			e.stopPropagation();
+	stop : function ( ev ) {
+		if ( typeof ev.stopPropagation == "function" ) {
+			ev.stopPropagation();
 		}
 
-		utility.prevent( e );
+		utility.prevent( ev );
 
-		// Assumed to always be valid, even if it's not decorated on `e` ( I'm looking at you IE8 )
-		e.returnValue = false;
-
-		return e;
+		return ev;
 	},
 
 	/**
@@ -657,11 +719,13 @@ var utility = {
 	 *
 	 * @method target
 	 * @memberOf utility
-	 * @param  {Object} e Event
-	 * @return {Object}   Event target
+	 * @param  {Object} ev Event
+	 * @return {Object}    Event target
+	 * @example
+	 * var target = keigai.util.target( Event );
 	 */
-	target : function ( e ) {
-		return e.target || e.srcElement;
+	target : function ( ev ) {
+		return ev.target || ev.srcElement;
 	},
 
 	/**
@@ -669,17 +733,19 @@ var utility = {
 	 *
 	 * @method uuid
 	 * @memberOf utility
-	 * @param  {Boolean} safe [Optional] Strips - from UUID
-	 * @return {String}       UUID
+	 * @param  {Boolean} strip [Optional] Strips - from UUID
+	 * @return {String}        UUID
+	 * @example
+	 * var uuid4 = keigai.util.uuid();
 	 */
-	uuid : function ( safe ) {
+	uuid : function ( strip ) {
 		var s = function () { return ( ( ( 1 + Math.random() ) * 0x10000 ) | 0 ).toString( 16 ).substring( 1 ); },
 		    r = [8, 9, "a", "b"],
 		    o;
 
 		o = ( s() + s() + "-" + s() + "-4" + s().substr( 0, 3 ) + "-" + r[Math.floor( Math.random() * 4 )] + s().substr( 0, 3 ) + "-" + s() + s() + s() );
 
-		if ( safe === true ) {
+		if ( strip === true ) {
 			o = o.replace( /-/g, "" );
 		}
 
@@ -687,13 +753,17 @@ var utility = {
 	},
 
 	/**
-	 * Walks `obj` and returns `arg`
+	 * Walks `obj` and returns `arg`, for when you can't easily access `arg`
 	 *
 	 * @method  walk
 	 * @memberOf utility
 	 * @param  {Mixed}  obj  Object or Array
 	 * @param  {String} arg  String describing the property to return
 	 * @return {Mixed}       arg
+	 * @example
+	 * var obj = {a: [{b: true}]};
+	 *
+	 * keigai.util.walk( obj, "a[0].b" ); // true
 	 */
 	walk : function ( obj, arg ) {
 		array.each( arg.replace( /\]$/, "" ).replace( /\]/g, "." ).replace( /\.\./g, "." ).split( /\.|\[/ ), function ( i ) {
@@ -709,6 +779,25 @@ var utility = {
 	 * @method when
 	 * @memberOf utility
 	 * @return {Object} {@link keigai.Deferred}
+	 * @example
+	 * var deferreds = [],
+	 *     defer1    = keigai.util.defer(),
+	 *     defer2    = keigai.util.defer();
+	 *
+	 * deferreds.push( defer1 );
+	 * deferreds.push( defer2 );
+	 *
+	 * // Executes when both deferreds have resolved or one has rejected
+	 * $.when( deferreds ).then( function ( args ) ) {
+	 *   ...
+	 * }, function ( err ) {
+	 *   ...
+	 * } );
+	 *
+	 * ...
+	 *
+	 * defer1.resolve( true );
+	 * defer2.resolve( true );
 	 */
 	when : function () {
 		var i     = 0,

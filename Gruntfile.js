@@ -4,7 +4,7 @@ module.exports = function (grunt) {
 		concat : {
 			options : {
 				banner : "/**\n" +
-				         " * <%= pkg.name %>\n" +
+				         " * <%= pkg.description %>\n" +
 				         " *\n" +
 				         " * @author <%= pkg.author.name %> <<%= pkg.author.email %>>\n" +
 				         " * @copyright <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>\n" +
@@ -58,7 +58,8 @@ module.exports = function (grunt) {
 				options: {
 				    destination : "doc",
 				    template    : "node_modules/ink-docstrap/template",
-				    configure   : "docstrap.json"
+				    configure   : "docstrap.json",
+				    "private"   : false
 				}
 			}
 		},

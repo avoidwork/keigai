@@ -1,6 +1,5 @@
 /**
  * @namespace client
- * @private
  */
 var client = {
 	/**
@@ -8,6 +7,7 @@ var client = {
 	 *
 	 * @memberOf client
 	 * @type {Boolean}
+	 * @private
 	 */
 	ie : function () {
 		return !server && regex.ie.test( navigator.userAgent );
@@ -18,6 +18,7 @@ var client = {
 	 *
 	 * @memberOf client
 	 * @type {Number}
+	 * @private
 	 */
 	version : function () {
 		var version = 0;
@@ -38,6 +39,7 @@ var client = {
 	 * @param  {String} uri  URI to query
 	 * @param  {String} verb HTTP verb
 	 * @return {Boolean}     `true` if the verb is allowed, undefined if unknown
+	 * @private
 	 */
 	allows : function ( uri, verb ) {
 		if ( string.isEmpty( uri ) || string.isEmpty( verb ) ) {
@@ -79,6 +81,7 @@ var client = {
 	 * @memberOf client
 	 * @param  {Array} args Array of commands the URI accepts
 	 * @return {Number} To be set as a bit
+	 * @private
 	 */
 	bit : function ( args ) {
 		var result = 0;
@@ -110,6 +113,7 @@ var client = {
 	 * @memberOf client
 	 * @param  {String} uri  URI to parse
 	 * @return {Boolean}     True if CORS
+	 * @private
 	 */
 	cors : function ( uri ) {
 		return ( !server && uri.indexOf( "//" ) > -1 && uri.indexOf( "//" + location.host ) === -1 );
@@ -124,6 +128,7 @@ var client = {
 	 * @param  {String} uri  URI to request
 	 * @param  {String} type Type of request
 	 * @return {Object}      Cached URI representation
+	 * @private
 	 */
 	headers : function ( xhr, uri, type ) {
 		var headers = string.trim( xhr.getAllResponseHeaders() ).split( "\n" ),
@@ -181,6 +186,7 @@ var client = {
 	 * @param  {Object} xhr  XHR Object
 	 * @param  {String} type [Optional] content-type header value
 	 * @return {Mixed}       Array, Boolean, Document, Number, Object or String
+	 * @private
 	 */
 	parse : function ( xhr, type ) {
 		type = type || "";
@@ -213,6 +219,7 @@ var client = {
 	 * @memberOf client
 	 * @param  {String} uri URI to query
 	 * @return {Object}     Contains an Array of available commands, the permission bit and a map
+	 * @private
 	 */
 	permissions : function ( uri ) {
 		var cached = cache.get( uri, false ),
@@ -249,10 +256,17 @@ var client = {
 	 * @param  {Function} failure [Optional] A handler function to execute on error
 	 * @param  {Mixed}    args    Custom JSONP handler parameter name, default is "callback"; or custom headers for GET request ( CORS )
 	 * @return {Object} {@link keigai.Deferred}
+	 * @example
+	 * keigai.util.jsonp( "http://somedomain.com/resource?callback=", function ( arg ) {
+	 *   // `arg` is the coerced response body
+	 * }, function ( err ) {
+	 *   // Handle `err`
+	 * } );
 	 */
 	jsonp : function ( uri, success, failure, args ) {
 		var defer    = deferred.factory(),
-		    callback = "callback", cbid, s;
+		    callback = "callback",
+		    cbid, s;
 
 		if ( external === undefined ) {
 			if ( !global.keigai ) {
@@ -309,16 +323,24 @@ var client = {
 	 * @method request
 	 * @memberOf client
 	 * @param  {String}   uri     URI to query
-	 * @param  {String}   type    Type of request ( DELETE/GET/POST/PUT/HEAD )
-	 * @param  {Function} success A handler function to execute when an appropriate response been received
-	 * @param  {Function} failure [Optional] A handler function to execute on error
+	 * @param  {String}   type    [Optional] Type of request ( DELETE/GET/POST/PUT/PATCH/HEAD/OPTIONS ), default is `GET`
+	 * @param  {Function} success [Optional] Handler to execute when an appropriate response been received
+	 * @param  {Function} failure [Optional] Handler to execute on error
 	 * @param  {Mixed}    args    [Optional] Data to send with the request
 	 * @param  {Object}   headers [Optional] Custom request headers ( can be used to set withCredentials )
 	 * @param  {Number}   timeout [Optional] Timeout in milliseconds, default is 30000
 	 * @return {Object}   {@link Deferred}
+	 * @example
+	 * keigai.util.request( "http://keigai.io" ).then( function ( arg ) {
+	 *   // `arg` is the coerced response body
+	 * }, function ( err ) {
+	 *   // Handle `err`
+	 * } );
 	 */
 	request : function ( uri, type, success, failure, args, headers, timeout ) {
 		var cors, xhr, payload, cached, contentType, doc, ab, blob, defer;
+
+		type = type || "GET";
 
 		if ( ( regex.put_post.test( type ) || regex.patch.test( type ) ) && args === undefined ) {
 			throw new Error( label.invalidArguments );
@@ -560,20 +582,6 @@ var client = {
 	},
 
 	/**
-	 * Creates a script Element to load an external script
-	 *
-	 * @method script
-	 * @memberOf client
-	 * @param  {String} arg    URL to script
-	 * @param  {Object} target [Optional] Element to receive the script
-	 * @param  {String} pos    [Optional] Position to create the script at within the target
-	 * @return {Object}        Element
-	 */
-	script : function ( arg, target, pos ) {
-		return element.create( "script", {type: "application/javascript", src: arg}, target || utility.dom( "head" )[0], pos );
-	},
-
-	/**
 	 * Scrolls to a position in the view using a two point bezier curve
 	 *
 	 * @method scroll
@@ -581,6 +589,7 @@ var client = {
 	 * @param  {Array}  dest Coordinates
 	 * @param  {Number} ms   [Optional] Milliseconds to scroll, default is 250, min is 100
 	 * @return {Object} {@link Deferred}
+	 * @private
 	 */
 	scroll : function ( dest, ms ) {
 		var defer = deferred(),
@@ -609,38 +618,12 @@ var client = {
 	 * @method scrollPos
 	 * @memberOf client
 	 * @return {Array} Describes the scroll position
+	 * @private
 	 */
 	scrollPos : function () {
 		return [
 			window.scrollX || 0,
 			window.scrollY || 0
 		];
-	},
-
-	/**
-	 * Returns the visible area of the View
-	 *
-	 * @method size
-	 * @memberOf client
-	 * @return {Array} Describes the View
-	 */
-	size : function () {
-		return [
-			document["documentElement" || "body"].clientWidth  || 0,
-			document["documentElement" || "body"].clientHeight || 0
-		];
-	},
-
-	/**
-	 * Creates a link Element to load an external stylesheet
-	 *
-	 * @method stylesheet
-	 * @memberOf client
-	 * @param  {String} arg   URL to stylesheet
-	 * @param  {String} media [Optional] Medias the stylesheet applies to
-	 * @return {Object}      Stylesheet
-	 */
-	stylesheet : function ( arg, media ) {
-		return element.create( "link", {rel: "stylesheet", type: "text/css", href: arg, media: media || "print, screen"}, utility.dom( "head" )[0] );
 	}
 };

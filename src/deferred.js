@@ -1,6 +1,5 @@
 /**
  * @namespace deferred
- * @private
  */
 var deferred = {
 	/**
@@ -9,6 +8,15 @@ var deferred = {
 	 * @method factory
 	 * @memberOf deferred
 	 * @return {Object} {@link keigai.Deferred}
+	 * @example
+	 * var deferred = keigai.util.defer();
+	 *
+	 * deferred.then( function ( ... ) { ... }, function ( err ) { ... } )
+	 * deferred.always( function ( ... ) { ... } );
+	 *
+	 * ...
+	 *
+	 * deferred.resolve( true );
 	 */
 	 factory : function () {
 		return new Deferred();
@@ -67,6 +75,7 @@ function Deferred () {
  * @method constructor
  * @memberOf keigai.Deferred
  * @type {Function}
+ * @private
  */
 Deferred.prototype.constructor = Deferred;
 
@@ -77,6 +86,18 @@ Deferred.prototype.constructor = Deferred;
  * @memberOf keigai.Deferred
  * @param  {Function} arg Function to execute
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * deferred.always( function () {
+ *            ...
+ *          } ).then( function () {
+ *            ...
+ *          } );
+ *
+ * ...
+ *
+ * deferred.resolve( true );
  */
 Deferred.prototype.always = function ( arg ) {
 	if ( !this.isResolved() && !this.isRejected() && typeof arg == "function" ) {
@@ -93,6 +114,12 @@ Deferred.prototype.always = function ( arg ) {
  * @memberOf keigai.Deferred
  * @param  {Function} arg Function to execute
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * deferred.done( function ( ... ) {
+ *   ...
+ * } );
  */
 Deferred.prototype.done = function ( arg ) {
 	if ( !this.isResolved() && !this.isRejected() && typeof arg == "function" ) {
@@ -109,6 +136,12 @@ Deferred.prototype.done = function ( arg ) {
  * @memberOf keigai.Deferred
  * @param  {Function} arg Function to execute
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * deferred.fail( function ( ... ) {
+ *   ...
+ * } );
  */
 Deferred.prototype.fail = function ( arg ) {
 	if ( !this.isResolved() && !this.isRejected() && typeof arg == "function" ) {
@@ -124,6 +157,14 @@ Deferred.prototype.fail = function ( arg ) {
  * @method isRejected
  * @memberOf keigai.Deferred
  * @return {Boolean} `true` if rejected
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * ...
+ *
+ * if ( deferred.isRejected() ) {
+ *   ...
+ * }
  */
 Deferred.prototype.isRejected = function () {
 	return ( this.promise.state === promise.state.FAILED );
@@ -135,6 +176,14 @@ Deferred.prototype.isRejected = function () {
  * @method isResolved
  * @memberOf keigai.Deferred
  * @return {Boolean} `true` if resolved
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * ...
+ *
+ * if ( deferred.isResolved() ) {
+ *   ...
+ * }
  */
 Deferred.prototype.isResolved = function () {
 	return ( this.promise.state === promise.state.SUCCESS );
@@ -147,6 +196,10 @@ Deferred.prototype.isResolved = function () {
  * @memberOf keigai.Deferred
  * @param  {Mixed} arg Rejection outcome
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * deferred.reject( new Error( "Something went wrong" ) );
  */
 Deferred.prototype.reject = function ( arg ) {
 	this.promise.reject.call( this.promise, arg );
@@ -161,6 +214,10 @@ Deferred.prototype.reject = function ( arg ) {
  * @memberOf keigai.Deferred
  * @param  {Mixed} arg Resolution outcome
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * deferred.resolve( true );
  */
 Deferred.prototype.resolve = function ( arg ) {
 	this.promise.resolve.call( this.promise, arg );
@@ -174,6 +231,10 @@ Deferred.prototype.resolve = function ( arg ) {
  * @method state
  * @memberOf keigai.Deferred
  * @return {String} Describes the state
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * deferred.state(); // 0
  */
 Deferred.prototype.state = function () {
 	return this.promise.state;
@@ -187,6 +248,15 @@ Deferred.prototype.state = function () {
  * @param  {Function} success Executed when/if promise is resolved
  * @param  {Function} failure [Optional] Executed when/if promise is broken
  * @return {Object} {@link Promise}
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * deferred.then( function ( ... ) { ... }, function ( err ) { ... } )
+ *         .then( function ( ... ) { ... }, function ( err ) { ... } );
+ *
+ * ...
+ *
+ * deferred.resolve( true );
  */
 Deferred.prototype.then = function ( success, failure ) {
 	return this.promise.then( success, failure );
