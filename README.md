@@ -36,4 +36,4 @@ DataStores can be wired to an API through the `setUri()` method, which hooks the
 Deferreds (Promises) are returned from methods that can "go over the wire", for easy handling of the asynchronous communication.
 
 ### util
-Utility belt of static functions for manipulating data & the DOM.
+Utility belt of functions for manipulating data & the DOM.
