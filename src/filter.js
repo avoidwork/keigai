@@ -47,6 +47,10 @@ var filter = {
  * @param  {Object} obj      Element to receive the filter
  * @param  {Object} list     {@link keigai.DataList}
  * @param  {Number} debounce [Optional] Milliseconds to debounce
+ * @example
+ * var store  = keigai.store( [...] ),
+ *     list   = keigai.list( document.querySelector( "#list" ), store, "{{field}}" ),
+ *     filter = keigai.filter( document.querySelector( "input.filter" ), list, "field" );
  */
 function DataListFilter ( element, list, debounce ) {
 	this.element  = element;
@@ -75,6 +79,10 @@ DataListFilter.prototype.constructor = DataListFilter;
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * filter.addEventListener( "input", function ( ev ) {
+ *   ...
+ * }, "myHook" );
  */
 DataListFilter.prototype.addEventListener = function ( ev, listener, id, scope ) {
 	this.observer.on( ev, listener, id, scope || this );
@@ -92,6 +100,10 @@ DataListFilter.prototype.addEventListener = function ( ev, listener, id, scope )
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * filter.addListener( "input", function ( ev ) {
+ *   ...
+ * }, "myHook" );
  */
 DataListFilter.prototype.addListener = function ( ev, listener, id, scope ) {
 	this.observer.on( ev, listener, id, scope || this );
@@ -105,6 +117,8 @@ DataListFilter.prototype.addListener = function ( ev, listener, id, scope ) {
  * @method dispatch
  * @memberOf keigai.DataListFilter
  * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * filter.dipatch( "input", ... );
  */
 DataListFilter.prototype.dispatch = function () {
 	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
@@ -118,6 +132,8 @@ DataListFilter.prototype.dispatch = function () {
  * @method emit
  * @memberOf keigai.DataListFilter
  * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * filter.emit( "input", ... );
  */
 DataListFilter.prototype.emit = function () {
 	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
@@ -132,6 +148,10 @@ DataListFilter.prototype.emit = function () {
  * @memberOf keigai.DataListFilter
  * @param  {String} ev [Optional] Event name
  * @return {Object} Listeners
+ * @example
+ * keigai.util.iterate( filter.listeners(), function ( fn, id ) {
+ *   ...
+ * } );
  */
 DataListFilter.prototype.listeners = function ( ev ) {
 	return ev ? this.observer.listeners[ev] : this.listeners;
@@ -145,6 +165,8 @@ DataListFilter.prototype.listeners = function ( ev ) {
  * @param  {String} ev Event name
  * @param  {String} id [Optional] Listener ID
  * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * filter.off( "input", "myHook" );
  */
 DataListFilter.prototype.off = function ( ev, id ) {
 	this.observer.off( ev, id );
@@ -162,6 +184,10 @@ DataListFilter.prototype.off = function ( ev, id ) {
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * filter.on( "input", function ( ev ) {
+ *   ...
+ * }, "myHook" );
  */
 DataListFilter.prototype.on = function ( ev, listener, id, scope ) {
 	this.observer.on( ev, listener, id, scope || this );
@@ -179,6 +205,10 @@ DataListFilter.prototype.on = function ( ev, listener, id, scope ) {
  * @param  {String}   id       [Optional] Listener ID
  * @param  {String}   scope    [Optional] Listener scope, default is `this`
  * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * filter.once( "input", function ( ev ) {
+ *   ...
+ * } );
  */
 DataListFilter.prototype.once = function ( ev, listener, id, scope ) {
 	this.observer.once( ev, listener, id, scope || this );
@@ -194,6 +224,8 @@ DataListFilter.prototype.once = function ( ev, listener, id, scope ) {
  * @param  {String} ev Event name
  * @param  {String} id [Optional] Listener ID
  * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * filter.removeEventListener( "input", "myHook" );
  */
 DataListFilter.prototype.removeEventListener = function ( ev, id ) {
 	this.observer.off( ev, id );
@@ -209,6 +241,8 @@ DataListFilter.prototype.removeEventListener = function ( ev, id ) {
  * @param  {String} ev Event name
  * @param  {String} id [Optional] Listener ID
  * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * filter.removeListener( "input", "myHook" );
  */
 DataListFilter.prototype.removeListener = function ( ev, id ) {
 	this.observer.off( ev, id );
@@ -225,6 +259,8 @@ DataListFilter.prototype.removeListener = function ( ev, id ) {
  * @memberOf keigai.DataListFilter
  * @param  {String} fields Comma separated filters
  * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * filter.set( "firstName, lastName, email" );
  */
 DataListFilter.prototype.set = function ( fields ) {
 	var obj = {};
@@ -239,11 +275,13 @@ DataListFilter.prototype.set = function ( fields ) {
 };
 
 /**
- * Cancel all event listeners
+ * Removes listeners, and DOM hooks to avoid memory leaks
  *
  * @method teardown
  * @memberOf keigai.DataListFilter
  * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * filter.teardown();
  */
 DataListFilter.prototype.teardown = function () {
 	this.observer.unhook( this.element, "keyup" );
@@ -253,13 +291,15 @@ DataListFilter.prototype.teardown = function () {
 };
 
 /**
- * Update the results list
+ * Applies the input value as a filter against the DataList based on specific fields
  *
  * @method update
  * @memberOf keigai.DataListFilter
  * @fires keigai.DataList#beforeFilter Fires before filter
  * @fires keigai.DataList#afterFilter Fires after filter
  * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * filter.update(); // Debounced execution
  */
 DataListFilter.prototype.update = function () {
 	var self = this;
