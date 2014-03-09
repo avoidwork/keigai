@@ -1,6 +1,5 @@
 /**
  * @namespace utility
- * @private
  */
 var utility = {
 	/**
@@ -8,6 +7,7 @@ var utility = {
 	 *
 	 * @memberOf utility
 	 * @type {Object}
+	 * @private
 	 */
 	timer : {},
 
@@ -16,6 +16,7 @@ var utility = {
 	 *
 	 * @memberOf utility
 	 * @type {Object}
+	 * @private
 	 */
 	repeating: {},
 
@@ -83,6 +84,7 @@ var utility = {
 	 * @memberOf utility
 	 * @param  {String} id ID of timer( s )
 	 * @return {Undefined} undefined
+	 * @private
 	 */
 	clearTimers : function ( id ) {
 		if ( id === undefined || string.isEmpty( id ) ) {
@@ -205,6 +207,7 @@ var utility = {
 	 * @param  {String} pattern   Regular expression pattern
 	 * @param  {String} modifiers Modifiers to apply to the pattern
 	 * @return {Boolean}          true
+	 * @private
 	 */
 	compile : function ( reg, pattern, modifiers ) {
 		reg.compile( pattern, modifiers );
@@ -254,6 +257,7 @@ var utility = {
 	 * @memberOf utility
 	 * @param  {String} arg DOM query
 	 * @return {Mixed}      undefined, Element, or Array of Elements
+	 * @private
 	 */
 	dom : function ( arg ) {
 		var result;
@@ -286,6 +290,7 @@ var utility = {
 	 * @memberOf utility
 	 * @param  {String} UUID
 	 * @return {String} DOM friendly ID
+	 * @private
 	 */
 	domId : function ( arg ) {
 		return "a" + arg.replace( /-/g, "" ).slice( 1 );
@@ -301,6 +306,7 @@ var utility = {
 	 * @param  {Mixed}   scope   Entity that was "this"
 	 * @param  {Boolean} warning [Optional] Will display as console warning if true
 	 * @return {Undefined}       undefined
+	 * @private
 	 */
 	error : function ( e, args, scope, warning ) {
 		var o = {
@@ -351,6 +357,7 @@ var utility = {
 	 * @param  {Mixed}   obj [Optional] Object to receive id
 	 * @param  {Boolean} dom [Optional] Verify the ID is unique in the DOM, default is false
 	 * @return {Mixed}       Object or id
+	 * @private
 	 */
 	genId : function ( obj, dom ) {
 		dom = ( dom === true );
@@ -544,6 +551,7 @@ var utility = {
 	 * @param  {String} arg     [Optional] Key to find in the querystring
 	 * @param  {String} qstring [Optional] Query string to parse
 	 * @return {Mixed}          Value or Object of key:value pairs
+	 * @private
 	 */
 	queryString : function ( arg, qstring ) {
 		var obj    = {},

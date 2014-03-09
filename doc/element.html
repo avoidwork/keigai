@@ -33,10 +33,6 @@
 						</li>
 						
 						<li>
-							<a href="cache.html">cache</a>
-						</li>
-						
-						<li>
 							<a href="client.html">client</a>
 						</li>
 						
@@ -61,11 +57,11 @@
 						</li>
 						
 						<li>
-							<a href="label.html">label</a>
+							<a href="list.html">list</a>
 						</li>
 						
 						<li>
-							<a href="list.html">list</a>
+							<a href="lru.html">lru</a>
 						</li>
 						
 						<li>
@@ -77,11 +73,11 @@
 						</li>
 						
 						<li>
-							<a href="promise.html">promise</a>
+							<a href="observable.html">observable</a>
 						</li>
 						
 						<li>
-							<a href="regex.html">regex</a>
+							<a href="promise.html">promise</a>
 						</li>
 						
 						<li>
@@ -94,10 +90,6 @@
 						
 						<li>
 							<a href="utility.html">utility</a>
-						</li>
-						
-						<li>
-							<a href="xml.html">xml</a>
 						</li>
 						
 
@@ -160,40 +152,6 @@
 							<a href="keigai.Promise.html">Promise</a>
 						</li>
 						
-						<li>
-							<a href="xhr.XMLHttpRequest.html">XMLHttpRequest</a>
-						</li>
-						
-
-					</ul>
-				</li>
-				
-				<li class="dropdown">
-					<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b
-						class="caret"></b></a>
-
-					<ul class="dropdown-menu ">
-						
-						<li>
-							<a href="global.html#bootstrap">bootstrap</a>
-						</li>
-						
-						<li>
-							<a href="global.html#css">css</a>
-						</li>
-						
-						<li>
-							<a href="global.html#html">html</a>
-						</li>
-						
-						<li>
-							<a href="global.html#is">is</a>
-						</li>
-						
-						<li>
-							<a href="global.html#xhr">xhr</a>
-						</li>
-						
 
 					</ul>
 				</li>
@@ -251,7 +209,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3928">line 3928</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3996">line 3996</a>
     </li></ul></dd>
     
 
@@ -285,7 +243,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="appendTo"><span class="type-signature">&lt;static> </span>appendTo<span class="signature">(a, b)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="appendTo"><span class="type-signature">&lt;static> </span>appendTo<span class="signature">(obj, child)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
     
 </dt>
@@ -293,7 +251,7 @@
     
     
     <div class="description">
-        <p>Appends <code>a</code> in <code>b</code></p>
+        <p>Appends an Element to an Element</p>
     </div>
     
 
@@ -327,7 +285,7 @@
 
         <tr>
             
-                <td class="name"><code>a</code></td>
+                <td class="name"><code>obj</code></td>
             
 
             <td class="type">
@@ -343,14 +301,14 @@
 
             
 
-            <td class="description last"><p>Element being appended</p></td>
+            <td class="description last"><p>Element</p></td>
         </tr>
 
 	
 
         <tr>
             
-                <td class="name"><code>b</code></td>
+                <td class="name"><code>child</code></td>
             
 
             <td class="type">
@@ -366,7 +324,7 @@
 
             
 
-            <td class="description last"><p>Element being appended to</p></td>
+            <td class="description last"><p>Child Element</p></td>
         </tr>
 
 	
@@ -398,7 +356,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3942">line 3942</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4011">line 4011</a>
     </li></ul></dd>
     
 
@@ -423,7 +381,7 @@
     
             
 <div class="param-desc">
-    <p>Element being appended to</p>
+    <p>Element</p>
 </div>
 
 
@@ -443,6 +401,12 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.appendTo( document.querySelector( "#target" ), document.querySelector( "#something" ) );</pre>
+
+
     
 </dd>
 
@@ -497,7 +461,7 @@
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -585,7 +549,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3948">line 3948</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4017">line 4017</a>
     </li></ul></dd>
     
 
@@ -630,6 +594,12 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.attr( document.querySelector( "select" ), "selected", "option 1" );</pre>
+
+
     
 </dd>
 
@@ -684,7 +654,7 @@
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -726,7 +696,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4022">line 4022</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4093">line 4093</a>
     </li></ul></dd>
     
 
@@ -772,12 +742,18 @@
         
     
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.clear( document.querySelector( "#something" ) );</pre>
+
+
+    
 </dd>
 
         
             
 <dt>
-    <h4 class="name" id="create"><span class="type-signature">&lt;static> </span>create<span class="signature">(type, args, target, pos)</span><span class="type-signature"> &rarr; {Mixed}</span></h4>
+    <h4 class="name" id="create"><span class="type-signature">&lt;static> </span>create<span class="signature">(type, args, obj, pos)</span><span class="type-signature"> &rarr; {Mixed}</span></h4>
     
     
 </dt>
@@ -866,13 +842,13 @@ An id is generated if not specified with args.</p>
 
         <tr>
             
-                <td class="name"><code>target</code></td>
+                <td class="name"><code>obj</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -905,7 +881,7 @@ An id is generated if not specified with args.</p>
 
             
 
-            <td class="description last"><p>[Optional] &quot;first&quot;, &quot;last&quot; or Object describing how to add the new Element, e.g. {before: referenceElement}</p></td>
+            <td class="description last"><p>[Optional] &quot;first&quot;, &quot;last&quot; or Object describing how to add the new Element, e.g. {before: referenceElement}, default is &quot;last&quot;</p></td>
         </tr>
 
 	
@@ -937,7 +913,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4044">line 4044</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4117">line 4117</a>
     </li></ul></dd>
     
 
@@ -982,6 +958,207 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.create( "div", {innerHTML: "Hello World!"}, document.querySelector( "#something" ) );
+keigai.util.element.create( "&lt;div&gt;Hello World!&lt;/div&gt;" );</pre>
+
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="css"><span class="type-signature">&lt;static> </span>css<span class="signature">(obj, key, value)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Gets or sets a CSS style attribute on an Element</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Element</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>CSS to put in a style tag</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[Optional] Value to set</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4208">line 4208</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Element</p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.css( document.querySelector( "#something" ), "font-weight", "bold" );
+keigai.util.element.css( document.querySelector( "#something" ), "font-weight" ); // "bold"</pre>
+
+
     
 </dd>
 
@@ -1036,7 +1213,7 @@ An id is generated if not specified with args.</p>
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -1124,7 +1301,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4157">line 4157</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4235">line 4235</a>
     </li></ul></dd>
     
 
@@ -1169,6 +1346,22 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Setting
+keigai.util.element.data( document.querySelector( "#something" ), "id", "abc-1234" );
+
+// Getting
+keigai.util.element.data( document.querySelector( "#something" ), "id" ); // "abc-1234"
+
+// Unsetting
+keigai.util.element.data( document.querySelector( "#something" ), "id", null );
+
+// Setting a `null` value can be done by using a String
+keigai.util.element.data( document.querySelector( "#something" ), "id", "null" );</pre>
+
+
     
 </dd>
 
@@ -1223,7 +1416,7 @@ An id is generated if not specified with args.</p>
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -1265,7 +1458,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4178">line 4178</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4268">line 4268</a>
     </li></ul></dd>
     
 
@@ -1310,6 +1503,12 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.destroy( document.querySelector( "#something" ) );</pre>
+
+
     
 </dd>
 
@@ -1364,7 +1563,7 @@ An id is generated if not specified with args.</p>
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -1406,7 +1605,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4194">line 4194</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4286">line 4286</a>
     </li></ul></dd>
     
 
@@ -1451,6 +1650,12 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.disable( document.querySelector( "#something" ) );</pre>
+
+
     
 </dd>
 
@@ -1562,7 +1767,7 @@ An id is generated if not specified with args.</p>
 
             
 
-            <td class="description last"><p>Data to include with the Event</p></td>
+            <td class="description last"><p>[Optional] Data to include with the Event</p></td>
         </tr>
 
 	
@@ -1640,7 +1845,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4210">line 4210</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4304">line 4304</a>
     </li></ul></dd>
     
 
@@ -1685,6 +1890,12 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.dispatch( document.querySelector( "#something" ), "click" );</pre>
+
+
     
 </dd>
 
@@ -1739,7 +1950,7 @@ An id is generated if not specified with args.</p>
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -1781,7 +1992,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4236">line 4236</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4332">line 4332</a>
     </li></ul></dd>
     
 
@@ -1826,6 +2037,12 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.enable( document.querySelector( "#something" ) );</pre>
+
+
     
 </dd>
 
@@ -1880,7 +2097,7 @@ An id is generated if not specified with args.</p>
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -1945,7 +2162,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4252">line 4252</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4350">line 4350</a>
     </li></ul></dd>
     
 
@@ -1990,6 +2207,12 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.find( document.querySelector( "#something" ), "p" );</pre>
+
+
     
 </dd>
 
@@ -2086,7 +2309,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4273">line 4273</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4373">line 4373</a>
     </li></ul></dd>
     
 
@@ -2131,6 +2354,12 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var frag = keigai.util.element.frag( "Hello World!" );</pre>
+
+
     
 </dd>
 
@@ -2185,7 +2414,7 @@ An id is generated if not specified with args.</p>
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -2195,7 +2424,7 @@ An id is generated if not specified with args.</p>
 
             
 
-            <td class="description last"><p>Element or Array of Elements or $ queries</p></td>
+            <td class="description last"><p>Element</p></td>
         </tr>
 
 	
@@ -2250,7 +2479,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4295">line 4295</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4397">line 4397</a>
     </li></ul></dd>
     
 
@@ -2275,7 +2504,7 @@ An id is generated if not specified with args.</p>
     
             
 <div class="param-desc">
-    <p>True if 1 or more Elements are found</p>
+    <p><code>true</code> if 1 or more Elements are found</p>
 </div>
 
 
@@ -2296,12 +2525,20 @@ An id is generated if not specified with args.</p>
         
     
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.has( document.querySelector( "#something" ), "p" ) ) {
+  ...
+}</pre>
+
+
+    
 </dd>
 
         
             
 <dt>
-    <h4 class="name" id="hasClass"><span class="type-signature">&lt;static> </span>hasClass<span class="signature">(obj)</span><span class="type-signature"> &rarr; {Mixed}</span></h4>
+    <h4 class="name" id="hasClass"><span class="type-signature">&lt;static> </span>hasClass<span class="signature">(obj, arg)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
     
     
 </dt>
@@ -2349,7 +2586,7 @@ An id is generated if not specified with args.</p>
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -2360,6 +2597,29 @@ An id is generated if not specified with args.</p>
             
 
             <td class="description last"><p>Element</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>arg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>CSS class to test for</p></td>
         </tr>
 
 	
@@ -2391,7 +2651,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4310">line 4310</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4416">line 4416</a>
     </li></ul></dd>
     
 
@@ -2416,7 +2676,7 @@ An id is generated if not specified with args.</p>
     
             
 <div class="param-desc">
-    <p>Element, Array of Elements or undefined</p>
+    <p><code>true</code> if Element has <code>arg</code></p>
 </div>
 
 
@@ -2427,7 +2687,7 @@ An id is generated if not specified with args.</p>
 	</dt>
 	<dd>
 		
-<span class="param-type">Mixed</span>
+<span class="param-type">Boolean</span>
 
 
 	</dd>
@@ -2436,6 +2696,14 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.hasClass( document.querySelector( "#something" ), "someClass" ) ) {
+  ...
+}</pre>
+
+
     
 </dd>
 
@@ -2490,7 +2758,7 @@ An id is generated if not specified with args.</p>
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -2532,7 +2800,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4322">line 4322</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4433">line 4433</a>
     </li></ul></dd>
     
 
@@ -2577,6 +2845,361 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.hidden( document.querySelector( "#something" ) ) ) {
+  ...
+}</pre>
+
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="html"><span class="type-signature">&lt;static> </span>html<span class="signature">(obj, arg)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Gets or sets an Elements innerHTML</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Element</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>arg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[Optional] innerHTML value</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4449">line 4449</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Element</p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.html( document.querySelector( "#something" ), "Hello World!" );
+keigai.util.element.html( document.querySelector( "#something" ) ); // "Hello World!"</pre>
+
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="is"><span class="type-signature">&lt;static> </span>is<span class="signature">(obj, arg)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Determines if Element is equal to <code>arg</code>, supports nodeNames &amp; CSS2+ selectors</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Element</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>arg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Property to query</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4471">line 4471</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><code>true</code> if a match</p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Boolean</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.is( document.querySelector( "#something" ), "div" ) ) {
+  ...
+}
+
+if ( keigai.util.element.is( document.querySelector( "#something" ), ":first-child" ) ) {
+  ...
+}</pre>
+
+
     
 </dd>
 
@@ -2631,7 +3254,7 @@ An id is generated if not specified with args.</p>
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -2719,7 +3342,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4371">line 4371</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4499">line 4499</a>
     </li></ul></dd>
     
 
@@ -2764,6 +3387,16 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Adding a class
+keigai.util.element.klass( document.querySelector( "#something" ), "newClass" );
+
+// Removing a class
+keigai.util.element.klass( document.querySelector( "#something" ), "newClass", false );</pre>
+
+
     
 </dd>
 
@@ -2818,7 +3451,7 @@ An id is generated if not specified with args.</p>
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -2860,7 +3493,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4408">line 4408</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4542">line 4542</a>
     </li></ul></dd>
     
 
@@ -2905,6 +3538,12 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var pos = keigai.util.element.position( document.querySelector( "#something" ) );</pre>
+
+
     
 </dd>
 
@@ -3024,7 +3663,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4444">line 4444</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4580">line 4580</a>
     </li></ul></dd>
     
 
@@ -3069,6 +3708,12 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.prependChild( document.querySelector( "#target" ), document.querySelector( "#something" ) );</pre>
+
+
     
 </dd>
 
@@ -3123,7 +3768,7 @@ An id is generated if not specified with args.</p>
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -3188,7 +3833,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4457">line 4457</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4595">line 4595</a>
     </li></ul></dd>
     
 
@@ -3233,6 +3878,12 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.removeAttr( document.querySelector( "a" ), "href" );</pre>
+
+
     
 </dd>
 
@@ -3398,7 +4049,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4489">line 4489</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4629">line 4629</a>
     </li></ul></dd>
     
 
@@ -3443,6 +4094,14 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.scrollTo( document.querySelector( "#something" ) ).then( function () {
+  ...
+} );</pre>
+
+
     
 </dd>
 
@@ -3585,7 +4244,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4514">line 4514</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4658">line 4658</a>
     </li></ul></dd>
     
 
@@ -3631,12 +4290,18 @@ An id is generated if not specified with args.</p>
         
     
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var userInput = keigai.util.element.serialize( document.querySelector( "form" ) );</pre>
+
+
+    
 </dd>
 
         
             
 <dt>
-    <h4 class="name" id="size"><span class="type-signature">&lt;static> </span>size<span class="signature">(obj)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="size"><span class="type-signature">&lt;static> </span>size<span class="signature">(obj)</span><span class="type-signature"> &rarr; {Array}</span></h4>
     
     
 </dt>
@@ -3644,7 +4309,7 @@ An id is generated if not specified with args.</p>
     
     
     <div class="description">
-        <p>Returns the size of the Object</p>
+        <p>Returns the size of the Element</p>
     </div>
     
 
@@ -3684,7 +4349,7 @@ An id is generated if not specified with args.</p>
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -3726,7 +4391,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4558">line 4558</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4704">line 4704</a>
     </li></ul></dd>
     
 
@@ -3751,7 +4416,7 @@ An id is generated if not specified with args.</p>
     
             
 <div class="param-desc">
-    <p>Size {height: n, width:n}</p>
+    <p>[width, height]</p>
 </div>
 
 
@@ -3762,7 +4427,7 @@ An id is generated if not specified with args.</p>
 	</dt>
 	<dd>
 		
-<span class="param-type">Object</span>
+<span class="param-type">Array</span>
 
 
 	</dd>
@@ -3771,6 +4436,12 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var size = keigai.util.element.size( document.querySelector( "#something" ) );</pre>
+
+
     
 </dd>
 
@@ -3890,7 +4561,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4573">line 4573</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4721">line 4721</a>
     </li></ul></dd>
     
 
@@ -3935,6 +4606,15 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var obj  = document.querySelector( "#something" ),
+    text = keigai.util.element.text( obj );
+
+keigai.util.element.text( obj, text + ", and some more text" );</pre>
+
+
     
 </dd>
 
@@ -3999,7 +4679,7 @@ An id is generated if not specified with args.</p>
 
             
 
-            <td class="description last"><p>Element, or $ query</p></td>
+            <td class="description last"><p>Element</p></td>
         </tr>
 
 	
@@ -4054,7 +4734,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4595">line 4595</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4748">line 4748</a>
     </li></ul></dd>
     
 
@@ -4099,6 +4779,16 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var obj = document.querySelector( "#something" );
+
+obj.addEventListener( "click", function ( ev ) {
+  keigai.util.element.toggleClass( obj, "active" );
+}, false );</pre>
+
+
     
 </dd>
 
@@ -4153,7 +4843,7 @@ An id is generated if not specified with args.</p>
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -4218,7 +4908,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4610">line 4610</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4769">line 4769</a>
     </li></ul></dd>
     
 
@@ -4263,6 +4953,12 @@ An id is generated if not specified with args.</p>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.update( document.querySelector( "#something" ), {innerHTML: "Hello World!", "class": "new"} );</pre>
+
+
     
 </dd>
 
@@ -4317,7 +5013,7 @@ An id is generated if not specified with args.</p>
             <td class="type">
             
                 
-<span class="param-type">Mixed</span>
+<span class="param-type">Object</span>
 
 
             
@@ -4382,7 +5078,7 @@ An id is generated if not specified with args.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4638">line 4638</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4799">line 4799</a>
     </li></ul></dd>
     
 
@@ -4428,6 +5124,12 @@ An id is generated if not specified with args.</p>
         
     
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">keigai.util.element.val( document.querySelector( "input[type='text']" ), "new value" );</pre>
+
+
+    
 </dd>
 
         </dl>
@@ -4456,7 +5158,7 @@ An id is generated if not specified with args.</p>
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Sat Mar 08 2014 15:14:18 GMT-0500 (EST) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Sun Mar 09 2014 09:41:50 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

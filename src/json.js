@@ -1,6 +1,5 @@
 /**
  * @namespace json
- * @private
  */
 var json = {
 	/**

@@ -1,6 +1,5 @@
 /**
  * @namespace promise
- * @private
  */
 var promise = {
 	/**

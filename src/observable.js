@@ -1,4 +1,22 @@
 /**
+ * @namespace observable
+ */
+var observable = {
+	/**
+	 * Observable factory
+	 *
+	 * @method factory
+	 * @memberOf observable
+	 * @return {Object} {@link keigai.Observable}
+	 * @example
+	 * var observer = keigai.util.observer( 50 );
+	 */
+	 factory : function ( arg ) {
+		return new Observable( arg );
+	}
+};
+
+/**
  * Creates a new Observable
  *
  * @constructor

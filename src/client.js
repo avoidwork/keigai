@@ -323,9 +323,9 @@ var client = {
 	 * @method request
 	 * @memberOf client
 	 * @param  {String}   uri     URI to query
-	 * @param  {String}   type    Type of request ( DELETE/GET/POST/PUT/PATCH/HEAD/OPTIONS ), default is `GET`
-	 * @param  {Function} success A handler function to execute when an appropriate response been received
-	 * @param  {Function} failure [Optional] A handler function to execute on error
+	 * @param  {String}   type    [Optional] Type of request ( DELETE/GET/POST/PUT/PATCH/HEAD/OPTIONS ), default is `GET`
+	 * @param  {Function} success [Optional] Handler to execute when an appropriate response been received
+	 * @param  {Function} failure [Optional] Handler to execute on error
 	 * @param  {Mixed}    args    [Optional] Data to send with the request
 	 * @param  {Object}   headers [Optional] Custom request headers ( can be used to set withCredentials )
 	 * @param  {Number}   timeout [Optional] Timeout in milliseconds, default is 30000

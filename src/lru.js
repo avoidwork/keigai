@@ -1,4 +1,22 @@
 /**
+ * @namespace lru
+ */
+var lru = {
+	/**
+	 * LRU factory
+	 *
+	 * @method factory
+	 * @memberOf lru
+	 * @return {Object} {@link keigai.LRU}
+	 * @example
+	 * var lru = keigai.util.lru( 50 );
+	 */
+	 factory : function ( max ) {
+		return new LRU( max );
+	}
+};
+
+/**
  * Creates a new Least Recently Used cache
  *
  * @constructor

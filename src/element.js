@@ -1,21 +1,22 @@
 /**
  * @namespace element
- * @private
  */
 var element = {
 	/**
-	 * Appends `a` in `b`
+	 * Appends an Element to an Element
 	 *
 	 * @memberOf appendTo
 	 * @memberOf element
-	 * @param  {Object} a Element being appended
-	 * @param  {Object} b Element being appended to
-	 * @return {Object}   Element being appended to
+	 * @param  {Object} obj   Element
+	 * @param  {Object} child Child Element
+	 * @return {Object}       Element
+	 * @example
+	 * keigai.util.element.appendTo( document.querySelector( "#target" ), document.querySelector( "#something" ) );
 	 */
-	appendTo : function ( a, b ) {
-		b.appendChild( a );
+	appendTo : function ( obj, child ) {
+		obj.appendChild( child );
 
-		return b;
+		return obj;
 	},
 
 	/**
@@ -23,10 +24,12 @@ var element = {
 	 *
 	 * @method attr
 	 * @memberOf element
-	 * @param  {Mixed}  obj   Element
+	 * @param  {Object} obj   Element
 	 * @param  {String} name  Attribute name
 	 * @param  {Mixed}  value Attribute value
 	 * @return {Object}       Element
+	 * @example
+	 * keigai.util.element.attr( document.querySelector( "select" ), "selected", "option 1" );
 	 */
 	attr : function ( obj, key, value ) {
 		var target, result;
@@ -97,8 +100,10 @@ var element = {
 	 *
 	 * @method clear
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
-	 * @return {Object}    Element
+	 * @param  {Object} obj Element
+	 * @return {Object}     Element
+	 * @example
+	 * keigai.util.element.clear( document.querySelector( "#something" ) );
 	 */
 	clear : function ( obj ) {
 		if ( typeof obj.reset == "function" ) {
@@ -120,25 +125,28 @@ var element = {
 	 *
 	 * @method create
 	 * @memberOf element
-	 * @param  {String} type   Type of Element to create, or HTML String
-	 * @param  {Object} args   [Optional] Properties to set
-	 * @param  {Mixed}  target [Optional] Target Element
-	 * @param  {Mixed}  pos    [Optional] "first", "last" or Object describing how to add the new Element, e.g. {before: referenceElement}
-	 * @return {Mixed}         Element that was created, or an Array if `type` is a String of multiple Elements (frag)
+	 * @param  {String} type Type of Element to create, or HTML String
+	 * @param  {Object} args [Optional] Properties to set
+	 * @param  {Object} obj  [Optional] Target Element
+	 * @param  {Mixed}  pos  [Optional] "first", "last" or Object describing how to add the new Element, e.g. {before: referenceElement}, default is "last"
+	 * @return {Mixed}       Element that was created, or an Array if `type` is a String of multiple Elements (frag)
+	 * @example
+	 * keigai.util.element.create( "div", {innerHTML: "Hello World!"}, document.querySelector( "#something" ) );
+	 * keigai.util.element.create( "&lt;div&gt;Hello World!&lt;/div&gt;" );
 	 */
-	create : function ( type, args, target, pos ) {
+	create : function ( type, args, obj, pos ) {
 		var svg  = false,
 		    frag = false,
-		    obj, uid, result;
+		    fragment, uid, result;
 
 		// Removing potential HTML template formatting
 		type = type.replace( /\t|\n|\r/g, "" );
 
-		if ( target ) {
-			svg = target.namespaceURI && regex.svg.test( target.namespaceURI );
+		if ( obj ) {
+			svg = obj.namespaceURI && regex.svg.test( obj.namespaceURI );
 		}
 		else {
-			target = document.body;
+			obj = document.body;
 		}
 		
 		if ( args instanceof Object && args.id && !utility.dom( "#" + args.id ) ) {
@@ -151,67 +159,69 @@ var element = {
 
 		// String injection, create a frag and apply it
 		if ( regex.html.test( type ) ) {
-			frag   = true;
-			obj    = element.frag( type );
-			result = obj.childNodes.length === 1 ? obj.childNodes[0] : array.cast( obj.childNodes );
+			frag     = true;
+			fragment = element.frag( type );
+			result   = fragment.childNodes.length === 1 ? fragment.childNodes[0] : array.cast( fragment.childNodes );
 		}
 		// Original syntax
 		else {
 			if ( !svg && !regex.svg.test( type ) ) {
-				obj = document.createElement( type );
+				fragment = document.createElement( type );
 			}
 			else {
-				obj = document.createElementNS( "http://www.w3.org/2000/svg", type );
+				fragment = document.createElementNS( "http://www.w3.org/2000/svg", type );
 			}
 
 			if ( uid ) {
-				obj.id = uid;
+				fragment.id = uid;
 			}
 
 			if ( args instanceof Object ) {
-				element.update( obj, args );
+				element.update( fragment, args );
 			}
 		}
 
 		if ( !pos || pos === "last" ) {
-			target.appendChild( obj );
+			obj.appendChild( fragment );
 		}
 		else if ( pos === "first" ) {
-			element.prependChild( target, obj );
+			element.prependChild( obj, fragment );
 		}
 		else if ( pos === "after" ) {
-			pos = {};
-			pos.after = target;
-			target    = target.parentNode;
-			target.insertBefore( obj, pos.after.nextSibling );
+			pos = {after: obj};
+			obj = obj.parentNode;
+			obj.insertBefore( fragment, pos.after.nextSibling );
 		}
 		else if ( pos.after ) {
-			target.insertBefore( obj, pos.after.nextSibling );
+			obj.insertBefore( fragment, pos.after.nextSibling );
 		}
 		else if ( pos === "before" ) {
-			pos = {};
-			pos.before = target;
-			target     = target.parentNode;
-			target.insertBefore( obj, pos.before );
+			pos = {before: obj};
+			obj = obj.parentNode;
+			obj.insertBefore( fragment, pos.before );
 		}
 		else if ( pos.before ) {
-			target.insertBefore( obj, pos.before );
+			obj.insertBefore( fragment, pos.before );
 		}
 		else {
-			target.appendChild( obj );
+			obj.appendChild( fragment );
 		}
 
-		return !frag ? obj : result;
+		return !frag ? fragment : result;
 	},
 
 	/**
 	 * Gets or sets a CSS style attribute on an Element
 	 *
 	 * @method css
-	 * @param  {Mixed}  obj   Element
+	 * @memberOf element
+	 * @param  {Object} obj   Element
 	 * @param  {String} key   CSS to put in a style tag
 	 * @param  {String} value [Optional] Value to set
 	 * @return {Object}       Element
+	 * @example
+	 * keigai.util.element.css( document.querySelector( "#something" ), "font-weight", "bold" );
+	 * keigai.util.element.css( document.querySelector( "#something" ), "font-weight" ); // "bold"
 	 */
 	css : function ( obj, key, value ) {
 		if ( !regex.caps.test( key ) ) {
@@ -232,10 +242,22 @@ var element = {
 	 *
 	 * @method data
 	 * @memberOf element
-	 * @param  {Mixed}  obj   Element
+	 * @param  {Object} obj   Element
 	 * @param  {String} key   Data key
 	 * @param  {Mixed}  value Boolean, Number or String to set
 	 * @return {Mixed}        undefined, Element or value
+	 * @example
+	 * // Setting
+	 * keigai.util.element.data( document.querySelector( "#something" ), "id", "abc-1234" );
+	 *
+	 * // Getting
+	 * keigai.util.element.data( document.querySelector( "#something" ), "id" ); // "abc-1234"
+	 *
+	 * // Unsetting
+	 * keigai.util.element.data( document.querySelector( "#something" ), "id", null );
+	 *
+	 * // Setting a `null` value can be done by using a String
+	 * keigai.util.element.data( document.querySelector( "#something" ), "id", "null" );
 	 */
 	data : function ( obj, key, value ) {
 		if ( value !== undefined ) {
@@ -253,8 +275,10 @@ var element = {
 	 *
 	 * @method destroy
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
+	 * @param  {Object} obj Element
 	 * @return {Undefined} undefined
+	 * @example
+	 * keigai.util.element.destroy( document.querySelector( "#something" ) );
 	 */
 	destroy : function ( obj ) {
 		if ( obj.parentNode !== null ) {
@@ -269,8 +293,10 @@ var element = {
 	 *
 	 * @method disable
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
-	 * @return {Object}    Element
+	 * @param  {Object} obj Element
+	 * @return {Object}     Element
+	 * @example
+	 * keigai.util.element.disable( document.querySelector( "#something" ) );
 	 */
 	disable : function ( obj ) {
 		if ( typeof obj.disabled == "boolean" && !obj.disabled ) {
@@ -289,10 +315,12 @@ var element = {
 	 * @memberOf element
 	 * @param  {Object}  obj        Element which dispatches the Event
 	 * @param  {String}  type       Type of Event to dispatch
-	 * @param  {Object}  data       Data to include with the Event
+	 * @param  {Object}  data       [Optional] Data to include with the Event
 	 * @param  {Boolean} bubbles    [Optional] Determines if the Event bubbles, defaults to `true`
 	 * @param  {Boolean} cancelable [Optional] Determines if the Event can be canceled, defaults to `true`
 	 * @return {Object}             Element which dispatches the Event
+	 * @example
+	 * keigai.util.element.dispatch( document.querySelector( "#something" ), "click" );
 	 */
 	dispatch : function ( obj, type, data, bubbles, cancelable ) {
 		var ev = new CustomEvent( type );
@@ -311,8 +339,10 @@ var element = {
 	 *
 	 * @method enable
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
-	 * @return {Object}    Element
+	 * @param  {Object} obj Element
+	 * @return {Object}     Element
+	 * @example
+	 * keigai.util.element.enable( document.querySelector( "#something" ) );
 	 */
 	enable : function ( obj ) {
 		if ( typeof obj.disabled == "boolean" && obj.disabled ) {
@@ -327,9 +357,11 @@ var element = {
 	 *
 	 * @method find
 	 * @memberOf element
-	 * @param  {Mixed}  obj Element to search
+	 * @param  {Object} obj Element to search
 	 * @param  {String} arg Comma delimited string of descendant selectors
 	 * @return {Mixed}      Array of Elements or undefined
+	 * @example
+	 * keigai.util.element.find( document.querySelector( "#something" ), "p" );
 	 */
 	find : function ( obj, arg ) {
 		var result = [];
@@ -350,6 +382,8 @@ var element = {
 	 * @memberOf element
 	 * @param  {String} arg [Optional] innerHTML
 	 * @return {Object}     Document fragment
+	 * @example
+	 * var frag = keigai.util.element.frag( "Hello World!" );
 	 */
 	frag : function ( arg ) {
 		var obj = document.createDocumentFragment();
@@ -370,9 +404,13 @@ var element = {
 	 *
 	 * @method has
 	 * @memberOf element
-	 * @param  {Mixed}   obj Element or Array of Elements or $ queries
-	 * @param  {String}  arg Type of Element to find
-	 * @return {Boolean}     True if 1 or more Elements are found
+	 * @param  {Object} obj Element
+	 * @param  {String} arg Type of Element to find
+	 * @return {Boolean}    `true` if 1 or more Elements are found
+	 * @example
+	 * if ( keigai.util.element.has( document.querySelector( "#something" ), "p" ) ) {
+	 *   ...
+	 * }
 	 */
 	has : function ( obj, arg ) {
 		var result = element.find( obj, arg );
@@ -385,11 +423,16 @@ var element = {
 	 *
 	 * @method hasClass
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
-	 * @return {Mixed}     Element, Array of Elements or undefined
+	 * @param  {Object} obj Element
+	 * @param  {String} arg CSS class to test for
+	 * @return {Boolean}    `true` if Element has `arg`
+	 * @example
+	 * if ( keigai.util.element.hasClass( document.querySelector( "#something" ), "someClass" ) ) {
+	 *   ...
+	 * }
 	 */
-	hasClass : function ( obj, klass ) {
-		return obj.classList.contains( klass );
+	hasClass : function ( obj, arg ) {
+		return obj.classList.contains( arg );
 	},
 
 	/**
@@ -397,8 +440,12 @@ var element = {
 	 *
 	 * @method hidden
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
+	 * @param  {Object} obj Element
 	 * @return {Boolean}   `true` if hidden
+	 * @example
+	 * if ( keigai.util.element.hidden( document.querySelector( "#something" ) ) ) {
+	 *   ...
+	 * }
 	 */
 	hidden : function ( obj ) {
 		return obj.style.display === "none" || ( typeof obj.hidden == "boolean" && obj.hidden );
@@ -408,9 +455,13 @@ var element = {
 	 * Gets or sets an Elements innerHTML
 	 *
 	 * @method html
+	 * @memberOf element
 	 * @param  {Object} obj Element
 	 * @param  {String} arg [Optional] innerHTML value
 	 * @return {Object}     Element
+	 * @example
+	 * keigai.util.element.html( document.querySelector( "#something" ), "Hello World!" );
+	 * keigai.util.element.html( document.querySelector( "#something" ) ); // "Hello World!"
 	 */
 	html : function ( obj, arg ) {
 		if ( arg === undefined ) {
@@ -423,12 +474,21 @@ var element = {
 	},
 
 	/**
-	 * Determines if Element is equal to arg, supports nodeNames & CSS2+ selectors
+	 * Determines if Element is equal to `arg`, supports nodeNames & CSS2+ selectors
 	 *
 	 * @method is
-	 * @param  {Mixed}   obj Element
-	 * @param  {String}  arg Property to query
-	 * @return {Boolean}     True if a match
+	 * @memberOf element
+	 * @param  {Object} obj Element
+	 * @param  {String} arg Property to query
+	 * @return {Boolean}    `true` if a match
+	 * @example
+	 * if ( keigai.util.element.is( document.querySelector( "#something" ), "div" ) ) {
+	 *   ...
+	 * }
+	 *
+	 * if ( keigai.util.element.is( document.querySelector( "#something" ), ":first-child" ) ) {
+	 *   ...
+	 * }
 	 */
 	is : function ( obj, arg ) {
 		if ( regex.selector_is.test( arg ) ) {
@@ -446,10 +506,16 @@ var element = {
 	 *
 	 * @method klass
 	 * @memberOf element
-	 * @param  {Mixed}   obj Element
+	 * @param  {Object}  obj Element
 	 * @param  {String}  arg Class to add or remove ( can be a wildcard )
 	 * @param  {Boolean} add Boolean to add or remove, defaults to true
 	 * @return {Object}      Element
+	 * @example
+	 * // Adding a class
+	 * keigai.util.element.klass( document.querySelector( "#something" ), "newClass" );
+	 *
+	 * // Removing a class
+	 * keigai.util.element.klass( document.querySelector( "#something" ), "newClass", false );
 	 */
 	klass : function ( obj, arg, add ) {
 		add = ( add !== false );
@@ -483,8 +549,10 @@ var element = {
 	 *
 	 * @method position
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
-	 * @return {Array}     Coordinates [left, top, right, bottom]
+	 * @param  {Object} obj Element
+	 * @return {Array}      Coordinates [left, top, right, bottom]
+	 * @example
+	 * var pos = keigai.util.element.position( document.querySelector( "#something" ) );
 	 */
 	position : function ( obj ) {
 		obj = obj || document.body;
@@ -522,6 +590,8 @@ var element = {
 	 * @param  {Object} obj   Element
 	 * @param  {Object} child Child Element
 	 * @return {Object}       Element
+	 * @example
+	 * keigai.util.element.prependChild( document.querySelector( "#target" ), document.querySelector( "#something" ) );
 	 */
 	prependChild : function ( obj, child ) {
 		return obj.childNodes.length === 0 ? obj.appendChild( child ) : obj.insertBefore( child, obj.childNodes[0] );
@@ -532,9 +602,11 @@ var element = {
 	 *
 	 * @method removeAttr
 	 * @memberOf element
-	 * @param  {Mixed}  obj Element
+	 * @param  {Object} obj Element
 	 * @param  {String} key Attribute name
 	 * @return {Object}     Element
+	 * @example
+	 * keigai.util.element.removeAttr( document.querySelector( "a" ), "href" );
 	 */
 	removeAttr : function ( obj, key ) {
 		var target;
@@ -569,6 +641,10 @@ var element = {
 	 * @param  {Number} offsetTop  [Optional] Offset from top of Element
 	 * @param  {Number} offsetLeft [Optional] Offset from left of Element
 	 * @return {Object} {@link Deferred}
+	 * @example
+	 * keigai.util.element.scrollTo( document.querySelector( "#something" ) ).then( function () {
+	 *   ...
+	 * } );
 	 */
 	scrollTo : function ( obj, ms, offsetTop, offsetLeft ) {
 		var pos = array.remove( element.position( obj ), 2, 3 );
@@ -593,6 +669,8 @@ var element = {
 	 * @param  {Boolean} string [Optional] true if you want a query string, default is false ( JSON )
 	 * @param  {Boolean} encode [Optional] true if you want to URI encode the value, default is true
 	 * @return {Mixed}          String or Object
+	 * @example
+	 * var userInput = keigai.util.element.serialize( document.querySelector( "form" ) );
 	 */
 	serialize : function ( obj, string, encode ) {
 		string       = ( string === true );
@@ -629,18 +707,20 @@ var element = {
 	},
 
 	/**
-	 * Returns the size of the Object
+	 * Returns the size of the Element
 	 *
 	 * @method size
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
-	 * @return {Object}    Size {height: n, width:n}
+	 * @param  {Object} obj Element
+	 * @return {Array}      [width, height]
+	 * @example
+	 * var size = keigai.util.element.size( document.querySelector( "#something" ) );
 	 */
 	size : function ( obj ) {
-		return {
-			height : obj.offsetHeight + number.parse( obj.style.paddingTop  || 0 ) + number.parse( obj.style.paddingBottom || 0 ) + number.parse( obj.style.borderTop  || 0 ) + number.parse( obj.style.borderBottom || 0 ),
-			width  : obj.offsetWidth  + number.parse( obj.style.paddingLeft || 0 ) + number.parse( obj.style.paddingRight  || 0 ) + number.parse( obj.style.borderLeft || 0 ) + number.parse( obj.style.borderRight  || 0 )
-		};
+		return [
+			obj.offsetWidth  + number.parse( obj.style.paddingLeft || 0 ) + number.parse( obj.style.paddingRight  || 0 ) + number.parse( obj.style.borderLeft || 0 ) + number.parse( obj.style.borderRight  || 0 ),
+			obj.offsetHeight + number.parse( obj.style.paddingTop  || 0 ) + number.parse( obj.style.paddingBottom || 0 ) + number.parse( obj.style.borderTop  || 0 ) + number.parse( obj.style.borderBottom || 0 )
+		];
 	},
 
 	/**
@@ -651,6 +731,11 @@ var element = {
 	 * @param  {Object} obj Element
 	 * @param  {String} arg [Optional] Value to set
 	 * @return {Object}     Element
+	 * @example
+	 * var obj  = document.querySelector( "#something" ),
+	 *     text = keigai.util.element.text( obj );
+	 *
+	 * keigai.util.element.text( obj, text + ", and some more text" );
 	 */
 	text : function ( obj, arg ) {
 		var key     = obj.textContent ? "textContent" : "innerText",
@@ -670,9 +755,15 @@ var element = {
 	 *
 	 * @method toggleClass
 	 * @memberOf element
-	 * @param  {Object} obj Element, or $ query
+	 * @param  {Object} obj Element
 	 * @param  {String} arg CSS class to toggle
 	 * @return {Object}     Element
+	 * @example
+	 * var obj = document.querySelector( "#something" );
+	 *
+	 * obj.addEventListener( "click", function ( ev ) {
+	 *   keigai.util.element.toggleClass( obj, "active" );
+	 * }, false );
 	 */
 	toggleClass : function ( obj, arg ) {
 		obj.classList.toggle( arg );
@@ -685,9 +776,11 @@ var element = {
 	 *
 	 * @method update
 	 * @memberOf element
-	 * @param  {Mixed}  obj  Element
+	 * @param  {Object}  obj  Element
 	 * @param  {Object} args Properties to set
 	 * @return {Object}      Element
+	 * @example
+	 * keigai.util.element.update( document.querySelector( "#something" ), {innerHTML: "Hello World!", "class": "new"} );
 	 */
 	update : function ( obj, args ) {
 		utility.iterate( args, function ( v, k ) {
@@ -713,9 +806,11 @@ var element = {
 	 *
 	 * @method val
 	 * @memberOf element
-	 * @param  {Mixed}  obj   Element
+	 * @param  {Object} obj   Element
 	 * @param  {Mixed}  value [Optional] Value to set
 	 * @return {Object}       Element
+	 * @example
+	 * keigai.util.element.val( document.querySelector( "input[type='text']" ), "new value" );
 	 */
 	val : function ( obj, value ) {
 		var ev = "input",

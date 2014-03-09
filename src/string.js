@@ -1,6 +1,5 @@
 /**
  * @namespace string
- * @private
  */
 var string = {
 	/**

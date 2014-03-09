@@ -1,6 +1,5 @@
 /**
  * @namespace filter
- * @private
  */
 var filter = {
 	/**

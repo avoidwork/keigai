@@ -5,6 +5,7 @@
 - Added examples to docblocks
 - Removed `client.script()`, `client.size()`, & `client.stylesheet()`
 - Defaulting second parameter of `client.request()` to `GET`
+- Exposed `keigai.util.repeat()`
 
 ## 0.2.7
 - Fixed alignment mistakes

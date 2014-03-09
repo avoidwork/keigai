@@ -1,6 +1,5 @@
 /**
  * @namespace grid
- * @private
  */
 var grid = {
 	/**

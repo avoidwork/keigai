@@ -9,7 +9,7 @@ var cache = {
 	 * @memberOf cache
 	 * @type {Object}
 	 */
-	lru : new LRU( CACHE ),
+	lru : lru.factory( CACHE ),
 
 	/**
 	 * Garbage collector for the cached items

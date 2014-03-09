@@ -1,6 +1,5 @@
 /**
  * @namespace math
- * @private
  */
 var math = {
 	/**

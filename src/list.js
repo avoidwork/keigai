@@ -1,6 +1,5 @@
 /**
  * @namespace list
- * @private
  */
 var list = {
 	/**

@@ -1,6 +1,5 @@
 /**
  * @namespace store
- * @private
  */
 var store = {
 	/**
@@ -1121,7 +1120,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 
 		this.keys[key]                = record.index;
 		this.records[record.index]    = record;
-		this.versions[record.key]     = new LRU( VERSIONS );
+		this.versions[record.key]     = lru.factory( VERSIONS );
 		this.versions[record.key].nth = 0;
 
 		if ( this.retrieve ) {
