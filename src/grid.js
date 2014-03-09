@@ -7,7 +7,7 @@ var grid = {
 	 *
 	 * @method factory
 	 * @memberOf grid
-	 * @fires DataGrid#change Fires when the DOM changes
+	 * @fires keigai.DataGrid#change Fires when the DOM changes
 	 * @param  {Object}  target      Element to receive DataGrid
 	 * @param  {Object}  store       DataStore
 	 * @param  {Array}   fields      Array of fields to display
@@ -139,6 +139,42 @@ function DataGrid ( target, store, fields, sortable, options, filtered ) {
 DataGrid.prototype.constructor = DataGrid;
 
 /**
+ * Adds an item to the DataGrid
+ *
+ * @method add
+ * @memberOf keigai.DataGrid
+ * @param {Object} record New DataStore record (shapes should match)
+ * @return {Object}       {@link keigai.DataGrid}
+ */
+DataGrid.prototype.add = function ( record ) {
+	var self = this;
+
+	this.store.set( null, record ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
+
+	return this;
+};
+
+/**
+ * Adds an event listener
+ *
+ * @method addEventListener
+ * @memberOf keigai.DataGrid
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.DataGrid}
+ */
+DataGrid.prototype.addEventListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
  * Adds an event listener
  *
  * @method addListener
@@ -258,8 +294,8 @@ DataGrid.prototype.once = function ( ev, listener, id, scope ) {
  *
  * @method refresh
  * @memberOf keigai.DataGrid
- * @fires DataGrid#beforeRefresh Fires before refresh
- * @fires DataGrid#afterRefresh Fires after refresh
+ * @fires keigai.DataGrid#beforeRefresh Fires before refresh
+ * @fires keigai.DataGrid#afterRefresh Fires after refresh
  * @return {Object} {@link keigai.DataGrid}
  */
 DataGrid.prototype.refresh = function () {
@@ -283,6 +319,55 @@ DataGrid.prototype.refresh = function () {
 	this.list.refresh();
 
 	this.dispatch( "afterRefresh", this.element );
+
+	return this;
+};
+
+/**
+ * Removes an item from the DataGrid
+ *
+ * @method remove
+ * @memberOf keigai.DataGrid
+ * @param {Mixed} record Record, key or index
+ * @return {Object} {@link keigai.DataGrid}
+ */
+DataGrid.prototype.remove = function ( record ) {
+	var self = this;
+
+	this.store.del( record ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeEventListener
+ * @memberOf keigai.DataGrid
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataGrid}
+ */
+DataGrid.prototype.removeEventListener = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeListener
+ * @memberOf keigai.DataGrid
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataGrid}
+ */
+DataGrid.prototype.removeListener = function ( ev, id ) {
+	this.observer.off( ev, id );
 
 	return this;
 };
@@ -331,6 +416,31 @@ DataGrid.prototype.teardown = function () {
 	this.observer.unhook( element.find( this.element, ".header" )[0], "click" );
 	element.destroy( this.element );
 	this.element = null;
+
+	return this;
+};
+
+/**
+ * Updates an item in the DataGrid
+ *
+ * @method update
+ * @memberOf keigai.DataGrid
+ * @param {Mixed}  record Record, key or index
+ * @param {Object} data   New property values
+ * @return {Object} {@link keigai.DataGrid}
+ */
+DataGrid.prototype.update = function ( record, data ) {
+	record   = record.key ? record : this.store.get ( record );
+	var self = this;
+
+	if ( record === undefined ) {
+		throw new Error( label.error.invalidArguments );
+	}
+
+	this.store.set( record.key, utility.merge( record.data, data ) ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
 
 	return this;
 };

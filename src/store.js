@@ -132,6 +132,23 @@ DataStore.prototype.constructor = DataStore;
 /**
  * Adds an event listener
  *
+ * @method addEventListener
+ * @memberOf keigai.DataStore
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.DataStore}
+ */
+DataStore.prototype.addEventListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Adds an event listener
+ *
  * @method addListener
  * @memberOf keigai.DataStore
  * @param  {String}   ev       Event name
@@ -846,6 +863,21 @@ DataStore.prototype.reindex = function () {
 			this.keys[this.records[i].key] = i;
 		}
 	}
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeEventListener
+ * @memberOf keigai.DataStore
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataStore}
+ */
+DataStore.prototype.removeEventListener = function ( ev, id ) {
+	this.observer.off( ev, id );
 
 	return this;
 };

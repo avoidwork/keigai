@@ -10,8 +10,12 @@ var filter = {
 	 * @param  {Object} target   Element to receive the filter
 	 * @param  {Object} list     {@link keigai.DataList}
 	 * @param  {String} filters  Comma delimited string of fields to filter by
-	 * @param  {Number} debounce [Optional] Milliseconds to debounce
+	 * @param  {Number} debounce [Optional] Milliseconds to debounce, default is `250`
 	 * @return {Object} {@link keigai.DataListFilter}
+	 * @example
+	 * var store  = keigai.store( [...] ),
+	 *     list   = keigai.list( document.querySelector( "#list" ), store, "{{field}}" ),
+	 *     filter = keigai.filter( document.querySelector( "input.filter" ), list, "field" );
 	 */
 	factory : function ( target, list, filters, debounce ) {
 		var ref = [list],
@@ -64,6 +68,23 @@ DataListFilter.prototype.constructor = DataListFilter;
 /**
  * Adds an event listener
  *
+ * @method addEventListener
+ * @memberOf keigai.DataListFilter
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.DataListFilter}
+ */
+DataListFilter.prototype.addEventListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Adds an event listener
+ *
  * @method addListener
  * @memberOf keigai.DataListFilter
  * @param  {String}   ev       Event name
@@ -81,7 +102,7 @@ DataListFilter.prototype.addListener = function ( ev, listener, id, scope ) {
 /**
  * Dispatches an event, with optional arguments
  *
- * @method emit
+ * @method dispatch
  * @memberOf keigai.DataListFilter
  * @return {Object} {@link keigai.DataListFilter}
  */
@@ -166,6 +187,36 @@ DataListFilter.prototype.once = function ( ev, listener, id, scope ) {
 };
 
 /**
+ * Removes an event listener
+ *
+ * @method removeEventListener
+ * @memberOf keigai.DataListFilter
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataListFilter}
+ */
+DataListFilter.prototype.removeEventListener = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeListener
+ * @memberOf keigai.DataListFilter
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataListFilter}
+ */
+DataListFilter.prototype.removeListener = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
  * Set the filters
  *
  * Create an object based on comma separated key string
@@ -206,8 +257,8 @@ DataListFilter.prototype.teardown = function () {
  *
  * @method update
  * @memberOf keigai.DataListFilter
- * @fires DataList#beforeFilter Fires before filter
- * @fires DataList#afterFilter Fires after filter
+ * @fires keigai.DataList#beforeFilter Fires before filter
+ * @fires keigai.DataList#afterFilter Fires after filter
  * @return {Object} {@link keigai.DataListFilter}
  */
 DataListFilter.prototype.update = function () {

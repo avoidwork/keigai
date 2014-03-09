@@ -2707,8 +2707,12 @@ var filter = {
 	 * @param  {Object} target   Element to receive the filter
 	 * @param  {Object} list     {@link keigai.DataList}
 	 * @param  {String} filters  Comma delimited string of fields to filter by
-	 * @param  {Number} debounce [Optional] Milliseconds to debounce
+	 * @param  {Number} debounce [Optional] Milliseconds to debounce, default is `250`
 	 * @return {Object} {@link keigai.DataListFilter}
+	 * @example
+	 * var store  = keigai.store( [...] ),
+	 *     list   = keigai.list( document.querySelector( "#list" ), store, "{{field}}" ),
+	 *     filter = keigai.filter( document.querySelector( "input.filter" ), list, "field" );
 	 */
 	factory : function ( target, list, filters, debounce ) {
 		var ref = [list],
@@ -2761,6 +2765,23 @@ DataListFilter.prototype.constructor = DataListFilter;
 /**
  * Adds an event listener
  *
+ * @method addEventListener
+ * @memberOf keigai.DataListFilter
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.DataListFilter}
+ */
+DataListFilter.prototype.addEventListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Adds an event listener
+ *
  * @method addListener
  * @memberOf keigai.DataListFilter
  * @param  {String}   ev       Event name
@@ -2778,7 +2799,7 @@ DataListFilter.prototype.addListener = function ( ev, listener, id, scope ) {
 /**
  * Dispatches an event, with optional arguments
  *
- * @method emit
+ * @method dispatch
  * @memberOf keigai.DataListFilter
  * @return {Object} {@link keigai.DataListFilter}
  */
@@ -2863,6 +2884,36 @@ DataListFilter.prototype.once = function ( ev, listener, id, scope ) {
 };
 
 /**
+ * Removes an event listener
+ *
+ * @method removeEventListener
+ * @memberOf keigai.DataListFilter
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataListFilter}
+ */
+DataListFilter.prototype.removeEventListener = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeListener
+ * @memberOf keigai.DataListFilter
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataListFilter}
+ */
+DataListFilter.prototype.removeListener = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
  * Set the filters
  *
  * Create an object based on comma separated key string
@@ -2903,8 +2954,8 @@ DataListFilter.prototype.teardown = function () {
  *
  * @method update
  * @memberOf keigai.DataListFilter
- * @fires DataList#beforeFilter Fires before filter
- * @fires DataList#afterFilter Fires after filter
+ * @fires keigai.DataList#beforeFilter Fires before filter
+ * @fires keigai.DataList#afterFilter Fires after filter
  * @return {Object} {@link keigai.DataListFilter}
  */
 DataListFilter.prototype.update = function () {
@@ -2956,7 +3007,7 @@ var grid = {
 	 *
 	 * @method factory
 	 * @memberOf grid
-	 * @fires DataGrid#change Fires when the DOM changes
+	 * @fires keigai.DataGrid#change Fires when the DOM changes
 	 * @param  {Object}  target      Element to receive DataGrid
 	 * @param  {Object}  store       DataStore
 	 * @param  {Array}   fields      Array of fields to display
@@ -3088,6 +3139,42 @@ function DataGrid ( target, store, fields, sortable, options, filtered ) {
 DataGrid.prototype.constructor = DataGrid;
 
 /**
+ * Adds an item to the DataGrid
+ *
+ * @method add
+ * @memberOf keigai.DataGrid
+ * @param {Object} record New DataStore record (shapes should match)
+ * @return {Object}       {@link keigai.DataGrid}
+ */
+DataGrid.prototype.add = function ( record ) {
+	var self = this;
+
+	this.store.set( null, record ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
+
+	return this;
+};
+
+/**
+ * Adds an event listener
+ *
+ * @method addEventListener
+ * @memberOf keigai.DataGrid
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.DataGrid}
+ */
+DataGrid.prototype.addEventListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
  * Adds an event listener
  *
  * @method addListener
@@ -3207,8 +3294,8 @@ DataGrid.prototype.once = function ( ev, listener, id, scope ) {
  *
  * @method refresh
  * @memberOf keigai.DataGrid
- * @fires DataGrid#beforeRefresh Fires before refresh
- * @fires DataGrid#afterRefresh Fires after refresh
+ * @fires keigai.DataGrid#beforeRefresh Fires before refresh
+ * @fires keigai.DataGrid#afterRefresh Fires after refresh
  * @return {Object} {@link keigai.DataGrid}
  */
 DataGrid.prototype.refresh = function () {
@@ -3232,6 +3319,55 @@ DataGrid.prototype.refresh = function () {
 	this.list.refresh();
 
 	this.dispatch( "afterRefresh", this.element );
+
+	return this;
+};
+
+/**
+ * Removes an item from the DataGrid
+ *
+ * @method remove
+ * @memberOf keigai.DataGrid
+ * @param {Mixed} record Record, key or index
+ * @return {Object} {@link keigai.DataGrid}
+ */
+DataGrid.prototype.remove = function ( record ) {
+	var self = this;
+
+	this.store.del( record ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeEventListener
+ * @memberOf keigai.DataGrid
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataGrid}
+ */
+DataGrid.prototype.removeEventListener = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeListener
+ * @memberOf keigai.DataGrid
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataGrid}
+ */
+DataGrid.prototype.removeListener = function ( ev, id ) {
+	this.observer.off( ev, id );
 
 	return this;
 };
@@ -3285,6 +3421,31 @@ DataGrid.prototype.teardown = function () {
 };
 
 /**
+ * Updates an item in the DataGrid
+ *
+ * @method update
+ * @memberOf keigai.DataGrid
+ * @param {Mixed}  record Record, key or index
+ * @param {Object} data   New property values
+ * @return {Object} {@link keigai.DataGrid}
+ */
+DataGrid.prototype.update = function ( record, data ) {
+	record   = record.key ? record : this.store.get ( record );
+	var self = this;
+
+	if ( record === undefined ) {
+		throw new Error( label.error.invalidArguments );
+	}
+
+	this.store.set( record.key, utility.merge( record.data, data ) ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
+
+	return this;
+};
+
+/**
  * @namespace list
  */
 var list = {
@@ -3293,7 +3454,7 @@ var list = {
 	 *
 	 * @method factory
 	 * @memberOf list
-	 * @fires DataList#change Fires when the DOM changes
+	 * @fires keigai.DataList#change Fires when the DOM changes
 	 * @param  {Object} target   Element to receive the DataList
 	 * @param  {Object} store    {@link keigai.DataStore}
 	 * @param  {Mixed}  template Record field, template ( $.tpl ), or String, e.g. "&lt;p>this is a {{field}} sample.&lt;/p>", fields are marked with {{ }}
@@ -3430,6 +3591,42 @@ function DataList ( element, store, template ) {
 DataList.prototype.constructor = DataList;
 
 /**
+ * Adds an item to the DataList
+ *
+ * @method add
+ * @memberOf keigai.DataList
+ * @param {Object} record New DataStore record (shapes should match)
+ * @return {Object}       {@link keigai.DataList}
+ */
+DataList.prototype.add = function ( record ) {
+	var self = this;
+
+	this.store.set( null, record ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
+
+	return this;
+};
+
+/**
+ * Adds an event listener
+ *
+ * @method addEventListener
+ * @memberOf keigai.DataList
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.addEventListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
  * Adds an event listener
  *
  * @method addListener
@@ -3449,7 +3646,7 @@ DataList.prototype.addListener = function ( ev, listener, id, scope ) {
 /**
  * Dispatches an event, with optional arguments
  *
- * @method emit
+ * @method dispatch
  * @memberOf keigai.DataList
  * @return {Object} {@link keigai.DataList}
  */
@@ -3657,9 +3854,9 @@ DataList.prototype.pages = function () {
  *
  * @method refresh
  * @memberOf keigai.DataList
- * @fires DataList#beforeRefresh Fires before refresh
- * @fires DataList#afterRefresh Fires after refresh
- * @fires DataList#error Fires on error
+ * @fires keigai.DataList#beforeRefresh Fires before refresh
+ * @fires keigai.DataList#afterRefresh Fires after refresh
+ * @fires keigai.DataList#error Fires on error
  * @param  {Boolean} redraw [Optional] Boolean to force clearing the DataList ( default ), false toggles "hidden" class of items
  * @param  {Boolean} create [Optional] Recreates cached View of data
  * @return {Object} {@link keigai.DataList}
@@ -3861,6 +4058,55 @@ DataList.prototype.refresh = function ( redraw, create ) {
 };
 
 /**
+ * Removes an item from the DataList
+ *
+ * @method remove
+ * @memberOf keigai.DataList
+ * @param {Mixed} record Record, key or index
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.remove = function ( record ) {
+	var self = this;
+
+	this.store.del( record ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeEventListener
+ * @memberOf keigai.DataList
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.removeEventListener = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeListener
+ * @memberOf keigai.DataList
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.removeListener = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
  * Sorts data list & refreshes element
  *
  * @method sort
@@ -3900,6 +4146,31 @@ DataList.prototype.teardown = function ( destroy ) {
 		element.destroy( this.element );
 		this.element = null;
 	}
+
+	return this;
+};
+
+/**
+ * Updates an item in the DataList
+ *
+ * @method update
+ * @memberOf keigai.DataList
+ * @param {Mixed}  record Record, key or index
+ * @param {Object} data   New property values
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.update = function ( record, data ) {
+	record   = record.key ? record : this.store.get ( record );
+	var self = this;
+
+	if ( record === undefined ) {
+		throw new Error( label.error.invalidArguments );
+	}
+
+	this.store.set( record.key, utility.merge( record.data, data ) ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
 
 	return this;
 };
@@ -6074,6 +6345,23 @@ DataStore.prototype.constructor = DataStore;
 /**
  * Adds an event listener
  *
+ * @method addEventListener
+ * @memberOf keigai.DataStore
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.DataStore}
+ */
+DataStore.prototype.addEventListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Adds an event listener
+ *
  * @method addListener
  * @memberOf keigai.DataStore
  * @param  {String}   ev       Event name
@@ -6788,6 +7076,21 @@ DataStore.prototype.reindex = function () {
 			this.keys[this.records[i].key] = i;
 		}
 	}
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeEventListener
+ * @memberOf keigai.DataStore
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataStore}
+ */
+DataStore.prototype.removeEventListener = function ( ev, id ) {
+	this.observer.off( ev, id );
 
 	return this;
 };
@@ -9498,7 +9801,7 @@ else {
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Sun Mar 09 2014 09:41:49 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Sun Mar 09 2014 11:07:57 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

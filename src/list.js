@@ -7,7 +7,7 @@ var list = {
 	 *
 	 * @method factory
 	 * @memberOf list
-	 * @fires DataList#change Fires when the DOM changes
+	 * @fires keigai.DataList#change Fires when the DOM changes
 	 * @param  {Object} target   Element to receive the DataList
 	 * @param  {Object} store    {@link keigai.DataStore}
 	 * @param  {Mixed}  template Record field, template ( $.tpl ), or String, e.g. "<p>this is a {{field}} sample.</p>", fields are marked with {{ }}
@@ -144,6 +144,42 @@ function DataList ( element, store, template ) {
 DataList.prototype.constructor = DataList;
 
 /**
+ * Adds an item to the DataList
+ *
+ * @method add
+ * @memberOf keigai.DataList
+ * @param {Object} record New DataStore record (shapes should match)
+ * @return {Object}       {@link keigai.DataList}
+ */
+DataList.prototype.add = function ( record ) {
+	var self = this;
+
+	this.store.set( null, record ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
+
+	return this;
+};
+
+/**
+ * Adds an event listener
+ *
+ * @method addEventListener
+ * @memberOf keigai.DataList
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.addEventListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
  * Adds an event listener
  *
  * @method addListener
@@ -163,7 +199,7 @@ DataList.prototype.addListener = function ( ev, listener, id, scope ) {
 /**
  * Dispatches an event, with optional arguments
  *
- * @method emit
+ * @method dispatch
  * @memberOf keigai.DataList
  * @return {Object} {@link keigai.DataList}
  */
@@ -371,9 +407,9 @@ DataList.prototype.pages = function () {
  *
  * @method refresh
  * @memberOf keigai.DataList
- * @fires DataList#beforeRefresh Fires before refresh
- * @fires DataList#afterRefresh Fires after refresh
- * @fires DataList#error Fires on error
+ * @fires keigai.DataList#beforeRefresh Fires before refresh
+ * @fires keigai.DataList#afterRefresh Fires after refresh
+ * @fires keigai.DataList#error Fires on error
  * @param  {Boolean} redraw [Optional] Boolean to force clearing the DataList ( default ), false toggles "hidden" class of items
  * @param  {Boolean} create [Optional] Recreates cached View of data
  * @return {Object} {@link keigai.DataList}
@@ -575,6 +611,55 @@ DataList.prototype.refresh = function ( redraw, create ) {
 };
 
 /**
+ * Removes an item from the DataList
+ *
+ * @method remove
+ * @memberOf keigai.DataList
+ * @param {Mixed} record Record, key or index
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.remove = function ( record ) {
+	var self = this;
+
+	this.store.del( record ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeEventListener
+ * @memberOf keigai.DataList
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.removeEventListener = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeListener
+ * @memberOf keigai.DataList
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.removeListener = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
  * Sorts data list & refreshes element
  *
  * @method sort
@@ -614,6 +699,31 @@ DataList.prototype.teardown = function ( destroy ) {
 		element.destroy( this.element );
 		this.element = null;
 	}
+
+	return this;
+};
+
+/**
+ * Updates an item in the DataList
+ *
+ * @method update
+ * @memberOf keigai.DataList
+ * @param {Mixed}  record Record, key or index
+ * @param {Object} data   New property values
+ * @return {Object} {@link keigai.DataList}
+ */
+DataList.prototype.update = function ( record, data ) {
+	record   = record.key ? record : this.store.get ( record );
+	var self = this;
+
+	if ( record === undefined ) {
+		throw new Error( label.error.invalidArguments );
+	}
+
+	this.store.set( record.key, utility.merge( record.data, data ) ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
 
 	return this;
 };
