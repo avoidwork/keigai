@@ -212,7 +212,8 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 			}
 
 			array.each( self.lists, function ( i ) {
-				i.refresh();
+				// Forcing a clear of views to deal with async nature of workers & staggered loading
+				i.refresh( true, true );
 			} );
 
 			if ( type === "del" ) {
