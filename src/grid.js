@@ -137,6 +137,7 @@ function DataGrid ( target, store, fields, sortable, options, filtered ) {
 	this.filter    = null;
 	this.filtered  = filtered === true;
 	this.list      = null;
+	this.observer  = observable.factory();
 	this.options   = options   || {};
 	this.store     = store;
 	this.sortable  = sortable  || [];

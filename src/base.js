@@ -22,7 +22,13 @@ var base = {
  * @memberOf keigai
  */
 function Base () {
-	this.observer = observable.factory();
+	/**
+	 * {@link keigai.Observable}
+	 *
+	 * @abstract
+	 * @type {Object}
+	 */
+	this.observer = null;
 }
 
 /**

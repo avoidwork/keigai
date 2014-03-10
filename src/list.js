@@ -129,7 +129,7 @@ function DataList ( element, store, template ) {
 	this.filtered    = [];
 	this.id          = utility.genId();
 	this.mutation    = null;
-	this.observer    = new Observable();
+	this.observer    = observable.factory();
 	this.pageIndex   = 1;
 	this.pageSize    = null;
 	this.pageRange   = 5;

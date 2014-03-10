@@ -115,6 +115,7 @@ function DataStore () {
 	this.loaded      = false;
 	this.maxDepth    = 0;
 	this.mongodb     = "";
+	this.observer    = observable.factory();
 	this.records     = [];
 	this.retrieve    = false;
 	this.source      = null;

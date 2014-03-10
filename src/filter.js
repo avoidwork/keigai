@@ -54,11 +54,11 @@ var filter = {
  *     filter = keigai.filter( document.querySelector( "input.filter" ), list, "field" );
  */
 function DataListFilter ( element, list, debounce ) {
-	this.element  = element;
-	this.list     = list;
 	this.debounce = debounce;
+	this.element  = element;
 	this.filters  = {};
-	this.observer = new Observable();
+	this.list     = list;
+	this.observer = observable.factory();
 }
 
 /**
