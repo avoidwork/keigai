@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.11
+- Fixing `DataStore.batch()` refresh of related `DataList` instances when doing back to back batch "sets" (e.g. sync with an API, & then batch "set" local data, subverting the feedback loop)
+
 ## 0.2.10
 - Fixing `Base` inheritance with an abstract `observer`, which is initialized within constructors
 
