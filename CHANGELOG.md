@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.10
+- Fixing `Base` inheritance with an abstract `observer`, which is initialized within constructors
+
 ## 0.2.9
 - Created `Base` & `base.factory()`
 - Refactored `DataGrid`, `DataList`, `DataListFilter`, & `DataStore` to extend `Base`
