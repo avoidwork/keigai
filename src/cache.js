@@ -29,8 +29,6 @@ var cache = {
 	/**
 	 * Expires a URI from the local cache
 	 *
-	 * Events: expire    Fires when the URI expires
-	 *
 	 * @method expire
 	 * @memberOf cache
 	 * @param  {String} uri URI of the local representation

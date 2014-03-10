@@ -147,16 +147,15 @@ DataStore.prototype.constructor = DataStore;
 /**
  * Batch sets or deletes data in the store
  *
- * Events: beforeBatch  Fires before the batch is queued
- *         afterBatch   Fires after the batch is queued
- *         failedBatch  Fires when an exception occurs
- *
  * @method batch
  * @memberOf keigai.DataStore
  * @param  {String}  type Type of action to perform ( set/del/delete )
  * @param  {Array}   data Array of keys or indices to delete, or Object containing multiple records to set
  * @param  {Boolean} sync [Optional] Syncs store with data, if true everything is erased
  * @return {Object} {@link keigai.Deferred}
+ * @fires keigai.DataStore#beforeBatch Fires before the batch is queued
+ * @fires keigai.DataStore#afterBatch Fires after the batch is queued
+ * @fires keigai.DataStore#failedBatch Fires when an exception occurs
  * @example
  * store.batch( "set", [...] ).then( function ( records ) {
  *   ...
@@ -256,13 +255,12 @@ DataStore.prototype.buildUri = function ( key ) {
 /**
  * Clears the data object, unsets the uri property
  *
- * Events: beforeClear Fires before the data is cleared
- *         afterClear  Fires after the data is cleared
- *
  * @method clear
  * @memberOf keigai.DataStore
  * @param  {Boolean} sync [Optional] Boolean to limit clearing of properties
  * @return {Object} {@link keigai.DataStore}
+ * @fires keigai.DataStore#beforeClear Fires before the data is cleared
+ * @fires keigai.DataStore#afterClear Fires after the data is cleared
  * @example
  * // Resyncing the records, if wired to an API
  * store.clear( true );
@@ -921,16 +919,15 @@ DataStore.prototype.select = function ( where ) {
 /**
  * Creates or updates an existing record
  *
- * Events: beforeSet  Fires before the record is set
- *         afterSet   Fires after the record is set, the record is the argument for listeners
- *         failedSet  Fires if the store is RESTful and the action is denied
- *
  * @method set
  * @memberOf keigai.DataStore
  * @param  {Mixed}   key   [Optional] Integer or String to use as a Primary Key
  * @param  {Object}  data  Key:Value pairs to set as field values
  * @param  {Boolean} batch [Optional] True if called by data.batch
  * @return {Object} {@link keigai.Deferred}
+ * @fires keigai.DataStore#beforeSet Fires before the record is set
+ * @fires keigai.DataStore#afterSet Fires after the record is set, the record is the argument for listeners
+ * @fires keigai.DataStore#failedSet Fires if the store is RESTful and the action is denied
  * @example
  * // Creating a new record
  * store.set( null, {...} );
@@ -1545,13 +1542,12 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 /**
  * Syncs the DataStore with a URI representation
  *
- * Events: beforeSync  Fires before syncing the DataStore
- *         afterSync   Fires after syncing the DataStore
- *         failedSync  Fires when an exception occurs
- *
  * @method sync
  * @memberOf keigai.DataStore
  * @return {Object} {@link keigai.Deferred}
+ * @fires keigai.DataStore#beforeSync Fires before syncing the DataStore
+ * @fires keigai.DataStore#afterSync Fires after syncing the DataStore
+ * @fires keigai.DataStore#failedSync Fires when an exception occurs
  * @example
  * store.sync().then( function ( records ) {
  *   ...
