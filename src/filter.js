@@ -29,6 +29,9 @@ var filter = {
 
 		obj = new DataListFilter( target, ref[0], debounce ).set( filters );
 
+		// Decorating `target` with the appropriate input `type`
+		element.attr( target, "type", "text" );
+
 		// Setting up a chain of Events
 		obj.observer.hook( obj.element, "keyup" );
 		obj.observer.hook( obj.element, "input" );
