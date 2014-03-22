@@ -323,7 +323,14 @@ var element = {
 	 * keigai.util.element.dispatch( document.querySelector( "#something" ), "click" );
 	 */
 	dispatch : function ( obj, type, data, bubbles, cancelable ) {
-		var ev = new CustomEvent( type );
+		var ev;
+
+		try {
+			ev = new CustomEvent( type );
+		}
+		catch ( e ) {
+			ev = document.createEvent( "CustomEvent" );
+		}
 
 		bubbles    = ( bubbles    !== false );
 		cancelable = ( cancelable !== false );

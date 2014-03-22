@@ -276,7 +276,9 @@ var utility = {
 	 */
 	delay : function () {
 		if ( typeof setImmediate != "undefined" ) {
-			return setImmediate;
+			return function ( arg ) {
+				setImmediate( arg );
+			};
 		}
 		else if ( typeof process != "undefined" ) {
 			return process.nextTick;
