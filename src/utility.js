@@ -86,6 +86,32 @@ var utility = {
 	},
 
 	/**
+	 * Blob factory
+	 *
+	 * @method blob
+	 * @memberOf utility
+	 * @param  {String} arg String to convert to a Blob
+	 * @return {Object}     Blob
+	 * @private
+	 */
+	blob : function ( arg ) {
+		var obj;
+
+		try {
+			obj = new Blob( [arg], {type: "application/javascript"} );
+		}
+		catch ( e ) {
+			if ( !global.BlobBuilder ) {
+				global.BlobBuilder = global.MSBlobBuilder || global.WebKitBlobBuilder || global.MozBlobBuilder;
+			}
+
+			obj = new global.BlobBuilder().append( arg ).getBlob();
+		}
+
+		return obj;
+	},
+
+	/**
 	 * Clears deferred & repeating functions
 	 *
 	 * @method clearTimers
@@ -871,5 +897,31 @@ var utility = {
 		}
 
 		return defer;
+	},
+
+	/**
+	 * Worker factory
+	 *
+	 * @method worker
+	 * @memberOf utility
+	 * @param  {Mixed}  arg   Script for the Worker to run
+	 * @param  {Object} defer Deferred to receive message from Worker
+	 * @return {Object}       Worker
+	 * @private
+	 */
+	worker : function ( arg, defer ) {
+		var obj = new Worker( global.URL.createObjectURL( utility.blob( arg ) ) );
+
+		obj.onerror = function ( err ) {
+			defer.reject( err );
+			obj.terminate();
+		};
+
+		obj.onmessage = function ( ev ) {
+			defer.resolve( ev.data );
+			obj.terminate();
+		};
+
+		return obj;
 	}
 };

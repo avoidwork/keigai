@@ -173,7 +173,7 @@
  * @license BSD-3 &lt;https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.2.13
+ * @version 0.2.14
  */
 ( function ( global ) {
 
@@ -4277,7 +4277,7 @@ function Deferred () {
 
 	// Setting handlers to execute Arrays of Functions
 	this.promise.then( function ( arg ) {
-		promise.delay( function () {
+		utility.delay( function () {
 			array.each( self.onDone, function ( i ) {
 				i( arg );
 			} );
@@ -4291,7 +4291,7 @@ function Deferred () {
 			self.onFail   = [];
 		} );
 	}, function ( arg ) {
-		promise.delay( function () {
+		utility.delay( function () {
 			array.each( self.onFail, function ( i ) {
 				i( arg );
 			} );
@@ -6076,6 +6076,7 @@ Promise.prototype.process = function() {
 			result = callback( value );
 		}
 		catch ( e ) {
+			utility.error( e );
 			child.reject( e );
 
 			return;
@@ -6990,7 +6991,7 @@ DataStore.prototype.save = function ( arg ) {
  */
 DataStore.prototype.select = function ( where ) {
 	var defer = deferred.factory(),
-	    blob, clauses, cond, functions, worker;
+	    clauses, cond, functions, worker;
 
 	if ( !( where instanceof Object ) ) {
 		throw new Error( label.invalidArguments );
@@ -7006,20 +7007,20 @@ DataStore.prototype.select = function ( where ) {
 			}
 		} );
 
-		blob   = new Blob( [WORKER] );
-		worker = new Worker( global.URL.createObjectURL( blob ) );
+		try {
+			worker = utility.worker( WORKER, defer );
+			worker.postMessage( {cmd: "select", records: this.records, where: json.encode( where ), functions: functions} );
+		}
+		catch ( e ) {
+			// Probably IE10, which doesn't have the correct security flag for local loading
+			webWorker = false;
 
-		worker.onerror = function ( err ) {
-			defer.reject( err );
-			worker.terminate();
-		};
-
-		worker.onmessage = function ( ev ) {
-			defer.resolve( ev.data );
-			worker.terminate();
-		};
-
-		worker.postMessage( {cmd: "select", records: this.records, where: json.encode( where ), functions: functions} );
+			this.select( where ).then( function ( arg ) {
+				defer.resolve( arg );
+			}, function ( e ) {
+				defer.reject( e );
+			} );
+		}
 	}
 	else {
 		clauses = array.fromObject( where );
@@ -7391,7 +7392,7 @@ DataStore.prototype.sort = function ( query, create, where ) {
 	var self    = this,
 	    view    = string.toCamelCase( string.explode( query ).join( " " ) ),
 	    defer   = deferred.factory(),
-	    blob, next, worker;
+	    next, worker;
 
 	// Next phase
 	next = function ( records ) {
@@ -7402,21 +7403,25 @@ DataStore.prototype.sort = function ( query, create, where ) {
 			defer.resolve( self.views[view] );
 		}
 		else if ( webWorker ) {
-			blob   = new Blob( [WORKER] );
-			worker = new Worker( global.URL.createObjectURL( blob ) );
+			defer.then( function ( arg ) {
+				self.views[view] = arg;
 
-			worker.onerror = function ( err ) {
-				defer.reject( err );
-				worker.terminate();
-			};
+				return self.views[view];
+			}, function ( e ) {
+				throw e;
+			} );
 
-			worker.onmessage = function ( ev ) {
-				self.views[view] = ev.data;
+			try {
+				worker = utility.worker( WORKER, defer );
+				worker.postMessage( {cmd: "sort", records: records, query: query} );
+			}
+			catch ( e ) {
+				// Probably IE10, which doesn't have the correct security flag for local loading
+				webWorker = false;
+
+				self.views[view] = array.keySort( records.slice(), query, "data" );
 				defer.resolve( self.views[view] );
-				worker.terminate();
-			};
-
-			worker.postMessage( {cmd: "sort", records: records, query: query} );
+			}
 		}
 		else {
 			self.views[view] = array.keySort( records.slice(), query, "data" );
@@ -8300,6 +8305,32 @@ var utility = {
 	},
 
 	/**
+	 * Blob factory
+	 *
+	 * @method blob
+	 * @memberOf utility
+	 * @param  {String} arg String to convert to a Blob
+	 * @return {Object}     Blob
+	 * @private
+	 */
+	blob : function ( arg ) {
+		var obj;
+
+		try {
+			obj = new Blob( [arg], {type: "application/javascript"} );
+		}
+		catch ( e ) {
+			if ( !global.BlobBuilder ) {
+				global.BlobBuilder = global.MSBlobBuilder || global.WebKitBlobBuilder || global.MozBlobBuilder;
+			}
+
+			obj = new global.BlobBuilder().append( arg ).getBlob();
+		}
+
+		return obj;
+	},
+
+	/**
 	 * Clears deferred & repeating functions
 	 *
 	 * @method clearTimers
@@ -9085,6 +9116,32 @@ var utility = {
 		}
 
 		return defer;
+	},
+
+	/**
+	 * Worker factory
+	 *
+	 * @method worker
+	 * @memberOf utility
+	 * @param  {Mixed}  arg   Script for the Worker to run
+	 * @param  {Object} defer Deferred to receive message from Worker
+	 * @return {Object}       Worker
+	 * @private
+	 */
+	worker : function ( arg, defer ) {
+		var obj = new Worker( global.URL.createObjectURL( utility.blob( arg ) ) );
+
+		obj.onerror = function ( err ) {
+			defer.reject( err );
+			obj.terminate();
+		};
+
+		obj.onmessage = function ( ev ) {
+			defer.resolve( ev.data );
+			obj.terminate();
+		};
+
+		return obj;
 	}
 };
 
@@ -9106,7 +9163,7 @@ function xhr () {
 	    XMLHttpRequest, headers, success, failure, state;
 
 	headers = {
-		"user-agent"   : "keigai/0.2.13 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"user-agent"   : "keigai/0.2.14 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
 	};
@@ -9786,7 +9843,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.2.13"
+	version : "0.2.14"
 };
 
 } )();
@@ -9825,7 +9882,7 @@ else {
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Fri Mar 21 2014 23:46:04 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Sun Mar 23 2014 10:41:53 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

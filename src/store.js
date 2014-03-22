@@ -842,7 +842,7 @@ DataStore.prototype.save = function ( arg ) {
  */
 DataStore.prototype.select = function ( where ) {
 	var defer = deferred.factory(),
-	    blob, clauses, cond, functions, worker;
+	    clauses, cond, functions, worker;
 
 	if ( !( where instanceof Object ) ) {
 		throw new Error( label.invalidArguments );
@@ -858,20 +858,20 @@ DataStore.prototype.select = function ( where ) {
 			}
 		} );
 
-		blob   = new Blob( [WORKER] );
-		worker = new Worker( global.URL.createObjectURL( blob ) );
+		try {
+			worker = utility.worker( WORKER, defer );
+			worker.postMessage( {cmd: "select", records: this.records, where: json.encode( where ), functions: functions} );
+		}
+		catch ( e ) {
+			// Probably IE10, which doesn't have the correct security flag for local loading
+			webWorker = false;
 
-		worker.onerror = function ( err ) {
-			defer.reject( err );
-			worker.terminate();
-		};
-
-		worker.onmessage = function ( ev ) {
-			defer.resolve( ev.data );
-			worker.terminate();
-		};
-
-		worker.postMessage( {cmd: "select", records: this.records, where: json.encode( where ), functions: functions} );
+			this.select( where ).then( function ( arg ) {
+				defer.resolve( arg );
+			}, function ( e ) {
+				defer.reject( e );
+			} );
+		}
 	}
 	else {
 		clauses = array.fromObject( where );
@@ -1243,7 +1243,7 @@ DataStore.prototype.sort = function ( query, create, where ) {
 	var self    = this,
 	    view    = string.toCamelCase( string.explode( query ).join( " " ) ),
 	    defer   = deferred.factory(),
-	    blob, next, worker;
+	    next, worker;
 
 	// Next phase
 	next = function ( records ) {
@@ -1254,21 +1254,25 @@ DataStore.prototype.sort = function ( query, create, where ) {
 			defer.resolve( self.views[view] );
 		}
 		else if ( webWorker ) {
-			blob   = new Blob( [WORKER] );
-			worker = new Worker( global.URL.createObjectURL( blob ) );
+			defer.then( function ( arg ) {
+				self.views[view] = arg;
 
-			worker.onerror = function ( err ) {
-				defer.reject( err );
-				worker.terminate();
-			};
+				return self.views[view];
+			}, function ( e ) {
+				throw e;
+			} );
 
-			worker.onmessage = function ( ev ) {
-				self.views[view] = ev.data;
+			try {
+				worker = utility.worker( WORKER, defer );
+				worker.postMessage( {cmd: "sort", records: records, query: query} );
+			}
+			catch ( e ) {
+				// Probably IE10, which doesn't have the correct security flag for local loading
+				webWorker = false;
+
+				self.views[view] = array.keySort( records.slice(), query, "data" );
 				defer.resolve( self.views[view] );
-				worker.terminate();
-			};
-
-			worker.postMessage( {cmd: "sort", records: records, query: query} );
+			}
 		}
 		else {
 			self.views[view] = array.keySort( records.slice(), query, "data" );
