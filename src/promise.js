@@ -138,6 +138,7 @@ Promise.prototype.process = function() {
 			result = callback( value );
 		}
 		catch ( e ) {
+			utility.error( e );
 			child.reject( e );
 
 			return;
