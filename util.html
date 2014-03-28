@@ -47,18 +47,18 @@
 			</header>
 			<section class="util">
 				<h2 class="blank"><a name="dom" class="anchor" href="#dom"><span class="octicon octicon-link"></span></a>$</h2>
-				<p><strong>keigai.util.$("selector")</strong></p>
+				<p><strong>keigai.util.$(arg)</strong></p>
 				<p>Queries the DOM using CSS selectors and returns an Array of Elements.</p>
 				<p><a href="http://api.keigai.io/utility.html#toc3" title="DOM helper API">API documentation</a></p>
 
 				<h2><a name="array" class="anchor" href="#array"><span class="octicon octicon-link"></span></a>array</h2>
 				<p><strong>keigai.util.array</strong></p>
-				<p>Collection of Array functions, including most of the Array functions from Ruby.</p>
+				<p>Collection of Array functions.</p>
 				<p><a href="http://api.keigai.io/array.html" title="Array API">API documentation</a></p>
 
 
 				<h2><a name="clone" class="anchor" href="#clone"><span class="octicon octicon-link"></span></a>clone</h2>
-				<p><strong>keigai.util.clone(arg [, shallow])</strong></p>
+				<p><strong>keigai.util.clone(arg[, shallow])</strong></p>
 				<p>Creates a deep or shallow clone of an Object.</p>
 				<p><a href="http://api.keigai.io/utility.html#toc4" title="Clone API">API documentation</a></p>
 
@@ -69,7 +69,7 @@
 
 				<h2><a name="defer" class="anchor" href="#defer"><span class="octicon octicon-link"></span></a>defer</h2>
 				<p><strong>keigai.util.defer()</strong></p>
-				<p>Creates a Deferred (encapsulates a Promise).</p>
+				<p>Creates a Deferred (encapsulates a Promise). Compatible with Promises/A+ libraries.</p>
 				<p><a href="http://api.keigai.io/deferred.html" title="Deferred API">API documentation</a></p>
 
 				<h2><a name="element" class="anchor" href="#el"><span class="octicon octicon-link"></span></a>element</h2>
@@ -78,7 +78,7 @@
 				<p><a href="http://api.keigai.io/element.html" title="Element API">API documentation</a></p>
 
 				<h2><a name="extend" class="anchor" href="#extend"><span class="octicon octicon-link"></span></a>extend</h2>
-				<p><strong>keigai.util.extend(obj [, args])</strong></p>
+				<p><strong>keigai.util.extend(obj[, args])</strong></p>
 				<p>Creates a "class" extending Object, with optional decoration.</p>
 				<p><a href="http://api.keigai.io/utility.html#toc6" title="Extend API">API documentation</a></p>
 
@@ -93,97 +93,84 @@
 				<p><a href="http://api.keigai.io/json.html" title="JSON API">API documentation</a></p>
 
 				<h2><a name="jsonp" class="anchor" href="#jsonp"><span class="octicon octicon-link"></span></a>jsonp</h2>
-				<p><strong>keigai.util.jsonp(uri, success [, failure, callback])</strong></p>
+				<p><strong>keigai.util.jsonp(uri, success[, failure, callback])</strong></p>
 				<p>Creates a JSONP request.</p>
 				<p><a href="http://api.keigai.io/client.html#toc3" title="JSONP API">API documentation</a></p>
 
 				<h2><a name="log" class="anchor" href="#log"><span class="octicon octicon-link"></span></a>log</h2>
-				<p><strong>keigai.util.log(arg [, target])</strong></p>
+				<p><strong>keigai.util.log(arg[, target])</strong></p>
 				<p>Writes argument to the console.</p>
 				<p><a href="http://api.keigai.io/utility.html#toc8" title="Log API">API documentation</a></p>
-				<h4>Example</h4>
 
 				<h2><a name="lru" class="anchor" href="#lru"><span class="octicon octicon-link"></span></a>lru</h2>
-				<p><strong>keigai.util.lru(max)</strong></p>
+				<p><strong>keigai.util.lru([max])</strong></p>
 				<p>LRU (least recently used) cache factory.</p>
 				<p><a href="http://api.keigai.io/lru.html" title="LRU API">API documentation</a></p>
 
 				<h2><a name="math" class="anchor" href="#math"><span class="octicon octicon-link"></span></a>math</h2>
 				<p><strong>keigai.util.coerce(arg)</strong></p>
-				<p>Queries the DOM using CSS selectors and returns an Array of Elements.</p>
-				<p><a href="http://api.keigai.io/deferred.html#factory" title="DOM helper API">API documentation</a></p>
+				<p>Collection of Math functions.</p>
+				<p><a href="http://api.keigai.io/math.html" title="Math API">API documentation</a></p>
 
 				<h2><a name="merge" class="anchor" href="#merge"><span class="octicon octicon-link"></span></a>merge</h2>
 				<p><strong>keigai.util.merge(a, b)</strong></p>
 				<p>Merges `b` into `a`.</p>
-				<p><a href="http://api.keigai.io/utility.html#coerce" title="DOM helper API">API documentation</a></p>
-				<h4>Example</h4>
+				<p><a href="http://api.keigai.io/utility.html#toc9" title="Merge API">API documentation</a></p>
 
 				<h2><a name="number" class="anchor" href="#number"><span class="octicon octicon-link"></span></a>number</h2>
-				<p><strong>keigai.util.number(a, b)</strong></p>
-				<p>Merges `b` into `a`.</p>
-				<p><a href="http://api.keigai.io/utility.html#coerce" title="DOM helper API">API documentation</a></p>
-				<h4>Example</h4>
+				<p><strong>keigai.util.number</strong></p>
+				<p>Collection of Number functions.</p>
+				<p><a href="http://api.keigai.io/number.html" title="Number API">API documentation</a></p>
 
 				<h2><a name="observer" class="anchor" href="#observer"><span class="octicon octicon-link"></span></a>observer</h2>
-				<p><strong>keigai.util.observer(a, b)</strong></p>
-				<p>Merges `b` into `a`.</p>
-				<p><a href="http://api.keigai.io/utility.html#coerce" title="DOM helper API">API documentation</a></p>
-				<h4>Example</h4>
+				<p><strong>keigai.util.observer([max])</strong></p>
+				<p>Observable factory.</p>
+				<p><a href="http://api.keigai.io/keigai.Observable.html" title="Observable API">API documentation</a></p>
 
 				<h2><a name="parse" class="anchor" href="#parse"><span class="octicon octicon-link"></span></a>parse</h2>
-				<p><strong>keigai.util.parse(a, b)</strong></p>
-				<p>Merges `b` into `a`.</p>
-				<p><a href="http://api.keigai.io/utility.html#coerce" title="DOM helper API">API documentation</a></p>
-				<h4>Example</h4>
+				<p><strong>keigai.util.parse(arg)</strong></p>
+				<p>Parses a URI into an Object.</p>
+				<p><a href="http://api.keigai.io/utility.html#coerce" title="Parse API">API documentation</a></p>
 
 				<h2><a name="prevent" class="anchor" href="#prevent"><span class="octicon octicon-link"></span></a>prevent</h2>
 				<p><strong>keigai.util.prevent(ev)</strong></p>
-				<p>Merges `b` into `a`.</p>
-				<p><a href="http://api.keigai.io/utility.html#coerce" title="DOM helper API">API documentation</a></p>
-				<h4>Example</h4>
+				<p>Prevents default behavior of an Event.</p>
+				<p><a href="http://api.keigai.io/utility.html#toc11" title="Prevent API">API documentation</a></p>
 
 				<h2><a name="request" class="anchor" href="#request"><span class="octicon octicon-link"></span></a>request</h2>
-				<p><strong>keigai.util.request(a, b)</strong></p>
-				<p>Merges `b` into `a`.</p>
-				<p><a href="http://api.keigai.io/utility.html#coerce" title="DOM helper API">API documentation</a></p>
-				<h4>Example</h4>
+				<p><strong>keigai.util.request(uri[, type, success, failure, args, headers, timeout])</strong></p>
+				<p>Creates an XmlHttpRequest to a URI. The returned Deferred will have an `xhr` property.</p>
+				<p><a href="http://api.keigai.io/client.html#toc4" title="Request API">API documentation</a></p>
 
 				<h2><a name="stop" class="anchor" href="#stop"><span class="octicon octicon-link"></span></a>stop</h2>
 				<p><strong>keigai.util.stop(ev)</strong></p>
-				<p>Merges `b` into `a`.</p>
-				<p><a href="http://api.keigai.io/utility.html#coerce" title="DOM helper API">API documentation</a></p>
-				<h4>Example</h4>
+				<p>Stops an Event from bubbling, &amp; prevents default behavior.</p>
+				<p><a href="http://api.keigai.io/utility.html#toc13" title="Stop API">API documentation</a></p>
 
 				<h2><a name="string" class="anchor" href="#string"><span class="octicon octicon-link"></span></a>string</h2>
 				<p><strong>keigai.util.string</strong></p>
-				<p>Merges `b` into `a`.</p>
-				<p><a href="http://api.keigai.io/utility.html#coerce" title="DOM helper API">API documentation</a></p>
-				<h4>Example</h4>
+				<p>Collection of String functions.</p>
+				<p><a href="http://api.keigai.io/string.html" title="String API">API documentation</a></p>
 
 				<h2><a name="target" class="anchor" href="#target"><span class="octicon octicon-link"></span></a>target</h2>
 				<p><strong>keigai.util.target(ev)</strong></p>
-				<p>Merges `b` into `a`.</p>
-				<p><a href="http://api.keigai.io/utility.html#coerce" title="DOM helper API">API documentation</a></p>
-				<h4>Example</h4>
+				<p>Returns the Event target.</p>
+				<p><a href="http://api.keigai.io/utility.html#toc14" title="Target API">API documentation</a></p>
 
 				<h2><a name="uuid" class="anchor" href="#uuid"><span class="octicon octicon-link"></span></a>uuid</h2>
-				<p><strong>keigai.util.uuid()</strong></p>
-				<p>Merges `b` into `a`.</p>
-				<p><a href="http://api.keigai.io/utility.html#coerce" title="DOM helper API">API documentation</a></p>
-				<h4>Example</h4>
+				<p><strong>keigai.util.uuid([true])</strong></p>
+				<p>Generates a version 4 UUID. Hyphens can be stripped by setting `true` as an argument.</p>
+				<p><a href="http://api.keigai.io/utility.html#toc15" title="UUID API">API documentation</a></p>
 
 				<h2><a name="walk" class="anchor" href="#walk"><span class="octicon octicon-link"></span></a>walk</h2>
-				<p><strong>keigai.util.walk(a, b)</strong></p>
-				<p>Merges `b` into `a`.</p>
-				<p><a href="http://api.keigai.io/utility.html#coerce" title="DOM helper API">API documentation</a></p>
-				<h4>Example</h4>
+				<p><strong>keigai.util.walk(obj, arg)</strong></p>
+				<p>Walks `obj` and returns `arg`, for when you can't easily access `arg`.</p>
+				<p><a href="http://api.keigai.io/utility.html#toc16" title="Walk API">API documentation</a></p>
 
 				<h2><a name="when" class="anchor" href="#when"><span class="octicon octicon-link"></span></a>when</h2>
 				<p><strong>keigai.util.when(a, b)</strong></p>
-				<p>Merges `b` into `a`.</p>
-				<p><a href="http://api.keigai.io/utility.html#coerce" title="DOM helper API">API documentation</a></p>
-				<h4>Example</h4>
+				<p>Accepts Deferreds or Promises as arguments, or an Array of either. Compatible with Promises/A+ libraries.</p>
+				<p><a href="http://api.keigai.io/utility.html#toc17" title="When API">API documentation</a></p>
 
 				<div id="disqus_thread"></div>
 				<script type="text/javascript">
