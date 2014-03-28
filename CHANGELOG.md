@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.14
+- Fixing `DataStore.setComplete()` when receiving an Array of URIs
+
 ## 0.2.13
 - Fixing `element.dispatch()`, `utility.delay()`, `DataStore.select()`, & `DataStore.sort()` for Internet Explorer 10
 - Created `utility.blob()`, & `utility.worker()` to maintain DRY
