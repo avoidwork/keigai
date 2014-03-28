@@ -1,12 +1,12 @@
 /**
- * keigai
+ * Lightweight data store library, with a utility belt
  *
  * @author Jason Mulligan <jason.mulligan@avoidwork.com>
  * @copyright 2014 Jason Mulligan
  * @license BSD-3 <https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.2.4
+ * @version 0.2.14
  */
 ( function ( global ) {
 
@@ -17,6 +17,7 @@ var document  = global.document,
     webWorker = typeof Blob != "undefined" && typeof Worker != "undefined",
     MAX       = 10,
     VERSIONS  = 100,
+    CACHE     = 500,
     http, https, lib, url, WORKER;
 
 if ( server ) {
@@ -113,8 +114,613 @@ var regex = {
 };
 
 /**
- * @namespace array
+ * @namespace lru
+ */
+var lru = {
+	/**
+	 * LRU factory
+	 *
+	 * @method factory
+	 * @memberOf lru
+	 * @return {Object} {@link keigai.LRU}
+	 * @example
+	 * var lru = keigai.util.lru( 50 );
+	 */
+	 factory : function ( max ) {
+		return new LRU( max );
+	}
+};
+
+/**
+ * Creates a new Least Recently Used cache
+ *
+ * @constructor
+ * @memberOf keigai
+ * @param  {Number} max [Optional] Max size of cache, default is 1000
+ * @example
+ * var lru = keigai.util.lru( 50 );
+ */
+function LRU ( max ) {
+	this.cache  = {};
+	this.max    = max || 1000;
+	this.first  = null;
+	this.last   = null;
+	this.length = 0;
+}
+
+/**
+ * Setting constructor loop
+ *
+ * @method constructor
+ * @memberOf keigai.LRU
+ * @type {Function}
  * @private
+ */
+LRU.prototype.constructor = LRU;
+
+/**
+ * Evicts the least recently used item from cache
+ *
+ * @method evict
+ * @memberOf keigai.LRU
+ * @return {Object} {@link keigai.LRU}
+ * @example
+ * lru.evict();
+ */
+LRU.prototype.evict = function () {
+	if ( this.last !== null ) {
+		this.remove( this.last );
+	}
+
+	return this;
+};
+
+/**
+ * Gets cached item and moves it to the front
+ *
+ * @method get
+ * @memberOf keigai.LRU
+ * @param  {String} key Item key
+ * @return {Object} {@link keigai.LRUItem}
+ * @example
+ * var item = lru.get( "key" );
+ */
+LRU.prototype.get = function ( key ) {
+	var item = this.cache[key];
+
+	if ( item === undefined ) {
+		return;
+	}
+
+	this.set( key, item.value );
+
+	return item.value;
+};
+
+/**
+ * Removes item from cache
+ *
+ * @method remove
+ * @memberOf keigai.LRU
+ * @param  {String} key Item key
+ * @return {Object} {@link keigai.LRUItem}
+ * @example
+ * lru.remove( "key" );
+ */
+LRU.prototype.remove = function ( key ) {
+	var item = this.cache[ key ];
+
+	if ( item ) {
+		delete this.cache[key];
+
+		this.length--;
+
+		if ( item.previous !== null ) {
+			this.cache[item.previous].next = item.next;
+		}
+
+		if ( item.next !== null ) {
+			this.cache[item.next].previous = item.previous;
+		}
+
+		if ( this.first === key ) {
+			this.first = item.previous;
+		}
+
+		if ( this.last === key ) {
+			this.last = item.next;
+		}
+	}
+
+	return item;
+};
+
+/**
+ * Sets item in cache as `first`
+ *
+ * @method set
+ * @memberOf keigai.LRU
+ * @param  {String} key   Item key
+ * @param  {Mixed}  value Item value
+ * @return {Object} {@link keigai.LRU}
+ * @example
+ * lru.set( "key", {x: true} );
+ */
+LRU.prototype.set = function ( key, value ) {
+	var item = this.remove( key );
+
+	if ( item === undefined ) {
+		item = new LRUItem( value );
+	}
+	else {
+		item.value = value;
+	}
+
+	item.next       = null;
+	item.previous   = this.first;
+	this.cache[key] = item;
+
+	if ( this.first !== null ) {
+		this.cache[this.first].next = key;
+	}
+
+	this.first = key;
+
+	if ( this.last === null ) {
+		this.last = key;
+	}
+
+	if ( ++this.length > this.max ) {
+		this.evict();
+	}
+
+	return this;
+};
+
+/**
+ * Creates a new LRUItem
+ *
+ * @constructor
+ * @memberOf keigai
+ * @param {Mixed} value Item value
+ * @private
+ */
+function LRUItem ( value ) {
+	this.next     = null;
+	this.previous = null;
+	this.value    = value;
+}
+
+/**
+ * Setting constructor loop
+ *
+ * @method constructor
+ * @memberOf keigai.LRUItem
+ * @type {Function}
+ */
+LRUItem.prototype.constructor = LRUItem;
+
+/**
+ * @namespace observable
+ */
+var observable = {
+	/**
+	 * Observable factory
+	 *
+	 * @method factory
+	 * @memberOf observable
+	 * @return {Object} {@link keigai.Observable}
+	 * @example
+	 * var observer = keigai.util.observer( 50 );
+	 */
+	 factory : function ( arg ) {
+		return new Observable( arg );
+	}
+};
+
+/**
+ * Creates a new Observable
+ *
+ * @constructor
+ * @memberOf keigai
+ * @param  {Number} arg Maximum listeners, default is 10
+ * @example
+ * var observer = keigai.util.observer( 50 );
+ */
+function Observable ( arg ) {
+	this.limit     = arg || MAX;
+	this.listeners = {};
+	this.hooks     = {};
+}
+
+/**
+ * Setting constructor loop
+ *
+ * @method constructor
+ * @memberOf keigai.Observable
+ * @type {Function}
+ * @private
+ */
+Observable.prototype.constructor = Observable;
+
+/**
+ * Dispatches an event, with optional arguments
+ *
+ * @method dispatch
+ * @memberOf keigai.Observable
+ * @return {Object} {@link keigai.Observable}
+ * @example
+ * observer.dispatch( "event", ... );
+ */
+Observable.prototype.dispatch = function () {
+	var args = array.cast( arguments ),
+	    ev   = args.shift();
+
+	if ( ev && this.listeners[ev] ) {
+		utility.iterate( this.listeners[ev], function ( i ) {
+			i.handler.apply( i.scope, args );
+		} );
+	}
+
+	return this;
+};
+
+/**
+ * Hooks into `target` for a DOM event
+ *
+ * @method hook
+ * @memberOf keigai.Observable
+ * @param  {Object} target Element
+ * @param  {String} ev     Event
+ * @return {Object}        Element
+ * @example
+ * observer.hook( document.querySelector( "a" ), "click" );
+ */
+Observable.prototype.hook = function ( target, ev ) {
+	var self = this;
+
+	if ( typeof target.addEventListener != "function" ) {
+		throw new Error( label.invalidArguments );
+	}
+
+	utility.genId( target, true );
+
+	this.hooks[target.id] = function ( arg ) {
+		self.dispatch( ev, arg );
+	};
+
+	target.addEventListener( ev, this.hooks[target.id], false );
+
+	return target;
+};
+
+/**
+ * Removes all, or a specific listener for an event
+ *
+ * @method off
+ * @memberOf keigai.Observable
+ * @param {String} ev Event name
+ * @param {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.Observable}
+ * @example
+ * observer.off( "click", "myHook" );
+ */
+Observable.prototype.off = function ( ev, id ) {
+	if ( this.listeners[ev] ) {
+		if ( id ) {
+			delete this.listeners[ev][id];
+		}
+		else {
+			delete this.listeners[ev];
+		}
+	}
+
+	return this;
+};
+
+/**
+ * Adds a listener for an event
+ *
+ * @method on
+ * @memberOf keigai.Observable
+ * @param  {String}   ev      Event name
+ * @param  {Function} handler Handler
+ * @param  {String}   id      [Optional] Handler ID
+ * @param  {String}   scope   [Optional] Handler scope, default is `this`
+ * @return {Object} {@link keigai.Observable}
+ * @example
+ * observer.on( "click", function ( ev ) {
+ *   ...
+ * }, "myHook" );
+ */
+Observable.prototype.on = function ( ev, handler, id, scope ) {
+	id    = id    || utility.uuid();
+	scope = scope || this;
+
+	if ( !this.listeners[ev] ) {
+		this.listeners[ev] = {};
+	}
+
+	if ( array.keys( this.listeners[ev] ).length >= this.limit ) {
+		throw( new Error( "Possible memory leak, more than " + this.limit + " listeners for event: " + ev ) );
+	}
+
+	this.listeners[ev][id] = {scope: scope, handler: handler};
+
+	return this;
+};
+
+/**
+ * Adds a short lived listener for an event
+ *
+ * @method once
+ * @memberOf keigai.Observable
+ * @param  {String}   ev      Event name
+ * @param  {Function} handler Handler
+ * @param  {String}   id      [Optional] Handler ID
+ * @param  {String}   scope   [Optional] Handler scope, default is `this`
+ * @return {Object} {@link keigai.Observable}
+ * @example
+ * observer.once( "click", function ( ev ) {
+ *   ...
+ * } );
+ */
+Observable.prototype.once = function ( ev, handler, id, scope  ) {
+	var self = this;
+
+	id    = id    || utility.uuid();
+	scope = scope || this;
+
+	return this.on( ev, function () {
+		handler.apply( scope, [].concat( array.cast( arguments ) ) );
+		self.off( ev, id );
+	}, id, scope );
+};
+
+/**
+ * Unhooks from `target` for a DOM event
+ *
+ * @method unhook
+ * @memberOf keigai.Observable
+ * @param  {Object} target Element
+ * @param  {String} ev     Event
+ * @return {Object}        Element
+ * @example
+ * observer.unhook( document.querySelector( "a" ), "click" );
+ */
+Observable.prototype.unhook = function ( target, ev ) {
+	target.removeEventListener( ev, this.hooks[target.id], false );
+	delete this.hooks[target.id];
+
+	return target;
+};
+
+/**
+ * @namespace base
+ * @private
+ */
+var base = {
+	/**
+	 * Base factory
+	 *
+	 * @memberOf base
+	 * @method factory
+	 * @return {Object} {@link keigai.Base}
+	 */
+	factory : function () {
+		return new Base();
+	}
+};
+
+/**
+ * Base Object
+ *
+ * @constructor
+ * @memberOf keigai
+ */
+function Base () {
+	/**
+	 * {@link keigai.Observable}
+	 *
+	 * @abstract
+	 * @type {Object}
+	 */
+	this.observer = null;
+}
+
+/**
+ * Setting constructor loop
+ *
+ * @method constructor
+ * @memberOf keigai.Base
+ * @type {Function}
+ * @private
+ */
+Base.prototype.constructor = Base;
+
+/**
+ * Adds an event listener
+ *
+ * @method addEventListener
+ * @memberOf keigai.Base
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.addEventListener( "event", function ( ev ) {
+ *   ...
+ * }, "myHook" );
+ */
+Base.prototype.addEventListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Adds an event listener
+ *
+ * @method addListener
+ * @memberOf keigai.Base
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.addEventListener( "event", function ( ev ) {
+ *   ...
+ * }, "myHook" );
+ */
+Base.prototype.addListener = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Dispatches an event, with optional arguments
+ *
+ * @method dispatch
+ * @memberOf keigai.Base
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.dispatch( "event", ... );
+ */
+Base.prototype.dispatch = function () {
+	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
+
+	return this;
+};
+
+/**
+ * Dispatches an event, with optional arguments
+ *
+ * @method emit
+ * @memberOf keigai.Base
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.emit( "event", ... );
+ */
+Base.prototype.emit = function () {
+	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
+
+	return this;
+};
+
+/**
+ * Gets listeners
+ *
+ * @method listeners
+ * @memberOf keigai.Base
+ * @param  {String} ev [Optional] Event name
+ * @return {Object} Listeners
+ * @example
+ * keigai.util.iterate( obj.listeners(), function ( fn, id ) {
+ *   ...
+ * } );
+ */
+Base.prototype.listeners = function ( ev ) {
+	return ev ? this.observer.listeners[ev] : this.listeners;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method off
+ * @memberOf keigai.Base
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.off( "event", "myHook" );
+ */
+Base.prototype.off = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
+ * Adds an event listener
+ *
+ * @method on
+ * @memberOf keigai.Base
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.on( "event", function ( ev ) {
+ *   ...
+ * }, "myHook" );
+ */
+Base.prototype.on = function ( ev, listener, id, scope ) {
+	this.observer.on( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Adds a short lived event listener
+ *
+ * @method once
+ * @memberOf keigai.Base
+ * @param  {String}   ev       Event name
+ * @param  {Function} listener Function to execute
+ * @param  {String}   id       [Optional] Listener ID
+ * @param  {String}   scope    [Optional] Listener scope, default is `this`
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.once( "event", function ( ev ) {
+ *   ...
+ * } );
+ */
+Base.prototype.once = function ( ev, listener, id, scope ) {
+	this.observer.once( ev, listener, id, scope || this );
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeEventListener
+ * @memberOf keigai.Base
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.removeListener( "event", "myHook" );
+ */
+Base.prototype.removeEventListener = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
+ * Removes an event listener
+ *
+ * @method removeListener
+ * @memberOf keigai.Base
+ * @param  {String} ev Event name
+ * @param  {String} id [Optional] Listener ID
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.removeListener( "event", "myHook" );
+ */
+Base.prototype.removeListener = function ( ev, id ) {
+	this.observer.off( ev, id );
+
+	return this;
+};
+
+/**
+ * @namespace array
  */
 var array = {
 	/**
@@ -125,6 +731,11 @@ var array = {
 	 * @param  {Array} obj Array to receive 'arg'
 	 * @param  {Mixed} arg Argument to set in 'obj'
 	 * @return {Array}     Array that was queried
+	 * @example
+	 * var myArray = [1, 2];
+	 *
+	 * keigai.util.array.add( myArray, 3 ); // [1, 2, 3]
+	 * keigai.util.array.add( myArray, 1 ); // [1, 2, 3]
 	 */
 	add : function ( obj, arg ) {
 		if ( !array.contains( obj, arg ) ) {
@@ -142,6 +753,10 @@ var array = {
 	 * @param  {Array} obj Array to search
 	 * @param  {Mixed} arg Value to find index of
 	 * @return {Number}    Index of `arg` within `obj`
+	 * @example
+	 * var myArray = [1, 5, 10, 15, 20, 25, ...];
+	 *
+	 * keigai.util.array.binIndex( myArray, 5 ); // 1
 	 */
 	binIndex : function ( obj, arg ) {
 		var min = 0,
@@ -174,6 +789,8 @@ var array = {
 	 * @param  {Object}  obj Object to cast
 	 * @param  {Boolean} key [Optional] Returns key or value, only applies to Objects without a length property
 	 * @return {Array}       Object as an Array
+	 * @example
+	 * keigai.util.array.cast( document.querySelectorAll( "..." ) );
 	 */
 	cast : function ( obj, key ) {
 		key   = ( key === true );
@@ -199,9 +816,11 @@ var array = {
 	 *
 	 * @method chunk
 	 * @memberOf array
-	 * @param  {Array}  obj  Array to parse
+	 * @param  {Array}  obj  Array to process
 	 * @param  {Number} size Chunk size ( integer )
 	 * @return {Array}       Chunked Array
+	 * @example
+	 * keigai.util.array.chunk( [0, 1, 2, 3], 2 ); // [[0, 1], [2, 3]]
 	 */
 	chunk : function ( obj, size ) {
 		var result = [],
@@ -224,6 +843,11 @@ var array = {
 	 * @memberOf array
 	 * @param  {Array} obj Array to clear
 	 * @return {Array}     Cleared Array
+	 * @example
+	 * var myArray = [1, 2, 3, 4, 5];
+	 *
+	 * keigai.util.array.clear( myArray );
+	 * myArray.length; // 0
 	 */
 	clear : function ( obj ) {
 		return obj.length > 0 ? array.remove( obj, 0, obj.length ) : obj;
@@ -236,6 +860,14 @@ var array = {
 	 * @memberOf array
 	 * @param  {Array} obj Array to clone
 	 * @return {Array}     Clone of Array
+	 * @example
+	 * var myArray      = [1, 2, 3, 4, 5],
+	 *     myArrayClone = keigai.util.array.clone( myArray );
+	 *
+	 * myArrayClone.push( 6 );
+	 *
+	 * myArray.length;      // 5
+	 * myArrayClone.length; // 6
 	 */
 	clone : function ( obj ) {
 		return obj.slice();
@@ -249,6 +881,8 @@ var array = {
 	 * @param  {Array} obj Array to search
 	 * @param  {Mixed} arg Value to look for
 	 * @return {Boolean}   True if found, false if not
+	 * @example
+	 * if ( keigai.util.array.contains( [1], 1 ) ) { ... }
 	 */
 	contains : function ( obj, arg ) {
 		return obj.indexOf( arg ) > -1;
@@ -262,6 +896,8 @@ var array = {
 	 * @param  {Array}    obj Array to iterate
 	 * @param  {Function} fn  Function to execute against indices
 	 * @return {Array}        New Array
+	 * @example
+	 * var results = keigai.util.array.collect( [...], function ( ... ) { ... } );
 	 */
 	collect : function ( obj, fn ) {
 		var result = [];
@@ -278,9 +914,12 @@ var array = {
 	 *
 	 * @method compact
 	 * @memberOf array
-	 * @param  {Array} obj    Array to compact
+	 * @param  {Array}   obj  Array to compact
 	 * @param  {Boolean} diff Indicates to return resulting Array only if there's a difference
 	 * @return {Array}        Compacted copy of `obj`, or null ( if `diff` is passed & no diff is found )
+	 * @example
+	 * keigai.util.array.compact( [null, "a", "b", "c", null, "d"] ); // ["a", "b", "c", "d"]
+	 * keigai.util.array.compact( ["a", "b", "c", "d"], true );       // null
 	 */
 	compact : function ( obj, diff ) {
 		var result = [];
@@ -300,6 +939,8 @@ var array = {
 	 * @param  {Array} obj   Array to search
 	 * @param  {Mixed} value Value to compare
 	 * @return {Array}       Array of counts
+	 * @example
+	 * keigai.util.array.count( ["apple", "banana", "orange", "apple"], "apple" ); // 2
 	 */
 	count : function ( obj, value ) {
 		return obj.filter( function ( i ) {
@@ -308,25 +949,27 @@ var array = {
 	},
 
 	/**
-	 * Finds the difference between array1 and array2
+	 * Finds the difference between two Arrays
 	 *
 	 * @method diff
 	 * @memberOf array
-	 * @param  {Array} array1 Source Array
-	 * @param  {Array} array2 Comparison Array
-	 * @return {Array}        Array of the differences
+	 * @param  {Array} obj1 Source Array
+	 * @param  {Array} obj2 Comparison Array
+	 * @return {Array}      Array of the differences
+	 * @example
+	 * keigai.util.array.diff( ["a"], ["a", "b"] ); // ["b"]
 	 */
-	diff : function ( array1, array2 ) {
+	diff : function ( obj1, obj2 ) {
 		var result = [];
 
-		array.each( array1, function ( i ) {
-			if ( !array.contains( array2, i ) ) {
+		array.each( obj1, function ( i ) {
+			if ( !array.contains( obj2, i ) ) {
 				array.add( result, i );
 			}
 		} );
 
-		array.each( array2, function ( i ) {
-			if ( !array.contains( array1, i ) ) {
+		array.each( obj2, function ( i ) {
+			if ( !array.contains( obj1, i ) ) {
 				array.add( result, i );
 			}
 		} );
@@ -345,6 +988,9 @@ var array = {
 	 * @param  {Boolean}  async [Optional] Asynchronous iteration
 	 * @param  {Number}   size  [Optional] Batch size for async iteration, default is 10
 	 * @return {Array}          Array
+	 * @example
+	 * keigai.util.array.each( [ ... ], function ( ... ) { ... } );
+	 * keigai.util.array.each( [ ... ], function ( ... ) { ... }, true, 100 ); // processing batches of a 100
 	 */
 	each : function ( obj, fn, async, size ) {
 		var nth = obj.length,
@@ -396,22 +1042,28 @@ var array = {
 	 * @memberOf array
 	 * @param  {Array} obj Array to inspect
 	 * @return {Boolean}   `true` if there's no indices
+	 * @example
+	 * keigai.util.array.empty( [] );    // true
+	 * keigai.util.array.empty( ["a"] ); // false
 	 */
 	empty : function ( obj ) {
 		return ( obj.length === 0 );
 	},
 
 	/**
-	 * Determines if `a` is equal to `b`
+	 * Determines if two Arrays are equal
 	 *
 	 * @method equal
 	 * @memberOf array
-	 * @param  {Array} a Array to compare
-	 * @param  {Array} b Array to compare
+	 * @param  {Array} obj1 Array to compare
+	 * @param  {Array} obj2 Array to compare
 	 * @return {Boolean} `true` if the Arrays match
+	 * @example
+	 * keigai.util.array.equal( ["a"], ["a"] );      // true
+	 * keigai.util.array.equal( ["a"], ["a", "b"] ); // false
 	 */
-	equal : function ( a, b ) {
-		return ( json.encode( a ) === json.encode( b ) );
+	equal : function ( obj1, obj2 ) {
+		return ( json.encode( obj1 ) === json.encode( obj2 ) );
 	},
 
 	/**
@@ -421,6 +1073,9 @@ var array = {
 	 * @memberOf array
 	 * @param  {Number} arg [Optional] Amount of numbers to generate, default is 100
 	 * @return {Array}      Array of numbers
+	 * @example
+	 * keigai.util.array.fib( 5 ) // [1, 1, 2, 3, 5];
+	 * keigai.util.array.fib( 6 ) // [1, 1, 2, 3, 5, 8];
 	 */
 	fib : function ( arg ) {
 		var result = [1, 1],
@@ -455,6 +1110,11 @@ var array = {
 	 * @param  {Number} start [Optional] Index to begin filling at
 	 * @param  {Number} end   [Optional] Offset from start to stop filling at
 	 * @return {Array}        Filled Array
+	 * @example
+	 * var myArray = ["a", "b", "c"];
+	 *
+	 * keigai.util.array.fill( myArray, function ( i ) { return i + "a"; } );
+	 * myArray[0]; // "aa"
 	 */
 	fill : function ( obj, arg, start, offset ) {
 		var fn  = typeof arg == "function",
@@ -475,15 +1135,37 @@ var array = {
 	},
 
 	/**
-	 * Returns the first Array node
+	 * Returns the first Array index
 	 *
 	 * @method first
 	 * @memberOf array
 	 * @param  {Array} obj The array
 	 * @return {Mixed}     The first node of the array
+	 * @example
+	 * keigai.util.array.first( ["a", "b"] ); // "a"
 	 */
 	first : function ( obj ) {
 		return obj[0];
+	},
+
+	/**
+	 * Flattens a 2D Array
+	 *
+	 * @method flat
+	 * @memberOf array
+	 * @param  {Array} obj 2D Array to flatten
+	 * @return {Array}     Flatten Array
+	 * @example
+	 * keigai.util.array.flat( [[0, 1], [2, 3]] ); // [0, 1, 2, 3]
+	 */
+	flat : function ( obj ) {
+		var result = [];
+
+		result = obj.reduce( function ( a, b ) {
+			return a.concat( b );
+		}, result );
+
+		return result;
 	},
 
 	/**
@@ -498,27 +1180,12 @@ var array = {
 	 * @param  {Boolean}  async [Optional] Asynchronous iteration
 	 * @param  {Number}   size  [Optional] Batch size for async iteration, default is 10
 	 * @return {Array}          Array
+	 * @example
+	 * keigai.util.array.forEach( [ ... ], function ( ... ) { ... } );
+	 * keigai.util.array.forEach( [ ... ], function ( ... ) { ... }, true, 100 ); // processing batches of a 100
 	 */
 	forEach : function ( obj, fn, async, size ) {
 		return array.each( obj, fn, async, size );
-	},
-
-	/**
-	 * Flattens a 2D Array
-	 *
-	 * @method flat
-	 * @memberOf array
-	 * @param  {Array} obj 2D Array to flatten
-	 * @return {Array}     Flatten Array
-	 */
-	flat : function ( obj ) {
-		var result = [];
-
-		result = obj.reduce( function ( a, b ) {
-			return a.concat( b );
-		}, result );
-
-		return result;
 	},
 
 	/**
@@ -528,19 +1195,23 @@ var array = {
 	 * @memberOf array
 	 * @param  {Object} obj Object to convert
 	 * @return {Array}      2D Array
+	 * @example
+	 * keigai.util.array.fromObject( {name: "John", sex: "male"} ); // [["name", "John"], ["sex", "male"]]
 	 */
 	fromObject : function ( obj ) {
 		return array.mingle( array.keys( obj ), array.cast( obj ) );
 	},
 
 	/**
-	 * Facade to indexOf for shorter syntax
+	 * Facade of indexOf
 	 *
 	 * @method index
 	 * @memberOf array
 	 * @param  {Array} obj Array to search
 	 * @param  {Mixed} arg Value to find index of
 	 * @return {Number}    The position of arg in instance
+	 * @example
+	 * keigai.util.array.index( ["a", "b", "c"], "b" ); // 1
 	 */
 	index : function ( obj, arg ) {
 		return obj.indexOf( arg );
@@ -553,6 +1224,11 @@ var array = {
 	 * @memberOf array
 	 * @param  {Array} obj Array to index
 	 * @return {Array}     Indexed Array
+	 * @example
+	 * var myArray = ["a", "b", "c"];
+	 *
+	 * myArray.prop = "d";
+	 * keigai.util.array.indexed( myArray ); ["a", "b", "c", "d"];
 	 */
 	indexed : function ( obj ) {
 		var indexed = [];
@@ -565,17 +1241,19 @@ var array = {
 	},
 
 	/**
-	 * Finds the intersections between array1 and array2
+	 * Finds the intersections between obj1 and obj2
 	 *
 	 * @method intersect
 	 * @memberOf array
-	 * @param  {Array} array1 Source Array
-	 * @param  {Array} array2 Comparison Array
-	 * @return {Array}        Array of the intersections
+	 * @param  {Array} obj1 Source Array
+	 * @param  {Array} obj2 Comparison Array
+	 * @return {Array}      Array of the intersections
+	 * @example
+	 * keigai.util.array.intersect( ["a", "b", "d"], ["b", "c", "d"] ); // ["b", "d"]
 	 */
-	intersect : function ( array1, array2 ) {
-		var a = array1.length > array2.length ? array1 : array2,
-		    b = ( a === array1 ? array2 : array1 );
+	intersect : function ( obj1, obj2 ) {
+		var a = obj1.length > obj2.length ? obj1 : obj2,
+		    b = ( a === obj1 ? obj2 : obj1 );
 
 		return a.filter( function ( key ) {
 			return array.contains( b, key );
@@ -590,6 +1268,11 @@ var array = {
 	 * @param  {Array}    obj Array to iterate
 	 * @param  {Function} fn  Function to test indices against
 	 * @return {Array}        Array
+	 * @example
+	 * var myArray = ["a", "b", "c"];
+	 *
+	 * keigai.util.array.keepIf( myArray, function ( i ) { return /a|c/.test( i ); } );
+	 * myArray[1]; // "c"
 	 */
 	keepIf : function ( obj, fn ) {
 		if ( typeof fn != "function" ) {
@@ -610,14 +1293,33 @@ var array = {
 	},
 
 	/**
+	 * Returns the keys in an "Associative Array"
+	 *
+	 * @method keys
+	 * @memberOf array
+	 * @param  {Mixed} obj Array or Object to extract keys from
+	 * @return {Array}     Array of the keys
+	 * @example
+	 * keigai.util.array.keys( {abc: true, xyz: false} ); // ["abc", "xyz"]
+	 */
+	keys : function ( obj ) {
+		return Object.keys( obj );
+	},
+
+	/**
 	 * Sorts an Array based on key values, like an SQL ORDER BY clause
 	 *
-	 * @method sort
+	 * @method keySort
 	 * @memberOf array
 	 * @param  {Array}  obj   Array to sort
 	 * @param  {String} query Sort query, e.g. "name, age desc, country"
 	 * @param  {String} sub   [Optional] Key which holds data, e.g. "{data: {}}" = "data"
 	 * @return {Array}        Sorted Array
+	 * @example
+	 * var myArray = [{abc: 123124, xyz: 5}, {abc: 123124, xyz: 6}, {abc: 2, xyz: 5}];
+	 *
+	 * keigai.util.array.keySort( myArray, "abc" );           // [{abc: 2, xyz: 5}, {abc: 123124, xyz: 5}, {abc: 123124, xyz: 6}];
+	 * keigai.util.array.keySort( myArray, "abc, xyz desc" ); // [{abc: 2, xyz: 5}, {abc: 123124, xyz: 6}, {abc: 123124, xyz: 5}];
 	 */
 	keySort : function ( obj, query, sub ) {
 		query       = query.replace( /\s*asc/ig, "" ).replace( /\s*desc/ig, " desc" );
@@ -648,18 +1350,6 @@ var array = {
 	},
 
 	/**
-	 * Returns the keys in an "Associative Array"
-	 *
-	 * @method keys
-	 * @memberOf array
-	 * @param  {Mixed} obj Array or Object to extract keys from
-	 * @return {Array}     Array of the keys
-	 */
-	keys : function ( obj ) {
-		return Object.keys( obj );
-	},
-
-	/**
 	 * Returns the last index of the Array
 	 *
 	 * @method last
@@ -667,6 +1357,11 @@ var array = {
 	 * @param  {Array}  obj Array
 	 * @param  {Number} arg [Optional] Negative offset from last index to return
 	 * @return {Mixed}      Last index( s ) of Array
+	 * @example
+	 * var myArray = [1, 2, 3, 4];
+	 *
+	 * keigai.util.array.last( myArray );    // 4
+	 * keigai.util.array.last( myArray, 2 ); // [3, 4]
 	 */
 	last : function ( obj, arg ) {
 		var n = obj.length - 1;
@@ -691,6 +1386,11 @@ var array = {
 	 * @param  {Number} start  Starting index
 	 * @param  {Number} offset Number of indices to return
 	 * @return {Array}         Array of indices
+	 * @example
+	 * var myArray = [1, 2, 3, 4];
+	 *
+	 * keigai.util.array.limit( myArray, 0, 2 ); // [1, 2]
+	 * keigai.util.array.limit( myArray, 2, 2 ); // [3, 4]
 	 */
 	limit : function ( obj, start, offset ) {
 		var result = [],
@@ -712,8 +1412,10 @@ var array = {
 	 *
 	 * @method max
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Mixed}     Number, String, etc.
+	 * @example
+	 * keigai.util.array.max( [5, 3, 9, 1, 4] ); // 9
 	 */
 	max : function ( obj ) {
 		return array.last( obj.sort( array.sort ) );
@@ -724,8 +1426,10 @@ var array = {
 	 *
 	 * @method mean
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Number}    Mean of the Array ( float or integer )
+	 * @example
+	 * keigai.util.array.mean( [1, 3, 5] ); // 3
 	 */
 	mean : function ( obj ) {
 		return obj.length > 0 ? ( array.sum( obj ) / obj.length ) : undefined;
@@ -736,8 +1440,11 @@ var array = {
 	 *
 	 * @method median
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Number}    Median number of the Array ( float or integer )
+	 * @example
+	 * keigai.util.array.median( [5, 1, 3, 8] ); // 4
+	 * keigai.util.array.median( [5, 1, 3] );    // 3
 	 */
 	median : function ( obj ) {
 		var nth    = obj.length,
@@ -752,16 +1459,22 @@ var array = {
 	 *
 	 * @method merge
 	 * @memberOf array
-	 * @param  {Array} obj Array to receive indices
-	 * @param  {Array} arg Array to merge
-	 * @return {Array}     obj
+	 * @param  {Array} obj1 Array to receive indices
+	 * @param  {Array} obj2 Array to merge
+	 * @return {Array}      First argument
+	 * @example
+	 * var a = ["a", "b", "c"],
+	 *     b = ["d"];
+	 *
+	 * keigai.util.array.merge( a, b );
+	 * a[3]; // "d"
 	 */
-	merge : function ( obj, arg ) {
-		array.each( arg, function ( i ) {
-			array.add( obj, i );
+	merge : function ( obj1, obj2 ) {
+		array.each( obj2, function ( i ) {
+			array.add( obj1, i );
 		} );
 
-		return obj;
+		return obj1;
 	},
 
 	/**
@@ -769,8 +1482,10 @@ var array = {
 	 *
 	 * @method min
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Mixed}     Number, String, etc.
+	 * @example
+	 * keigai.util.array.min( [5, 3, 9, 1, 4] ); // 1
 	 */
 	min : function ( obj ) {
 		return obj.sort( array.sort )[0];
@@ -784,6 +1499,11 @@ var array = {
 	 * @param  {Array} obj1 Array to mingle
 	 * @param  {Array} obj2 Array to mingle
 	 * @return {Array}      2D Array
+	 * @example
+	 * var a = ["a", "b"],
+	 *     b = ["c", "d"];
+	 *
+	 * keigai.util.array.mingle( a, b ); // [["a", "c"], ["b", "d"]]
 	 */
 	mingle : function ( obj1, obj2 ) {
 		var result;
@@ -800,8 +1520,11 @@ var array = {
 	 *
 	 * @method mode
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Mixed}     Mode value of the Array
+	 * @example
+	 * keigai.util.array.mode( [1, 3, 7, 1, 2, 10, 7, 7, 3, 10] );     // 7
+	 * keigai.util.array.mode( [1, 3, 7, 1, 2, 10, 7, 7, 3, 10, 10] ); // [7, 10]
 	 */
 	mode : function ( obj ) {
 		var values = {},
@@ -849,6 +1572,8 @@ var array = {
 	 * @param  {Number} precision [Optional] Rounding precision
 	 * @param  {Number} total     [Optional] Value to compare against
 	 * @return {Array}            Array of percents
+	 * @example
+	 * keigai.util.array.percents( [1, 2, 3, 37] ); // [2, 5, 7, 86]
 	 */
 	percents : function ( obj, precision, total ) {
 		var result = [],
@@ -892,8 +1617,10 @@ var array = {
 	 *
 	 * @method range
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Number}    Range of the array ( float or integer )
+	 * @example
+	 * keigai.util.array.range( [5, 1, 3, 8] ); // 7
 	 */
 	range : function ( obj ) {
 		return array.max( obj ) - array.min( obj );
@@ -907,6 +1634,8 @@ var array = {
 	 * @param  {Array} obj 2D Array to search
 	 * @param  {Mixed} arg Primitive to find
 	 * @return {Mixed}     Array or undefined
+	 * @example
+	 * keigai.util.array.rassoc( [[1, 3], [7, 2], [4, 3]], 3 ); // [1, 3]
 	 */
 	rassoc : function ( obj, arg ) {
 		var result;
@@ -930,27 +1659,11 @@ var array = {
 	 * @param  {Array}    obj Array to iterate
 	 * @param  {Function} fn  Function to execute against `obj` indices
 	 * @return {Array}        Array of indices which fn() is not true
+	 * @example
+	 * keigai.util.array.reject( [0, 1, 2, 3, 4, 5], function ( i ) { return i % 2 > 0; } ); // [0, 2, 4]
 	 */
 	reject : function ( obj, fn ) {
 		return array.diff( obj, obj.filter( fn ) );
-	},
-	
-	/**
-	 * Replaces the contents of `obj` with `arg`
-	 *
-	 * @method replace
-	 * @memberOf array
-	 * @param  {Array} obj Array to modify
-	 * @param  {Array} arg Array to become `obj`
-	 * @return {Array}     New version of `obj`
-	 */
-	replace : function ( obj, arg ) {
-		array.remove( obj, 0, obj.length );
-		array.each( arg, function ( i ) {
-			obj.push( i );
-		} );
-
-		return obj;
 	},
 
 	/**
@@ -962,6 +1675,11 @@ var array = {
 	 * @param  {Mixed}  start Starting index, or value to find within obj
 	 * @param  {Number} end   [Optional] Ending index
 	 * @return {Array}        Modified Array
+	 * @example
+	 * var myArray = ["a", "b", "c", "d", "e"];
+	 *
+	 * keigai.util.array.remove( myArray, 2, 3 );
+	 * myArray[2]; // "e"
 	 */
 	remove : function ( obj, start, end ) {
 		if ( isNaN( start ) ) {
@@ -992,6 +1710,11 @@ var array = {
 	 * @param  {Array}    obj Array to iterate
 	 * @param  {Function} fn  Function to test indices against
 	 * @return {Array}        Array
+	 * @example
+	 * var myArray = ["a", "b", "c"];
+	 *
+	 * keigai.util.array.removeIf( myArray, function ( i ) { return /a|c/.test( i ); } );
+	 * myArray[0]; // "b"
 	 */
 	removeIf : function ( obj, fn ) {
 		var remove;
@@ -1017,6 +1740,12 @@ var array = {
 	 * @param  {Array}    obj Array to iterate
 	 * @param  {Function} fn  Function to test indices against
 	 * @return {Array}        Array
+	 * @example
+	 * var myArray = ["a", "b", "c"];
+	 *
+	 * keigai.util.array.removeWhile( myArray, function ( i ) { return /a|c/.test( i ); } );
+	 * myArray[0];     // "b"
+	 * myArray.length; // 2
 	 */
 	removeWhile : function ( obj, fn ) {
 		if ( typeof fn != "function" ) {
@@ -1042,13 +1771,40 @@ var array = {
 	},
 
 	/**
+	 * Replaces the contents of `obj` with `arg`
+	 *
+	 * @method replace
+	 * @memberOf array
+	 * @param  {Array} obj1 Array to modify
+	 * @param  {Array} obj2 Array to values to push into `obj1`
+	 * @return {Array}      Array to modify
+	 * @example
+	 * var myArray = ["a", "b", "c"];
+	 *
+	 * keigai.util.array.replace( myArray, [true, false] );
+	 * myArray[0];     // true
+	 * myArray.length; // 2
+	 */
+	replace : function ( obj1, obj2 ) {
+		array.remove( obj1, 0, obj1.length );
+		array.each( obj2, function ( i ) {
+			obj1.push( i );
+		} );
+
+		return obj1;
+	},
+
+	/**
 	 * Returns the "rest" of `obj` from `arg`
 	 *
 	 * @method rest
 	 * @memberOf array
-	 * @param  {Array}  obj Array to parse
+	 * @param  {Array}  obj Array to process
 	 * @param  {Number} arg [Optional] Start position of subset of `obj` ( positive number only )
 	 * @return {Array}      Array of a subset of `obj`
+	 * @example
+	 * keigai.util.array.rest( [1, 2, 3, 4, 5, 6] );    // [2, 3, 4, 5, 6]
+	 * keigai.util.array.rest( [1, 2, 3, 4, 5, 6], 3 ); // [4, 5, 6]
 	 */
 	rest : function ( obj, arg ) {
 		arg = arg || 1;
@@ -1068,6 +1824,8 @@ var array = {
 	 * @param  {Array} obj Array to search
 	 * @param  {Mixed} arg Primitive to find
 	 * @return {Mixed}     Index or undefined
+	 * @example
+	 * keigai.util.array.rindex( [1, 2, 3, 2, 1], 2 ); // 3
 	 */
 	rindex : function ( obj, arg ) {
 		var result = -1;
@@ -1089,6 +1847,9 @@ var array = {
 	 * @param  {Array}  obj Array to rotate
 	 * @param  {Number} arg Index to become the first index, if negative the rotation is in the opposite direction
 	 * @return {Array}      Newly rotated Array
+	 * @example
+	 * keigai.util.array.rotate( [0, 1, 2, 3, 4],  3 )[0] // 2;
+	 * keigai.util.array.rotate( [0, 1, 2, 3, 4], -2 )[0] // 3;
 	 */
 	rotate : function ( obj, arg ) {
 		var nth = obj.length,
@@ -1121,6 +1882,9 @@ var array = {
 	 * @param  {Number} end    [Optional] The end of the series
 	 * @param  {Number} offset [Optional] Offset for indices, default is 1
 	 * @return {Array}         Array of new series
+	 * @example
+	 * keigai.util.array.series( 0, 5 );     // [0, 1, 2, 3, 4]
+	 * keigai.util.array.series( 0, 25, 5 ); // [0, 5, 10, 15, 20]
 	 */
 	series : function ( start, end, offset ) {
 		start      = start  || 0;
@@ -1139,46 +1903,6 @@ var array = {
 	},
 
 	/**
-	 * Splits an Array by divisor
-	 *
-	 * @method split
-	 * @memberOf array
-	 * @param  {Array}  obj     Array to parse
-	 * @param  {Number} divisor Integer to divide the Array by
-	 * @return {Array}          Split Array
-	 */
-	split : function ( obj, divisor ) {
-		var result  = [],
-		    total   = obj.length,
-		    nth     = Math.ceil( total / divisor ),
-		    low     = Math.floor( total / divisor ),
-		    lower   = Math.ceil( total / nth ),
-		    lowered = false,
-		    start   = 0,
-		    i       = -1;
-
-		// Finding the fold
-		if ( number.diff( total, ( divisor * nth ) ) > nth ) {
-			lower = total - ( low * divisor ) + low - 1;
-		}
-
-		while ( ++i < divisor ) {
-			if ( !lowered && lower < divisor && i === lower ) {
-				--nth;
-				lowered = true;
-			}
-
-			if ( i > 0 ) {
-				start = start + nth;
-			}
-
-			result.push( array.limit( obj, start, nth ) );
-		}
-
-		return result;
-	},
-
-	/**
 	 * Sorts the Array by parsing values
 	 *
 	 * @method sort
@@ -1186,6 +1910,8 @@ var array = {
 	 * @param  {Mixed} a Argument to compare
 	 * @param  {Mixed} b Argument to compare
 	 * @return {Number}  Number indicating sort order
+	 * @example
+	 * keigai.util.array.sort( 2, 3 ); // -1
 	 */
 	sort : function ( a, b ) {
 		var types = {a: typeof a, b: typeof b},
@@ -1225,9 +1951,87 @@ var array = {
 	 * @memberOf array
 	 * @param  {Array} obj Array to sort
 	 * @return {Array}     Sorted Array
+	 * @example
+	 * var myArray = [5, 9, 2, 4];
+	 *
+	 * keigai.util.array.sorted( myArray );
+	 * myArray[0]; // 2
 	 */
 	sorted : function ( obj ) {
 		return obj.sort( array.sort );
+	},
+
+	/**
+	 * Splits an Array by divisor
+	 *
+	 * @method split
+	 * @memberOf array
+	 * @param  {Array}  obj     Array to process
+	 * @param  {Number} divisor Integer to divide the Array by
+	 * @return {Array}          Split Array
+	 * @example
+	 * var myArray = [],
+	 *     i       = -1,
+	 *     results;
+	 *
+	 * while ( ++i < 100 ) {
+	 *   myArray.push( i + 1 );
+	 * }
+	 *
+	 * results = keigai.util.array.split( myArray, 21 );
+	 * results.length;     // 21
+	 * results[0].length;  // 5
+	 * results[19].length; // 4
+	 * results[19][0];     // 99
+	 * results[20].length; // 1
+	 * results[20][0];     // 100
+	 */
+	split : function ( obj, divisor ) {
+		var result  = [],
+		    total   = obj.length,
+		    nth     = Math.ceil( total / divisor ),
+		    low     = Math.floor( total / divisor ),
+		    lower   = Math.ceil( total / nth ),
+		    lowered = false,
+		    start   = 0,
+		    i       = -1;
+
+		// Finding the fold
+		if ( number.diff( total, ( divisor * nth ) ) > nth ) {
+			lower = total - ( low * divisor ) + low - 1;
+		}
+		else if ( total % divisor > 0 && lower * nth >= total ) {
+			lower--;
+		}
+
+		while ( ++i < divisor ) {
+			if ( i > 0 ) {
+				start = start + nth;
+			}
+
+			if ( !lowered && lower < divisor && i === lower ) {
+				--nth;
+				lowered = true;
+			}
+
+			result.push( array.limit( obj, start, nth ) );
+		}
+
+		return result;
+	},
+
+	/**
+	 * Finds the standard deviation of an Array ( of numbers )
+	 *
+	 * @method stddev
+	 * @memberOf array
+	 * @param  {Array} obj Array to process
+	 * @return {Number}    Standard deviation of the Array ( float or integer )
+	 * @example
+	 * keigai.util.array.stddev( [1, 3, 5] ); // 1.632993161855452
+	 */
+	stddev : function ( obj ) {
+		return Math.sqrt( array.variance( obj ) );
 	},
 
 	/**
@@ -1237,6 +2041,8 @@ var array = {
 	 * @memberOf array
 	 * @param  {Array} obj Array to sum
 	 * @return {Number}    Summation of Array
+	 * @example
+	 * keigai.util.array.sum( [2, 4, 3, 1] ); // 10
 	 */
 	sum : function ( obj ) {
 		var result = 0;
@@ -1251,40 +2057,18 @@ var array = {
 	},
 
 	/**
-	 * Finds the standard deviation of an Array ( of numbers )
-	 *
-	 * @method stddev
-	 * @memberOf array
-	 * @param  {Array} obj Array to parse
-	 * @return {Number}    Standard deviation of the Array ( float or integer )
-	 */
-	stddev : function ( obj ) {
-		return Math.sqrt( array.variance( obj ) );
-	},
-
-	/**
-	 * Takes the first `arg` indices from `obj`
+	 * Takes the first `n` indices from `obj`
 	 *
 	 * @method take
 	 * @memberOf array
-	 * @param  {Array}  obj Array to parse
-	 * @param  {Number} arg Offset from 0 to return
+	 * @param  {Array}  obj Array to process
+	 * @param  {Number} n   Offset from 0 to return
 	 * @return {Array}      Subset of `obj`
+	 * @example
+	 * keigai.util.array.take( [1, 2, 3, 4], 2 ); // [1, 2]
 	 */
-	take : function ( obj, arg ) {
-		return array.limit( obj, 0, arg );
-	},
-
-	/**
-	 * Gets the total keys in an Array
-	 *
-	 * @method total
-	 * @memberOf array
-	 * @param  {Array} obj Array to find the length of
-	 * @return {Number}    Number of keys in Array
-	 */
-	total : function ( obj ) {
-		return array.indexed( obj ).length;
+	take : function ( obj, n ) {
+		return array.limit( obj, 0, n );
 	},
 
 	/**
@@ -1294,6 +2078,8 @@ var array = {
 	 * @memberOf array
 	 * @param  {Array} ar Array to transform
 	 * @return {Object}   New object
+	 * @example
+	 * keigai.util.array.toObject( ["abc", "def"] ); // {0: "abc", 1: "def"}
 	 */
 	toObject : function ( ar ) {
 		var obj = {},
@@ -1307,12 +2093,31 @@ var array = {
 	},
 
 	/**
+	 * Gets the total keys in an Array
+	 *
+	 * @method total
+	 * @memberOf array
+	 * @param  {Array} obj Array to find the length of
+	 * @return {Number}    Number of keys in Array
+	 * @example
+	 * var myArray = [true, true, false];
+	 *
+	 * myArray.extra = true;
+	 * keigai.util.array.total( myArray ); // 4
+	 */
+	total : function ( obj ) {
+		return array.indexed( obj ).length;
+	},
+
+	/**
 	 * Returns an Array of unique indices of `obj`
 	 *
 	 * @method unique
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Array}     Array of unique indices
+	 * @example
+	 * keigai.util.array.unique( ["a", "b", "a", "c", "b", "d"] ); // ["a", "b", "c", "d"]
 	 */
 	unique : function ( obj ) {
 		var result = [];
@@ -1329,8 +2134,10 @@ var array = {
 	 *
 	 * @method variance
 	 * @memberOf array
-	 * @param  {Array} obj Array to parse
+	 * @param  {Array} obj Array to process
 	 * @return {Number}    Variance of the Array ( float or integer )
+	 * @example
+	 * keigai.util.array.variance( [1, 3, 5] ); // 2.6666666666666665
 	 */
 	variance : function ( obj ) {
 		var nth = obj.length,
@@ -1359,6 +2166,8 @@ var array = {
 	 * @param  {Array} obj  Array to transform
 	 * @param  {Mixed} args Argument instance or Array to merge
 	 * @return {Array}      Array
+	 * @example
+	 * keigai.util.array.zip( [0, 1], 1 ); // [[0, 1], [1, null]]
 	 */
 	zip : function ( obj, args ) {
 		var result = [];
@@ -1397,7 +2206,7 @@ var cache = {
 	 * @memberOf cache
 	 * @type {Object}
 	 */
-	items : {},
+	lru : lru.factory( CACHE ),
 
 	/**
 	 * Garbage collector for the cached items
@@ -1407,9 +2216,9 @@ var cache = {
 	 * @return {Undefined} undefined
 	 */
 	clean : function () {
-		return utility.iterate( cache.items, function ( v, k ) {
-			if ( cache.expired( k ) ) {
-				cache.expire( k, true );
+		array.each( array.keys( cache.lru.cache ), function ( i ) {
+			if ( cache.expired( i ) ) {
+				cache.expire( i );
 			}
 		} );
 	},
@@ -1417,16 +2226,14 @@ var cache = {
 	/**
 	 * Expires a URI from the local cache
 	 *
-	 * Events: expire    Fires when the URI expires
-	 *
 	 * @method expire
 	 * @memberOf cache
 	 * @param  {String} uri URI of the local representation
 	 * @return {Boolean} `true` if successful
 	 */
 	expire : function ( uri ) {
-		if ( cache.items[uri] ) {
-			delete cache.items[uri];
+		if ( cache.lru.cache[uri] ) {
+			cache.lru.remove( uri );
 
 			return true;
 		}
@@ -1444,9 +2251,9 @@ var cache = {
 	 * @return {Boolean}    True if the URI has expired
 	 */
 	expired : function ( uri ) {
-		var item = cache.items[uri];
+		var item = cache.lru.cache[uri];
 
-		return item && item.expires < new Date();
+		return item && item.value.expires < new Date().getTime();
 	},
 
 	/**
@@ -1460,9 +2267,10 @@ var cache = {
 	 * @return {Mixed}          URI Object {headers, response} or False
 	 */
 	get : function ( uri, expire ) {
-		uri = utility.parse( uri ).href;
+		uri      = utility.parse( uri ).href;
+		var item = cache.lru.get( uri );
 
-		if ( !cache.items[uri] ) {
+		if ( !item ) {
 			return false;
 		}
 
@@ -1472,7 +2280,7 @@ var cache = {
 			return false;
 		}
 
-		return utility.clone( cache.items[uri], true );
+		return utility.clone( item, true );
 	},
 
 	/**
@@ -1486,30 +2294,33 @@ var cache = {
 	 * @return {Mixed}           URI Object {headers, response} or undefined
 	 */
 	set : function ( uri, property, value ) {
-		uri = utility.parse( uri ).href;
+		uri      = utility.parse( uri ).href;
+		var item = cache.lru.get( uri );
 
-		if ( !cache.items[uri] ) {
-			cache.items[uri] = {};
-			cache.items[uri].permission = 0;
+		if ( !item ) {
+			item = {
+				permission : 0
+			};
 		}
 
 		if ( property === "permission" ) {
-			cache.items[uri].permission |= value;
+			item.permission |= value;
 		}
 		else if ( property === "!permission" ) {
-			cache.items[uri].permission &= ~value;
+			item.permission &= ~value;
 		}
 		else {
-			cache.items[uri][property] = value;
+			item[property] = value;
 		}
 
-		return cache.items[uri];
+		cache.lru.set( uri, item );
+
+		return item;
 	}
 };
 
 /**
  * @namespace client
- * @private
  */
 var client = {
 	/**
@@ -1517,6 +2328,7 @@ var client = {
 	 *
 	 * @memberOf client
 	 * @type {Boolean}
+	 * @private
 	 */
 	ie : function () {
 		return !server && regex.ie.test( navigator.userAgent );
@@ -1527,6 +2339,7 @@ var client = {
 	 *
 	 * @memberOf client
 	 * @type {Number}
+	 * @private
 	 */
 	version : function () {
 		var version = 0;
@@ -1547,6 +2360,7 @@ var client = {
 	 * @param  {String} uri  URI to query
 	 * @param  {String} verb HTTP verb
 	 * @return {Boolean}     `true` if the verb is allowed, undefined if unknown
+	 * @private
 	 */
 	allows : function ( uri, verb ) {
 		if ( string.isEmpty( uri ) || string.isEmpty( verb ) ) {
@@ -1588,6 +2402,7 @@ var client = {
 	 * @memberOf client
 	 * @param  {Array} args Array of commands the URI accepts
 	 * @return {Number} To be set as a bit
+	 * @private
 	 */
 	bit : function ( args ) {
 		var result = 0;
@@ -1619,6 +2434,7 @@ var client = {
 	 * @memberOf client
 	 * @param  {String} uri  URI to parse
 	 * @return {Boolean}     True if CORS
+	 * @private
 	 */
 	cors : function ( uri ) {
 		return ( !server && uri.indexOf( "//" ) > -1 && uri.indexOf( "//" + location.host ) === -1 );
@@ -1633,6 +2449,7 @@ var client = {
 	 * @param  {String} uri  URI to request
 	 * @param  {String} type Type of request
 	 * @return {Object}      Cached URI representation
+	 * @private
 	 */
 	headers : function ( xhr, uri, type ) {
 		var headers = string.trim( xhr.getAllResponseHeaders() ).split( "\n" ),
@@ -1690,6 +2507,7 @@ var client = {
 	 * @param  {Object} xhr  XHR Object
 	 * @param  {String} type [Optional] content-type header value
 	 * @return {Mixed}       Array, Boolean, Document, Number, Object or String
+	 * @private
 	 */
 	parse : function ( xhr, type ) {
 		type = type || "";
@@ -1722,6 +2540,7 @@ var client = {
 	 * @memberOf client
 	 * @param  {String} uri URI to query
 	 * @return {Object}     Contains an Array of available commands, the permission bit and a map
+	 * @private
 	 */
 	permissions : function ( uri ) {
 		var cached = cache.get( uri, false ),
@@ -1758,10 +2577,17 @@ var client = {
 	 * @param  {Function} failure [Optional] A handler function to execute on error
 	 * @param  {Mixed}    args    Custom JSONP handler parameter name, default is "callback"; or custom headers for GET request ( CORS )
 	 * @return {Object} {@link keigai.Deferred}
+	 * @example
+	 * keigai.util.jsonp( "http://somedomain.com/resource?callback=", function ( arg ) {
+	 *   // `arg` is the coerced response body
+	 * }, function ( err ) {
+	 *   // Handle `err`
+	 * } );
 	 */
 	jsonp : function ( uri, success, failure, args ) {
 		var defer    = deferred.factory(),
-		    callback = "callback", cbid, s;
+		    callback = "callback",
+		    cbid, s;
 
 		if ( external === undefined ) {
 			if ( !global.keigai ) {
@@ -1818,16 +2644,24 @@ var client = {
 	 * @method request
 	 * @memberOf client
 	 * @param  {String}   uri     URI to query
-	 * @param  {String}   type    Type of request ( DELETE/GET/POST/PUT/HEAD )
-	 * @param  {Function} success A handler function to execute when an appropriate response been received
-	 * @param  {Function} failure [Optional] A handler function to execute on error
+	 * @param  {String}   type    [Optional] Type of request ( DELETE/GET/POST/PUT/PATCH/HEAD/OPTIONS ), default is `GET`
+	 * @param  {Function} success [Optional] Handler to execute when an appropriate response been received
+	 * @param  {Function} failure [Optional] Handler to execute on error
 	 * @param  {Mixed}    args    [Optional] Data to send with the request
 	 * @param  {Object}   headers [Optional] Custom request headers ( can be used to set withCredentials )
 	 * @param  {Number}   timeout [Optional] Timeout in milliseconds, default is 30000
 	 * @return {Object}   {@link Deferred}
+	 * @example
+	 * keigai.util.request( "http://keigai.io" ).then( function ( arg ) {
+	 *   // `arg` is the coerced response body
+	 * }, function ( err ) {
+	 *   // Handle `err`
+	 * } );
 	 */
 	request : function ( uri, type, success, failure, args, headers, timeout ) {
-		var cors, xhr, payload, cached, typed, contentType, doc, ab, blob, defer;
+		var cors, xhr, payload, cached, contentType, doc, ab, blob, defer;
+
+		type = type || "GET";
 
 		if ( ( regex.put_post.test( type ) || regex.patch.test( type ) ) && args === undefined ) {
 			throw new Error( label.invalidArguments );
@@ -1841,7 +2675,6 @@ var client = {
 		xhr         = !client.ie || ( !cors || client.version > 9 ) ? new XMLHttpRequest() : new XDomainRequest();
 		payload     = ( regex.put_post.test( type ) || regex.patch.test( type ) ) && args ? args : null;
 		cached      = type === "get" ? cache.get( uri ) : false;
-		typed       = string.capitalize( type );
 		contentType = null;
 		doc         = typeof Document != "undefined";
 		ab          = typeof ArrayBuffer != "undefined";
@@ -2070,20 +2903,6 @@ var client = {
 	},
 
 	/**
-	 * Creates a script Element to load an external script
-	 *
-	 * @method script
-	 * @memberOf client
-	 * @param  {String} arg    URL to script
-	 * @param  {Object} target [Optional] Element to receive the script
-	 * @param  {String} pos    [Optional] Position to create the script at within the target
-	 * @return {Object}        Element
-	 */
-	script : function ( arg, target, pos ) {
-		return element.create( "script", {type: "application/javascript", src: arg}, target || utility.dom( "head" )[0], pos );
-	},
-
-	/**
 	 * Scrolls to a position in the view using a two point bezier curve
 	 *
 	 * @method scroll
@@ -2091,6 +2910,7 @@ var client = {
 	 * @param  {Array}  dest Coordinates
 	 * @param  {Number} ms   [Optional] Milliseconds to scroll, default is 250, min is 100
 	 * @return {Object} {@link Deferred}
+	 * @private
 	 */
 	scroll : function ( dest, ms ) {
 		var defer = deferred(),
@@ -2119,45 +2939,18 @@ var client = {
 	 * @method scrollPos
 	 * @memberOf client
 	 * @return {Array} Describes the scroll position
+	 * @private
 	 */
 	scrollPos : function () {
 		return [
 			window.scrollX || 0,
 			window.scrollY || 0
 		];
-	},
-
-	/**
-	 * Returns the visible area of the View
-	 *
-	 * @method size
-	 * @memberOf client
-	 * @return {Array} Describes the View
-	 */
-	size : function () {
-		return [
-			document["documentElement" || "body"].clientWidth  || 0,
-			document["documentElement" || "body"].clientHeight || 0
-		];
-	},
-
-	/**
-	 * Creates a link Element to load an external stylesheet
-	 *
-	 * @method stylesheet
-	 * @memberOf client
-	 * @param  {String} arg   URL to stylesheet
-	 * @param  {String} media [Optional] Medias the stylesheet applies to
-	 * @return {Object}      Stylesheet
-	 */
-	stylesheet : function ( arg, media ) {
-		return element.create( "link", {rel: "stylesheet", type: "text/css", href: arg, media: media || "print, screen"}, utility.dom( "head" )[0] );
 	}
 };
 
 /**
  * @namespace filter
- * @private
  */
 var filter = {
 	/**
@@ -2168,8 +2961,12 @@ var filter = {
 	 * @param  {Object} target   Element to receive the filter
 	 * @param  {Object} list     {@link keigai.DataList}
 	 * @param  {String} filters  Comma delimited string of fields to filter by
-	 * @param  {Number} debounce [Optional] Milliseconds to debounce
+	 * @param  {Number} debounce [Optional] Milliseconds to debounce, default is `250`
 	 * @return {Object} {@link keigai.DataListFilter}
+	 * @example
+	 * var store  = keigai.store( [...] ),
+	 *     list   = keigai.list( document.querySelector( "#list" ), store, "{{field}}" ),
+	 *     filter = keigai.filter( document.querySelector( "input.filter" ), list, "field" );
 	 */
 	factory : function ( target, list, filters, debounce ) {
 		var ref = [list],
@@ -2182,6 +2979,9 @@ var filter = {
 		}
 
 		obj = new DataListFilter( target, ref[0], debounce ).set( filters );
+
+		// Decorating `target` with the appropriate input `type`
+		element.attr( target, "type", "text" );
 
 		// Setting up a chain of Events
 		obj.observer.hook( obj.element, "keyup" );
@@ -2198,17 +2998,30 @@ var filter = {
  *
  * @constructor
  * @memberOf keigai
+ * @extends {keigai.Base}
  * @param  {Object} obj      Element to receive the filter
  * @param  {Object} list     {@link keigai.DataList}
  * @param  {Number} debounce [Optional] Milliseconds to debounce
+ * @example
+ * var store  = keigai.store( [...] ),
+ *     list   = keigai.list( document.querySelector( "#list" ), store, "{{field}}" ),
+ *     filter = keigai.filter( document.querySelector( "input.filter" ), list, "field" );
  */
 function DataListFilter ( element, list, debounce ) {
-	this.element  = element;
-	this.list     = list;
 	this.debounce = debounce;
+	this.element  = element;
 	this.filters  = {};
-	this.observer = new Observable();
+	this.list     = list;
+	this.observer = observable.factory();
 }
+
+/**
+ * Extending Base
+ *
+ * @memberOf keigai.DataListFilter
+ * @type {Object} {@link keigai.Base}
+ */
+DataListFilter.prototype = base.factory();
 
 /**
  * Setting constructor loop
@@ -2216,112 +3029,9 @@ function DataListFilter ( element, list, debounce ) {
  * @method constructor
  * @memberOf keigai.DataListFilter
  * @type {Function}
+ * @private
  */
 DataListFilter.prototype.constructor = DataListFilter;
-
-/**
- * Adds an event listener
- *
- * @method addListener
- * @memberOf keigai.DataListFilter
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataListFilter}
- */
-DataListFilter.prototype.addListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataListFilter
- * @return {Object} {@link keigai.DataListFilter}
- */
-DataListFilter.prototype.dispatch = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataListFilter
- * @return {Object} {@link keigai.DataListFilter}
- */
-DataListFilter.prototype.emit = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
- * Gets listeners
- *
- * @method listeners
- * @memberOf keigai.DataListFilter
- * @param  {String} ev [Optional] Event name
- * @return {Object} Listeners
- */
-DataListFilter.prototype.listeners = function ( ev ) {
-	return ev ? this.observer.listeners[ev] : this.listeners;
-};
-
-/**
- * Removes an event listener
- *
- * @method off
- * @memberOf keigai.DataListFilter
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataListFilter}
- */
-DataListFilter.prototype.off = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method on
- * @memberOf keigai.DataListFilter
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataListFilter}
- */
-DataListFilter.prototype.on = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds a short lived event listener
- *
- * @method once
- * @memberOf keigai.DataListFilter
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataListFilter}
- */
-DataListFilter.prototype.once = function ( ev, listener, id, scope ) {
-	this.observer.once( ev, listener, id, scope || this );
-
-	return this;
-};
 
 /**
  * Set the filters
@@ -2332,6 +3042,8 @@ DataListFilter.prototype.once = function ( ev, listener, id, scope ) {
  * @memberOf keigai.DataListFilter
  * @param  {String} fields Comma separated filters
  * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * filter.set( "firstName, lastName, email" );
  */
 DataListFilter.prototype.set = function ( fields ) {
 	var obj = {};
@@ -2346,11 +3058,13 @@ DataListFilter.prototype.set = function ( fields ) {
 };
 
 /**
- * Cancel all event listeners
+ * Removes listeners, and DOM hooks to avoid memory leaks
  *
  * @method teardown
  * @memberOf keigai.DataListFilter
  * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * filter.teardown();
  */
 DataListFilter.prototype.teardown = function () {
 	this.observer.unhook( this.element, "keyup" );
@@ -2360,13 +3074,15 @@ DataListFilter.prototype.teardown = function () {
 };
 
 /**
- * Update the results list
+ * Applies the input value as a filter against the DataList based on specific fields
  *
  * @method update
  * @memberOf keigai.DataListFilter
- * @fires DataList#beforeFilter Fires before filter
- * @fires DataList#afterFilter Fires after filter
+ * @fires keigai.DataList#beforeFilter Fires before filter
+ * @fires keigai.DataList#afterFilter Fires after filter
  * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * filter.update(); // Debounced execution
  */
 DataListFilter.prototype.update = function () {
 	var self = this;
@@ -2410,7 +3126,6 @@ DataListFilter.prototype.update = function () {
 
 /**
  * @namespace grid
- * @private
  */
 var grid = {
 	/**
@@ -2418,7 +3133,7 @@ var grid = {
 	 *
 	 * @method factory
 	 * @memberOf grid
-	 * @fires DataGrid#change Fires when the DOM changes
+	 * @fires keigai.DataGrid#change Fires when the DOM changes
 	 * @param  {Object}  target      Element to receive DataGrid
 	 * @param  {Object}  store       DataStore
 	 * @param  {Array}   fields      Array of fields to display
@@ -2427,6 +3142,15 @@ var grid = {
 	 * @param  {Boolean} filtered    [Optional] Create an input to filter the data grid
 	 * @param  {Number}  debounce    [Optional] DataListFilter input debounce, default is 250
 	 * @return {Object} {@link keigai.DataGrid}
+	 * @example
+	 * var fields  = ["name", "age"],
+	 *     options = {pageSize: 5, order: "age desc, name"},
+	 *     store   = keigai.store(),
+	 *     grid    = keigai.grid( document.querySelector( "#grid" ), store, fields, fields, options, true );
+	 *
+	 * store.setUri( "data.json" ).then( null, function ( e ) {
+	 *   ...
+	 * } );
 	 */
 	factory : function ( target, store, fields, sortable, options, filtered, debounce ) {
 		var ref = [store],
@@ -2512,12 +3236,18 @@ var grid = {
  *
  * @constructor
  * @memberOf keigai
+ * @extends {keigai.Base}
  * @param  {Object}  target   Element to receive DataGrid
  * @param  {Object}  store    DataStore
  * @param  {Array}   fields   Array of fields to display
  * @param  {Array}   sortable [Optional] Array of sortable columns/fields
  * @param  {Object}  options  [Optional] DataList options
  * @param  {Boolean} filtered [Optional] Create an input to filter the DataGrid
+ * @example
+ * var fields  = ["name", "age"],
+ *     options = {pageSize: 5, order: "age desc, name"},
+ *     store   = keigai.store( [...] ),
+ *     grid    = keigai.grid( document.querySelector( "#grid" ), store, fields, fields, options, true );
  */
 function DataGrid ( target, store, fields, sortable, options, filtered ) {
 	var sortOrder;
@@ -2533,7 +3263,7 @@ function DataGrid ( target, store, fields, sortable, options, filtered ) {
 	this.filter    = null;
 	this.filtered  = filtered === true;
 	this.list      = null;
-	this.observer  = new Observable();
+	this.observer  = observable.factory();
 	this.options   = options   || {};
 	this.store     = store;
 	this.sortable  = sortable  || [];
@@ -2541,40 +3271,40 @@ function DataGrid ( target, store, fields, sortable, options, filtered ) {
 }
 
 /**
+ * Extending Base
+ *
+ * @memberOf keigai.DataGrid
+ * @type {Object} {@link keigai.Base}
+ */
+DataGrid.prototype = base.factory();
+
+/**
  * Setting constructor loop
  *
  * @method constructor
  * @memberOf keigai.DataGrid
  * @type {Function}
+ * @private
  */
 DataGrid.prototype.constructor = DataGrid;
 
 /**
- * Adds an event listener
+ * Adds an item to the DataGrid
  *
- * @method addListener
+ * @method add
  * @memberOf keigai.DataGrid
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataGrid}
+ * @param {Object} record New DataStore record (shapes should match)
+ * @return {Object}       {@link keigai.DataGrid}
+ * @example
+ * grid.add( {name: "John Doe", age: 34} );
  */
-DataGrid.prototype.addListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
+DataGrid.prototype.add = function ( record ) {
+	var self = this;
 
-	return this;
-};
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataGrid
- * @return {Object} {@link keigai.DataGrid}
- */
-DataGrid.prototype.dispatch = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
+	this.store.set( null, record ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
 
 	return this;
 };
@@ -2585,83 +3315,11 @@ DataGrid.prototype.dispatch = function () {
  * @method dump
  * @memberOf keigai.DataGrid
  * @return {Array} Record set
+ * @example
+ * var data = grid.dump();
  */
 DataGrid.prototype.dump = function () {
 	return this.store.dump( this.list.records, this.fields );
-};
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataGrid
- * @return {Object} {@link keigai.DataGrid}
- */
-DataGrid.prototype.emit = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
- * Gets listeners
- *
- * @method listeners
- * @memberOf keigai.DataGrid
- * @param  {String} ev [Optional] Event name
- * @return {Object} Listeners
- */
-DataGrid.prototype.listeners = function ( ev ) {
-	return ev ? this.observer.listeners[ev] : this.listeners;
-};
-
-/**
- * Removes an event listener
- *
- * @method off
- * @memberOf keigai.DataGrid
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataGrid}
- */
-DataGrid.prototype.off = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method on
- * @memberOf keigai.DataGrid
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataGrid}
- */
-DataGrid.prototype.on = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds a short lived event listener
- *
- * @method once
- * @memberOf keigai.DataGrid
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataGrid}
- */
-DataGrid.prototype.once = function ( ev, listener, id, scope ) {
-	this.observer.once( ev, listener, id, scope || this );
-
-	return this;
 };
 
 /**
@@ -2669,9 +3327,11 @@ DataGrid.prototype.once = function ( ev, listener, id, scope ) {
  *
  * @method refresh
  * @memberOf keigai.DataGrid
- * @fires DataGrid#beforeRefresh Fires before refresh
- * @fires DataGrid#afterRefresh Fires after refresh
+ * @fires keigai.DataGrid#beforeRefresh Fires before refresh
+ * @fires keigai.DataGrid#afterRefresh Fires after refresh
  * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.refresh();
  */
 DataGrid.prototype.refresh = function () {
 	var sort = [],
@@ -2699,19 +3359,40 @@ DataGrid.prototype.refresh = function () {
 };
 
 /**
+ * Removes an item from the DataGrid
+ *
+ * @method remove
+ * @memberOf keigai.DataGrid
+ * @param {Mixed} record Record, key or index
+ * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.remove( "key" );
+ */
+DataGrid.prototype.remove = function ( record ) {
+	var self = this;
+
+	this.store.del( record ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
+
+	return this;
+};
+
+/**
  * Sorts the DataGrid when a column header is clicked
  *
  * @method sort
  * @memberOf keigai.DataGrid
- * @param  {Object} e Event
+ * @param  {Object} ev Event
  * @return {Object} {@link keigai.DataGrid}
  */
-DataGrid.prototype.sort = function ( e ) {
-	var target = utility.target( e ),
+DataGrid.prototype.sort = function ( ev ) {
+	var target = utility.target( ev ),
 	    field;
 
 	// Stopping event propogation
-	utility.stop( e );
+	utility.stop( ev );
 
 	// Refreshing list if target is sortable
 	if ( element.hasClass( target, "sortable" ) ) {
@@ -2731,6 +3412,8 @@ DataGrid.prototype.sort = function ( e ) {
  * @method teardown
  * @memberOf keigai.DataGrid
  * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * grid.teardown();
  */
 DataGrid.prototype.teardown = function () {
 	if ( this.filter !== null ) {
@@ -2747,21 +3430,45 @@ DataGrid.prototype.teardown = function () {
 };
 
 /**
+ * Updates an item in the DataGrid
+ *
+ * @method update
+ * @memberOf keigai.DataGrid
+ * @param {Mixed}  key  Key or index
+ * @param {Object} data New property values
+ * @return {Object}     {@link keigai.DataGrid}
+ * @example
+ * grid.update( "key", {name: "Jim Smith"} );
+ */
+DataGrid.prototype.update = function ( key, data ) {
+	var self = this;
+
+	this.store.update( key, data ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
+
+	return this;
+};
+
+/**
  * @namespace list
- * @private
  */
 var list = {
 	/**
-	 * Creates an instance of datalist
+	 * Creates an instance of DataList
 	 *
 	 * @method factory
 	 * @memberOf list
-	 * @fires DataList#change Fires when the DOM changes
+	 * @fires keigai.DataList#change Fires when the DOM changes
 	 * @param  {Object} target   Element to receive the DataList
 	 * @param  {Object} store    {@link keigai.DataStore}
 	 * @param  {Mixed}  template Record field, template ( $.tpl ), or String, e.g. "<p>this is a {{field}} sample.</p>", fields are marked with {{ }}
 	 * @param  {Object} options  Optional parameters to set on the DataList
 	 * @return {Object} {@link keigai.DataList}
+	 * @example
+	 * var store = keigai.store( [...] ),
+	 *     list  = keigai.list( document.querySelector("#list"), store, "{{name}}", {order: "name"} );
 	 */
 	factory : function ( target, store, template, options ) {
 		var ref = [store],
@@ -2830,6 +3537,7 @@ var list = {
 	 * @method pages
 	 * @memberOf list
 	 * @return {Number} Total pages
+	 * @private
 	 */
 	pages : function () {
 		if ( isNaN( this.pageSize ) ) {
@@ -2845,6 +3553,7 @@ var list = {
 	 * @method range
 	 * @memberOf list
 	 * @return {Array}  Array of start & end numbers
+	 * @private
 	 */
 	range : function () {
 		var start = ( this.pageIndex * this.pageSize ) - this.pageSize,
@@ -2859,6 +3568,10 @@ var list = {
  *
  * @constructor
  * @memberOf keigai
+ * @extends {keigai.Base}
+ * @example
+ * var store = keigai.store( [...] ),
+ *     list  = keigai.list( document.querySelector("#list"), store, "{{name}}", {order: "name"} );
  */
 function DataList ( element, store, template ) {
 	this.callback    = null;
@@ -2869,7 +3582,7 @@ function DataList ( element, store, template ) {
 	this.filtered    = [];
 	this.id          = utility.genId();
 	this.mutation    = null;
-	this.observer    = new Observable();
+	this.observer    = observable.factory();
 	this.pageIndex   = 1;
 	this.pageSize    = null;
 	this.pageRange   = 5;
@@ -2884,40 +3597,40 @@ function DataList ( element, store, template ) {
 }
 
 /**
+ * Extending Base
+ *
+ * @memberOf keigai.DataList
+ * @type {Object} {@link keigai.Base}
+ */
+DataList.prototype = base.factory();
+
+/**
  * Setting constructor loop
  *
  * @method constructor
  * @memberOf keigai.DataList
  * @type {Function}
+ * @private
  */
 DataList.prototype.constructor = DataList;
 
 /**
- * Adds an event listener
+ * Adds an item to the DataList
  *
- * @method addListener
+ * @method add
  * @memberOf keigai.DataList
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataList}
+ * @param {Object} record New DataStore record (shapes should match)
+ * @return {Object}       {@link keigai.DataList}
+ * @example
+ * list.add( {name: "John Doe", age: 34} );
  */
-DataList.prototype.addListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
+DataList.prototype.add = function ( record ) {
+	var self = this;
 
-	return this;
-};
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataList
- * @return {Object} {@link keigai.DataList}
- */
-DataList.prototype.dispatch = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
+	this.store.set( null, record ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
 
 	return this;
 };
@@ -2928,83 +3641,11 @@ DataList.prototype.dispatch = function () {
  * @method dump
  * @memberOf keigai.DataList
  * @return {Array} Record set
+ * @example
+ * var data = list.dump();
  */
 DataList.prototype.dump = function () {
 	return this.store.dump( this.records );
-};
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataList
- * @return {Object} {@link keigai.DataList}
- */
-DataList.prototype.emit = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
- * Gets listeners
- *
- * @method listeners
- * @memberOf keigai.DataList
- * @param  {String} ev [Optional] Event name
- * @return {Object} Listeners
- */
-DataList.prototype.listeners = function ( ev ) {
-	return ev ? this.observer.listeners[ev] : this.listeners;
-};
-
-/**
- * Removes an event listener
- *
- * @method off
- * @memberOf keigai.DataList
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataList}
- */
-DataList.prototype.off = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method on
- * @memberOf keigai.DataList
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataList}
- */
-DataList.prototype.on = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds a short lived event listener
- *
- * @method once
- * @memberOf keigai.DataList
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataList}
- */
-DataList.prototype.once = function ( ev, listener, id, scope ) {
-	this.observer.once( ev, listener, id, scope || this );
-
-	return this;
 };
 
 /**
@@ -3012,21 +3653,25 @@ DataList.prototype.once = function ( ev, listener, id, scope ) {
  *
  * @method page
  * @memberOf keigai.DataList
- * @param  {Number} page Page to view
- * @return {Object} {@link keigai.DataList}
+ * @param  {Number} n Page to view
+ * @return {Object}   {@link keigai.DataList}
+ * @example
+ * list.page( 2 );
  */
-DataList.prototype.page = function ( page ) {
-	this.pageIndex = page;
+DataList.prototype.page = function ( n ) {
+	this.pageIndex = n;
 
 	return this.refresh();
 };
 
 /**
- * Adds pagination Elements to the View
+ * Adds pagination Elements to the View, executed from `DataList.refresh()`
  *
  * @method pages
  * @memberOf keigai.DataList
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.pages();
  */
 DataList.prototype.pages = function () {
 	var self  = this,
@@ -3120,12 +3765,15 @@ DataList.prototype.pages = function () {
  *
  * @method refresh
  * @memberOf keigai.DataList
- * @fires DataList#beforeRefresh Fires before refresh
- * @fires DataList#afterRefresh Fires after refresh
- * @fires DataList#error Fires on error
+ * @extends {keigai.Base}
+ * @fires keigai.DataList#beforeRefresh Fires before refresh
+ * @fires keigai.DataList#afterRefresh Fires after refresh
+ * @fires keigai.DataList#error Fires on error
  * @param  {Boolean} redraw [Optional] Boolean to force clearing the DataList ( default ), false toggles "hidden" class of items
  * @param  {Boolean} create [Optional] Recreates cached View of data
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.refresh();
  */
 DataList.prototype.refresh = function ( redraw, create ) {
 	var self     = this,
@@ -3324,12 +3972,42 @@ DataList.prototype.refresh = function ( redraw, create ) {
 };
 
 /**
+ * Removes an item from the DataList
+ *
+ * @method remove
+ * @memberOf keigai.DataList
+ * @param {Mixed} record Record, key or index
+ * @return {Object} {@link keigai.DataList}
+ * @example
+ * // Adding a click handler to 'trash' Elements
+ * keigai.util.array.cast( document.querySelectorAll( ".list .trash" ) ).forEach( function ( i ) {
+ *   i.addEventListener( "click", function ( ev ) {
+ *     var key = keigai.util.element.data( keigai.util.target( ev ).parentNode, "key" );
+ *
+ *     list.remove( key );
+ *   }, false );
+ * } );
+ */
+DataList.prototype.remove = function ( record ) {
+	var self = this;
+
+	this.store.del( record ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
+
+	return this;
+};
+
+/**
  * Sorts data list & refreshes element
  *
  * @method sort
  * @memberOf keigai.DataList
  * @param  {String} order SQL "ORDER BY" clause
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.sort( "age, name" );
  */
 DataList.prototype.sort = function ( order ) {
 	this.order = order;
@@ -3344,6 +4022,8 @@ DataList.prototype.sort = function ( order ) {
  * @memberOf keigai.DataList
  * @param  {Boolean} destroy [Optional] `true` will remove the DataList from the DOM
  * @return {Object} {@link keigai.DataList}
+ * @example
+ * list.teardown();
  */
 DataList.prototype.teardown = function ( destroy ) {
 	destroy  = ( destroy === true );
@@ -3368,8 +4048,29 @@ DataList.prototype.teardown = function ( destroy ) {
 };
 
 /**
+ * Updates an item in the DataList
+ *
+ * @method update
+ * @memberOf keigai.DataList
+ * @param {Mixed}  key  Key or index
+ * @param {Object} data New property values
+ * @return {Object}     {@link keigai.DataList}
+ * @example
+ * list.update( "key", {name: "Jim Smith"} );
+ */
+DataList.prototype.update = function ( key, data ) {
+	var self = this;
+
+	this.store.update( key, data ).then( null, function ( e ) {
+		utility.error( e );
+		self.dispatch( "error", e );
+	} );
+
+	return this;
+};
+
+/**
  * @namespace deferred
- * @private
  */
 var deferred = {
 	/**
@@ -3378,6 +4079,15 @@ var deferred = {
 	 * @method factory
 	 * @memberOf deferred
 	 * @return {Object} {@link keigai.Deferred}
+	 * @example
+	 * var deferred = keigai.util.defer();
+	 *
+	 * deferred.then( function ( ... ) { ... }, function ( err ) { ... } )
+	 * deferred.always( function ( ... ) { ... } );
+	 *
+	 * ...
+	 *
+	 * deferred.resolve( true );
 	 */
 	 factory : function () {
 		return new Deferred();
@@ -3400,7 +4110,7 @@ function Deferred () {
 
 	// Setting handlers to execute Arrays of Functions
 	this.promise.then( function ( arg ) {
-		promise.delay( function () {
+		utility.delay( function () {
 			array.each( self.onDone, function ( i ) {
 				i( arg );
 			} );
@@ -3414,7 +4124,7 @@ function Deferred () {
 			self.onFail   = [];
 		} );
 	}, function ( arg ) {
-		promise.delay( function () {
+		utility.delay( function () {
 			array.each( self.onFail, function ( i ) {
 				i( arg );
 			} );
@@ -3436,6 +4146,7 @@ function Deferred () {
  * @method constructor
  * @memberOf keigai.Deferred
  * @type {Function}
+ * @private
  */
 Deferred.prototype.constructor = Deferred;
 
@@ -3446,6 +4157,18 @@ Deferred.prototype.constructor = Deferred;
  * @memberOf keigai.Deferred
  * @param  {Function} arg Function to execute
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * deferred.always( function () {
+ *            ...
+ *          } ).then( function () {
+ *            ...
+ *          } );
+ *
+ * ...
+ *
+ * deferred.resolve( true );
  */
 Deferred.prototype.always = function ( arg ) {
 	if ( !this.isResolved() && !this.isRejected() && typeof arg == "function" ) {
@@ -3462,6 +4185,12 @@ Deferred.prototype.always = function ( arg ) {
  * @memberOf keigai.Deferred
  * @param  {Function} arg Function to execute
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * deferred.done( function ( ... ) {
+ *   ...
+ * } );
  */
 Deferred.prototype.done = function ( arg ) {
 	if ( !this.isResolved() && !this.isRejected() && typeof arg == "function" ) {
@@ -3478,6 +4207,12 @@ Deferred.prototype.done = function ( arg ) {
  * @memberOf keigai.Deferred
  * @param  {Function} arg Function to execute
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * deferred.fail( function ( ... ) {
+ *   ...
+ * } );
  */
 Deferred.prototype.fail = function ( arg ) {
 	if ( !this.isResolved() && !this.isRejected() && typeof arg == "function" ) {
@@ -3493,6 +4228,14 @@ Deferred.prototype.fail = function ( arg ) {
  * @method isRejected
  * @memberOf keigai.Deferred
  * @return {Boolean} `true` if rejected
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * ...
+ *
+ * if ( deferred.isRejected() ) {
+ *   ...
+ * }
  */
 Deferred.prototype.isRejected = function () {
 	return ( this.promise.state === promise.state.FAILED );
@@ -3504,6 +4247,14 @@ Deferred.prototype.isRejected = function () {
  * @method isResolved
  * @memberOf keigai.Deferred
  * @return {Boolean} `true` if resolved
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * ...
+ *
+ * if ( deferred.isResolved() ) {
+ *   ...
+ * }
  */
 Deferred.prototype.isResolved = function () {
 	return ( this.promise.state === promise.state.SUCCESS );
@@ -3516,6 +4267,10 @@ Deferred.prototype.isResolved = function () {
  * @memberOf keigai.Deferred
  * @param  {Mixed} arg Rejection outcome
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * deferred.reject( new Error( "Something went wrong" ) );
  */
 Deferred.prototype.reject = function ( arg ) {
 	this.promise.reject.call( this.promise, arg );
@@ -3530,6 +4285,10 @@ Deferred.prototype.reject = function ( arg ) {
  * @memberOf keigai.Deferred
  * @param  {Mixed} arg Resolution outcome
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * deferred.resolve( true );
  */
 Deferred.prototype.resolve = function ( arg ) {
 	this.promise.resolve.call( this.promise, arg );
@@ -3543,6 +4302,10 @@ Deferred.prototype.resolve = function ( arg ) {
  * @method state
  * @memberOf keigai.Deferred
  * @return {String} Describes the state
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * deferred.state(); // 0
  */
 Deferred.prototype.state = function () {
 	return this.promise.state;
@@ -3556,6 +4319,15 @@ Deferred.prototype.state = function () {
  * @param  {Function} success Executed when/if promise is resolved
  * @param  {Function} failure [Optional] Executed when/if promise is broken
  * @return {Object} {@link Promise}
+ * @example
+ * var deferred = keigai.util.defer();
+ *
+ * deferred.then( function ( ... ) { ... }, function ( err ) { ... } )
+ *         .then( function ( ... ) { ... }, function ( err ) { ... } );
+ *
+ * ...
+ *
+ * deferred.resolve( true );
  */
 Deferred.prototype.then = function ( success, failure ) {
 	return this.promise.then( success, failure );
@@ -3563,22 +4335,23 @@ Deferred.prototype.then = function ( success, failure ) {
 
 /**
  * @namespace element
- * @private
  */
 var element = {
 	/**
-	 * Appends `a` in `b`
+	 * Appends an Element to an Element
 	 *
 	 * @memberOf appendTo
 	 * @memberOf element
-	 * @param  {Object} a Element being appended
-	 * @param  {Object} b Element being appended to
-	 * @return {Object}   Element being appended to
+	 * @param  {Object} obj   Element
+	 * @param  {Object} child Child Element
+	 * @return {Object}       Element
+	 * @example
+	 * keigai.util.element.appendTo( document.querySelector( "#target" ), document.querySelector( "#something" ) );
 	 */
-	appendTo : function ( a, b ) {
-		b.appendChild( a );
+	appendTo : function ( obj, child ) {
+		obj.appendChild( child );
 
-		return b;
+		return obj;
 	},
 
 	/**
@@ -3586,10 +4359,12 @@ var element = {
 	 *
 	 * @method attr
 	 * @memberOf element
-	 * @param  {Mixed}  obj   Element
+	 * @param  {Object} obj   Element
 	 * @param  {String} name  Attribute name
 	 * @param  {Mixed}  value Attribute value
 	 * @return {Object}       Element
+	 * @example
+	 * keigai.util.element.attr( document.querySelector( "select" ), "selected", "option 1" );
 	 */
 	attr : function ( obj, key, value ) {
 		var target, result;
@@ -3660,8 +4435,10 @@ var element = {
 	 *
 	 * @method clear
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
-	 * @return {Object}    Element
+	 * @param  {Object} obj Element
+	 * @return {Object}     Element
+	 * @example
+	 * keigai.util.element.clear( document.querySelector( "#something" ) );
 	 */
 	clear : function ( obj ) {
 		if ( typeof obj.reset == "function" ) {
@@ -3683,25 +4460,28 @@ var element = {
 	 *
 	 * @method create
 	 * @memberOf element
-	 * @param  {String} type   Type of Element to create, or HTML String
-	 * @param  {Object} args   [Optional] Properties to set
-	 * @param  {Mixed}  target [Optional] Target Element
-	 * @param  {Mixed}  pos    [Optional] "first", "last" or Object describing how to add the new Element, e.g. {before: referenceElement}
-	 * @return {Mixed}         Element that was created, or an Array if `type` is a String of multiple Elements (frag)
+	 * @param  {String} type Type of Element to create, or HTML String
+	 * @param  {Object} args [Optional] Properties to set
+	 * @param  {Object} obj  [Optional] Target Element
+	 * @param  {Mixed}  pos  [Optional] "first", "last" or Object describing how to add the new Element, e.g. {before: referenceElement}, default is "last"
+	 * @return {Mixed}       Element that was created, or an Array if `type` is a String of multiple Elements (frag)
+	 * @example
+	 * keigai.util.element.create( "div", {innerHTML: "Hello World!"}, document.querySelector( "#something" ) );
+	 * keigai.util.element.create( "&lt;div&gt;Hello World!&lt;/div&gt;" );
 	 */
-	create : function ( type, args, target, pos ) {
+	create : function ( type, args, obj, pos ) {
 		var svg  = false,
 		    frag = false,
-		    obj, uid, result;
+		    fragment, uid, result;
 
 		// Removing potential HTML template formatting
 		type = type.replace( /\t|\n|\r/g, "" );
 
-		if ( target ) {
-			svg = target.namespaceURI && regex.svg.test( target.namespaceURI );
+		if ( obj ) {
+			svg = obj.namespaceURI && regex.svg.test( obj.namespaceURI );
 		}
 		else {
-			target = document.body;
+			obj = document.body;
 		}
 		
 		if ( args instanceof Object && args.id && !utility.dom( "#" + args.id ) ) {
@@ -3714,67 +4494,69 @@ var element = {
 
 		// String injection, create a frag and apply it
 		if ( regex.html.test( type ) ) {
-			frag   = true;
-			obj    = element.frag( type );
-			result = obj.childNodes.length === 1 ? obj.childNodes[0] : array.cast( obj.childNodes );
+			frag     = true;
+			fragment = element.frag( type );
+			result   = fragment.childNodes.length === 1 ? fragment.childNodes[0] : array.cast( fragment.childNodes );
 		}
 		// Original syntax
 		else {
 			if ( !svg && !regex.svg.test( type ) ) {
-				obj = document.createElement( type );
+				fragment = document.createElement( type );
 			}
 			else {
-				obj = document.createElementNS( "http://www.w3.org/2000/svg", type );
+				fragment = document.createElementNS( "http://www.w3.org/2000/svg", type );
 			}
 
 			if ( uid ) {
-				obj.id = uid;
+				fragment.id = uid;
 			}
 
 			if ( args instanceof Object ) {
-				element.update( obj, args );
+				element.update( fragment, args );
 			}
 		}
 
 		if ( !pos || pos === "last" ) {
-			target.appendChild( obj );
+			obj.appendChild( fragment );
 		}
 		else if ( pos === "first" ) {
-			element.prependChild( target, obj );
+			element.prependChild( obj, fragment );
 		}
 		else if ( pos === "after" ) {
-			pos = {};
-			pos.after = target;
-			target    = target.parentNode;
-			target.insertBefore( obj, pos.after.nextSibling );
+			pos = {after: obj};
+			obj = obj.parentNode;
+			obj.insertBefore( fragment, pos.after.nextSibling );
 		}
 		else if ( pos.after ) {
-			target.insertBefore( obj, pos.after.nextSibling );
+			obj.insertBefore( fragment, pos.after.nextSibling );
 		}
 		else if ( pos === "before" ) {
-			pos = {};
-			pos.before = target;
-			target     = target.parentNode;
-			target.insertBefore( obj, pos.before );
+			pos = {before: obj};
+			obj = obj.parentNode;
+			obj.insertBefore( fragment, pos.before );
 		}
 		else if ( pos.before ) {
-			target.insertBefore( obj, pos.before );
+			obj.insertBefore( fragment, pos.before );
 		}
 		else {
-			target.appendChild( obj );
+			obj.appendChild( fragment );
 		}
 
-		return !frag ? obj : result;
+		return !frag ? fragment : result;
 	},
 
 	/**
 	 * Gets or sets a CSS style attribute on an Element
 	 *
 	 * @method css
-	 * @param  {Mixed}  obj   Element
+	 * @memberOf element
+	 * @param  {Object} obj   Element
 	 * @param  {String} key   CSS to put in a style tag
 	 * @param  {String} value [Optional] Value to set
 	 * @return {Object}       Element
+	 * @example
+	 * keigai.util.element.css( document.querySelector( "#something" ), "font-weight", "bold" );
+	 * keigai.util.element.css( document.querySelector( "#something" ), "font-weight" ); // "bold"
 	 */
 	css : function ( obj, key, value ) {
 		if ( !regex.caps.test( key ) ) {
@@ -3795,10 +4577,22 @@ var element = {
 	 *
 	 * @method data
 	 * @memberOf element
-	 * @param  {Mixed}  obj   Element
+	 * @param  {Object} obj   Element
 	 * @param  {String} key   Data key
 	 * @param  {Mixed}  value Boolean, Number or String to set
 	 * @return {Mixed}        undefined, Element or value
+	 * @example
+	 * // Setting
+	 * keigai.util.element.data( document.querySelector( "#something" ), "id", "abc-1234" );
+	 *
+	 * // Getting
+	 * keigai.util.element.data( document.querySelector( "#something" ), "id" ); // "abc-1234"
+	 *
+	 * // Unsetting
+	 * keigai.util.element.data( document.querySelector( "#something" ), "id", null );
+	 *
+	 * // Setting a `null` value can be done by using a String
+	 * keigai.util.element.data( document.querySelector( "#something" ), "id", "null" );
 	 */
 	data : function ( obj, key, value ) {
 		if ( value !== undefined ) {
@@ -3816,8 +4610,10 @@ var element = {
 	 *
 	 * @method destroy
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
+	 * @param  {Object} obj Element
 	 * @return {Undefined} undefined
+	 * @example
+	 * keigai.util.element.destroy( document.querySelector( "#something" ) );
 	 */
 	destroy : function ( obj ) {
 		if ( obj.parentNode !== null ) {
@@ -3832,8 +4628,10 @@ var element = {
 	 *
 	 * @method disable
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
-	 * @return {Object}    Element
+	 * @param  {Object} obj Element
+	 * @return {Object}     Element
+	 * @example
+	 * keigai.util.element.disable( document.querySelector( "#something" ) );
 	 */
 	disable : function ( obj ) {
 		if ( typeof obj.disabled == "boolean" && !obj.disabled ) {
@@ -3852,13 +4650,22 @@ var element = {
 	 * @memberOf element
 	 * @param  {Object}  obj        Element which dispatches the Event
 	 * @param  {String}  type       Type of Event to dispatch
-	 * @param  {Object}  data       Data to include with the Event
+	 * @param  {Object}  data       [Optional] Data to include with the Event
 	 * @param  {Boolean} bubbles    [Optional] Determines if the Event bubbles, defaults to `true`
 	 * @param  {Boolean} cancelable [Optional] Determines if the Event can be canceled, defaults to `true`
 	 * @return {Object}             Element which dispatches the Event
+	 * @example
+	 * keigai.util.element.dispatch( document.querySelector( "#something" ), "click" );
 	 */
 	dispatch : function ( obj, type, data, bubbles, cancelable ) {
-		var ev = new CustomEvent( type );
+		var ev;
+
+		try {
+			ev = new CustomEvent( type );
+		}
+		catch ( e ) {
+			ev = document.createEvent( "CustomEvent" );
+		}
 
 		bubbles    = ( bubbles    !== false );
 		cancelable = ( cancelable !== false );
@@ -3874,8 +4681,10 @@ var element = {
 	 *
 	 * @method enable
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
-	 * @return {Object}    Element
+	 * @param  {Object} obj Element
+	 * @return {Object}     Element
+	 * @example
+	 * keigai.util.element.enable( document.querySelector( "#something" ) );
 	 */
 	enable : function ( obj ) {
 		if ( typeof obj.disabled == "boolean" && obj.disabled ) {
@@ -3890,9 +4699,11 @@ var element = {
 	 *
 	 * @method find
 	 * @memberOf element
-	 * @param  {Mixed}  obj Element to search
+	 * @param  {Object} obj Element to search
 	 * @param  {String} arg Comma delimited string of descendant selectors
 	 * @return {Mixed}      Array of Elements or undefined
+	 * @example
+	 * keigai.util.element.find( document.querySelector( "#something" ), "p" );
 	 */
 	find : function ( obj, arg ) {
 		var result = [];
@@ -3913,6 +4724,8 @@ var element = {
 	 * @memberOf element
 	 * @param  {String} arg [Optional] innerHTML
 	 * @return {Object}     Document fragment
+	 * @example
+	 * var frag = keigai.util.element.frag( "Hello World!" );
 	 */
 	frag : function ( arg ) {
 		var obj = document.createDocumentFragment();
@@ -3933,9 +4746,13 @@ var element = {
 	 *
 	 * @method has
 	 * @memberOf element
-	 * @param  {Mixed}   obj Element or Array of Elements or $ queries
-	 * @param  {String}  arg Type of Element to find
-	 * @return {Boolean}     True if 1 or more Elements are found
+	 * @param  {Object} obj Element
+	 * @param  {String} arg Type of Element to find
+	 * @return {Boolean}    `true` if 1 or more Elements are found
+	 * @example
+	 * if ( keigai.util.element.has( document.querySelector( "#something" ), "p" ) ) {
+	 *   ...
+	 * }
 	 */
 	has : function ( obj, arg ) {
 		var result = element.find( obj, arg );
@@ -3948,11 +4765,16 @@ var element = {
 	 *
 	 * @method hasClass
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
-	 * @return {Mixed}     Element, Array of Elements or undefined
+	 * @param  {Object} obj Element
+	 * @param  {String} arg CSS class to test for
+	 * @return {Boolean}    `true` if Element has `arg`
+	 * @example
+	 * if ( keigai.util.element.hasClass( document.querySelector( "#something" ), "someClass" ) ) {
+	 *   ...
+	 * }
 	 */
-	hasClass : function ( obj, klass ) {
-		return obj.classList.contains( klass );
+	hasClass : function ( obj, arg ) {
+		return obj.classList.contains( arg );
 	},
 
 	/**
@@ -3960,8 +4782,12 @@ var element = {
 	 *
 	 * @method hidden
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
+	 * @param  {Object} obj Element
 	 * @return {Boolean}   `true` if hidden
+	 * @example
+	 * if ( keigai.util.element.hidden( document.querySelector( "#something" ) ) ) {
+	 *   ...
+	 * }
 	 */
 	hidden : function ( obj ) {
 		return obj.style.display === "none" || ( typeof obj.hidden == "boolean" && obj.hidden );
@@ -3971,9 +4797,13 @@ var element = {
 	 * Gets or sets an Elements innerHTML
 	 *
 	 * @method html
+	 * @memberOf element
 	 * @param  {Object} obj Element
 	 * @param  {String} arg [Optional] innerHTML value
 	 * @return {Object}     Element
+	 * @example
+	 * keigai.util.element.html( document.querySelector( "#something" ), "Hello World!" );
+	 * keigai.util.element.html( document.querySelector( "#something" ) ); // "Hello World!"
 	 */
 	html : function ( obj, arg ) {
 		if ( arg === undefined ) {
@@ -3986,12 +4816,21 @@ var element = {
 	},
 
 	/**
-	 * Determines if Element is equal to arg, supports nodeNames & CSS2+ selectors
+	 * Determines if Element is equal to `arg`, supports nodeNames & CSS2+ selectors
 	 *
 	 * @method is
-	 * @param  {Mixed}   obj Element
-	 * @param  {String}  arg Property to query
-	 * @return {Boolean}     True if a match
+	 * @memberOf element
+	 * @param  {Object} obj Element
+	 * @param  {String} arg Property to query
+	 * @return {Boolean}    `true` if a match
+	 * @example
+	 * if ( keigai.util.element.is( document.querySelector( "#something" ), "div" ) ) {
+	 *   ...
+	 * }
+	 *
+	 * if ( keigai.util.element.is( document.querySelector( "#something" ), ":first-child" ) ) {
+	 *   ...
+	 * }
 	 */
 	is : function ( obj, arg ) {
 		if ( regex.selector_is.test( arg ) ) {
@@ -4009,10 +4848,16 @@ var element = {
 	 *
 	 * @method klass
 	 * @memberOf element
-	 * @param  {Mixed}   obj Element
+	 * @param  {Object}  obj Element
 	 * @param  {String}  arg Class to add or remove ( can be a wildcard )
 	 * @param  {Boolean} add Boolean to add or remove, defaults to true
 	 * @return {Object}      Element
+	 * @example
+	 * // Adding a class
+	 * keigai.util.element.klass( document.querySelector( "#something" ), "newClass" );
+	 *
+	 * // Removing a class
+	 * keigai.util.element.klass( document.querySelector( "#something" ), "newClass", false );
 	 */
 	klass : function ( obj, arg, add ) {
 		add = ( add !== false );
@@ -4046,8 +4891,10 @@ var element = {
 	 *
 	 * @method position
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
-	 * @return {Array}     Coordinates [left, top, right, bottom]
+	 * @param  {Object} obj Element
+	 * @return {Array}      Coordinates [left, top, right, bottom]
+	 * @example
+	 * var pos = keigai.util.element.position( document.querySelector( "#something" ) );
 	 */
 	position : function ( obj ) {
 		obj = obj || document.body;
@@ -4085,6 +4932,8 @@ var element = {
 	 * @param  {Object} obj   Element
 	 * @param  {Object} child Child Element
 	 * @return {Object}       Element
+	 * @example
+	 * keigai.util.element.prependChild( document.querySelector( "#target" ), document.querySelector( "#something" ) );
 	 */
 	prependChild : function ( obj, child ) {
 		return obj.childNodes.length === 0 ? obj.appendChild( child ) : obj.insertBefore( child, obj.childNodes[0] );
@@ -4095,9 +4944,11 @@ var element = {
 	 *
 	 * @method removeAttr
 	 * @memberOf element
-	 * @param  {Mixed}  obj Element
+	 * @param  {Object} obj Element
 	 * @param  {String} key Attribute name
 	 * @return {Object}     Element
+	 * @example
+	 * keigai.util.element.removeAttr( document.querySelector( "a" ), "href" );
 	 */
 	removeAttr : function ( obj, key ) {
 		var target;
@@ -4132,6 +4983,10 @@ var element = {
 	 * @param  {Number} offsetTop  [Optional] Offset from top of Element
 	 * @param  {Number} offsetLeft [Optional] Offset from left of Element
 	 * @return {Object} {@link Deferred}
+	 * @example
+	 * keigai.util.element.scrollTo( document.querySelector( "#something" ) ).then( function () {
+	 *   ...
+	 * } );
 	 */
 	scrollTo : function ( obj, ms, offsetTop, offsetLeft ) {
 		var pos = array.remove( element.position( obj ), 2, 3 );
@@ -4156,6 +5011,8 @@ var element = {
 	 * @param  {Boolean} string [Optional] true if you want a query string, default is false ( JSON )
 	 * @param  {Boolean} encode [Optional] true if you want to URI encode the value, default is true
 	 * @return {Mixed}          String or Object
+	 * @example
+	 * var userInput = keigai.util.element.serialize( document.querySelector( "form" ) );
 	 */
 	serialize : function ( obj, string, encode ) {
 		string       = ( string === true );
@@ -4192,18 +5049,20 @@ var element = {
 	},
 
 	/**
-	 * Returns the size of the Object
+	 * Returns the size of the Element
 	 *
 	 * @method size
 	 * @memberOf element
-	 * @param  {Mixed} obj Element
-	 * @return {Object}    Size {height: n, width:n}
+	 * @param  {Object} obj Element
+	 * @return {Array}      [width, height]
+	 * @example
+	 * var size = keigai.util.element.size( document.querySelector( "#something" ) );
 	 */
 	size : function ( obj ) {
-		return {
-			height : obj.offsetHeight + number.parse( obj.style.paddingTop  || 0 ) + number.parse( obj.style.paddingBottom || 0 ) + number.parse( obj.style.borderTop  || 0 ) + number.parse( obj.style.borderBottom || 0 ),
-			width  : obj.offsetWidth  + number.parse( obj.style.paddingLeft || 0 ) + number.parse( obj.style.paddingRight  || 0 ) + number.parse( obj.style.borderLeft || 0 ) + number.parse( obj.style.borderRight  || 0 )
-		};
+		return [
+			obj.offsetWidth  + number.parse( obj.style.paddingLeft || 0 ) + number.parse( obj.style.paddingRight  || 0 ) + number.parse( obj.style.borderLeft || 0 ) + number.parse( obj.style.borderRight  || 0 ),
+			obj.offsetHeight + number.parse( obj.style.paddingTop  || 0 ) + number.parse( obj.style.paddingBottom || 0 ) + number.parse( obj.style.borderTop  || 0 ) + number.parse( obj.style.borderBottom || 0 )
+		];
 	},
 
 	/**
@@ -4214,6 +5073,11 @@ var element = {
 	 * @param  {Object} obj Element
 	 * @param  {String} arg [Optional] Value to set
 	 * @return {Object}     Element
+	 * @example
+	 * var obj  = document.querySelector( "#something" ),
+	 *     text = keigai.util.element.text( obj );
+	 *
+	 * keigai.util.element.text( obj, text + ", and some more text" );
 	 */
 	text : function ( obj, arg ) {
 		var key     = obj.textContent ? "textContent" : "innerText",
@@ -4233,9 +5097,15 @@ var element = {
 	 *
 	 * @method toggleClass
 	 * @memberOf element
-	 * @param  {Object} obj Element, or $ query
+	 * @param  {Object} obj Element
 	 * @param  {String} arg CSS class to toggle
 	 * @return {Object}     Element
+	 * @example
+	 * var obj = document.querySelector( "#something" );
+	 *
+	 * obj.addEventListener( "click", function ( ev ) {
+	 *   keigai.util.element.toggleClass( obj, "active" );
+	 * }, false );
 	 */
 	toggleClass : function ( obj, arg ) {
 		obj.classList.toggle( arg );
@@ -4248,9 +5118,11 @@ var element = {
 	 *
 	 * @method update
 	 * @memberOf element
-	 * @param  {Mixed}  obj  Element
+	 * @param  {Object}  obj  Element
 	 * @param  {Object} args Properties to set
 	 * @return {Object}      Element
+	 * @example
+	 * keigai.util.element.update( document.querySelector( "#something" ), {innerHTML: "Hello World!", "class": "new"} );
 	 */
 	update : function ( obj, args ) {
 		utility.iterate( args, function ( v, k ) {
@@ -4276,9 +5148,11 @@ var element = {
 	 *
 	 * @method val
 	 * @memberOf element
-	 * @param  {Mixed}  obj   Element
+	 * @param  {Object} obj   Element
 	 * @param  {Mixed}  value [Optional] Value to set
 	 * @return {Object}       Element
+	 * @example
+	 * keigai.util.element.val( document.querySelector( "input[type='text']" ), "new value" );
 	 */
 	val : function ( obj, value ) {
 		var ev = "input",
@@ -4358,7 +5232,6 @@ var element = {
 
 /**
  * @namespace json
- * @private
  */
 var json = {
 	/**
@@ -4366,10 +5239,16 @@ var json = {
 	 *
 	 * @method csv
 	 * @memberOf json
-	 * @param  {String}  arg JSON  string to transform
+	 * @param  {Mixed}   arg       JSON, Array or Object
 	 * @param  {String}  delimiter [Optional] Character to separate fields
 	 * @param  {Boolean} header    [Optional] False to not include field names as first row
 	 * @return {String}            CSV string
+	 * @example
+	 * var csv = keigai.util.json.csv("[{\"prop\":\"value\"},{\"prop\":\"value2\"}]");
+	 * csv;
+	 * "prop
+	 *  value
+	 *  value2"
 	 */
 	csv : function ( arg, delimiter, header ) {
 		var obj    = json.decode( arg, true ) || arg,
@@ -4436,6 +5315,15 @@ var json = {
 	 * @param  {String}  arg    String to parse
 	 * @param  {Boolean} silent [Optional] Silently fail
 	 * @return {Mixed}          Entity resulting from parsing JSON, or undefined
+	 * @example
+	 * var x = keigai.util.json.decode( ..., true );
+	 *
+	 * if ( x ) {
+	 *   ...
+	 * }
+	 * else {
+	 *   ... // invalid JSON, with `Error` suppressed by `silent`
+	 * }
 	 */
 	decode : function ( arg, silent ) {
 		try {
@@ -4451,13 +5339,22 @@ var json = {
 	},
 
 	/**
-	 * Encodes the argument as JSON
+	 * Encodes `arg` as JSON
 	 *
 	 * @method encode
 	 * @memberOf json
-	 * @param  {Mixed}   arg    Entity to encode
+	 * @param  {Mixed}   arg    Primative
 	 * @param  {Boolean} silent [Optional] Silently fail
 	 * @return {String}         JSON, or undefined
+	 * @example
+	 * var x = keigai.util.json.encode( ..., true );
+	 *
+	 * if ( x ) {
+	 *   ...
+	 * }
+	 * else {
+	 *   ... // invalid JSON, with `Error` suppressed by `silent`
+	 * }
 	 */
 	encode : function ( arg, silent ) {
 		try {
@@ -4608,165 +5505,7 @@ var label = {
 };
 
 /**
- * Creates a new Least Recently Used cache
- *
- * @constructor
- * @memberOf keigai
- * @param  {Number} max [Optional] Max size of cache, default is 1000
- */
-function LRU ( max ) {
-	this.cache  = {};
-	this.max    = max || 1000;
-	this.first  = null;
-	this.last   = null;
-	this.length = 0;
-}
-
-/**
- * Setting constructor loop
- *
- * @method constructor
- * @memberOf keigai.LRU
- * @type {Function}
- */
-LRU.prototype.constructor = LRU;
-
-/**
- * Evicts the least recently used item from cache
- *
- * @method evict
- * @memberOf keigai.LRU
- * @return {Object} {@link keigai.LRU}
- */
-LRU.prototype.evict = function () {
-	if ( this.last !== null ) {
-		this.remove( this.last );
-	}
-
-	return this;
-};
-
-/**
- * Gets cached item and moves it to the front
- *
- * @method get
- * @memberOf keigai.LRU
- * @param  {String} key Item key
- * @return {Object} {@link keigai.LRUItem}
- */
-LRU.prototype.get = function ( key ) {
-	var item = this.cache[key];
-
-	if ( item === undefined ) {
-		return;
-	}
-
-	this.set( key, item.value );
-
-	return item.value;
-};
-
-/**
- * Removes item from cache
- *
- * @method remove
- * @memberOf keigai.LRU
- * @param  {String} key Item key
- * @return {Object} {@link keigai.LRUItem}
- */
-LRU.prototype.remove = function ( key ) {
-	var item = this.cache[ key ];
-
-	if ( item ) {
-		delete this.cache[key];
-
-		this.length--;
-
-		if ( item.previous !== null ) {
-			this.cache[item.previous].next = item.next;
-		}
-
-		if ( item.next !== null ) {
-			this.cache[item.next].previous = item.previous;
-		}
-
-		if ( this.first === key ) {
-			this.first = item.previous;
-		}
-
-		if ( this.last === key ) {
-			this.last = item.next;
-		}
-	}
-
-	return item;
-};
-
-/**
- * Sets item in cache as `first`
- *
- * @method set
- * @memberOf keigai.LRU
- * @param  {String} key   Item key
- * @param  {Mixed}  value Item value
- * @return {Object} {@link keigai.LRU}
- */
-LRU.prototype.set = function ( key, value ) {
-	var item = this.remove( key );
-
-	if ( item === undefined ) {
-		item = new LRUItem( value );
-	}
-	else {
-		item.value = value;
-	}
-
-	item.next       = null;
-	item.previous   = this.first;
-	this.cache[key] = item;
-
-	if ( this.first !== null ) {
-		this.cache[this.first].next = key;
-	}
-
-	this.first = key;
-
-	if ( this.last === null ) {
-		this.last = key;
-	}
-
-	if ( ++this.length > this.max ) {
-		this.evict();
-	}
-
-	return this;
-};
-
-/**
- * Creates a new LRUItem
- *
- * @constructor
- * @memberOf keigai
- * @param {Mixed} value Item value
- */
-function LRUItem ( value ) {
-	this.next     = null;
-	this.previous = null;
-	this.value    = value;
-}
-
-/**
- * Setting constructor loop
- *
- * @method constructor
- * @memberOf keigai.LRUItem
- * @type {Function}
- */
-LRUItem.prototype.constructor = LRUItem;
-
-/**
- * @namespace array
- * @private
+ * @namespace math
  */
 var math = {
 	/**
@@ -4777,6 +5516,13 @@ var math = {
 	 * @method bezier
 	 * @memberOf math
 	 * @return {Array} Coordinates
+	 * @example
+	 * // Moving straight down
+	 * var p1 = keigai.util.math.bezier( 0, 10, 2000, 10, 0 ),
+	 *     p2 = keigai.util.math.bezier( 0, 10, 2000, 10, 0.5 ),
+	 *     p3 = keigai.util.math.bezier( 0, 10, 2000, 10, 0.75 ),
+	 *     p4 = keigai.util.math.bezier( 0, 10, 2000, 10, 0.9 ),
+	 *     p5 = keigai.util.math.bezier( 0, 10, 2000, 10, 1 );
 	 */
 	bezier : function () {
 		var a = array.cast( arguments ),
@@ -4827,6 +5573,8 @@ var math = {
 	 * @param  {Array} a Coordinates [x, y]
 	 * @param  {Array} b Coordinates [x, y]
 	 * @return {Number}  Distance between `a` & `b`
+	 * @example
+	 * var dist = keigai.util.math.dist( [4, 40], [-10, 12] );
 	 */
 	dist : function ( a, b ) {
 		return Math.sqrt( math.sqr( b[0] - a[0] ) + math.sqr( b[1] - a[1] ) );
@@ -4839,6 +5587,8 @@ var math = {
 	 * @memberOf math
 	 * @param  {Number} n Number to square
 	 * @return {Number}   Squared value
+	 * @example
+	 * var sqr = keigai.util.math.sqr( 23 );
 	 */
 	sqr : function ( n ) {
 		return Math.pow( n, 2 );
@@ -4846,8 +5596,7 @@ var math = {
 };
 
 /**
- * @namespace array
- * @private
+ * @namespace number
  */
 var number = {
 	/**
@@ -4857,6 +5606,8 @@ var number = {
 	 * @memberOf number
 	 * @param {Number} arg Number to compare
 	 * @return {Number}    The absolute difference
+	 * @example
+	 * keigai.util.number.diff( -3, 8 ); // 11
 	 */
 	diff : function ( num1, num2 ) {
 		if ( isNaN( num1 ) || isNaN( num2 ) ) {
@@ -4873,6 +5624,12 @@ var number = {
 	 * @memberOf number
 	 * @param {Number} arg Number to test
 	 * @return {Boolean}   True if even, or undefined
+	 * @example
+	 * var n = keigai.util.number.random( 10 );
+	 *
+	 * if ( keigai.util.number.even( n ) ) {
+	 *   ...
+	 * }
 	 */
 	even : function ( arg ) {
 		return arg % 2 === 0;
@@ -4887,6 +5644,8 @@ var number = {
 	 * @param  {String} delimiter [Optional] String to delimit the Number with
 	 * @param  {String} every     [Optional] Position to insert the delimiter, default is 3
 	 * @return {String}           Number represented as a comma delimited String
+	 * @example
+	 * keigai.util.number.format( 1000 ); // "1,000"
 	 */
 	format : function ( arg, delimiter, every ) {
 		if ( isNaN( arg ) ) {
@@ -4925,6 +5684,10 @@ var number = {
 	 * @param  {Number} a Number to divide
 	 * @param  {Number} b [Optional] Number to test a against
 	 * @return {Mixed}    Boolean if b is passed, Number if b is undefined
+	 * @example
+	 * if ( keigai.util.number.half( 2, 4 ) ) {
+	 *   ...
+	 * } );
 	 */
 	half : function ( a, b ) {
 		return b ? ( ( a / b ) === 0.5 ) : ( a / 2 );
@@ -4937,6 +5700,12 @@ var number = {
 	 * @memberOf number
 	 * @param  {Number} arg Number to test
 	 * @return {Boolean}    True if odd, or undefined
+	 * @example
+	 * var n = keigai.util.number.random( 10 );
+	 *
+	 * if ( keigai.util.number.odd( n ) ) {
+	 *   ...
+	 * }
 	 */
 	odd : function ( arg ) {
 		return !number.even( arg );
@@ -4950,6 +5719,9 @@ var number = {
 	 * @param  {Mixed}  arg  Number to parse
 	 * @param  {Number} base Integer representing the base or radix
 	 * @return {Number}      Integer or float
+	 * @example
+	 * // Unsure if `n` is an int or a float
+	 * keigai.util.number.parse( n );
 	 */
 	parse : function ( arg, base ) {
 		return ( base === undefined ) ? parseFloat( arg ) : parseInt( arg, base );
@@ -4962,6 +5734,8 @@ var number = {
 	 * @memberOf number
 	 * @param  {Number} arg Ceiling for random number, default is 100
 	 * @return {Number}     Random number
+	 * @example
+	 * var n = keigai.util.math.random( 10 );
 	 */
 	random : function ( arg ) {
 		arg = arg || 100;
@@ -4977,6 +5751,8 @@ var number = {
 	 * @param  {Number} arg       Number to round
 	 * @param  {String} direction [Optional] "up" or "down"
 	 * @return {Number}           Rounded interger
+	 * @example
+	 * keigai.util.math.round( n, "down" );
 	 */
 	round : function ( arg, direction ) {
 		arg = number.parse( arg );
@@ -4994,188 +5770,10 @@ var number = {
 };
 
 /**
- * Creates a new Observable
- *
- * @constructor
- * @memberOf keigai
- * @param  {Number} arg Maximum listeners, default is 10
- */
-function Observable ( arg ) {
-	this.limit     = arg || MAX;
-	this.listeners = {};
-	this.hooks     = {};
-}
-
-/**
- * Setting constructor loop
- *
- * @method constructor
- * @memberOf keigai.Observable
- * @type {Function}
- */
-Observable.prototype.constructor = Observable;
-
-/**
- * Dispatches an event, with optional arguments
- *
- * @method dispatch
- * @memberOf keigai.Observable
- * @return {Object} {@link keigai.Observable}
- */
-Observable.prototype.dispatch = function () {
-	var args = array.cast( arguments ),
-	    ev   = args.shift();
-
-	if ( ev && this.listeners[ev] ) {
-		utility.iterate( this.listeners[ev], function ( i ) {
-			i.handler.apply( i.scope, args );
-		} );
-	}
-
-	return this;
-};
-
-/**
- * Hooks into `target` for a DOM event
- *
- * @method hook
- * @memberOf keigai.Observable
- * @param  {Object} target Element
- * @param  {String} ev     Event
- * @return {Object}        Element
- */
-Observable.prototype.hook = function ( target, ev ) {
-	var self = this;
-
-	if ( typeof target.addEventListener != "function" ) {
-		throw new Error( label.invalidArguments );
-	}
-
-	utility.genId( target, true );
-
-	this.hooks[target.id] = function ( arg ) {
-		self.dispatch( ev, arg );
-	};
-
-	target.addEventListener( ev, this.hooks[target.id], false );
-
-	return target;
-};
-
-/**
- * Removes all, or a specific listener for an event
- *
- * @method off
- * @memberOf keigai.Observable
- * @param {String} ev Event name
- * @param {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.Observable}
- */
-Observable.prototype.off = function ( ev, id ) {
-	if ( this.listeners[ev] ) {
-		if ( id ) {
-			delete this.listeners[ev][id];
-		}
-		else {
-			delete this.listeners[ev];
-		}
-	}
-
-	return this;
-};
-
-/**
- * Adds a listener for an event
- *
- * @method on
- * @memberOf keigai.Observable
- * @param  {String}   ev      Event name
- * @param  {Function} handler Handler
- * @param  {String}   id      [Optional] Handler ID
- * @param  {String}   scope   [Optional] Handler scope, default is `this`
- * @return {Object} {@link keigai.Observable}
- */
-Observable.prototype.on = function ( ev, handler, id, scope ) {
-	id    = id    || utility.uuid();
-	scope = scope || this;
-
-	if ( !this.listeners[ev] ) {
-		this.listeners[ev] = {};
-	}
-
-	if ( array.keys( this.listeners[ev] ).length >= this.limit ) {
-		throw( new Error( "Possible memory leak, more than " + this.limit + " listeners for event: " + ev ) );
-	}
-
-	this.listeners[ev][id] = {scope: scope, handler: handler};
-
-	return this;
-};
-
-/**
- * Adds a short lived listener for an event
- *
- * @method once
- * @memberOf keigai.Observable
- * @param  {String}   ev      Event name
- * @param  {Function} handler Handler
- * @param  {String}   id      [Optional] Handler ID
- * @param  {String}   scope   [Optional] Handler scope, default is `this`
- * @return {Object} {@link keigai.Observable}
- */
-Observable.prototype.once = function ( ev, handler, id, scope  ) {
-	var self = this;
-
-	id    = id    || utility.uuid();
-	scope = scope || this;
-
-	return this.on( ev, function () {
-		handler.apply( scope, [].concat( array.cast( arguments ) ) );
-		self.off( ev, id );
-	}, id, scope );
-};
-
-/**
- * Unhooks from `target` for a DOM event
- *
- * @method unhook
- * @memberOf keigai.Observable
- * @param  {Object} target Element
- * @param  {String} ev     Event
- * @return {Object}        Element
- */
-Observable.prototype.unhook = function ( target, ev ) {
-	target.removeEventListener( ev, this.hooks[target.id], false );
-
-	return target;
-};
-
-/**
  * @namespace promise
  * @private
  */
 var promise = {
-	/**
-	 * Async delay strategy
-	 *
-	 * @method delay
-	 * @memberOf promise
-	 * @return {Function} Delay method
-	 */
-	delay : function () {
-		if ( typeof setImmediate != "undefined" ) {
-			return setImmediate;
-		}
-		else if ( typeof process != "undefined" ) {
-			return process.nextTick;
-		}
-		else {
-			return function ( arg ) {
-				setTimeout( arg, 0 );
-			};
-		}
-	}(),
-
 	/**
 	 * Promise factory
 	 *
@@ -5223,7 +5821,7 @@ var promise = {
 		obj.state = state;
 
 		if ( !obj.deferred ) {
-			promise.delay( function () {
+			utility.delay( function () {
 				obj.process();
 			} );
 
@@ -5251,6 +5849,7 @@ var promise = {
  *
  * @constructor
  * @memberOf keigai
+ * @private
  */
 function Promise () {
 	this.deferred = false;
@@ -5264,7 +5863,6 @@ function Promise () {
  *
  * @method constructor
  * @memberOf keigai.Promise
- * @private
  * @type {Function}
  */
 Promise.prototype.constructor = Promise;
@@ -5311,6 +5909,7 @@ Promise.prototype.process = function() {
 			result = callback( value );
 		}
 		catch ( e ) {
+			utility.error( e );
 			child.reject( e );
 
 			return;
@@ -5371,7 +5970,7 @@ Promise.prototype.then = function ( success, failure ) {
 	} );
 
 	if ( this.state > promise.state.PENDING && !this.deferred ) {
-		promise.delay( function () {
+		utility.delay( function () {
 			self.process();
 		} );
 
@@ -5383,7 +5982,6 @@ Promise.prototype.then = function ( success, failure ) {
 
 /**
  * @namespace store
- * @private
  */
 var store = {
 	/**
@@ -5394,6 +5992,8 @@ var store = {
 	 * @param  {Mixed}  recs [Optional] Data to set with this.batch
 	 * @param  {Object} args [Optional] Arguments to set on the store
 	 * @return {Object} {@link keigai.DataStore}
+	 * @example
+	 * var store = keigai.store();
 	 */
 	factory : function ( recs, args ) {
 		var obj = new DataStore();
@@ -5416,6 +6016,7 @@ var store = {
 	 * @memberOf store
 	 * @param  {Object} ev Event
 	 * @return {Undefined} undefined
+	 * @private
 	 */
 	worker : function ( ev ) {
 		var cmd = ev.data.cmd,
@@ -5475,6 +6076,9 @@ var store = {
  *
  * @constructor
  * @memberOf keigai
+ * @extends {keigai.Base}
+ * @example
+ * var store = keigai.store();
  */
 function DataStore () {
 	this.autosave    = false;
@@ -5493,7 +6097,7 @@ function DataStore () {
 	this.loaded      = false;
 	this.maxDepth    = 0;
 	this.mongodb     = "";
-	this.observer    = new Observable();
+	this.observer    = observable.factory();
 	this.records     = [];
 	this.retrieve    = false;
 	this.source      = null;
@@ -5505,37 +6109,25 @@ function DataStore () {
 }
 
 /**
+ * Extending Base
+ *
+ * @memberOf keigai.DataGrid
+ * @type {Object} {@link keigai.Base}
+ */
+DataStore.prototype = base.factory();
+
+/**
  * Setting constructor loop
  *
  * @method constructor
  * @memberOf keigai.DataStore
  * @type {Function}
+ * @private
  */
 DataStore.prototype.constructor = DataStore;
 
 /**
- * Adds an event listener
- *
- * @method addListener
- * @memberOf keigai.DataStore
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataStore}
- */
-DataStore.prototype.addListener = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
  * Batch sets or deletes data in the store
- *
- * Events: beforeBatch  Fires before the batch is queued
- *         afterBatch   Fires after the batch is queued
- *         failedBatch  Fires when an exception occurs
  *
  * @method batch
  * @memberOf keigai.DataStore
@@ -5543,6 +6135,15 @@ DataStore.prototype.addListener = function ( ev, listener, id, scope ) {
  * @param  {Array}   data Array of keys or indices to delete, or Object containing multiple records to set
  * @param  {Boolean} sync [Optional] Syncs store with data, if true everything is erased
  * @return {Object} {@link keigai.Deferred}
+ * @fires keigai.DataStore#beforeBatch Fires before the batch is queued
+ * @fires keigai.DataStore#afterBatch Fires after the batch is queued
+ * @fires keigai.DataStore#failedBatch Fires when an exception occurs
+ * @example
+ * store.batch( "set", [...] ).then( function ( records ) {
+ *   ...
+ * }, function ( err ) {
+ *   ...
+ * } );
  */
 DataStore.prototype.batch = function ( type, data, sync ) {
 	if ( !regex.set_del.test( type ) || ( sync && regex.del.test( type ) ) || typeof data != "object" ) {
@@ -5592,7 +6193,8 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 			}
 
 			array.each( self.lists, function ( i ) {
-				i.refresh();
+				// Forcing a clear of views to deal with async nature of workers & staggered loading
+				i.refresh( true, true );
 			} );
 
 			if ( type === "del" ) {
@@ -5623,6 +6225,8 @@ DataStore.prototype.batch = function ( type, data, sync ) {
  * @memberOf keigai.DataStore
  * @param  {String} key Record key
  * @return {String}     URI
+ * @example
+ * var uri = store.buildUri( "key" );
  */
 DataStore.prototype.buildUri = function ( key ) {
 	var parsed = utility.parse( this.uri );
@@ -5633,13 +6237,18 @@ DataStore.prototype.buildUri = function ( key ) {
 /**
  * Clears the data object, unsets the uri property
  *
- * Events: beforeClear Fires before the data is cleared
- *         afterClear  Fires after the data is cleared
- *
  * @method clear
  * @memberOf keigai.DataStore
  * @param  {Boolean} sync [Optional] Boolean to limit clearing of properties
  * @return {Object} {@link keigai.DataStore}
+ * @fires keigai.DataStore#beforeClear Fires before the data is cleared
+ * @fires keigai.DataStore#afterClear Fires after the data is cleared
+ * @example
+ * // Resyncing the records, if wired to an API
+ * store.clear( true );
+ *
+ * // Resetting the store
+ * store.clear();
  */
 DataStore.prototype.clear = function ( sync ) {
 	sync       = ( sync === true );
@@ -5701,14 +6310,19 @@ DataStore.prototype.clear = function ( sync ) {
 /**
  * Crawls a record's properties and creates DataStores when URIs are detected
  *
- * Events: beforeRetrieve Fires before crawling a record
- *         afterRetrieve  Fires after the store has retrieved all data from crawling
- *         failedRetrieve Fires if an exception occurs
- *
  * @method crawl
  * @memberOf keigai.DataStore
  * @param  {Mixed}  arg Record, key or index
  * @return {Object} {@link keigai.Deferred}
+ * @fires keigai.DataStore#beforeRetrieve Fires before crawling a record
+ * @fires keigai.DataStore#afterRetrieve Fires after the store has retrieved all data from crawling
+ * @fires keigai.DataStore#failedRetrieve Fires if an exception occurs
+ * @example
+ * store.crawl( "key" ).then( function () {
+ *   ...
+ * }, function ( err ) {
+ *   ...
+ * } );
  */
 DataStore.prototype.crawl = function ( arg ) {
 	var self      = this,
@@ -5716,7 +6330,8 @@ DataStore.prototype.crawl = function ( arg ) {
 	    record    = ( arg instanceof Object ) ? arg : this.get( arg ),
 	    defer     = deferred.factory(),
 	    deferreds = [],
-	    parsed    = utility.parse( this.uri || "" );
+	    parsed    = utility.parse( this.uri || "" ),
+	    clone;
 
 	if ( this.uri === null || record === undefined ) {
 		throw new Error( label.invalidArguments );
@@ -5726,41 +6341,71 @@ DataStore.prototype.crawl = function ( arg ) {
 		this.dispatch( "beforeRetrieve", record );
 	}
 
-	// Depth of recursion is controled by `maxDepth`
-	utility.iterate( record.data, function ( v, k ) {
-		var uri;
+	// An Array is considered a collection
+	if ( record.data instanceof Array ) {
+		clone       = utility.clone( record.data );
+		record.data = {};
 
-		if ( array.contains( self.ignore, k ) || array.contains( self.leafs, k ) || self.depth >= self.maxDepth || ( !( v instanceof Array ) && typeof v != "string" ) || ( v.indexOf( "//" ) === -1 && v.charAt( 0 ) !== "/" ) ) {
-			return;
-		}
+		array.each( clone, function ( i ) {
+			var key = i.replace( /.*\//, "" ),
+			    uri;
 
-		array.add( self.collections, k );
+			record.data[key] = store.factory( null, {id: record.key + "-" + key, key: self.key, pointer: self.pointer, source: self.source, ignore: self.ignore.slice(), leafs: self.leafs.slice(), depth: self.depth + 1, maxDepth: self.maxDepth, headers: self.headers, retrieve: true} );
 
-		record.data[k] = store.factory( null, {id: record.key + "-" + k, key: self.key, source: self.source, ignore: self.ignore.slice(), leafs: self.leafs.slice(), depth: self.depth + 1, maxDepth: self.maxDepth, headers: self.headers, retrieve: true} );
-
-		if ( !array.contains( self.leafs, k ) && ( record.data[k].data.maxDepth === 0 || record.data[k].data.depth <= record.data[k].data.maxDepth ) ) {
-			if ( v instanceof Array ) {
-				deferreds.push( record.data[k].data.batch( "set", v ) );
+			if ( i.indexOf( "//" ) === -1 ) {
+				// Relative path to store, i.e. a child
+				if ( i.charAt( 0 ) !== "/" ) {
+					uri = self.buildUri( i );
+				}
+				// Root path, relative to store, i.e. a domain
+				else {
+					uri = parsed.protocol + "//" + parsed.host + i;
+				}
 			}
 			else {
-				if ( v.indexOf( "//" ) === -1 ) {
-					// Relative path to store, i.e. a child
-					if ( v.charAt( 0 ) !== "/" ) {
-						uri = self.buildUri( v );
-					}
-					// Root path, relative to store, i.e. a domain
-					else {
-						uri = parsed.protocol + "//" + parsed.host + v;
-					}
+				uri = i;
+			}
+
+			deferreds.push( record.data[key].data.setUri( uri ) );
+		} );
+	}
+	else {
+		// Depth of recursion is controled by `maxDepth`
+		utility.iterate( record.data, function ( v, k ) {
+			var uri;
+
+			if ( array.contains( self.ignore, k ) || array.contains( self.leafs, k ) || self.depth >= self.maxDepth || ( !( v instanceof Array ) && typeof v != "string" ) || ( v.indexOf( "//" ) === -1 && v.charAt( 0 ) !== "/" ) ) {
+				return;
+			}
+
+			array.add( self.collections, k );
+
+			record.data[k] = store.factory( null, {id: record.key + "-" + k, key: self.key, source: self.source, ignore: self.ignore.slice(), leafs: self.leafs.slice(), depth: self.depth + 1, maxDepth: self.maxDepth, headers: self.headers, retrieve: true} );
+
+			if ( !array.contains( self.leafs, k ) && ( record.data[k].data.maxDepth === 0 || record.data[k].data.depth <= record.data[k].data.maxDepth ) ) {
+				if ( v instanceof Array ) {
+					deferreds.push( record.data[k].data.batch( "set", v ) );
 				}
 				else {
-					uri = v;
-				}
+					if ( v.indexOf( "//" ) === -1 ) {
+						// Relative path to store, i.e. a child
+						if ( v.charAt( 0 ) !== "/" ) {
+							uri = self.buildUri( v );
+						}
+						// Root path, relative to store, i.e. a domain
+						else {
+							uri = parsed.protocol + "//" + parsed.host + v;
+						}
+					}
+					else {
+						uri = v;
+					}
 
-				deferreds.push( record.data[k].data.setUri( uri ) );
+					deferreds.push( record.data[k].data.setUri( uri ) );
+				}
 			}
-		}
-	} );
+		} );
+	}
 
 	if ( deferreds.length > 0 ) {
 		utility.when( deferreds ).then( function () {
@@ -5791,16 +6436,21 @@ DataStore.prototype.crawl = function ( arg ) {
 /**
  * Deletes a record based on key or index
  *
- * Events: beforeDelete  Fires before the record is deleted
- *         afterDelete   Fires after the record is deleted
- *         failedDelete  Fires if the store is RESTful and the action is denied
- *
  * @method del
  * @memberOf keigai.DataStore
  * @param  {Mixed}   record  Record, key or index
  * @param  {Boolean} reindex [Optional] `true` if DataStore should be reindexed
  * @param  {Boolean} batch   [Optional] `true` if part of a batch operation
  * @return {Object} {@link keigai.Deferred}
+ * @fires keigai.DataStore#beforeDelete Fires before the record is deleted
+ * @fires keigai.DataStore#afterDelete Fires after the record is deleted
+ * @fires keigai.DataStore#failedDelete Fires if the store is RESTful and the action is denied
+ * @example
+ * store.del( "key" ).then( function () {
+ *   console.log( "Successfully deleted " + key );
+ * }, function ( err ) {
+ *   console.warn( "Failed to delete " + key + ": " + err.message );
+ * } );
  */
 DataStore.prototype.del = function ( record, reindex, batch ) {
 	record    = record.key ? record : this.get ( record );
@@ -5843,6 +6493,7 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
  * @param  {Boolean} batch   `true` if part of a batch operation
  * @param  {Object}  defer   Deferred instance
  * @return {Object} {@link keigai.DataStore}
+ * @private
  */
 DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 	delete this.keys[record.key];
@@ -5881,19 +6532,6 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 };
 
 /**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataStore
- * @return {Object} {@link keigai.DataStore}
- */
-DataStore.prototype.dispatch = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
  * Exports a subset or complete record set of DataStore
  *
  * @method dump
@@ -5901,6 +6539,8 @@ DataStore.prototype.dispatch = function () {
  * @param  {Array} args   [Optional] Sub-data set of DataStore
  * @param  {Array} fields [Optional] Fields to export, defaults to all
  * @return {Array}        Records
+ * @example
+ * var data = store.dump();
  */
 DataStore.prototype.dump = function ( args, fields ) {
 	args       = args || this.records;
@@ -5940,19 +6580,6 @@ DataStore.prototype.dump = function ( args, fields ) {
 };
 
 /**
- * Dispatches an event, with optional arguments
- *
- * @method emit
- * @memberOf keigai.DataStore
- * @return {Object} {@link keigai.DataStore}
- */
-DataStore.prototype.emit = function () {
-	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
-
-	return this;
-};
-
-/**
  * Retrieves a record based on key or index
  *
  * If the key is an integer, cast to a string before sending as an argument!
@@ -5962,6 +6589,8 @@ DataStore.prototype.emit = function () {
  * @param  {Mixed}  record Key, index or Array of pagination start & end; or comma delimited String of keys or indices
  * @param  {Number} offset [Optional] Offset from `record` for pagination
  * @return {Mixed}         Individual record, or Array of records
+ * @example
+ * var record = store.get( "key" );
  */
 DataStore.prototype.get = function ( record, offset ) {
 	var records = this.records,
@@ -6008,6 +6637,7 @@ DataStore.prototype.get = function ( record, offset ) {
  * @param  {String} field Field in both DataStores
  * @param  {String} join  Type of JOIN to perform, defaults to `inner`
  * @return {Object} {@link keigai.Deferred}
+ * var data = store.join( otherStore, "commonField" );
  */
 DataStore.prototype.join = function ( arg, field, join ) {
 	join          = join || "inner";
@@ -6118,73 +6748,14 @@ DataStore.prototype.join = function ( arg, field, join ) {
 };
 
 /**
- * Gets listeners
- *
- * @method listeners
- * @memberOf keigai.DataStore
- * @param  {String} ev [Optional] Event name
- * @return {Object} Listeners
- */
-DataStore.prototype.listeners = function ( ev ) {
-	return ev ? this.observer.listeners[ev] : this.listeners;
-};
-
-/**
- * Removes an event listener
- *
- * @method off
- * @memberOf keigai.DataStore
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataStore}
- */
-DataStore.prototype.off = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Adds an event listener
- *
- * @method on
- * @memberOf keigai.DataStore
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataStore}
- */
-DataStore.prototype.on = function ( ev, listener, id, scope ) {
-	this.observer.on( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
- * Adds a short lived event listener
- *
- * @method once
- * @memberOf keigai.DataStore
- * @param  {String}   ev       Event name
- * @param  {Function} listener Function to execute
- * @param  {String}   id       [Optional] Listener ID
- * @param  {String}   scope    [Optional] Listener scope, default is `this`
- * @return {Object} {@link keigai.DataStore}
- */
-DataStore.prototype.once = function ( ev, listener, id, scope ) {
-	this.observer.once( ev, listener, id, scope || this );
-
-	return this;
-};
-
-/**
  * Retrieves only 1 field/property
  *
  * @method only
  * @memberOf keigai.DataStore
  * @param  {String} arg Field/property to retrieve
  * @return {Array}      Array of values
+ * @example
+ * var ages = store.only( "age" );
  */
 DataStore.prototype.only = function ( arg ) {
 	if ( arg === this.key ) {
@@ -6200,12 +6771,14 @@ DataStore.prototype.only = function ( arg ) {
 };
 
 /**
- * Purges DataStore or record from localStorage
+ * Purges DataStore or record from persistant storage
  *
  * @method purge
  * @memberOf keigai.DataStore
  * @param  {Mixed} arg  [Optional] String or Number for record
  * @return {Object}     Record or store
+ * @example
+ * store.purge();
  */
 DataStore.prototype.purge = function ( arg ) {
 	return this.storage( arg || this, "remove" );
@@ -6217,6 +6790,8 @@ DataStore.prototype.purge = function ( arg ) {
  * @method reindex
  * @memberOf keigai.DataStore
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.reindex();
  */
 DataStore.prototype.reindex = function () {
 	var nth = this.total,
@@ -6235,57 +6810,52 @@ DataStore.prototype.reindex = function () {
 };
 
 /**
- * Removes an event listener
- *
- * @method removeListener
- * @memberOf keigai.DataStore
- * @param  {String} ev Event name
- * @param  {String} id [Optional] Listener ID
- * @return {Object} {@link keigai.DataStore}
- */
-DataStore.prototype.removeListener = function ( ev, id ) {
-	this.observer.off( ev, id );
-
-	return this;
-};
-
-/**
- * Restores DataStore or record frome localStorage
+ * Restores DataStore or record persistant storage
  *
  * @method restore
  * @memberOf keigai.DataStore
  * @param  {Mixed} arg  [Optional] String or Number for record
  * @return {Object}     Record or store
+ * @example
+ * store.restore();
  */
 DataStore.prototype.restore = function ( arg ) {
 	return this.storage( arg || this, "get" );
 };
 
 /**
- * Saves DataStore or record to localStorage, sessionStorage or MongoDB (node.js only)
+ * Saves DataStore or record to persistant storage, or sessionStorage
  *
  * @method save
  * @memberOf keigai.DataStore
  * @param  {Mixed} arg  [Optional] String or Number for record
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * store.save();
  */
 DataStore.prototype.save = function ( arg ) {
 	return this.storage( arg || this, "set" );
 };
 
 /**
- * Selects records based on an explcit description
- *
- * Note: Records are not by reference!
+ * Selects records (not by reference) based on an explicit description
  *
  * @method select
  * @memberOf keigai.DataStore
  * @param  {Object} where Object describing the WHERE clause
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * var adults;
+ *
+ * store.select( {age: function ( i ) { return i >= 21; } } ).then( function ( records ) {
+ *   adults = records;
+ * }, function ( err ) {
+ *   ...
+ * } );
  */
 DataStore.prototype.select = function ( where ) {
 	var defer = deferred.factory(),
-	    blob, clauses, cond, functions, worker;
+	    clauses, cond, functions, worker;
 
 	if ( !( where instanceof Object ) ) {
 		throw new Error( label.invalidArguments );
@@ -6301,20 +6871,20 @@ DataStore.prototype.select = function ( where ) {
 			}
 		} );
 
-		blob   = new Blob( [WORKER] );
-		worker = new Worker( global.URL.createObjectURL( blob ) );
+		try {
+			worker = utility.worker( WORKER, defer );
+			worker.postMessage( {cmd: "select", records: this.records, where: json.encode( where ), functions: functions} );
+		}
+		catch ( e ) {
+			// Probably IE10, which doesn't have the correct security flag for local loading
+			webWorker = false;
 
-		worker.onerror = function ( err ) {
-			defer.reject( err );
-			worker.terminate();
-		};
-
-		worker.onmessage = function ( ev ) {
-			defer.resolve( ev.data );
-			worker.terminate();
-		};
-
-		worker.postMessage( {cmd: "select", records: this.records, where: json.encode( where ), functions: functions} );
+			this.select( where ).then( function ( arg ) {
+				defer.resolve( arg );
+			}, function ( e ) {
+				defer.reject( e );
+			} );
+		}
 	}
 	else {
 		clauses = array.fromObject( where );
@@ -6362,16 +6932,21 @@ DataStore.prototype.select = function ( where ) {
 /**
  * Creates or updates an existing record
  *
- * Events: beforeSet  Fires before the record is set
- *         afterSet   Fires after the record is set, the record is the argument for listeners
- *         failedSet  Fires if the store is RESTful and the action is denied
- *
  * @method set
  * @memberOf keigai.DataStore
  * @param  {Mixed}   key   [Optional] Integer or String to use as a Primary Key
  * @param  {Object}  data  Key:Value pairs to set as field values
  * @param  {Boolean} batch [Optional] True if called by data.batch
  * @return {Object} {@link keigai.Deferred}
+ * @fires keigai.DataStore#beforeSet Fires before the record is set
+ * @fires keigai.DataStore#afterSet Fires after the record is set, the record is the argument for listeners
+ * @fires keigai.DataStore#failedSet Fires if the store is RESTful and the action is denied
+ * @example
+ * // Creating a new record
+ * store.set( null, {...} );
+ *
+ * // Updating a record
+ * store.set( "key", {...} );
  */
 DataStore.prototype.set = function ( key, data, batch ) {
 	data       = utility.clone( data, true );
@@ -6471,6 +7046,7 @@ DataStore.prototype.set = function ( key, data, batch ) {
  * @param  {Boolean} batch  `true` if part of a batch operation
  * @param  {Object}  defer  Deferred instance
  * @return {Object} {@link keigai.DataStore}
+ * @private
  */
 DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 	var self      = this,
@@ -6481,23 +7057,12 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 
 	// Setting key
 	if ( !key ) {
-		if ( this.source === null ) {
-			if ( this.key === null ) {
-				key = utility.uuid();
-			}
-			else {
-				key = data[this.key] || utility.uuid();
-			}
-		}
-		else if ( data[this.source] === undefined ) {
-			key = utility.uuid();
+		if ( this.key !== null && data[this.key] ) {
+			key = data[this.key];
 		}
 		else {
-			key = data[this.source][this.key];
+			key = utility.uuid();
 		}
-	}
-	else {
-		key = utility.uuid();
 	}
 
 	// Removing primary key from data
@@ -6515,7 +7080,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 
 		this.keys[key]                = record.index;
 		this.records[record.index]    = record;
-		this.versions[record.key]     = new LRU( VERSIONS );
+		this.versions[record.key]     = lru.factory( VERSIONS );
 		this.versions[record.key].nth = 0;
 
 		if ( this.retrieve ) {
@@ -6568,6 +7133,8 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
  * @memberOf keigai.DataStore
  * @param  {Number} arg Milliseconds until data is stale
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.setExpires( 5 * 60 * 1000 ); // Resyncs every 5 minutes
  */
 DataStore.prototype.setExpires = function ( arg ) {
 	// Expiry cannot be less than a second, and must be a valid scenario for consumption; null will disable repetitive expiration
@@ -6613,6 +7180,12 @@ DataStore.prototype.setExpires = function ( arg ) {
  * @memberOf keigai.DataStore
  * @param  {String} arg API collection end point
  * @return {Object}     Deferred
+ * @example
+ * store.setUri( "..." ).then( function ( records ) {
+ *   ...
+ * }, function ( err ) {
+ *   ...
+ * } );
  */
 DataStore.prototype.setUri = function ( arg ) {
 	var defer = deferred.factory(),
@@ -6663,9 +7236,7 @@ DataStore.prototype.setUri = function ( arg ) {
 };
 
 /**
- * Returns a view, or creates a view and returns it
- *
- * Records in a view are not by reference, they are clones
+ * Creates, or returns a cached view of the records (not by reference)
  *
  * @method sort
  * @memberOf keigai.DataStore
@@ -6673,13 +7244,19 @@ DataStore.prototype.setUri = function ( arg ) {
  * @param  {String} create [Optional, default behavior is true, value is false] Boolean determines whether to recreate a view if it exists
  * @param  {Object} where  [Optional] Object describing the WHERE clause
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * store.sort( "age desc, name" ).then( function ( records ) {
+ *   ...
+ * }, function ( err ) {
+ *   ...
+ * } );
  */
 DataStore.prototype.sort = function ( query, create, where ) {
 	create      = ( create === true || ( where instanceof Object ) );
 	var self    = this,
 	    view    = string.toCamelCase( string.explode( query ).join( " " ) ),
 	    defer   = deferred.factory(),
-	    blob, next, worker;
+	    next, worker;
 
 	// Next phase
 	next = function ( records ) {
@@ -6690,21 +7267,25 @@ DataStore.prototype.sort = function ( query, create, where ) {
 			defer.resolve( self.views[view] );
 		}
 		else if ( webWorker ) {
-			blob   = new Blob( [WORKER] );
-			worker = new Worker( global.URL.createObjectURL( blob ) );
+			defer.then( function ( arg ) {
+				self.views[view] = arg;
 
-			worker.onerror = function ( err ) {
-				defer.reject( err );
-				worker.terminate();
-			};
+				return self.views[view];
+			}, function ( e ) {
+				throw e;
+			} );
 
-			worker.onmessage = function ( ev ) {
-				self.views[view] = ev.data;
+			try {
+				worker = utility.worker( WORKER, defer );
+				worker.postMessage( {cmd: "sort", records: records, query: query} );
+			}
+			catch ( e ) {
+				// Probably IE10, which doesn't have the correct security flag for local loading
+				webWorker = false;
+
+				self.views[view] = array.keySort( records.slice(), query, "data" );
 				defer.resolve( self.views[view] );
-				worker.terminate();
-			};
-
-			worker.postMessage( {cmd: "sort", records: records, query: query} );
+			}
 		}
 		else {
 			self.views[view] = array.keySort( records.slice(), query, "data" );
@@ -6733,6 +7314,8 @@ DataStore.prototype.sort = function ( query, create, where ) {
  * @param  {Object} op   Operation to perform ( get, remove or set )
  * @param  {String} type [Optional] Type of Storage to use ( local, session [local] )
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * store.storage( store, "set" );
  */
 DataStore.prototype.storage = function ( obj, op, type ) {
 	var self    = this,
@@ -6976,13 +7559,18 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 /**
  * Syncs the DataStore with a URI representation
  *
- * Events: beforeSync  Fires before syncing the DataStore
- *         afterSync   Fires after syncing the DataStore
- *         failedSync  Fires when an exception occurs
- *
  * @method sync
  * @memberOf keigai.DataStore
  * @return {Object} {@link keigai.Deferred}
+ * @fires keigai.DataStore#beforeSync Fires before syncing the DataStore
+ * @fires keigai.DataStore#afterSync Fires after syncing the DataStore
+ * @fires keigai.DataStore#failedSync Fires when an exception occurs
+ * @example
+ * store.sync().then( function ( records ) {
+ *   ...
+ * }, function ( err ) {
+ *   ...
+ * } );
  */
 DataStore.prototype.sync = function () {
 	if ( this.uri === null || string.isEmpty( this.uri ) ) {
@@ -7067,6 +7655,8 @@ DataStore.prototype.sync = function () {
  * @method teardown
  * @memberOf keigai.DataStore
  * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.teardown();
  */
 DataStore.prototype.teardown = function () {
 	var uri = this.uri,
@@ -7113,6 +7703,9 @@ DataStore.prototype.teardown = function () {
  * @param  {Mixed}  key     Key or index
  * @param  {String} version [Optional] Version to restore
  * @return {Object}         Deferred
+ * @example
+ * // Didn't like the new version, so undo the change
+ * store.undo( "key", "v1" );
  */
 DataStore.prototype.undo = function ( key, version ) {
 	var record   = this.get( key ),
@@ -7152,6 +7745,8 @@ DataStore.prototype.undo = function ( key, version ) {
  * @memberOf keigai.DataStore
  * @param  {String} key Field to compare
  * @return {Array}      Array of values
+ * @example
+ * var ages = store.unique( "age" );
  */
 DataStore.prototype.unique = function ( key ) {
 	return array.unique( this.records.map( function ( i ) {
@@ -7169,6 +7764,8 @@ DataStore.prototype.unique = function ( key ) {
  * @param  {Mixed}  key  Key or index
  * @param  {Object} data Key:Value pairs to set as field values
  * @return {Object} {@link keigai.Deferred}
+ * @example
+ * store.update( "key", {age: 34} );
  */
 DataStore.prototype.update = function ( key, data ) {
 	var record = this.get( key ),
@@ -7178,11 +7775,7 @@ DataStore.prototype.update = function ( key, data ) {
 		throw new Error( label.invalidArguments );
 	}
 
-	utility.iterate( record.data, function ( v, k ) {
-		data[v] = k;
-	} );
-	
-	this.set( key, data ).then( function ( arg ) {
+	this.set( key, utility.merge( record.data, data ) ).then( function ( arg ) {
 		defer.resolve( arg );
 	}, function ( e ) {
 		defer.reject( e );
@@ -7193,7 +7786,6 @@ DataStore.prototype.update = function ( key, data ) {
 
 /**
  * @namespace string
- * @private
  */
 var string = {
 	/**
@@ -7204,6 +7796,8 @@ var string = {
 	 * @param  {String}  obj String to capitalize
 	 * @param  {Boolean} all [Optional] Capitalize each word
 	 * @return {String}      Capitalized String
+	 * @example
+	 * keigai.util.string.capitalize( "hello" ); // "Hello"
 	 */
 	capitalize : function ( obj, all ) {
 		all = ( all === true );
@@ -7229,6 +7823,8 @@ var string = {
 	 * @memberOf string
 	 * @param  {String} obj String to escape
 	 * @return {String}     Escaped string
+	 * @example
+	 * keigai.util.string.escape( "{hello}" ); // "\{hello\}"
 	 */
 	escape : function ( obj ) {
 		return obj.replace( /[\-\[\]{}()*+?.,\\\^\$|#\s]/g, "\\$&" );
@@ -7242,30 +7838,15 @@ var string = {
 	 * @param  {String} obj String to capitalize
 	 * @param  {String} arg String to split on
 	 * @return {Array}      Array of the exploded String
+	 * @example
+	 * keigai.util.array.each( keigai.util.string.explode( "abc, def" ), function ( i ) {
+	 *   ...
+	 * } );
 	 */
 	explode : function ( obj, arg ) {
 		arg = arg || ",";
 
 		return string.trim( obj ).split( new RegExp( "\\s*" + arg + "\\s*" ) );
-	},
-
-	/**
-	 * Replaces all spaces in a string with dashes
-	 *
-	 * @method hyphenate
-	 * @memberOf string
-	 * @param  {String} obj   String to hyphenate
-	 * @param {Boolean} camel [Optional] Hyphenate camelCase
-	 * @return {String}       String with dashes instead of spaces
-	 */
-	hyphenate : function ( obj, camel ) {
-		var result = string.trim( obj ).replace( /\s+/g, "-" );
-
-		if ( camel === true ) {
-			result = result.replace( /([A-Z])/g, "-$1" ).toLowerCase();
-		}
-
-		return result;
 	},
 
 	/**
@@ -7278,6 +7859,8 @@ var string = {
 	 * @param  {Object} obj  Object to convert
 	 * @param  {String} name [Optional] Name of Object
 	 * @return {String}      String representation
+	 * @example
+	 * keigai.util.string.fromObject( {a: true, b: false}, "stats" ); // "stats = {'a': true,'b':false}"
 	 */
 	fromObject : function ( obj, name ) {
 		var result = ( name ? name + " = {" : "{" ) + "\n";
@@ -7292,12 +7875,37 @@ var string = {
 	},
 
 	/**
+	 * Replaces all spaces in a string with dashes
+	 *
+	 * @method hyphenate
+	 * @memberOf string
+	 * @param  {String} obj   String to hyphenate
+	 * @param {Boolean} camel [Optional] Hyphenate camelCase
+	 * @return {String}       String with dashes instead of spaces
+	 * @example
+	 * keigai.util.string.hyphenate( "hello world" ); // "hello-world"
+	 */
+	hyphenate : function ( obj, camel ) {
+		var result = string.trim( obj ).replace( /\s+/g, "-" );
+
+		if ( camel === true ) {
+			result = result.replace( /([A-Z])/g, "-$1" ).toLowerCase();
+		}
+
+		return result;
+	},
+
+	/**
 	 * Tests if a string is a boolean
 	 *
 	 * @method isBoolean
 	 * @memberOf string
 	 * @param  {String}  obj String to test
 	 * @return {Boolean}     Result of test
+	 * @example
+	 * if ( keigai.util.string.isBoolean( ... ) {
+	 *   ...
+	 * } );
 	 */
 	isBoolean : function ( obj ) {
 		return regex.bool.test( obj );
@@ -7310,6 +7918,10 @@ var string = {
 	 * @memberOf string
 	 * @param  {String}  obj String to test
 	 * @return {Boolean}     Result of test
+	 * @example
+	 * if ( !keigai.util.string.isEmpty( ... ) {
+	 *   ...
+	 * } );
 	 */
 	isEmpty : function ( obj ) {
 		return string.trim( obj ) === "";
@@ -7322,6 +7934,10 @@ var string = {
 	 * @memberOf string
 	 * @param  {String}  obj String to test
 	 * @return {Boolean}     Result of test
+	 * @example
+	 * if ( keigai.util.string.isNumber( ... ) {
+	 *   ...
+	 * } );
 	 */
 	isNumber : function ( obj ) {
 		return regex.number.test( obj );
@@ -7334,6 +7950,10 @@ var string = {
 	 * @memberOf string
 	 * @param  {String}  obj String to test
 	 * @return {Boolean}     Result of test
+	 * @example
+	 * if ( keigai.util.string.isUrl( ... ) {
+	 *   ...
+	 * } );
 	 */
 	isUrl : function ( obj ) {
 		return regex.url.test( obj );
@@ -7346,6 +7966,8 @@ var string = {
 	 * @memberOf string
 	 * @param  {String} obj String to capitalize
 	 * @return {String}     Camel case String
+	 * @example
+	 * keigai.util.string.toCamelCase( "hello world" ); // "helloWorld"
 	 */
 	toCamelCase : function ( obj ) {
 		var s = string.trim( obj ).replace( /\.|_|-|\@|\[|\]|\(|\)|\#|\$|\%|\^|\&|\*|\s+/g, " " ).toLowerCase().split( regex.space_hyphen ),
@@ -7365,6 +7987,8 @@ var string = {
 	 * @memberOf string
 	 * @param  {String} obj String to transform
 	 * @return {String}     Transformed string
+	 * @example
+	 * keigai.util.string.singular( "cans" ); // "can"
 	 */
 	singular : function ( obj ) {
 		return obj.replace( /oe?s$/, "o" ).replace( /ies$/, "y" ).replace( /ses$/, "se" ).replace( /s$/, "" );
@@ -7377,6 +8001,12 @@ var string = {
 	 * @memberOf string
 	 * @param  {String} obj String to cast
 	 * @return {Function}   Function
+	 * @example
+	 * var fn = someFunction.toString();
+	 *
+	 * ...
+	 *
+	 * var func = keigai.util.string.toFunction( fn );
 	 */
 	toFunction : function ( obj ) {
 		var args = string.trim( obj.replace( /^.*\(/, "" ).replace( /[\t|\r|\n|\"|\']+/g, "" ).replace( /\).*/, "" ) ),
@@ -7392,6 +8022,8 @@ var string = {
 	 * @memberOf string
 	 * @param  {String} obj String to capitalize
 	 * @return {String}     Trimmed String
+	 * @example
+	 * keigai.util.string.trim( "  hello world " ); // "hello world"
 	 */
 	trim : function ( obj ) {
 		return obj.replace( /^(\s+|\t+)|(\s+|\t+)$/g, "" );
@@ -7416,6 +8048,8 @@ var string = {
 	 * @memberOf string
 	 * @param  {String} obj String to uncapitalize
 	 * @return {String}     Uncapitalized String
+	 * @example
+	 * keigai.util.string.uncapitalize( "Hello" ); // "hello"
 	 */
 	uncapitalize : function ( obj ) {
 		obj = string.trim( obj );
@@ -7431,6 +8065,9 @@ var string = {
 	 * @param  {String}  obj  String to unhypenate
 	 * @param  {Boolean} caps [Optional] True to capitalize each word
 	 * @return {String}       Unhyphenated String
+	 * @example
+	 * keigai.util.string.unhyphenate( "hello-world" );       // "hello world"
+	 * keigai.util.string.unhyphenate( "hello-world", true ); // "Hello World"
 	 */
 	unhyphenate : function ( obj, caps ) {
 		if ( caps !== true ) {
@@ -7446,7 +8083,6 @@ var string = {
 
 /**
  * @namespace utility
- * @private
  */
 var utility = {
 	/**
@@ -7454,6 +8090,7 @@ var utility = {
 	 *
 	 * @memberOf utility
 	 * @type {Object}
+	 * @private
 	 */
 	timer : {},
 
@@ -7462,26 +8099,35 @@ var utility = {
 	 *
 	 * @memberOf utility
 	 * @type {Object}
+	 * @private
 	 */
 	repeating: {},
 
 	/**
-	 * Queries the DOM using CSS selectors and returns an Element or Array of Elements
+	 * Creates Elements or Queries the DOM using CSS selectors
 	 *
 	 * @method $
 	 * @memberOf utility
-	 * @param  {Mixed} arg Element, HTML, or Comma delimited string of CSS selectors
-	 * @return {Mixed}     Element or Array of Elements
+	 * @param  {Mixed} arg HTML, or Comma delimited string of CSS selectors
+	 * @return {Array}     Array of matching Elements
+	 * @example
+	 * var $ = keigai.util.$;
+	 *
+	 * // Looking for Elements
+	 * $( ".someClass" ).forEach( function ( i ) {
+	 *   ...
+	 * } );
+	 *
+	 * // Creating an H1 Element
+	 * $( "&lt;h1&gt;" ).forEach( function ( i ) {
+	 *   ...
+	 * } );
 	 */
 	$ : function ( arg ) {
 		var result;
 
 		// Nothing
 		if ( !arg ) {
-		}
-		// Element
-		else if ( arg.nodeName ) {
-			result = [arg];
 		}
 		// HTML
 		else if ( regex.html.test( arg ) ) {
@@ -7523,12 +8169,39 @@ var utility = {
 	},
 
 	/**
+	 * Blob factory
+	 *
+	 * @method blob
+	 * @memberOf utility
+	 * @param  {String} arg String to convert to a Blob
+	 * @return {Object}     Blob
+	 * @private
+	 */
+	blob : function ( arg ) {
+		var obj;
+
+		try {
+			obj = new Blob( [arg], {type: "application/javascript"} );
+		}
+		catch ( e ) {
+			if ( !global.BlobBuilder ) {
+				global.BlobBuilder = global.MSBlobBuilder || global.WebKitBlobBuilder || global.MozBlobBuilder;
+			}
+
+			obj = new global.BlobBuilder().append( arg ).getBlob();
+		}
+
+		return obj;
+	},
+
+	/**
 	 * Clears deferred & repeating functions
 	 *
 	 * @method clearTimers
 	 * @memberOf utility
 	 * @param  {String} id ID of timer( s )
 	 * @return {Undefined} undefined
+	 * @private
 	 */
 	clearTimers : function ( id ) {
 		if ( id === undefined || string.isEmpty( id ) ) {
@@ -7556,6 +8229,11 @@ var utility = {
 	 * @param  {Object}  obj     Object to clone
 	 * @param  {Boolean} shallow [Optional] Create a shallow clone, which doesn't maintain prototypes, default is `false`
 	 * @return {Object}          Clone of obj
+	 * @example
+	 * var x = {a: true, b: false},
+	 *     y = keigai.util.clone( x, true );
+	 *
+	 * y.a; // true
 	 */
 	clone : function ( obj, shallow ) {
 		var clone;
@@ -7607,6 +8285,8 @@ var utility = {
 	 * @memberOf utility
 	 * @param  {String} value String to coerce
 	 * @return {Mixed}        Primitive version of the String
+	 * @example
+	 * keigai.util.coerce( "1" ); // 1
 	 */
 	coerce : function ( value ) {
 		var tmp;
@@ -7651,6 +8331,7 @@ var utility = {
 	 * @param  {String} pattern   Regular expression pattern
 	 * @param  {String} modifiers Modifiers to apply to the pattern
 	 * @return {Boolean}          true
+	 * @private
 	 */
 	compile : function ( reg, pattern, modifiers ) {
 		reg.compile( pattern, modifiers );
@@ -7669,6 +8350,7 @@ var utility = {
 	 * @param  {Number}   id     [Optional] ID of the deferred function
 	 * @param  {Boolean}  repeat [Optional] Describes the execution, default is `false`
 	 * @return {String}          ID of the timer
+	 * @private
 	 */
 	defer : function ( fn, ms, id, repeat ) {
 		var op;
@@ -7694,12 +8376,37 @@ var utility = {
 	},
 
 	/**
+	 * Async delay strategy
+	 *
+	 * @method delay
+	 * @memberOf promise
+	 * @return {Function} Delay method
+	 * @private
+	 */
+	delay : function () {
+		if ( typeof setImmediate != "undefined" ) {
+			return function ( arg ) {
+				setImmediate( arg );
+			};
+		}
+		else if ( typeof process != "undefined" ) {
+			return process.nextTick;
+		}
+		else {
+			return function ( arg ) {
+				setTimeout( arg, 0 );
+			};
+		}
+	}(),
+
+	/**
 	 * Queries DOM with fastest method
 	 *
 	 * @method dom
 	 * @memberOf utility
 	 * @param  {String} arg DOM query
 	 * @return {Mixed}      undefined, Element, or Array of Elements
+	 * @private
 	 */
 	dom : function ( arg ) {
 		var result;
@@ -7732,6 +8439,7 @@ var utility = {
 	 * @memberOf utility
 	 * @param  {String} UUID
 	 * @return {String} DOM friendly ID
+	 * @private
 	 */
 	domId : function ( arg ) {
 		return "a" + arg.replace( /-/g, "" ).slice( 1 );
@@ -7747,6 +8455,7 @@ var utility = {
 	 * @param  {Mixed}   scope   Entity that was "this"
 	 * @param  {Boolean} warning [Optional] Will display as console warning if true
 	 * @return {Undefined}       undefined
+	 * @private
 	 */
 	error : function ( e, args, scope, warning ) {
 		var o = {
@@ -7772,6 +8481,8 @@ var utility = {
 	 * @param  {Object} obj Object to extend
 	 * @param  {Object} arg [Optional] Object for decoration
 	 * @return {Object}     Decorated obj
+	 * @example
+	 * var extendObj = keigai.util.extend( someObj, {newProperty: value} );
 	 */
 	extend : function ( obj, arg ) {
 		var o;
@@ -7797,6 +8508,7 @@ var utility = {
 	 * @param  {Mixed}   obj [Optional] Object to receive id
 	 * @param  {Boolean} dom [Optional] Verify the ID is unique in the DOM, default is false
 	 * @return {Mixed}       Object or id
+	 * @private
 	 */
 	genId : function ( obj, dom ) {
 		dom = ( dom === true );
@@ -7835,6 +8547,10 @@ var utility = {
 	 * @param  {Object}   obj Object to iterate
 	 * @param  {Function} fn  Function to execute against properties
 	 * @return {Object}       Object
+	 * @example
+	 * keigai.util.iterate( {...}, function ( value, key ) {
+	 *   ...
+	 * } );
 	 */
 	iterate : function ( obj, fn ) {
 		if ( typeof fn != "function" ) {
@@ -7856,6 +8572,8 @@ var utility = {
 	 * @param  {String} arg    String to write to the console
 	 * @param  {String} target [Optional] Target console, default is "log"
 	 * @return {Undefined}     undefined
+	 * @example
+	 * keigai.util.log( "Something bad happened", "warn" );
 	 */
 	log : function ( arg, target ) {
 		var ts, msg;
@@ -7875,6 +8593,11 @@ var utility = {
 	 * @param  {Object} obj Object to decorate
 	 * @param  {Object} arg Decoration
 	 * @return {Object}     Decorated Object
+	 * @example
+	 * var obj = {a: true};
+	 *
+	 * keigai.util.merge( obj, {b: false} )
+	 * obj.b; // false
 	 */
 	merge : function ( obj, arg ) {
 		utility.iterate( arg, function ( v, k ) {
@@ -7901,6 +8624,21 @@ var utility = {
 	 * @memberOf utility
 	 * @param  {String} uri URI to parse
 	 * @return {Object}     Parsed URI
+	 * @example
+	 * var parsed = keigai.util.parse( location.href );
+	 *
+	 * parsed;
+	 * {
+	 *   auth     : "",
+	 *   hash     : "",
+	 *   host     : "",
+	 *   hostname : "",
+	 *   query    : {},
+	 *   pathname : "",
+	 *   port     : n,
+	 *   protocol : "",
+	 *   search   : "",
+	 * }
 	 */
 	parse : function ( uri ) {
 		var obj    = {},
@@ -7971,15 +8709,17 @@ var utility = {
 	 *
 	 * @method prevent
 	 * @memberOf utility
-	 * @param  {Object} e Event
-	 * @return {Object}   Event
+	 * @param  {Object} ev Event
+	 * @return {Object}    Event
+	 * @example
+	 * keigai.util.prevent( Event );
 	 */
-	prevent : function ( e ) {
-		if ( typeof e.preventDefault == "function" ) {
-			e.preventDefault();
+	prevent : function ( ev ) {
+		if ( typeof ev.preventDefault == "function" ) {
+			ev.preventDefault();
 		}
 
-		return e;
+		return ev;
 	},
 
 	/**
@@ -7990,6 +8730,7 @@ var utility = {
 	 * @param  {String} arg     [Optional] Key to find in the querystring
 	 * @param  {String} qstring [Optional] Query string to parse
 	 * @return {Mixed}          Value or Object of key:value pairs
+	 * @private
 	 */
 	queryString : function ( arg, qstring ) {
 		var obj    = {},
@@ -8045,6 +8786,15 @@ var utility = {
 	 * @param  {String}   id  [Optional] Timeout ID
 	 * @param  {Boolean}  now Executes `fn` and then setup repetition, default is `true`
 	 * @return {String}       Timeout ID
+	 * @example
+	 * keigai.util.repeat( function () {
+	 *   ...
+	 *
+	 *   // Cancelling repetition at some point in the future
+	 *   if ( someCondition ) {
+	 *     return false;
+	 *   }
+	 * }, 1000, "repeating" );
 	 */
 	repeat : function ( fn, ms, id, now ) {
 		ms  = ms || 10;
@@ -8082,20 +8832,19 @@ var utility = {
 	 *
 	 * @method stop
 	 * @memberOf utility
-	 * @param  {Object} e Event
-	 * @return {Object}   Event
+	 * @param  {Object} ev Event
+	 * @return {Object}    Event
+	 * @example
+	 * keigai.util.stop( Event );
 	 */
-	stop : function ( e ) {
-		if ( typeof e.stopPropagation == "function" ) {
-			e.stopPropagation();
+	stop : function ( ev ) {
+		if ( typeof ev.stopPropagation == "function" ) {
+			ev.stopPropagation();
 		}
 
-		utility.prevent( e );
+		utility.prevent( ev );
 
-		// Assumed to always be valid, even if it's not decorated on `e` ( I'm looking at you IE8 )
-		e.returnValue = false;
-
-		return e;
+		return ev;
 	},
 
 	/**
@@ -8103,11 +8852,13 @@ var utility = {
 	 *
 	 * @method target
 	 * @memberOf utility
-	 * @param  {Object} e Event
-	 * @return {Object}   Event target
+	 * @param  {Object} ev Event
+	 * @return {Object}    Event target
+	 * @example
+	 * var target = keigai.util.target( Event );
 	 */
-	target : function ( e ) {
-		return e.target || e.srcElement;
+	target : function ( ev ) {
+		return ev.target || ev.srcElement;
 	},
 
 	/**
@@ -8115,17 +8866,19 @@ var utility = {
 	 *
 	 * @method uuid
 	 * @memberOf utility
-	 * @param  {Boolean} safe [Optional] Strips - from UUID
-	 * @return {String}       UUID
+	 * @param  {Boolean} strip [Optional] Strips - from UUID
+	 * @return {String}        UUID
+	 * @example
+	 * var uuid4 = keigai.util.uuid();
 	 */
-	uuid : function ( safe ) {
+	uuid : function ( strip ) {
 		var s = function () { return ( ( ( 1 + Math.random() ) * 0x10000 ) | 0 ).toString( 16 ).substring( 1 ); },
 		    r = [8, 9, "a", "b"],
 		    o;
 
 		o = ( s() + s() + "-" + s() + "-4" + s().substr( 0, 3 ) + "-" + r[Math.floor( Math.random() * 4 )] + s().substr( 0, 3 ) + "-" + s() + s() + s() );
 
-		if ( safe === true ) {
+		if ( strip === true ) {
 			o = o.replace( /-/g, "" );
 		}
 
@@ -8133,13 +8886,17 @@ var utility = {
 	},
 
 	/**
-	 * Walks `obj` and returns `arg`
+	 * Walks `obj` and returns `arg`, for when you can't easily access `arg`
 	 *
 	 * @method  walk
 	 * @memberOf utility
 	 * @param  {Mixed}  obj  Object or Array
 	 * @param  {String} arg  String describing the property to return
 	 * @return {Mixed}       arg
+	 * @example
+	 * var obj = {a: [{b: true}]};
+	 *
+	 * keigai.util.walk( obj, "a[0].b" ); // true
 	 */
 	walk : function ( obj, arg ) {
 		array.each( arg.replace( /\]$/, "" ).replace( /\]/g, "." ).replace( /\.\./g, "." ).split( /\.|\[/ ), function ( i ) {
@@ -8155,6 +8912,25 @@ var utility = {
 	 * @method when
 	 * @memberOf utility
 	 * @return {Object} {@link keigai.Deferred}
+	 * @example
+	 * var deferreds = [],
+	 *     defer1    = keigai.util.defer(),
+	 *     defer2    = keigai.util.defer();
+	 *
+	 * deferreds.push( defer1 );
+	 * deferreds.push( defer2 );
+	 *
+	 * // Executes when both deferreds have resolved or one has rejected
+	 * $.when( deferreds ).then( function ( args ) ) {
+	 *   ...
+	 * }, function ( err ) {
+	 *   ...
+	 * } );
+	 *
+	 * ...
+	 *
+	 * defer1.resolve( true );
+	 * defer2.resolve( true );
 	 */
 	when : function () {
 		var i     = 0,
@@ -8204,6 +8980,32 @@ var utility = {
 		}
 
 		return defer;
+	},
+
+	/**
+	 * Worker factory
+	 *
+	 * @method worker
+	 * @memberOf utility
+	 * @param  {Mixed}  arg   Script for the Worker to run
+	 * @param  {Object} defer Deferred to receive message from Worker
+	 * @return {Object}       Worker
+	 * @private
+	 */
+	worker : function ( arg, defer ) {
+		var obj = new Worker( global.URL.createObjectURL( utility.blob( arg ) ) );
+
+		obj.onerror = function ( err ) {
+			defer.reject( err );
+			obj.terminate();
+		};
+
+		obj.onmessage = function ( ev ) {
+			defer.resolve( ev.data );
+			obj.terminate();
+		};
+
+		return obj;
 	}
 };
 
@@ -8222,12 +9024,12 @@ function xhr () {
 	    DONE             = 4,
 	    ERR_REFUSED      = /ECONNREFUSED/,
 	    ready            = new RegExp( HEADERS_RECEIVED + "|" + LOADING ),
-	    XMLHttpRequest, headers, handler, handlerError, state;
+	    XMLHttpRequest, headers, success, failure, state;
 
 	headers = {
-		"User-Agent"   : "keigai/0.2.4 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
-		"Content-Type" : "text/plain",
-		"Accept"       : "*/*"
+		"user-agent"   : "keigai/0.2.14 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"content-type" : "text/plain",
+		"accept"       : "*/*"
 	};
 
 	/**
@@ -8255,12 +9057,12 @@ function xhr () {
 	/**
 	 * Response handler
 	 *
-	 * @method handler
+	 * @method success
 	 * @memberOf xhr
 	 * @param  {Object} res HTTP(S) Response Object
 	 * @return {Undefined}  undefined
 	 */
-	handler = function ( res ) {
+	success = function ( res ) {
 		var self = this;
 
 		state.call( this, HEADERS_RECEIVED );
@@ -8295,12 +9097,12 @@ function xhr () {
 	/**
 	 * Response error handler
 	 *
-	 * @method handlerError
+	 * @method failure
 	 * @memberOf xhr
 	 * @param  {Object} e Error
 	 * @return {Undefined} undefined
 	 */
-	handlerError = function ( e ) {
+	failure = function ( e ) {
 		this.status       = ERR_REFUSED.test( e.message ) ? 503 : 500;
 		this.statusText   = "";
 		this.responseText = e.message;
@@ -8315,6 +9117,7 @@ function xhr () {
 	 *
 	 * @constructor
 	 * @private
+	 * @memberOf xhr
 	 * @return {Object} XMLHttpRequest instance
 	 */
 	XMLHttpRequest = function () {
@@ -8505,7 +9308,7 @@ function xhr () {
 	 * @return {Object}      XMLHttpRequest instance
 	 */
 	XMLHttpRequest.prototype.overrideMimeType = function ( mime ) {
-		this._headers["Content-Type"] = mime;
+		this._headers["content-type"] = mime;
 
 		return this;
 	};
@@ -8558,10 +9361,10 @@ function xhr () {
 
 		// Specifying Content-Length accordingly
 		if ( regex.put_post.test( this._params.method ) ) {
-			this._headers["Content-Length"] = data !== null ? Buffer.byteLength( data ) : 0;
+			this._headers["content-length"] = data !== null ? Buffer.byteLength( data ) : 0;
 		}
 
-		this._headers.Host = parsed.hostname + ( !regex.http_ports.test( parsed.port ) ? ":" + parsed.port : "" );
+		this._headers.host = parsed.hostname + ( !regex.http_ports.test( parsed.port ) ? ":" + parsed.port : "" );
 
 		options = {
 			hostname : parsed.hostname,
@@ -8586,12 +9389,12 @@ function xhr () {
 		obj = parsed.protocol === "http:" ? http : https;
 
 		request = obj.request( options, function ( arg ) {
-			handler.call( self, arg );
+			success.call( self, arg );
 		} ).on( "error", function ( e ) {
-			handlerError.call( self, e );
+			failure.call( self, e );
 		} );
 
-		data === null ? request.setSocketKeepAlive( true, 10000 ) : request.write( data, "utf8" );
+		data === null ? request.setSocketKeepAlive( true ) : request.write( data, "utf8" );
 		this._request = request;
 		request.end();
 
@@ -8617,7 +9420,7 @@ function xhr () {
 			throw new Error( label.invalidStateNotSending );
 		}
 
-		this._headers[header] = value;
+		this._headers[header.toLowerCase()] = value;
 
 		return this;
 	};
@@ -8882,21 +9685,20 @@ return {
 		clone    : utility.clone,
 		coerce   : utility.coerce,
 		defer    : deferred.factory,
-		el       : element,
+		element  : element,
 		extend   : utility.extend,
 		iterate  : utility.iterate,
 		json     : json,
 		jsonp    : client.jsonp,
 		log      : utility.log,
-		lru      : function ( arg ) {
-			return new LRU( arg );
-		},
+		lru      : lru.factory,
 		math     : math,
 		merge    : utility.merge,
 		number   : number,
-		observer : Observable,
+		observer : observable.factory,
 		parse    : utility.parse,
 		prevent  : utility.prevent,
+		repeat   : utility.repeat,
 		request  : client.request,
 		stop     : utility.stop,
 		string   : string,
@@ -8905,7 +9707,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.2.4"
+	version : "0.2.14"
 };
 
 } )();
