@@ -500,7 +500,7 @@ var client = {
 									r = client.parse( xhr, t );
 
 									if ( r === undefined ) {
-										deferred.reject( new Error( label.serverError ) );
+										defer.reject( new Error( label.serverError ) );
 									}
 								}
 
@@ -524,14 +524,14 @@ var client = {
 									break;
 								case 201:
 									if ( ( o.headers.Location === undefined || string.isEmpty( o.headers.Location ) ) && !string.isUrl( r ) ) {
-										deferred.reject( new Error( label.invalidArguments ) );
+										defer.reject( new Error( label.invalidArguments ) );
 									}
 									else {
 										redirect = string.trim ( o.headers.Location || r );
 										client.request( redirect, "GET", function ( arg ) {
 											defer.resolve ( arg );
 										}, function ( e ) {
-											deferred.reject( e );
+											defer.reject( e );
 										} );
 										break;
 									}
@@ -546,18 +546,18 @@ var client = {
 							defer.resolve( r );
 							break;
 						case 401:
-							deferred.reject( new Error( label.serverUnauthorized ) );
+							defer.reject( new Error( label.serverUnauthorized ) );
 							break;
 						case 403:
 							cache.set( uri, "!permission", client.bit( [type] ) );
-							deferred.reject( new Error( label.serverForbidden ) );
+							defer.reject( new Error( label.serverForbidden ) );
 							break;
 						case 405:
 							cache.set( uri, "!permission", client.bit( [type] ) );
-							deferred.reject( new Error( label.serverInvalidMethod ) );
+							defer.reject( new Error( label.serverInvalidMethod ) );
 							break;
 						default:
-							deferred.reject( new Error( label.serverError ) );
+							defer.reject( new Error( label.serverError ) );
 					}
 				}
 				else if ( xdr ) {
