@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.2.16
+- Fixing URL parsing via keigai dependency
+- Changed build status image to an SVG (Mithgol)
+
+## 0.2.15
+- Fixing error handling in XHR requests
+
 ## 0.2.14
 - Fixing `DataStore.setComplete()` when receiving an Array of URIs
 
