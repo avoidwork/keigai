@@ -353,7 +353,7 @@ function xhr () {
 			this._headers["content-length"] = data !== null ? Buffer.byteLength( data ) : 0;
 		}
 
-		this._headers.host = parsed.hostname + ( !regex.http_ports.test( parsed.port ) ? ":" + parsed.port : "" );
+		this._headers.host = parsed.host;
 
 		options = {
 			hostname : parsed.hostname,
