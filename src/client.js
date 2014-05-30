@@ -523,8 +523,8 @@ var client = {
 									defer.resolve( r );
 									break;
 								case 201:
-									if ( ( o.headers.Location === undefined || string.isEmpty( o.headers.Location ) ) && !string.isUrl( r ) ) {
-										defer.reject( new Error( label.invalidArguments ) );
+									if ( ( o.headers.location === undefined || string.isEmpty( o.headers.location ) ) && !string.isUrl( r ) ) {
+										defer.resolve( r );
 									}
 									else {
 										redirect = string.trim ( o.headers.Location || r );
@@ -533,7 +533,6 @@ var client = {
 										}, function ( e ) {
 											defer.reject( e );
 										} );
-										break;
 									}
 									break;
 								case 204:
