@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.2.17
+- Fixing XHR shim for node.js
+- Fixing XHR 201 handling
+
 ## 0.2.16
 - Fixing URL parsing via keigai dependency
 - Changed build status image to an SVG (Mithgol)
