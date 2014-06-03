@@ -556,7 +556,7 @@ var client = {
 							defer.reject( new Error( label.serverInvalidMethod ) );
 							break;
 						default:
-							defer.reject( new Error( label.serverError ) );
+							defer.reject( new Error( xhr.responseText || label.serverError ) );
 					}
 				}
 				else if ( xdr ) {
