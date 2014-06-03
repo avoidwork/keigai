@@ -350,7 +350,19 @@ function xhr () {
 
 		// Specifying Content-Length accordingly
 		if ( regex.put_post.test( this._params.method ) ) {
-			this._headers["content-length"] = data !== null ? Buffer.byteLength( data ) : 0;
+			if ( data === null ) {
+				this._headers["content-length"] = 0;
+			}
+			else if ( typeof data == "string" ) {
+				this._headers["content-length"] = Buffer.byteLength( data );
+			}
+			else if ( data instanceof Buffer || typeof data.toString == "function" ) {
+				data = data.toString();
+				this._headers["content-length"] = Buffer.byteLength( data );
+			}
+			else {
+				throw new Error( label.invalidArguments );
+			}
 		}
 
 		this._headers.host = parsed.host;
