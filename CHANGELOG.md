@@ -2,6 +2,7 @@
 
 ## 0.2.18
 - Fixing the error message returned from `client.request()`, such that it's the server response if supplied
+- Fixing `content-length` header decoration for outbound requests
 
 ## 0.2.17
 - Fixing XHR shim for node.js
