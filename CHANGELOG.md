@@ -1,12 +1,15 @@
 # Change Log
 
+## 0.2.18
+- Fixing the error message returned from `client.request()`, such that it's the server response if supplied
+- Fixing `content-length` header decoration for outbound requests
+
 ## 0.2.17
 - Fixing XHR shim for node.js
 - Fixing XHR 201 handling
 
 ## 0.2.16
-- Fixing URL parsing via keigai dependency
-- Changed build status image to an SVG (Mithgol)
+- Fixing URL parsing
 
 ## 0.2.15
 - Fixing error handling in XHR requests
