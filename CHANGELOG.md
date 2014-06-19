@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.19
+- Fixing sending Buffers over the wire
+
 ## 0.2.18
 - Fixing the error message returned from `client.request()`, such that it's the server response if supplied
 - Fixing `content-length` header decoration for outbound requests
