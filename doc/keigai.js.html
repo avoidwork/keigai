@@ -137,6 +137,10 @@
 						</li>
 						
 						<li>
+							<a href="keigai.KXMLHttpRequest.html">KXMLHttpRequest</a>
+						</li>
+						
+						<li>
 							<a href="keigai.LRU.html">LRU</a>
 						</li>
 						
@@ -173,7 +177,7 @@
  * @license BSD-3 &lt;https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.2.18
+ * @version 0.3.0
  */
 ( function ( global ) {
 
@@ -185,6 +189,7 @@ var document  = global.document,
     MAX       = 10,
     VERSIONS  = 100,
     CACHE     = 500,
+    EVENTS    = ["readystatechange", "abort", "load", "loadstart", "loadend", "error", "progress", "timeout"],
     http, https, lib, url, WORKER;
 
 if ( server ) {
@@ -773,6 +778,21 @@ Base.prototype.dispatch = function () {
  */
 Base.prototype.emit = function () {
 	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
+
+	return this;
+};
+
+/**
+ * Hooks into `target` for an event
+ *
+ * @method hook
+ * @memberOf keigai.Base
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.hook( document.querySelector( "a" ), "click" );
+ */
+Base.prototype.hook = function () {
+	this.observer.hook.apply( this.observer, [].concat( array.cast( arguments ) ) );
 
 	return this;
 };
@@ -2487,6 +2507,37 @@ var cache = {
 };
 
 /**
+ * Custom Object returned from `client.request()`
+ *
+ * @constructor
+ * @memberOf keigai
+ * @extends {keigai.Base}
+ * @param {Object} xhr XMLHttpRequest
+ */
+function KXMLHttpRequest ( xhr ) {
+	this.observer = observable.factory();
+	this.xhr      = xhr;
+}
+
+/**
+ * Extending Base
+ *
+ * @memberOf keigai.KXMLHttpRequest
+ * @type {Object} {@link keigai.Base}
+ */
+KXMLHttpRequest.prototype = base.factory();
+
+/**
+ * Setting constructor loop
+ *
+ * @method constructor
+ * @memberOf keigai.KXMLHttpRequest
+ * @type {Function}
+ * @private
+ */
+KXMLHttpRequest.prototype.constructor = KXMLHttpRequest;
+
+/**
  * @namespace client
  */
 var client = {
@@ -2804,6 +2855,34 @@ var client = {
 	},
 
 	/**
+	 * KXMLHttpRequest factory
+	 *
+	 * @method kxhr
+	 * @memberOf client
+	 * @param {Object} xhr XMLHttpRequest
+	 * @return {Object} {@link keigai.KXMLHttpRequest}
+	 * @private
+	 */
+	kxhr : function ( xhr ) {
+		var obj   = new KXMLHttpRequest( xhr ),
+		    defer = deferred.factory();
+
+		// Wrapping deferred methods on obj
+		array.each( array.keys( Deferred.prototype ), function ( i ) {
+			obj[i] = function () {
+				return defer[i].apply( defer, array.cast( arguments ) );
+			};
+		} );
+
+		// Hooking observer for standard events
+		array.each( EVENTS, function ( i ) {
+			obj.hook( obj.xhr, i );
+		} );
+
+		return obj;
+	},
+
+	/**
 	 * Creates an XmlHttpRequest to a URI ( aliased to multiple methods )
 	 *
 	 * The returned Deferred will have an .xhr
@@ -2817,7 +2896,7 @@ var client = {
 	 * @param  {Mixed}    args    [Optional] Data to send with the request
 	 * @param  {Object}   headers [Optional] Custom request headers ( can be used to set withCredentials )
 	 * @param  {Number}   timeout [Optional] Timeout in milliseconds, default is 30000
-	 * @return {Object}   {@link Deferred}
+	 * @return {Object}   {@link keigai.KXMLHttpRequest}
 	 * @example
 	 * keigai.util.request( "http://keigai.io" ).then( function ( arg ) {
 	 *   // `arg` is the coerced response body
@@ -2826,7 +2905,7 @@ var client = {
 	 * } );
 	 */
 	request : function ( uri, type, success, failure, args, headers, timeout ) {
-		var cors, xhr, payload, cached, contentType, doc, ab, blob, defer;
+		var cors, kxhr, payload, cached, contentType, doc, ab, blob;
 
 		type = type || "GET";
 
@@ -2839,31 +2918,42 @@ var client = {
 		headers     = headers instanceof Object ? headers : null;
 		timeout     = timeout || 30000;
 		cors        = client.cors( uri );
-		xhr         = !client.ie || ( !cors || client.version > 9 ) ? new XMLHttpRequest() : new XDomainRequest();
+		kxhr        = client.kxhr( !client.ie || ( !cors || client.version > 9 ) ? new XMLHttpRequest() : new XDomainRequest() );
 		payload     = ( regex.put_post.test( type ) || regex.patch.test( type ) ) && args ? args : null;
 		cached      = type === "get" ? cache.get( uri ) : false;
 		contentType = null;
 		doc         = typeof Document != "undefined";
 		ab          = typeof ArrayBuffer != "undefined";
 		blob        = typeof Blob != "undefined";
-		defer       = deferred.factory();
 
 		// Only GET & POST is supported by XDomainRequest (so useless!)
 		if ( cors && client.ie && client.version === 9 && !regex.xdomainrequest.test( type ) ) {
 			throw new Error( label.notAvailable );
 		}
 
+		// Hooking custom events
+		kxhr.on( "readystatechange", function ( ev ) {
+			switch ( this.xhr.readyState ) {
+				case 1:
+					this.dispatch( "beforeXHR", this.xhr, ev );
+					break;
+				case 4:
+					this.dispatch( "afterXHR", this.xhr, ev );
+					break;
+			}
+		} );
+
 		// Using a deferred to resolve request
-		defer.then( function ( arg ) {
+		kxhr.then( function ( arg ) {
 			if ( typeof success == "function" ) {
-				success.call( xhr, arg, xhr );
+				success.call( kxhr.xhr, arg, kxhr.xhr );
 			}
 
 			return arg;
 		}, function ( e ) {
 			if ( typeof failure == "function" ) {
 				try {
-					return failure.call( xhr, e, xhr );
+					return failure.call( kxhr.xhr, e, kxhr.xhr );
 				}
 				catch ( err ) {
 					throw err;
@@ -2872,200 +2962,211 @@ var client = {
 		} );
 
 		if ( !cors && !regex.get_headers.test( type ) && client.allows( uri, type ) === false ) {
-			xhr.status = 405;
-			defer.reject( null );
+			utility.delay( function () {
+				kxhr.dispatch( "beforeXHR", kxhr.xhr, null );
+				kxhr.dispatch( "afterXHR", kxhr.xhr, null );
+			} );
+
+			kxhr.xhr.status = 405;
+			kxhr.reject( null );
 		}
 
 		if ( type === "get" && Boolean( cached ) ) {
 			// Decorating XHR for proxy behavior
 			if ( server ) {
-				xhr.readyState  = 4;
-				xhr.status      = 200;
-				xhr._resheaders = cached.headers;
+				kxhr.xhr.readyState  = 4;
+				kxhr.xhr.status      = 200;
+				kxhr.xhr._resheaders = cached.headers;
 			}
 
-			defer.resolve( cached.response );
+			utility.delay( function () {
+				kxhr.dispatch( "beforeXHR", kxhr.xhr, null );
+				kxhr.dispatch( "afterXHR", kxhr.xhr, null );
+			} );
+
+			kxhr.resolve( cached.response );
 		}
 		else {
-			xhr.open( type.toUpperCase(), uri, true );
+			utility.delay( function () {
+				kxhr.xhr.open( type.toUpperCase(), uri, true );
 
-			// Setting content-type value
-			if ( headers !== null && headers.hasOwnProperty( "content-type" ) ) {
-				contentType = headers["content-type"];
-			}
-
-			if ( cors && contentType === null ) {
-				contentType = "text/plain";
-			}
-
-			// Transforming payload
-			if ( payload !== null ) {
-				if ( payload.hasOwnProperty( "xml" ) ) {
-					payload = payload.xml;
+				// Setting content-type value
+				if ( headers !== null && headers.hasOwnProperty( "content-type" ) ) {
+					contentType = headers["content-type"];
 				}
 
-				if ( doc && payload instanceof Document ) {
-					payload = xml.decode( payload );
+				if ( cors && contentType === null ) {
+					contentType = "text/plain";
 				}
 
-				if ( typeof payload == "string" && regex.is_xml.test( payload ) ) {
-					contentType = "application/xml";
+				// Transforming payload
+				if ( payload !== null ) {
+					if ( payload.hasOwnProperty( "xml" ) ) {
+						payload = payload.xml;
+					}
+
+					if ( doc && payload instanceof Document ) {
+						payload = xml.decode( payload );
+					}
+
+					if ( typeof payload == "string" && regex.is_xml.test( payload ) ) {
+						contentType = "application/xml";
+					}
+
+					if ( !( ab && payload instanceof ArrayBuffer ) && !( blob && payload instanceof Blob ) && ( !server && !( payload instanceof Buffer ) ) && payload instanceof Object ) {
+						contentType = "application/json";
+						payload = json.encode( payload );
+					}
+
+					if ( contentType === null && ( ( ab && payload instanceof ArrayBuffer ) || ( blob && payload instanceof Blob ) ) ) {
+						contentType = "application/octet-stream";
+					}
+
+					if ( contentType === null ) {
+						contentType = "application/x-www-form-urlencoded; charset=UTF-8";
+					}
 				}
 
-				if ( !( ab && payload instanceof ArrayBuffer ) && !( blob && payload instanceof Blob ) && ( !server && !( payload instanceof Buffer ) ) && payload instanceof Object ) {
-					contentType = "application/json";
-					payload = json.encode( payload );
+				// Setting headers for everything except IE9 CORS requests
+				if ( !client.ie || ( !cors || client.version > 9 ) ) {
+					if ( headers === null ) {
+						headers = {};
+					}
+
+					if ( typeof cached == "object" && cached.headers.hasOwnProperty( "etag" ) ) {
+						headers.etag = cached.headers.etag;
+					}
+
+					if ( contentType !== null ) {
+						headers["content-type"] = contentType;
+					}
+
+					if ( headers.hasOwnProperty( "callback" ) ) {
+						delete headers.callback;
+					}
+
+					utility.iterate( headers, function ( v, k ) {
+						if ( v !== null && k !== "withCredentials") {
+							kxhr.xhr.setRequestHeader( k, v );
+						}
+					} );
+
+					// Cross Origin Resource Sharing ( CORS )
+					if ( typeof kxhr.xhr.withCredentials == "boolean" && headers !== null && typeof headers.withCredentials == "boolean" ) {
+						kxhr.xhr.withCredentials = headers.withCredentials;
+					}
 				}
 
-				if ( contentType === null && ( ( ab && payload instanceof ArrayBuffer ) || ( blob && payload instanceof Blob ) ) ) {
-					contentType = "application/octet-stream";
-				}
+				kxhr.on( "load", function () {
+					var self   = this,
+					    xdr    = client.ie && this.xhr.readyState === undefined,
+					    shared = true,
+					    o, r, t, redirect;
 
-				if ( contentType === null ) {
-					contentType = "application/x-www-form-urlencoded; charset=UTF-8";
-				}
-			}
+					if ( !xdr && this.xhr.readyState === 4 ) {
+						switch ( this.xhr.status ) {
+							case 200:
+							case 201:
+							case 202:
+							case 203:
+							case 204:
+							case 205:
+							case 206:
+								o = client.headers( this.xhr, uri, type );
 
-			// Setting headers for everything except IE9 CORS requests
-			if ( !client.ie || ( !cors || client.version > 9 ) ) {
-				if ( headers === null ) {
-					headers = {};
-				}
+								if ( type === "head" ) {
+									return this.resolve( o.headers );
+								}
+								else if ( type === "options" ) {
+									return this.resolve( o.headers );
+								}
+								else if ( type !== "delete" ) {
+									if ( server && regex.priv.test( o.headers["cache-control"] ) ) {
+										shared = false;
+									}
 
-				if ( typeof cached == "object" && cached.headers.hasOwnProperty( "etag" ) ) {
-					headers.etag = cached.headers.etag;
-				}
+									if ( regex.http_body.test( this.xhr.status ) ) {
+										t = o.headers["content-type"] || "";
+										r = client.parse( this.xhr, t );
 
-				if ( contentType !== null ) {
-					headers["content-type"] = contentType;
-				}
+										if ( r === undefined ) {
+											this.reject( new Error( label.serverError ) );
+										}
+									}
 
-				if ( headers.hasOwnProperty( "callback" ) ) {
-					delete headers.callback;
-				}
+									if ( type === "get" && shared ) {
+										cache.set( uri, "response", ( o.response = utility.clone( r, true ) ) );
+									}
+									else {
+										cache.expire( uri, true );
+									}
+								}
+								else if ( type === "delete" ) {
+									cache.expire( uri, true );
+								}
 
-				utility.iterate( headers, function ( v, k ) {
-					if ( v !== null && k !== "withCredentials") {
-						xhr.setRequestHeader( k, v );
+								switch ( this.xhr.status ) {
+									case 200:
+									case 202:
+									case 203:
+									case 206:
+										this.resolve( r );
+										break;
+									case 201:
+										if ( ( o.headers.location === undefined || string.isEmpty( o.headers.location ) ) && !string.isUrl( r ) ) {
+											this.resolve( r );
+										}
+										else {
+											redirect = string.trim ( o.headers.Location || r );
+											client.request( redirect, "GET", function ( arg ) {
+												self.resolve ( arg );
+											}, function ( e ) {
+												self.reject( e );
+											} );
+										}
+										break;
+									case 204:
+									case 205:
+										this.resolve( null );
+										break;
+								}
+								break;
+							case 304:
+								this.resolve( r );
+								break;
+							case 401:
+								this.reject( new Error( this.xhr.responseText || label.serverUnauthorized ) );
+								break;
+							case 403:
+								cache.set( uri, "!permission", client.bit( [type] ) );
+								this.reject( new Error( this.xhr.responseText || label.serverForbidden ) );
+								break;
+							case 405:
+								cache.set( uri, "!permission", client.bit( [type] ) );
+								this.reject( new Error( this.xhr.responseText || label.serverInvalidMethod ) );
+								break;
+							default:
+								this.reject( new Error( this.xhr.responseText || label.serverError ) );
+						}
+					}
+					else if ( xdr ) {
+						r = client.parse( this.xhr, "text/plain" );
+						cache.set( uri, "permission", client.bit( ["get"] ) );
+						cache.set( uri, "response", r );
+						this.resolve( r );
 					}
 				} );
 
-				// Cross Origin Resource Sharing ( CORS )
-				if ( typeof xhr.withCredentials == "boolean" && headers !== null && typeof headers.withCredentials == "boolean" ) {
-					xhr.withCredentials = headers.withCredentials;
-				}
-			}
+				kxhr.on( "error", function ( e ) {
+					this.reject( e );
+				} );
 
-			xhr.onload = function () {
-				var xdr    = client.ie && xhr.readyState === undefined,
-				    shared = true,
-				    o, r, t, redirect;
-
-				if ( !xdr && xhr.readyState === 4 ) {
-					switch ( xhr.status ) {
-						case 200:
-						case 201:
-						case 202:
-						case 203:
-						case 204:
-						case 205:
-						case 206:
-							o = client.headers( xhr, uri, type );
-
-							if ( type === "head" ) {
-								return defer.resolve( o.headers );
-							}
-							else if ( type === "options" ) {
-								return defer.resolve( o.headers );
-							}
-							else if ( type !== "delete" ) {
-								if ( server && regex.priv.test( o.headers["cache-control"] ) ) {
-									shared = false;
-								}
-
-								if ( regex.http_body.test( xhr.status ) ) {
-									t = o.headers["content-type"] || "";
-									r = client.parse( xhr, t );
-
-									if ( r === undefined ) {
-										defer.reject( new Error( label.serverError ) );
-									}
-								}
-
-								if ( type === "get" && shared ) {
-									cache.set( uri, "response", ( o.response = utility.clone( r, true ) ) );
-								}
-								else {
-									cache.expire( uri, true );
-								}
-							}
-							else if ( type === "delete" ) {
-								cache.expire( uri, true );
-							}
-
-							switch ( xhr.status ) {
-								case 200:
-								case 202:
-								case 203:
-								case 206:
-									defer.resolve( r );
-									break;
-								case 201:
-									if ( ( o.headers.location === undefined || string.isEmpty( o.headers.location ) ) && !string.isUrl( r ) ) {
-										defer.resolve( r );
-									}
-									else {
-										redirect = string.trim ( o.headers.Location || r );
-										client.request( redirect, "GET", function ( arg ) {
-											defer.resolve ( arg );
-										}, function ( e ) {
-											defer.reject( e );
-										} );
-									}
-									break;
-								case 204:
-								case 205:
-									defer.resolve( null );
-									break;
-							}
-							break;
-						case 304:
-							defer.resolve( r );
-							break;
-						case 401:
-							defer.reject( new Error( label.serverUnauthorized ) );
-							break;
-						case 403:
-							cache.set( uri, "!permission", client.bit( [type] ) );
-							defer.reject( new Error( label.serverForbidden ) );
-							break;
-						case 405:
-							cache.set( uri, "!permission", client.bit( [type] ) );
-							defer.reject( new Error( label.serverInvalidMethod ) );
-							break;
-						default:
-							defer.reject( new Error( xhr.responseText || label.serverError ) );
-					}
-				}
-				else if ( xdr ) {
-					r = client.parse( xhr, "text/plain" );
-					cache.set( uri, "permission", client.bit( ["get"] ) );
-					cache.set( uri, "response", r );
-					defer.resolve( r );
-				}
-			};
-
-			xhr.onerror = function ( e ) {
-				defer.reject( e );
-			};
-
-			// Firing event & sending request
-			payload !== null ? xhr.send( payload ) : xhr.send();
+				// Sending request
+				kxhr.xhr.send( payload !== null ? payload : undefined );
+			} );
 		}
 
-		defer.xhr = xhr;
-
-		return defer;
+		return kxhr;
 	},
 
 	/**
@@ -9187,7 +9288,7 @@ function xhr () {
 	    XMLHttpRequest, headers, success, failure, state;
 
 	headers = {
-		"user-agent"   : "keigai/0.2.18 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"user-agent"   : "keigai/0.3.0 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
 	};
@@ -9879,7 +9980,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.2.18"
+	version : "0.3.0"
 };
 
 } )();
@@ -9918,7 +10019,7 @@ else {
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Thu Jun 19 2014 15:02:15 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Tue Jun 24 2014 07:06:17 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
