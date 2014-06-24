@@ -8,6 +8,7 @@ var document  = global.document,
     MAX       = 10,
     VERSIONS  = 100,
     CACHE     = 500,
+    EVENTS    = ["readystatechange", "abort", "load", "loadstart", "loadend", "error", "progress", "timeout"],
     http, https, lib, url, WORKER;
 
 if ( server ) {

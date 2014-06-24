@@ -114,6 +114,21 @@ Base.prototype.emit = function () {
 };
 
 /**
+ * Hooks into `target` for an event
+ *
+ * @method hook
+ * @memberOf keigai.Base
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.hook( document.querySelector( "a" ), "click" );
+ */
+Base.prototype.hook = function () {
+	this.observer.hook.apply( this.observer, [].concat( array.cast( arguments ) ) );
+
+	return this;
+};
+
+/**
  * Gets listeners
  *
  * @method listeners
