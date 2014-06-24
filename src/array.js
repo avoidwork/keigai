@@ -614,6 +614,8 @@ var array = {
 			sub = "";
 		}
 
+		sorts.push( "try {" );
+
 		array.each( queries, function ( i ) {
 			var s = ".",
 			    e = "";
@@ -634,6 +636,7 @@ var array = {
 		} );
 
 		sorts.push( "else return 0;" );
+		sorts.push( "} catch ( e ) { return 0; }" );
 
 		return obj.sort( new Function( "a", "b", sorts.join( "\n" ) ) );
 	},
