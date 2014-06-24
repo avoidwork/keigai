@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.3.1
+- Extending `array.keySort()` to support deep sorting
+
+## 0.3.0
+- Refactored `client.request()` to utilize a `KXMLHttpRequest` instance which is basically an `observable` with `deferred` methods, and it contains the original `XMLHttpRequest` to maintain the existing API; `beforeXHR` & `afterXHR` events are now present
+
 ## 0.2.19
 - Fixing sending Buffers over the wire
 

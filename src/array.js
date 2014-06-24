@@ -603,7 +603,9 @@ var array = {
 	keySort : function ( obj, query, sub ) {
 		query       = query.replace( /\s*asc/ig, "" ).replace( /\s*desc/ig, " desc" );
 		var queries = string.explode( query ).map( function ( i ) { return i.split( " " ); } ),
-		    sorts   = [];
+		    sorts   = [],
+		    braceS  = "[\"",
+		    braceE  = "\"]";
 
 		if ( sub && sub !== "" ) {
 			sub = "." + sub;
@@ -613,13 +615,21 @@ var array = {
 		}
 
 		array.each( queries, function ( i ) {
+			var s = ".",
+			    e = "";
+
+			if ( regex.not_dotnotation.test( i[0] ) ) {
+				s = braceS;
+				e = braceE;
+			}
+
 			if ( i[1] === "desc" ) {
-				sorts.push( "if ( a" + sub + "[\"" + i[0] + "\"] < b" + sub + "[\"" + i[0] + "\"] ) return 1;" );
-				sorts.push( "if ( a" + sub + "[\"" + i[0] + "\"] > b" + sub + "[\"" + i[0] + "\"] ) return -1;" );
+				sorts.push( "if ( a" + sub + s + i[0] + e + " < b" + sub + s + i[0] + e + " ) return 1;" );
+				sorts.push( "if ( a" + sub + s + i[0] + e + " > b" + sub + s + i[0] + e + " ) return -1;" );
 			}
 			else {
-				sorts.push( "if ( a" + sub + "[\"" + i[0] + "\"] < b" + sub + "[\"" + i[0] + "\"] ) return -1;" );
-				sorts.push( "if ( a" + sub + "[\"" + i[0] + "\"] > b" + sub + "[\"" + i[0] + "\"] ) return 1;" );
+				sorts.push( "if ( a" + sub + s + i[0] + e + " < b" + sub + s + i[0] + e + " ) return -1;" );
+				sorts.push( "if ( a" + sub + s + i[0] + e + " > b" + sub + s + i[0] + e + " ) return 1;" );
 			}
 		} );
 
