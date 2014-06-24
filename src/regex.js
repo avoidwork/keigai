@@ -41,6 +41,7 @@ var regex = {
 	json_wrap            : /^[\[\{]/,
 	klass                : /^\./,
 	no                   : /no-store|no-cache/i,
+	not_dotnotation      : /-|\s/,
 	not_endpoint         : /.*\//,
 	null_undefined       : /null|undefined/,
 	number               : /(^-?\d\d*\.\d*$)|(^-?\d\d*$)|(^-?\.\d\d*$)|number/,
