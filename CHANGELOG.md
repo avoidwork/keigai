@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.3.3
+- Refactoring `array.keySort()` to be 'safe'
+
 ## 0.3.2
 - Refactoring `utility.walk()` to be 'safe'
 - Fixing `list.refresh()` such that it can deal with `undefined` returned from `utility.walk()`
