@@ -351,7 +351,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 			// Replacing dot notation properties
 			array.each( items, function ( attr ) {
 				var key   = attr.replace( /\{\{|\}\}/g, "" ),
-				    value = utility.walk( i.data, key );
+				    value = utility.walk( i.data, key ) || "";
 
 				reg.compile( string.escape( attr ), "g" );
 				html = html.replace( reg, value );
@@ -374,7 +374,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 			// Replacing dot notation properties
 			array.each( items, function ( attr ) {
 				var key   = attr.replace( /\{\{|\}\}/g, "" ),
-				    value = utility.walk( i.data, key );
+				    value = utility.walk( i.data, key ) || "";
 
 				reg.compile( string.escape( attr ), "g" );
 
