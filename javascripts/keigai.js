@@ -6,7 +6,7 @@
  * @license BSD-3 <https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.3.0
+ * @version 0.3.2
  */
 ( function ( global ) {
 
@@ -85,6 +85,7 @@ var regex = {
 	json_wrap            : /^[\[\{]/,
 	klass                : /^\./,
 	no                   : /no-store|no-cache/i,
+	not_dotnotation      : /-|\s/,
 	not_endpoint         : /.*\//,
 	null_undefined       : /null|undefined/,
 	number               : /(^-?\d\d*\.\d*$)|(^-?\d\d*$)|(^-?\.\d\d*$)|number/,
@@ -1340,7 +1341,9 @@ var array = {
 	keySort : function ( obj, query, sub ) {
 		query       = query.replace( /\s*asc/ig, "" ).replace( /\s*desc/ig, " desc" );
 		var queries = string.explode( query ).map( function ( i ) { return i.split( " " ); } ),
-		    sorts   = [];
+		    sorts   = [],
+		    braceS  = "[\"",
+		    braceE  = "\"]";
 
 		if ( sub && sub !== "" ) {
 			sub = "." + sub;
@@ -1350,13 +1353,21 @@ var array = {
 		}
 
 		array.each( queries, function ( i ) {
+			var s = ".",
+			    e = "";
+
+			if ( regex.not_dotnotation.test( i[0] ) ) {
+				s = braceS;
+				e = braceE;
+			}
+
 			if ( i[1] === "desc" ) {
-				sorts.push( "if ( a" + sub + "[\"" + i[0] + "\"] < b" + sub + "[\"" + i[0] + "\"] ) return 1;" );
-				sorts.push( "if ( a" + sub + "[\"" + i[0] + "\"] > b" + sub + "[\"" + i[0] + "\"] ) return -1;" );
+				sorts.push( "if ( a" + sub + s + i[0] + e + " < b" + sub + s + i[0] + e + " ) return 1;" );
+				sorts.push( "if ( a" + sub + s + i[0] + e + " > b" + sub + s + i[0] + e + " ) return -1;" );
 			}
 			else {
-				sorts.push( "if ( a" + sub + "[\"" + i[0] + "\"] < b" + sub + "[\"" + i[0] + "\"] ) return -1;" );
-				sorts.push( "if ( a" + sub + "[\"" + i[0] + "\"] > b" + sub + "[\"" + i[0] + "\"] ) return 1;" );
+				sorts.push( "if ( a" + sub + s + i[0] + e + " < b" + sub + s + i[0] + e + " ) return -1;" );
+				sorts.push( "if ( a" + sub + s + i[0] + e + " > b" + sub + s + i[0] + e + " ) return 1;" );
 			}
 		} );
 
@@ -3900,7 +3911,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 			// Replacing dot notation properties
 			array.each( items, function ( attr ) {
 				var key   = attr.replace( /\{\{|\}\}/g, "" ),
-				    value = utility.walk( i.data, key );
+				    value = utility.walk( i.data, key ) || "";
 
 				reg.compile( string.escape( attr ), "g" );
 				html = html.replace( reg, value );
@@ -3923,7 +3934,7 @@ DataList.prototype.refresh = function ( redraw, create ) {
 			// Replacing dot notation properties
 			array.each( items, function ( attr ) {
 				var key   = attr.replace( /\{\{|\}\}/g, "" ),
-				    value = utility.walk( i.data, key );
+				    value = utility.walk( i.data, key ) || "";
 
 				reg.compile( string.escape( attr ), "g" );
 
@@ -8982,18 +8993,25 @@ var utility = {
 	 * @memberOf utility
 	 * @param  {Mixed}  obj  Object or Array
 	 * @param  {String} arg  String describing the property to return
-	 * @return {Mixed}       arg
+	 * @return {Mixed}       Target or undefined
 	 * @example
 	 * var obj = {a: [{b: true}]};
 	 *
 	 * keigai.util.walk( obj, "a[0].b" ); // true
 	 */
 	walk : function ( obj, arg ) {
+		var output = obj;
+
 		array.each( arg.replace( /\]$/, "" ).replace( /\]/g, "." ).replace( /\.\./g, "." ).split( /\.|\[/ ), function ( i ) {
-			obj = obj[i];
+			if ( output[i] === undefined || output[i] === null ) {
+				output = undefined;
+				return false;
+			}
+
+			output = output[i];
 		} );
 
-		return obj;
+		return output;
 	},
 
 	/**
@@ -9117,7 +9135,7 @@ function xhr () {
 	    XMLHttpRequest, headers, success, failure, state;
 
 	headers = {
-		"user-agent"   : "keigai/0.3.0 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"user-agent"   : "keigai/0.3.2 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
 	};
@@ -9809,7 +9827,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.3.0"
+	version : "0.3.2"
 };
 
 } )();
