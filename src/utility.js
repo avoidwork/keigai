@@ -803,18 +803,25 @@ var utility = {
 	 * @memberOf utility
 	 * @param  {Mixed}  obj  Object or Array
 	 * @param  {String} arg  String describing the property to return
-	 * @return {Mixed}       arg
+	 * @return {Mixed}       Target or undefined
 	 * @example
 	 * var obj = {a: [{b: true}]};
 	 *
 	 * keigai.util.walk( obj, "a[0].b" ); // true
 	 */
 	walk : function ( obj, arg ) {
+		var output = obj;
+
 		array.each( arg.replace( /\]$/, "" ).replace( /\]/g, "." ).replace( /\.\./g, "." ).split( /\.|\[/ ), function ( i ) {
-			obj = obj[i];
+			if ( output[i] === undefined || output[i] === null ) {
+				output = undefined;
+				return false;
+			}
+
+			output = output[i];
 		} );
 
-		return obj;
+		return output;
 	},
 
 	/**
