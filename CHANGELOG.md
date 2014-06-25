@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.3.4
+- DataGrid CSS tweak to add ellipsis by default
+- Replacing "-" or "_" in DataGrid header row with " "
+
 ## 0.3.3
 - Refactoring `array.keySort()` to be 'safe'
 

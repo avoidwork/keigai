@@ -40,7 +40,7 @@ var grid = {
 		// Creating DataList template based on fields
 		array.each( obj.fields, function ( i ) {
 			var trimmed = i.replace( /.*\./g, "" ),
-			    el      = element.create( "span", {innerHTML: string.capitalize( string.unCamelCase( string.unhyphenate( trimmed, true ) ), true ), style: css, "data-field": i}, header );
+			    el      = element.create( "span", {innerHTML: string.capitalize( string.unCamelCase( string.unhyphenate( trimmed, true ) ).replace( /_|-/g, " " ), true ), style: css, "data-field": i}, header );
 
 			// Adding CSS class if "column" is sortable
 			if ( array.contains( obj.sortable, i ) ) {
