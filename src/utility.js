@@ -875,22 +875,42 @@ var utility = {
 					if ( ++i === nth && !defer.isResolved() ) {
 						if ( args.length > 1 ) {
 							defer.resolve( args.map( function ( obj ) {
-								return obj.value || obj.promise.value;
+								if ( typeof obj.defer == "undefined" ) {
+									return obj.value || obj.promise.value;
+								}
+								else {
+									return obj.defer.promise.value;
+								}
 							} ) );
 						}
 						else {
-							defer.resolve( args[0].value || args[0].promise.value );
+							if ( typeof args[0].defer == "undefined" ) {
+								defer.resolve( args[0].value || args[0].promise.value );
+							}
+							else {
+								defer.resolve( args[0].defer.promise.value );
+							}
 						}
 					}
 				}, function () {
 					if ( !defer.isResolved() ) {
 						if ( args.length > 1 ) {
 							defer.reject( args.map( function ( obj ) {
-								return obj.value || obj.promise.value;
+								if ( typeof obj.defer == "undefined" ) {
+									return obj.value || obj.promise.value;
+								}
+								else {
+									return obj.defer.promise.value;
+								}
 							} ) );
 						}
 						else {
-							defer.reject( args[0].value || args[0].promise.value );
+							if ( typeof args[0].defer == "undefined" ) {
+								defer.reject( args[0].value || args[0].promise.value );
+							}
+							else {
+								return args[0].defer.promise.value;
+							}
 						}
 					}
 				} );

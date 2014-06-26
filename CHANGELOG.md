@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.3.5
+- Fixing `utility.when()` to handle the new `KXMLHttpRequest` type
+- Changing `KXMLHttpRequest` instances to be decorated with the `defer` property for `utility.when()`
+
 ## 0.3.4
 - DataGrid CSS tweak to add ellipsis by default
 - Replacing "-" or "_" in DataGrid header row with " "

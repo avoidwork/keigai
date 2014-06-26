@@ -26,6 +26,9 @@ if ( server ) {
 		XMLHttpRequest = null;
 	}
 }
+else if ( typeof Buffer == "undefined" ) {
+	Buffer = function () {};
+}
 
 lib = ( function () {
 "use strict";

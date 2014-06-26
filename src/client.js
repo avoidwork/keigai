@@ -8,6 +8,7 @@
  */
 function KXMLHttpRequest ( xhr ) {
 	this.observer = observable.factory();
+	this.defer    = deferred.factory();
 	this.xhr      = xhr;
 }
 
@@ -356,13 +357,12 @@ var client = {
 	 * @private
 	 */
 	kxhr : function ( xhr ) {
-		var obj   = new KXMLHttpRequest( xhr ),
-		    defer = deferred.factory();
+		var obj = new KXMLHttpRequest( xhr );
 
 		// Wrapping deferred methods on obj
 		array.each( array.keys( Deferred.prototype ), function ( i ) {
 			obj[i] = function () {
-				return defer[i].apply( defer, array.cast( arguments ) );
+				return obj.defer[i].apply( obj.defer, array.cast( arguments ) );
 			};
 		} );
 
