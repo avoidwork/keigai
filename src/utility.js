@@ -688,6 +688,37 @@ var utility = {
 	},
 
 	/**
+	 * Asynchronous DOM rendering
+	 *
+	 * @method render
+	 * @memberOf utility
+	 * @param  {Function} fn Function to execute on next 'frame'
+	 * @return {Object} {@link keigai.Deferred}
+	 * @example
+	 * keigai.util.render( function () {
+	 *     return keitai.util.element.html( document.querySelector( "#id" ), "Hello World" )
+	 * } ).then( function ( arg ) {
+	 *     // arg is the return value of your function
+	 * }, function ( e ) {
+	 *     // Handle e
+	 * } );
+	 */
+	render : function ( fn ) {
+		var defer = deferred.factory();
+
+		RENDER( function () {
+			try {
+				defer.resolve( fn() );
+			}
+			catch ( e ) {
+				defer.reject( e );
+			}
+		} );
+
+		return defer;
+	},
+
+	/**
 	 * Creates a recursive function. Return false from the function to halt recursion.
 	 *
 	 * @method repeat
@@ -925,13 +956,12 @@ var utility = {
 	 *
 	 * @method worker
 	 * @memberOf utility
-	 * @param  {Mixed}  arg   Script for the Worker to run
 	 * @param  {Object} defer Deferred to receive message from Worker
 	 * @return {Object}       Worker
 	 * @private
 	 */
-	worker : function ( arg, defer ) {
-		var obj = new Worker( global.URL.createObjectURL( utility.blob( arg ) ) );
+	worker : function ( defer ) {
+		var obj = new Worker( WORKER );
 
 		obj.onerror = function ( err ) {
 			defer.reject( err );

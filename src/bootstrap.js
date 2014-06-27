@@ -118,6 +118,14 @@ function bootstrap () {
 	has   = Object.prototype.hasOwnProperty;
 	slice = Array.prototype.slice;
 
+	// DataStore Worker "script"
+	if ( webWorker ) {
+		WORKER = global.URL.createObjectURL( utility.blob( "var " + string.fromObject( array, "array" ) + ", " + string.fromObject( regex, "regex" ) + ", " + string.fromObject( string, "string" ) + ", " + string.fromObject( utility, "utility" ) + "; onmessage = " + store.worker.toString() + ";" ) );
+	}
+
+	// Setting up `utility.render()`
+	RENDER = global.requestAnimationFrame || utility.delay;
+
 	// Initializing
 	if ( typeof exports != "undefined" || typeof define == "function" || regex.complete_loaded.test( document.readyState ) ) {
 		init();
