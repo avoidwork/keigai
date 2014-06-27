@@ -6,7 +6,7 @@
  * @license BSD-3 <https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.3.3
+ * @version 0.3.6
  */
 ( function ( global ) {
 
@@ -35,6 +35,9 @@ if ( server ) {
 	if ( typeof XMLHttpRequest == "undefined" ) {
 		XMLHttpRequest = null;
 	}
+}
+else if ( typeof Buffer == "undefined" ) {
+	Buffer = function () {};
 }
 
 lib = ( function () {
@@ -2359,6 +2362,7 @@ var cache = {
  */
 function KXMLHttpRequest ( xhr ) {
 	this.observer = observable.factory();
+	this.defer    = deferred.factory();
 	this.xhr      = xhr;
 }
 
@@ -2707,13 +2711,12 @@ var client = {
 	 * @private
 	 */
 	kxhr : function ( xhr ) {
-		var obj   = new KXMLHttpRequest( xhr ),
-		    defer = deferred.factory();
+		var obj = new KXMLHttpRequest( xhr );
 
 		// Wrapping deferred methods on obj
 		array.each( array.keys( Deferred.prototype ), function ( i ) {
 			obj[i] = function () {
-				return defer[i].apply( defer, array.cast( arguments ) );
+				return obj.defer[i].apply( obj.defer, array.cast( arguments ) );
 			};
 		} );
 
@@ -3276,7 +3279,7 @@ var grid = {
 		// Creating DataList template based on fields
 		array.each( obj.fields, function ( i ) {
 			var trimmed = i.replace( /.*\./g, "" ),
-			    el      = element.create( "span", {innerHTML: string.capitalize( string.unCamelCase( string.unhyphenate( trimmed, true ) ), true ), style: css, "data-field": i}, header );
+			    el      = element.create( "span", {innerHTML: string.capitalize( string.unCamelCase( string.unhyphenate( trimmed, true ) ).replace( /_|-/g, " " ), true ), style: css, "data-field": i}, header );
 
 			// Adding CSS class if "column" is sortable
 			if ( array.contains( obj.sortable, i ) ) {
@@ -7275,11 +7278,10 @@ DataStore.prototype.setExpires = function ( arg ) {
 			return false;
 		}
 
-		if ( !cache.expire( self.uri ) ) {
-			self.dispatch( "beforeExpire");
-			self.dispatch( "expire");
-			self.dispatch( "afterExpire");
-		}
+		cache.expire( self.uri );
+		self.dispatch( "beforeExpire");
+		self.dispatch( "expire");
+		self.dispatch( "afterExpire");
 	}, expires, id, false );
 };
 
@@ -9068,22 +9070,42 @@ var utility = {
 					if ( ++i === nth && !defer.isResolved() ) {
 						if ( args.length > 1 ) {
 							defer.resolve( args.map( function ( obj ) {
-								return obj.value || obj.promise.value;
+								if ( typeof obj.defer == "undefined" ) {
+									return obj.value || obj.promise.value;
+								}
+								else {
+									return obj.defer.promise.value;
+								}
 							} ) );
 						}
 						else {
-							defer.resolve( args[0].value || args[0].promise.value );
+							if ( typeof args[0].defer == "undefined" ) {
+								defer.resolve( args[0].value || args[0].promise.value );
+							}
+							else {
+								defer.resolve( args[0].defer.promise.value );
+							}
 						}
 					}
 				}, function () {
 					if ( !defer.isResolved() ) {
 						if ( args.length > 1 ) {
 							defer.reject( args.map( function ( obj ) {
-								return obj.value || obj.promise.value;
+								if ( typeof obj.defer == "undefined" ) {
+									return obj.value || obj.promise.value;
+								}
+								else {
+									return obj.defer.promise.value;
+								}
 							} ) );
 						}
 						else {
-							defer.reject( args[0].value || args[0].promise.value );
+							if ( typeof args[0].defer == "undefined" ) {
+								defer.reject( args[0].value || args[0].promise.value );
+							}
+							else {
+								return args[0].defer.promise.value;
+							}
 						}
 					}
 				} );
@@ -9138,7 +9160,7 @@ function xhr () {
 	    XMLHttpRequest, headers, success, failure, state;
 
 	headers = {
-		"user-agent"   : "keigai/0.3.3 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"user-agent"   : "keigai/0.3.6 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
 	};
@@ -9830,7 +9852,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.3.3"
+	version : "0.3.6"
 };
 
 } )();
