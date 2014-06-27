@@ -636,7 +636,7 @@ var array = {
 		} );
 
 		sorts.push( "else return 0;" );
-		sorts.push( "} catch ( e ) { return 0; }" );
+		sorts.push( "} catch ( e ) { return -1; }" );
 
 		return obj.sort( new Function( "a", "b", sorts.join( "\n" ) ) );
 	},
