@@ -25,6 +25,10 @@ if ( server ) {
 	if ( typeof XMLHttpRequest == "undefined" ) {
 		XMLHttpRequest = null;
 	}
+
+	if ( typeof btoa == "undefined" ) {
+		btoa = require( "btoa" );
+	}
 }
 else if ( typeof Buffer == "undefined" ) {
 	Buffer = function () {};

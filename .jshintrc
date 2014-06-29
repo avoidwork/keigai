@@ -39,6 +39,7 @@
 		"Blob": true,
 		"Worker": true,
 		"postMessage": true,
-		"requestAnimationFrame": true
+		"requestAnimationFrame": true,
+		"btoa": true
 	}
 }
