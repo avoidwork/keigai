@@ -350,7 +350,11 @@ DataList.prototype.refresh = function ( create ) {
 			// Replacing dot notation properties
 			array.each( items, function ( attr ) {
 				var key   = attr.replace( /\{\{|\}\}/g, "" ),
-				    value = utility.walk( i.data, key ) || "";
+				    value = utility.walk( i.data, key );
+
+				if ( value === undefined ) {
+					value = "";
+				}
 
 				reg.compile( string.escape( attr ), "g" );
 				html = html.replace( reg, value );
