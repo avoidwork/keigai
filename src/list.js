@@ -128,6 +128,7 @@ function DataList ( element, store, template ) {
 	this.filter      = null;
 	this.filtered    = [];
 	this.id          = utility.genId();
+	this.items       = [];
 	this.mutation    = null;
 	this.observer    = observable.factory();
 	this.pageIndex   = 1;
@@ -316,13 +317,12 @@ DataList.prototype.pages = function () {
  * @fires keigai.DataList#beforeRefresh Fires before refresh
  * @fires keigai.DataList#afterRefresh Fires after refresh
  * @fires keigai.DataList#error Fires on error
- * @param  {Boolean} redraw [Optional] Boolean to force clearing the DataList ( default ), false toggles "hidden" class of items
  * @param  {Boolean} create [Optional] Recreates cached View of data
  * @return {Object} {@link keigai.DataList}
  * @example
  * list.refresh();
  */
-DataList.prototype.refresh = function ( redraw, create ) {
+DataList.prototype.refresh = function ( create ) {
 	var self     = this,
 	    el       = this.element,
 	    template = ( typeof this.template == "object" ),
@@ -334,7 +334,6 @@ DataList.prototype.refresh = function ( redraw, create ) {
 	    range    = [],
 	    fn, ceiling, next;
 
-	redraw = redraw !== false;
 	create = create === true;
 
 	this.dispatch( "beforeRefresh", el );
@@ -351,7 +350,11 @@ DataList.prototype.refresh = function ( redraw, create ) {
 			// Replacing dot notation properties
 			array.each( items, function ( attr ) {
 				var key   = attr.replace( /\{\{|\}\}/g, "" ),
-				    value = utility.walk( i.data, key ) || "";
+				    value = utility.walk( i.data, key );
+
+				if ( value === undefined ) {
+					value = "";
+				}
 
 				reg.compile( string.escape( attr ), "g" );
 				html = html.replace( reg, value );
@@ -450,49 +453,81 @@ DataList.prototype.refresh = function ( redraw, create ) {
 
 		// Processing records & generating templates
 		array.each( self.current, function ( i ) {
-			items.push( {key: i.key, template: fn( i )} );
+			var html = fn( i ),
+			    hash = btoa( html );
+
+			items.push( {key: i.key, template: html, hash: hash} );
 		} );
 
-		// Preparing the target element
-		if ( redraw ) {
+		// Updating element
+		utility.render( function () {
+			var destroy   = [],
+			    callbacks = [],
+			    i, nth;
+
 			if ( items.length === 0 ) {
-				el.innerHTML = "<li class=\"empty\">" + self.emptyMsg + "</li>";
+				element.html( el, "<li class=\"empty\">" + self.emptyMsg + "</li>" );
 			}
 			else {
-				el.innerHTML = items.map( function ( i ) {
-					return i.template;
-				} ).join( "\n" );
+				if ( self.items.length === 0 ) {
+					element.html( el, items.map( function ( i ) {
+						return i.template;
+					} ).join( "" ) );
 
-				if ( callback ) {
-					array.each( element.find( el, "> li" ), function ( i ) {
-						self.callback( i );
+					if ( callback ) {
+						array.each( array.cast( el.childNodes ), function ( i ) {
+							self.callback( i );
+						} );
+					}
+				}
+				else {
+					array.each( items, function ( i, idx ) {
+						if ( self.items[idx] !== undefined && self.items[idx].hash !== i.hash ) {
+							element.data( element.html( el.childNodes[idx], i.template.replace( /<li data-key=\"\d+\">|<\/li>/g, "" ) ), "key", i.key );
+							callbacks.push( idx );
+						}
+						else if ( self.items[idx] === undefined ) {
+							element.create( i.template, null, el );
+							callbacks.push( idx );
+						}
 					} );
+
+					if ( items.length < self.items.length ) {
+						i   = items.length - 1;
+						nth = self.items.length;
+
+						while ( ++i < nth ) {
+							destroy.push( i );
+						}
+
+						array.each( destroy.reverse(), function ( i ) {
+							element.destroy( el.childNodes[ i ] );
+						} );
+					}
+
+					if ( callback ) {
+						array.each( callbacks, function ( i ) {
+							self.callback( el.childNodes[i] );
+						} );
+					}
 				}
 			}
-		}
-		else {
-			array.each( element.find( el, "> li" ), function ( i ) {
-				element.addClass( i, "hidden" );
-			} );
 
-			array.each( items, function ( i ) {
-				array.each( element.find( el, "> li[data-key='" + i.key + "']" ), function ( o ) {
-					element.removeClass( o, "hidden" );
+			// Updating reference for next change
+			self.items = items;
+
+			// Rendering pagination elements
+			if ( self.pageSize !== null && regex.top_bottom.test( self.pagination ) && !isNaN( self.pageIndex ) && !isNaN( self.pageSize ) ) {
+				self.pages();
+			}
+			else {
+				array.each( utility.$( "#" + el.id + "-pages-top, #" + el.id + "-pages-bottom" ), function ( i ) {
+					element.destroy( i );
 				} );
-			} );
-		}
+			}
 
-		// Rendering pagination elements
-		if ( self.pageSize !== null && regex.top_bottom.test( self.pagination ) && !isNaN( self.pageIndex ) && !isNaN( self.pageSize ) ) {
-			self.pages();
-		}
-		else {
-			array.each( utility.$( "#" + el.id + "-pages-top, #" + el.id + "-pages-bottom" ), function ( i ) {
-				element.destroy( i );
-			} );
-		}
-
-		self.dispatch( "afterRefresh", el );
+			self.dispatch( "afterRefresh", el );
+		} );
 	};
 
 	// Consuming records based on sort

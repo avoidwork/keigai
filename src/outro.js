@@ -1,9 +1,6 @@
 // Bootstrapping
 bootstrap();
 
-// DataStore Worker "script"
-WORKER = "var " + string.fromObject( array, "array" ) + ", " + string.fromObject( regex, "regex" ) + ", " + string.fromObject( string, "string" ) + ", " + string.fromObject( utility, "utility" ) + "; onmessage = " + store.worker.toString() + ";";
-
 // Interface
 return {
 	filter  : filter.factory,
@@ -29,6 +26,7 @@ return {
 		observer : observable.factory,
 		parse    : utility.parse,
 		prevent  : utility.prevent,
+		render   : utility.render,
 		repeat   : utility.repeat,
 		request  : client.request,
 		stop     : utility.stop,

@@ -183,16 +183,16 @@ var client = {
 		} );
 
 		if ( regex.no.test( items["cache-control"] ) ) {
-			// Do nothing
+			expires = expires.getTime();
 		}
 		else if ( items["cache-control"] && regex.number_present.test( items["cache-control"] ) ) {
 			expires = expires.setSeconds( expires.getSeconds() + number.parse( regex.number_present.exec( items["cache-control"] )[0], 10 ) );
 		}
 		else if ( items.expires ) {
-			expires = new Date( items.expires );
+			expires = new Date( items.expires ).getTime();
 		}
 		else {
-			expires = expires.setSeconds( expires.getSeconds() + expires );
+			expires = expires.getTime();
 		}
 
 		o.expires    = expires;

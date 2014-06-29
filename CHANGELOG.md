@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.4.0
+- Updating `client.headers()` to not cache responses which do not have an explicit expiration
+- Created `utility.render()` to schedule DOM manipulation
+- Refactored `list.refresh()` to render the difference on a render frame via `utility.render()`, & removed the `redraw` parameter
+
+## 0.3.6
+- Fixing `store.setExpires()` ... old abaaso logic in place didn't work with the new `LRU` cache
+
 ## 0.3.5
 - Fixing `utility.when()` to handle the new `KXMLHttpRequest` type
 - Changing `KXMLHttpRequest` instances to be decorated with the `defer` property for `utility.when()`

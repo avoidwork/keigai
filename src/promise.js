@@ -34,7 +34,7 @@ var promise = {
 	/**
 	 * Initiates processing a Promise
 	 *
-	 * @memberOf process
+	 * @method process
 	 * @memberOf promise
 	 * @param  {Object} obj   Promise instance
 	 * @param  {Mixed}  arg   Promise value
