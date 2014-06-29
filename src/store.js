@@ -1076,7 +1076,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 	// Setting key
 	if ( !key ) {
 		if ( this.key !== null && data[this.key] ) {
-			key = data[this.key];
+			key = data[this.key].toString();
 		}
 		else {
 			key = utility.uuid();
