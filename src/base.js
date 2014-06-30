@@ -101,6 +101,21 @@ Base.prototype.dispatch = function () {
 /**
  * Dispatches an event, with optional arguments
  *
+ * @method dispatchEvent
+ * @memberOf keigai.Base
+ * @return {Object} {@link keigai.Base}
+ * @example
+ * obj.dispatchEvent( "event", ... );
+ */
+Base.prototype.dispatchEvent = function () {
+	this.observer.dispatch.apply( this.observer, [].concat( array.cast( arguments ) ) );
+
+	return this;
+};
+
+/**
+ * Dispatches an event, with optional arguments
+ *
  * @method emit
  * @memberOf keigai.Base
  * @return {Object} {@link keigai.Base}

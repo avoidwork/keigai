@@ -1,8 +1,9 @@
 # Change Log
 
 ## 0.4.2
-- Fix `KXMLHttpRequest` for node.js `XMLHttpRequest` shim
 - Fix `Observable.hook()` when called on non-DOM Objects
+- Refactor `XMLHttpRequest` shim to use an `Observable` instance
+- Created `Base.dispatchEvent()`
 
 ## 0.4.1
 - Fixed `array.keySort()` when one side of the comparison is `undefined`

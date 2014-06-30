@@ -13,12 +13,32 @@ function xhr () {
 	    DONE             = 4,
 	    ERR_REFUSED      = /ECONNREFUSED/,
 	    ready            = new RegExp( HEADERS_RECEIVED + "|" + LOADING ),
-	    XMLHttpRequest, headers, success, failure, state;
+	    XMLHttpRequest, headers, dispatch, success, failure, state;
 
 	headers = {
 		"user-agent"   : "keigai/{{VERSION}} node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
+	};
+
+	/**
+	 * Dispatches an event
+	 *
+	 * @method dispatch
+	 * @memberOf xhr
+	 * @param  {String} arg Event to dispatch
+	 * @return {Object}     XMLHttpRequest instance
+	 */
+	dispatch = function ( arg ) {
+		var fn = "on" + arg;
+
+		if ( typeof this[fn] == "function" ) {
+			this[fn]();
+		}
+
+		this.dispatchEvent( arg );
+
+		return this;
 	};
 
 	/**
@@ -32,11 +52,11 @@ function xhr () {
 	state = function ( arg ) {
 		if ( this.readyState !== arg ) {
 			this.readyState = arg;
-			this.dispatchEvent( "readystatechange" );
+			dispatch.call( this, "readystatechange" );
 
 			if ( this.readyState === DONE && !this._error ) {
-				this.dispatchEvent( "load" );
-				this.dispatchEvent( "loadend" );
+				dispatch.call( this, "load" );
+				dispatch.call( this, "loadend" );
 			}
 		}
 
@@ -55,7 +75,6 @@ function xhr () {
 		var self = this;
 
 		state.call( this, HEADERS_RECEIVED );
-
 		this.status      = res.statusCode;
 		this._resheaders = res.headers;
 
@@ -97,7 +116,7 @@ function xhr () {
 		this.responseText = e.message;
 		this._error       = true;
 		this._send        = false;
-		this.dispatchEvent( "error" );
+		dispatch.call( this, "error" );
 		state.call( this, DONE );
 	};
 
@@ -123,17 +142,34 @@ function xhr () {
 		this.responseXML        = null;
 		this.status             = UNSENT;
 		this.statusText         = "";
+		this.observer           = observable.factory();
 
 		// Psuedo private for prototype chain
-		this._id                = utility.genId();
 		this._error             = false;
 		this._headers           = {};
-		this._listeners         = {};
 		this._params            = {};
 		this._request           = null;
 		this._resheaders        = {};
 		this._send              = false;
 	};
+
+	/**
+	 * Extending Base
+	 *
+	 * @memberOf keigai.XMLHttpRequest
+	 * @type {Object} {@link keigai.Base}
+	 */
+	XMLHttpRequest.prototype = base.factory();
+
+	/**
+	 * Setting constructor loop
+	 *
+	 * @method constructor
+	 * @memberOf keigai.XMLHttpRequest
+	 * @type {Function}
+	 * @private
+	 */
+	XMLHttpRequest.prototype.constructor = XMLHttpRequest;
 
 	/**
 	 * Aborts a request
@@ -145,65 +181,19 @@ function xhr () {
 	XMLHttpRequest.prototype.abort = function () {
 		if ( this._request !== null ) {
 			this._request.abort();
-			this._request = null;
-		}
+			this._request     = null;
+			this.responseText = "";
+			this.responseXML  = "";
+			this._error       = true;
+			this._headers     = {};
 
-		this.responseText = "";
-		this.responseXML  = "";
-		this._error       = true;
-		this._headers     = {};
+			if ( this._send === true || ready.test( this.readyState ) ) {
+				this._send = false;
+				state.call( this, DONE );
+			}
 
-		if ( this._send === true || ready.test( this.readyState ) ) {
-			this._send = false;
-			state.call( this, DONE );
-		}
-
-		this.dispatchEvent( "abort" );
-		this.readyState = UNSENT;
-
-		return this;
-	};
-
-	/**
-	 * Adds an event listener to an XMLHttpRequest instance
-	 *
-	 * @method addEventListener
-	 * @memberOf XMLHttpRequest
-	 * @param {String}   event Event to listen for
-	 * @param {Function} fn    Event handler
-	 * @return {Object}        XMLHttpRequest instance
-	 */
-	XMLHttpRequest.prototype.addEventListener = function ( event, fn ) {
-		if ( !this._listeners.hasOwnProperty( event ) ) {
-			this._listeners[event] = [];
-		}
-
-		this._listeners[event].add( fn );
-
-		return this;
-	};
-
-	/**
-	 * Dispatches an event
-	 *
-	 * @method dispatchEvent
-	 * @memberOf XMLHttpRequest
-	 * @param  {String} event Name of event
-	 * @return {Object}       XMLHttpRequest instance
-	 */
-	XMLHttpRequest.prototype.dispatchEvent = function ( event ) {
-		var self = this;
-
-		if ( typeof this["on" + event] === "function" ) {
-			this["on" + event]();
-		}
-
-		if ( this._listeners.hasOwnProperty( event ) ) {
-			array.each( this._listeners[event], function ( i ) {
-				if ( typeof i == "function" ) {
-					i.call( self );
-				}
-			} );
+			dispatch.call( this, "abort" );
+			this.readyState = UNSENT;
 		}
 
 		return this;
@@ -303,25 +293,6 @@ function xhr () {
 	};
 
 	/**
-	 * Removes an event listener from an XMLHttpRequest instance
-	 *
-	 * @method removeEventListener
-	 * @memberOf XMLHttpRequest
-	 * @param {String}   event Event to listen for
-	 * @param {Function} fn    Event handler
-	 * @return {Object}        XMLHttpRequest instance
-	 */
-	XMLHttpRequest.prototype.removeEventListener = function ( event, fn ) {
-		if ( !this._listeners.hasOwnProperty( event ) ) {
-			return;
-		}
-
-		this._listeners[event].remove( fn );
-
-		return this;
-	};
-
-	/**
 	 * Sends an XMLHttpRequest request
 	 *
 	 * @method send
@@ -384,8 +355,8 @@ function xhr () {
 			options.auth = parsed.auth;
 		}
 
-		self._send = true;
-		self.dispatchEvent( "readystatechange" );
+		this._send = true;
+		dispatch.call( this, "readystatechange" );
 
 		obj = parsed.protocol === "http:" ? http : https;
 
@@ -399,7 +370,7 @@ function xhr () {
 		this._request = request;
 		request.end();
 
-		self.dispatchEvent( "loadstart" );
+		dispatch.call( this, "loadstart" );
 
 		return this;
 	};
