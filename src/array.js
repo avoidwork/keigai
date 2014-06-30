@@ -614,8 +614,6 @@ var array = {
 			sub = "";
 		}
 
-		sorts.push( "try {" );
-
 		array.each( queries, function ( i ) {
 			var s = ".",
 			    e = "";
@@ -625,6 +623,8 @@ var array = {
 				e = braceE;
 			}
 
+			sorts.push( "try {" );
+
 			if ( i[1] === "desc" ) {
 				sorts.push( "if ( a" + sub + s + i[0] + e + " < b" + sub + s + i[0] + e + " ) return 1;" );
 				sorts.push( "if ( a" + sub + s + i[0] + e + " > b" + sub + s + i[0] + e + " ) return -1;" );
@@ -633,10 +633,18 @@ var array = {
 				sorts.push( "if ( a" + sub + s + i[0] + e + " < b" + sub + s + i[0] + e + " ) return -1;" );
 				sorts.push( "if ( a" + sub + s + i[0] + e + " > b" + sub + s + i[0] + e + " ) return 1;" );
 			}
+
+			sorts.push( "} catch (e) {" );
+			sorts.push( "try {" );
+			sorts.push( "if ( a" + sub + s + i[0] + e + " !== undefined ) return " + ( i[1] === "desc" ? "-1" : "1") + ";" );
+			sorts.push( "} catch (e) {}" );
+			sorts.push( "try {" );
+			sorts.push( "if ( b" + sub + s + i[0] + e + " !== undefined ) return " + ( i[1] === "desc" ? "1" : "-1") + ";" );
+			sorts.push( "} catch (e) {}" );
+			sorts.push( "}" );
 		} );
 
-		sorts.push( "else return 0;" );
-		sorts.push( "} catch ( e ) { return 0; }" );
+		sorts.push( "return 0;" );
 
 		return obj.sort( new Function( "a", "b", sorts.join( "\n" ) ) );
 	},
