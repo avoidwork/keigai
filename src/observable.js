@@ -81,7 +81,7 @@ Observable.prototype.hook = function ( target, ev ) {
 		throw new Error( label.invalidArguments );
 	}
 
-	utility.genId( target, true );
+	utility.genId( target );
 
 	this.hooks[target.id] = function ( arg ) {
 		self.dispatch( ev, arg );

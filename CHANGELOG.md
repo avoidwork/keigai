@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.4.2
+- Fix `Observable.hook()` when called on non-DOM Objects
+- Refactor `XMLHttpRequest` shim to use an `Observable` instance
+- Created `Base.dispatchEvent()`
+
+## 0.4.1
+- Fixed `array.keySort()` when one side of the comparison is `undefined`
+
 ## 0.4.0
 - Updating `client.headers()` to not cache responses which do not have an explicit expiration
 - Created `utility.render()` to schedule DOM manipulation
