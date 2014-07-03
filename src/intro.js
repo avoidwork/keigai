@@ -9,7 +9,7 @@ var document  = global.document,
     VERSIONS  = 100,
     CACHE     = 500,
     EVENTS    = ["readystatechange", "abort", "load", "loadstart", "loadend", "error", "progress", "timeout"],
-    format, http, https, lib, mongodb, url, RENDER, WORKER;
+    format, http, https, lib, mongodb, url, RENDER, TIME, WORKER;
 
 if ( server ) {
 	url     = require( "url" );
