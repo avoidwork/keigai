@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.4.3
+- Fix `utility.render()` by passing `requestAnimationFrame()` argument or closest millisecond, & change the fallback to a naive 16ms delay
+
 ## 0.4.2
 - Fix `Observable.hook()` when called on non-DOM Objects
 - Refactor `XMLHttpRequest` shim to use an `Observable` instance

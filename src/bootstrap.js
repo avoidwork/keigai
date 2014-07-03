@@ -8,6 +8,8 @@
 function bootstrap () {
 	// Second phase
 	function init () {
+		TIME = new Date().getTime();
+
 		// Cache garbage collector (every minute)
 		utility.repeat( function () {
 			cache.clean();
@@ -124,7 +126,13 @@ function bootstrap () {
 	}
 
 	// Setting up `utility.render()`
-	RENDER = global.requestAnimationFrame || utility.delay;
+	RENDER = global.requestAnimationFrame || function ( fn ) {
+		var offset = new Date().getTime() - TIME;
+
+		utility.defer( function () {
+			fn( offset );
+		}, 16, offset );
+	};
 
 	// Initializing
 	if ( typeof exports != "undefined" || typeof define == "function" || regex.complete_loaded.test( document.readyState ) ) {

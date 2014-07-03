@@ -38,7 +38,6 @@ return {
 	},
 	version : "{{VERSION}}"
 };
-
 } )();
 
 // Node, AMD & window supported

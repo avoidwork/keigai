@@ -688,7 +688,7 @@ var utility = {
 	},
 
 	/**
-	 * Asynchronous DOM rendering
+	 * Asynchronous DOM rendering (cannot be cancelled, suggested for reactive behavior)
 	 *
 	 * @method render
 	 * @memberOf utility
@@ -706,9 +706,9 @@ var utility = {
 	render : function ( fn ) {
 		var defer = deferred.factory();
 
-		RENDER( function () {
+		RENDER( function ( arg ) {
 			try {
-				defer.resolve( fn() );
+				defer.resolve( fn( arg ) );
 			}
 			catch ( e ) {
 				defer.reject( e );
