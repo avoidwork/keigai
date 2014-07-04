@@ -3,6 +3,7 @@
 ## 0.5.0
 - Refactoring `promise.factory()` to use native `Promises`, & `utility.when()` to use `Promise.all()`
 - Added node.js dependency for `Promise` shim
+- Removed invalid `Deferred.isResolved()`, `Deferred.isRejected()`, & `Deferred.state()`
 
 ## 0.4.3
 - Fix `utility.render()` by passing `requestAnimationFrame()` argument or closest millisecond, & change the fallback to a naive 16ms delay
