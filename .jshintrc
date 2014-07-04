@@ -40,6 +40,7 @@
 		"Worker": true,
 		"postMessage": true,
 		"requestAnimationFrame": true,
-		"btoa": true
+		"btoa": true,
+		"Promise": true
 	}
 }

@@ -77,6 +77,10 @@
 						</li>
 						
 						<li>
+							<a href="promise.html">promise</a>
+						</li>
+						
+						<li>
 							<a href="store.html">store</a>
 						</li>
 						
@@ -177,7 +181,7 @@
  * @license BSD-3 &lt;https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.4.3
+ * @version 0.5.0
  */
 ( function ( global ) {
 
@@ -4507,19 +4511,17 @@ Deferred.prototype.constructor = Deferred;
  * var deferred = keigai.util.defer();
  *
  * deferred.always( function () {
- *            ...
- *          } ).then( function () {
- *            ...
- *          } );
+ *     ...
+ * } ).then( function () {
+ *     ...
+ * } );
  *
  * ...
  *
  * deferred.resolve( true );
  */
 Deferred.prototype.always = function ( arg ) {
-	if ( !this.isResolved() && !this.isRejected() && typeof arg == "function" ) {
-		this.onAlways.push( arg );
-	}
+	this.onAlways.push( arg );
 
 	return this;
 };
@@ -4539,9 +4541,7 @@ Deferred.prototype.always = function ( arg ) {
  * } );
  */
 Deferred.prototype.done = function ( arg ) {
-	if ( !this.isResolved() && !this.isRejected() && typeof arg == "function" ) {
-		this.onDone.push( arg );
-	}
+	this.onDone.push( arg );
 
 	return this;
 };
@@ -4561,49 +4561,9 @@ Deferred.prototype.done = function ( arg ) {
  * } );
  */
 Deferred.prototype.fail = function ( arg ) {
-	if ( !this.isResolved() && !this.isRejected() && typeof arg == "function" ) {
-		this.onFail.push( arg );
-	}
+	this.onFail.push( arg );
 
 	return this;
-};
-
-/**
- * Determines if Deferred is rejected
- *
- * @method isRejected
- * @memberOf keigai.Deferred
- * @return {Boolean} `true` if rejected
- * @example
- * var deferred = keigai.util.defer();
- *
- * ...
- *
- * if ( deferred.isRejected() ) {
- *   ...
- * }
- */
-Deferred.prototype.isRejected = function () {
-	return ( this.promise.state === promise.state.FAILED );
-};
-
-/**
- * Determines if Deferred is resolved
- *
- * @method isResolved
- * @memberOf keigai.Deferred
- * @return {Boolean} `true` if resolved
- * @example
- * var deferred = keigai.util.defer();
- *
- * ...
- *
- * if ( deferred.isResolved() ) {
- *   ...
- * }
- */
-Deferred.prototype.isResolved = function () {
-	return ( this.promise.state === promise.state.SUCCESS );
 };
 
 /**
@@ -4640,21 +4600,6 @@ Deferred.prototype.resolve = function ( arg ) {
 	this.promise.resolve.call( this.promise, arg );
 
 	return this;
-};
-
-/**
- * Gets the state of the Promise
- *
- * @method state
- * @memberOf keigai.Deferred
- * @return {String} Describes the state
- * @example
- * var deferred = keigai.util.defer();
- *
- * deferred.state(); // 0
- */
-Deferred.prototype.state = function () {
-	return this.promise.state;
 };
 
 /**
@@ -6117,213 +6062,37 @@ var number = {
 
 /**
  * @namespace promise
- * @private
  */
 var promise = {
 	/**
-	 * Promise factory
+	 * "Unboxed" Promise factory
 	 *
 	 * @method factory
 	 * @memberOf promise
 	 * @return {Object} {@link Promise}
 	 */
 	factory : function () {
-		return new Promise();
-	},
-
-	/**
-	 * Pipes a reconciliation from `parent` to `child`
-	 *
-	 * @method pipe
-	 * @memberOf promise
-	 * @param  {Object} parent Promise
-	 * @param  {Object} child  Promise
-	 * @return {Undefined}     undefined
-	 */
-	pipe : function ( parent, child ) {
-		parent.then( function ( arg ) {
-			child.resolve( arg );
-		}, function ( e ) {
-			child.reject( e );
-		} );
-	},
-
-	/**
-	 * Initiates processing a Promise
-	 *
-	 * @method process
-	 * @memberOf promise
-	 * @param  {Object} obj   Promise instance
-	 * @param  {Mixed}  arg   Promise value
-	 * @param  {Number} state State, e.g. "1"
-	 * @return {Object}       Promise instance
-	 */
-	process : function ( obj, arg, state ) {
-		if ( obj.state > promise.state.PENDING ) {
-			return;
-		}
-
-		obj.value = arg;
-		obj.state = state;
-
-		if ( !obj.deferred ) {
-			utility.delay( function () {
-				obj.process();
-			} );
-
-			obj.deferred = true;
-		}
-
-		return obj;
-	},
-
-	/**
-	 * States of a Promise
-	 *
-	 * @memberOf promise
-	 * @type {Object}
-	 */
-	state : {
-		PENDING : 0,
-		FAILURE : 1,
-		SUCCESS : 2
-	}
-};
-
-/**
- * Creates a new Promise
- *
- * @constructor
- * @memberOf keigai
- * @private
- */
-function Promise () {
-	this.deferred = false;
-	this.handlers = [];
-	this.state    = promise.state.PENDING;
-	this.value    = null;
-}
-
-/**
- * Setting constructor loop
- *
- * @method constructor
- * @memberOf keigai.Promise
- * @type {Function}
- */
-Promise.prototype.constructor = Promise;
-
-/**
- * Processes `handlers` queue
- *
- * @method process
- * @memberOf keigai.Promise
- * @return {Object} {@link Promise}
- */
-Promise.prototype.process = function() {
-	var result, success, value;
-
-	this.deferred = false;
-
-	if ( this.state === promise.state.PENDING ) {
-		return;
-	}
-
-	value   = this.value;
-	success = this.state === promise.state.SUCCESS;
-
-	array.each( this.handlers.slice(), function ( i ) {
-		var callback = i[success ? "success" : "failure" ],
-		    child    = i.promise;
-
-		if ( !callback || typeof callback != "function" ) {
-			if ( value && typeof value.then == "function" ) {
-				promise.pipe( value, child );
-			}
-			else {
-				if ( success ) {
-					child.resolve( value );
-				} else {
-					child.reject( value );
-				}
-			}
-
-			return;
-		}
-
-		try {
-			result = callback( value );
-		}
-		catch ( e ) {
-			utility.error( e );
-			child.reject( e );
-
-			return;
-		}
-
-		if ( result && typeof result.then == "function" ) {
-			promise.pipe( result, promise );
-		}
-		else {
-			child.resolve( result );
-		}
-	} );
-
-	return this;
-};
-
-/**
- * Breaks a Promise
- *
- * @method reject
- * @memberOf keigai.Promise
- * @param  {Mixed} arg Promise value
- * @return {Object} {@link Promise}
- */
-Promise.prototype.reject = function ( arg ) {
-	return promise.process( this, arg, promise.state.FAILURE );
-};
-
-/**
- * Resolves a Promise
- *
- * @method resolve
- * @memberOf keigai.Promise
- * @param  {Mixed} arg Promise value
- * @return {Object} {@link Promise}
- */
-Promise.prototype.resolve = function ( arg ) {
-	return promise.process( this, arg, promise.state.SUCCESS );
-};
-
-/**
- * Registers handler(s) for a Promise
- *
- * @method then
- * @memberOf keigai.Promise
- * @param  {Function} success [Optional] Success handler for eventual value
- * @param  {Function} failure [Optional] Failure handler for eventual value
- * @return {Object} {@link Promise}
- */
-Promise.prototype.then = function ( success, failure ) {
-	var self  = this,
-	    child = new Promise();
-
-	this.handlers.push( {
-		success : success,
-		failure : failure,
-		promise : child
-	} );
-
-	if ( this.state > promise.state.PENDING && !this.deferred ) {
-		utility.delay( function () {
-			self.process();
+		var promise, pCatch, pRace, pResolve, pReject, pThen;
+		
+		promise = new Promise( function ( resolve, reject ) {
+			pResolve = resolve;
+			pReject  = reject;
 		} );
 
-		this.deferred = true;
-	}
+		pCatch = function () {
+			return promise["catch"].apply( promise, arguments );
+		};
 
-	return child;
+		pRace = function () {
+			return promise.race.apply( promise, arguments );
+		};
+
+		pThen = function () {
+			return promise.then.apply( promise, arguments );
+		};
+
+		return {"catch": pCatch, race: pRace, resolve: pResolve, reject: pReject, then: pThen};
+	}
 };
 
 /**
@@ -9310,69 +9079,24 @@ var utility = {
 	 * defer2.resolve( true );
 	 */
 	when : function () {
-		var i     = 0,
-		    defer = deferred.factory(),
-		    args  = array.cast( arguments ),
-		    nth;
+		var defer = deferred.factory(),
+		    args  = array.cast( arguments );
 
 		// Did we receive an Array? if so it overrides any other arguments
 		if ( args[0] instanceof Array ) {
 			args = args[0];
 		}
 
-		// How many instances to observe?
-		nth = args.length;
-
 		// None, end on next tick
-		if ( nth === 0 ) {
+		if ( args.length === 0 ) {
 			defer.resolve( null );
 		}
 		// Setup and wait
 		else {
-			array.each( args, function ( p ) {
-				p.then( function () {
-					if ( ++i === nth && !defer.isResolved() ) {
-						if ( args.length > 1 ) {
-							defer.resolve( args.map( function ( obj ) {
-								if ( typeof obj.defer == "undefined" ) {
-									return obj.value || obj.promise.value;
-								}
-								else {
-									return obj.defer.promise.value;
-								}
-							} ) );
-						}
-						else {
-							if ( typeof args[0].defer == "undefined" ) {
-								defer.resolve( args[0].value || args[0].promise.value );
-							}
-							else {
-								defer.resolve( args[0].defer.promise.value );
-							}
-						}
-					}
-				}, function () {
-					if ( !defer.isResolved() ) {
-						if ( args.length > 1 ) {
-							defer.reject( args.map( function ( obj ) {
-								if ( typeof obj.defer == "undefined" ) {
-									return obj.value || obj.promise.value;
-								}
-								else {
-									return obj.defer.promise.value;
-								}
-							} ) );
-						}
-						else {
-							if ( typeof args[0].defer == "undefined" ) {
-								defer.reject( args[0].value || args[0].promise.value );
-							}
-							else {
-								return args[0].defer.promise.value;
-							}
-						}
-					}
-				} );
+			Promise.all( args ).then( function ( results ) {
+				defer.resolve( results );
+			}, function ( e ) {
+				defer.reject( e );
 			} );
 		}
 
@@ -9423,7 +9147,7 @@ function xhr () {
 	    XMLHttpRequest, headers, dispatch, success, failure, state;
 
 	headers = {
-		"user-agent"   : "keigai/0.4.3 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"user-agent"   : "keigai/0.5.0 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
 	};
@@ -10100,7 +9824,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.4.3"
+	version : "0.5.0"
 };
 } )();
 
@@ -10138,7 +9862,7 @@ else {
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Thu Jul 03 2014 06:42:30 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Fri Jul 04 2014 06:26:49 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
