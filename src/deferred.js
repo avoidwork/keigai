@@ -39,33 +39,29 @@ function Deferred () {
 
 	// Setting handlers to execute Arrays of Functions
 	this.promise.then( function ( arg ) {
-		utility.delay( function () {
-			array.each( self.onDone, function ( i ) {
-				i( arg );
-			} );
-
-			array.each( self.onAlways, function ( i ) {
-				i( arg );
-			} );
-
-			self.onAlways = [];
-			self.onDone   = [];
-			self.onFail   = [];
+		array.each( self.onDone, function ( i ) {
+			i( arg );
 		} );
+
+		array.each( self.onAlways, function ( i ) {
+			i( arg );
+		} );
+
+		self.onAlways = [];
+		self.onDone   = [];
+		self.onFail   = [];
 	}, function ( arg ) {
-		utility.delay( function () {
-			array.each( self.onFail, function ( i ) {
-				i( arg );
-			} );
-
-			array.each( self.onAlways, function ( i ) {
-				i( arg );
-			} );
-
-			self.onAlways = [];
-			self.onDone   = [];
-			self.onFail   = [];
+		array.each( self.onFail, function ( i ) {
+			i( arg );
 		} );
+
+		array.each( self.onAlways, function ( i ) {
+			i( arg );
+		} );
+
+		self.onAlways = [];
+		self.onDone   = [];
+		self.onFail   = [];
 	} );
 }
 
@@ -90,19 +86,17 @@ Deferred.prototype.constructor = Deferred;
  * var deferred = keigai.util.defer();
  *
  * deferred.always( function () {
- *            ...
- *          } ).then( function () {
- *            ...
- *          } );
+ *     ...
+ * } ).then( function () {
+ *     ...
+ * } );
  *
  * ...
  *
  * deferred.resolve( true );
  */
 Deferred.prototype.always = function ( arg ) {
-	if ( !this.isResolved() && !this.isRejected() && typeof arg == "function" ) {
-		this.onAlways.push( arg );
-	}
+	this.onAlways.push( arg );
 
 	return this;
 };
@@ -122,9 +116,7 @@ Deferred.prototype.always = function ( arg ) {
  * } );
  */
 Deferred.prototype.done = function ( arg ) {
-	if ( !this.isResolved() && !this.isRejected() && typeof arg == "function" ) {
-		this.onDone.push( arg );
-	}
+	this.onDone.push( arg );
 
 	return this;
 };
@@ -144,49 +136,9 @@ Deferred.prototype.done = function ( arg ) {
  * } );
  */
 Deferred.prototype.fail = function ( arg ) {
-	if ( !this.isResolved() && !this.isRejected() && typeof arg == "function" ) {
-		this.onFail.push( arg );
-	}
+	this.onFail.push( arg );
 
 	return this;
-};
-
-/**
- * Determines if Deferred is rejected
- *
- * @method isRejected
- * @memberOf keigai.Deferred
- * @return {Boolean} `true` if rejected
- * @example
- * var deferred = keigai.util.defer();
- *
- * ...
- *
- * if ( deferred.isRejected() ) {
- *   ...
- * }
- */
-Deferred.prototype.isRejected = function () {
-	return ( this.promise.state === promise.state.FAILED );
-};
-
-/**
- * Determines if Deferred is resolved
- *
- * @method isResolved
- * @memberOf keigai.Deferred
- * @return {Boolean} `true` if resolved
- * @example
- * var deferred = keigai.util.defer();
- *
- * ...
- *
- * if ( deferred.isResolved() ) {
- *   ...
- * }
- */
-Deferred.prototype.isResolved = function () {
-	return ( this.promise.state === promise.state.SUCCESS );
 };
 
 /**
@@ -223,21 +175,6 @@ Deferred.prototype.resolve = function ( arg ) {
 	this.promise.resolve.call( this.promise, arg );
 
 	return this;
-};
-
-/**
- * Gets the state of the Promise
- *
- * @method state
- * @memberOf keigai.Deferred
- * @return {String} Describes the state
- * @example
- * var deferred = keigai.util.defer();
- *
- * deferred.state(); // 0
- */
-Deferred.prototype.state = function () {
-	return this.promise.state;
 };
 
 /**

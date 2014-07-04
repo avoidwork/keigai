@@ -882,69 +882,24 @@ var utility = {
 	 * defer2.resolve( true );
 	 */
 	when : function () {
-		var i     = 0,
-		    defer = deferred.factory(),
-		    args  = array.cast( arguments ),
-		    nth;
+		var defer = deferred.factory(),
+		    args  = array.cast( arguments );
 
 		// Did we receive an Array? if so it overrides any other arguments
 		if ( args[0] instanceof Array ) {
 			args = args[0];
 		}
 
-		// How many instances to observe?
-		nth = args.length;
-
 		// None, end on next tick
-		if ( nth === 0 ) {
+		if ( args.length === 0 ) {
 			defer.resolve( null );
 		}
 		// Setup and wait
 		else {
-			array.each( args, function ( p ) {
-				p.then( function () {
-					if ( ++i === nth && !defer.isResolved() ) {
-						if ( args.length > 1 ) {
-							defer.resolve( args.map( function ( obj ) {
-								if ( typeof obj.defer == "undefined" ) {
-									return obj.value || obj.promise.value;
-								}
-								else {
-									return obj.defer.promise.value;
-								}
-							} ) );
-						}
-						else {
-							if ( typeof args[0].defer == "undefined" ) {
-								defer.resolve( args[0].value || args[0].promise.value );
-							}
-							else {
-								defer.resolve( args[0].defer.promise.value );
-							}
-						}
-					}
-				}, function () {
-					if ( !defer.isResolved() ) {
-						if ( args.length > 1 ) {
-							defer.reject( args.map( function ( obj ) {
-								if ( typeof obj.defer == "undefined" ) {
-									return obj.value || obj.promise.value;
-								}
-								else {
-									return obj.defer.promise.value;
-								}
-							} ) );
-						}
-						else {
-							if ( typeof args[0].defer == "undefined" ) {
-								defer.reject( args[0].value || args[0].promise.value );
-							}
-							else {
-								return args[0].defer.promise.value;
-							}
-						}
-					}
-				} );
+			Promise.all( args ).then( function ( results ) {
+				defer.resolve( results );
+			}, function ( e ) {
+				defer.reject( e );
 			} );
 		}
 

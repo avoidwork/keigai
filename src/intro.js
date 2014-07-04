@@ -18,6 +18,10 @@ if ( server ) {
 	mongodb = require( "mongodb" ).MongoClient;
 	format  = require( "util" ).format;
 
+	if ( typeof Promise == "undefined" ) {
+		Promise = require( "es6-promise" ).Promise;
+	}
+
 	if ( typeof Storage == "undefined" ) {
 		localStorage = require( "localStorage" );
 	}
