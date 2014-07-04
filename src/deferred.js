@@ -39,33 +39,29 @@ function Deferred () {
 
 	// Setting handlers to execute Arrays of Functions
 	this.promise.then( function ( arg ) {
-		utility.delay( function () {
-			array.each( self.onDone, function ( i ) {
-				i( arg );
-			} );
-
-			array.each( self.onAlways, function ( i ) {
-				i( arg );
-			} );
-
-			self.onAlways = [];
-			self.onDone   = [];
-			self.onFail   = [];
+		array.each( self.onDone, function ( i ) {
+			i( arg );
 		} );
+
+		array.each( self.onAlways, function ( i ) {
+			i( arg );
+		} );
+
+		self.onAlways = [];
+		self.onDone   = [];
+		self.onFail   = [];
 	}, function ( arg ) {
-		utility.delay( function () {
-			array.each( self.onFail, function ( i ) {
-				i( arg );
-			} );
-
-			array.each( self.onAlways, function ( i ) {
-				i( arg );
-			} );
-
-			self.onAlways = [];
-			self.onDone   = [];
-			self.onFail   = [];
+		array.each( self.onFail, function ( i ) {
+			i( arg );
 		} );
+
+		array.each( self.onAlways, function ( i ) {
+			i( arg );
+		} );
+
+		self.onAlways = [];
+		self.onDone   = [];
+		self.onFail   = [];
 	} );
 }
 
