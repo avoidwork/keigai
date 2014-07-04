@@ -37,3 +37,7 @@ Deferreds (Promises) are returned from methods that can "go over the wire", for 
 
 ### util
 Utility belt of functions for manipulating data & the DOM.
+
+## Browser Requirements
+- ES6 Promises
+- btoa()
