@@ -26,6 +26,7 @@ return {
 		observer : observable.factory,
 		parse    : utility.parse,
 		prevent  : utility.prevent,
+		race     : utility.race,
 		render   : utility.render,
 		repeat   : utility.repeat,
 		request  : client.request,

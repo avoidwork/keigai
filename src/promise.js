@@ -10,7 +10,7 @@ var promise = {
 	 * @return {Object} {@link Promise}
 	 */
 	factory : function () {
-		var promise, pCatch, pRace, pResolve, pReject, pThen;
+		var promise, pCatch, pResolve, pReject, pThen;
 		
 		promise = new Promise( function ( resolve, reject ) {
 			pResolve = resolve;
@@ -21,14 +21,10 @@ var promise = {
 			return promise["catch"].apply( promise, arguments );
 		};
 
-		pRace = function () {
-			return promise.race.apply( promise, arguments );
-		};
-
 		pThen = function () {
 			return promise.then.apply( promise, arguments );
 		};
 
-		return {"catch": pCatch, race: pRace, resolve: pResolve, reject: pReject, then: pThen};
+		return {"catch": pCatch, resolve: pResolve, reject: pReject, then: pThen};
 	}
 };
