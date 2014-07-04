@@ -6,7 +6,7 @@
  * @license BSD-3 <https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.5.0
+ * @version 0.5.1
  */
 ( function ( global ) {
 
@@ -5897,7 +5897,7 @@ var promise = {
 	 * @return {Object} {@link Promise}
 	 */
 	factory : function () {
-		var promise, pCatch, pRace, pResolve, pReject, pThen;
+		var promise, pCatch, pResolve, pReject, pThen;
 		
 		promise = new Promise( function ( resolve, reject ) {
 			pResolve = resolve;
@@ -5908,15 +5908,11 @@ var promise = {
 			return promise["catch"].apply( promise, arguments );
 		};
 
-		pRace = function () {
-			return promise.race.apply( promise, arguments );
-		};
-
 		pThen = function () {
 			return promise.then.apply( promise, arguments );
 		};
 
-		return {"catch": pCatch, race: pRace, resolve: pResolve, reject: pReject, then: pThen};
+		return {"catch": pCatch, resolve: pResolve, reject: pReject, then: pThen};
 	}
 };
 
@@ -8710,6 +8706,57 @@ var utility = {
 	},
 
 	/**
+	 * Accepts Deferreds or Promises as arguments, or an Array of either
+	 *
+	 * @method race
+	 * @memberOf utility
+	 * @return {Object} {@link keigai.Deferred}
+	 * @example
+	 * var deferreds = [],
+	 *     defer1    = keigai.util.defer(),
+	 *     defer2    = keigai.util.defer();
+	 *
+	 * deferreds.push( defer1 );
+	 * deferreds.push( defer2 );
+	 *
+	 * // Executes when one deferred is resolved or rejected
+	 * keigai.util.race( deferreds ).then( function ( arg ) ) {
+	 *   ...
+	 * }, function ( err ) {
+	 *   ...
+	 * } );
+	 *
+	 * ...
+	 *
+	 * defer1.resolve( true );
+	 * defer2.resolve( true );
+	 */
+	race : function () {
+		var defer = deferred.factory(),
+		    args  = array.cast( arguments );
+
+		// Did we receive an Array? if so it overrides any other arguments
+		if ( args[0] instanceof Array ) {
+			args = args[0];
+		}
+
+		// None, end on next tick
+		if ( args.length === 0 ) {
+			defer.resolve( null );
+		}
+		// Setup and wait
+		else {
+			Promise.race( args ).then( function ( results ) {
+				defer.resolve( results );
+			}, function ( e ) {
+				defer.reject( e );
+			} );
+		}
+
+		return defer;
+	},
+
+	/**
 	 * Asynchronous DOM rendering (cannot be cancelled, suggested for reactive behavior)
 	 *
 	 * @method render
@@ -8892,7 +8939,7 @@ var utility = {
 	 * deferreds.push( defer2 );
 	 *
 	 * // Executes when both deferreds have resolved or one has rejected
-	 * $.when( deferreds ).then( function ( args ) ) {
+	 * keigai.util.when( deferreds ).then( function ( args ) ) {
 	 *   ...
 	 * }, function ( err ) {
 	 *   ...
@@ -8972,7 +9019,7 @@ function xhr () {
 	    XMLHttpRequest, headers, dispatch, success, failure, state;
 
 	headers = {
-		"user-agent"   : "keigai/0.5.0 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"user-agent"   : "keigai/0.5.1 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
 	};
@@ -9639,6 +9686,7 @@ return {
 		observer : observable.factory,
 		parse    : utility.parse,
 		prevent  : utility.prevent,
+		race     : utility.race,
 		render   : utility.render,
 		repeat   : utility.repeat,
 		request  : client.request,
@@ -9649,7 +9697,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.5.0"
+	version : "0.5.1"
 };
 } )();
 
