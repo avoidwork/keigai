@@ -10,6 +10,7 @@ return {
 	util    : {
 		$        : utility.$,
 		array    : array,
+		base     : utility.base,
 		clone    : utility.clone,
 		coerce   : utility.coerce,
 		defer    : deferred.factory,

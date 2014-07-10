@@ -86,6 +86,26 @@ var utility = {
 	},
 
 	/**
+	 * Creates an instance of Base
+	 *
+	 * @method base
+	 * @memberOf utility
+	 * @param  {Object} arg [Optional] Decorative Object
+	 * @return {Object}     Instance of Base
+	 */
+	base : function ( arg ) {
+		var obj = new Base();
+
+		if ( arg instanceof Object ) {
+			utility.merge( obj, arg );
+		}
+
+		obj.observer = observable.factory();
+
+		return obj;
+	},
+
+	/**
 	 * Blob factory
 	 *
 	 * @method blob

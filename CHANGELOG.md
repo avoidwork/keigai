@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.5.2
+- Creating `utility.base()` to return an instance of Base, public as `keigai.util.base()`
+
+## 0.5.1
+- Removing 'race()' from unboxed 'Promise'
+- Creating 'utility.race()' which wraps 'Promise.race()'
+
+
 ## 0.5.0
 - Refactoring `promise.factory()` to use native `Promises`, & `utility.when()` to use `Promise.all()`
 - Added node.js dependency for `Promise` shim
