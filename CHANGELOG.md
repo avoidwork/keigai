@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.5.3
+- Changing how a DataStore expires by firing 'beforeExpire' before the URI is expired from local cache
+
 ## 0.5.2
 - Creating `utility.base()` to return an instance of Base, public as `keigai.util.base()`
 
