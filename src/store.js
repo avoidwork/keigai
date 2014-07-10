@@ -1183,8 +1183,8 @@ DataStore.prototype.setExpires = function ( arg ) {
 			return false;
 		}
 
-		cache.expire( self.uri );
 		self.dispatch( "beforeExpire");
+		cache.expire( self.uri );
 		self.dispatch( "expire");
 		self.dispatch( "afterExpire");
 	}, expires, id, false );
