@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.5.4
+- Fixed a reference error in `store.delComplete()`
+- Updated a docblock example
+
 ## 0.5.3
 - Changing how a DataStore expires by firing 'beforeExpire' before the URI is expired from local cache
 

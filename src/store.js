@@ -11,7 +11,13 @@ var store = {
 	 * @param  {Object} args [Optional] Arguments to set on the store
 	 * @return {Object} {@link keigai.DataStore}
 	 * @example
-	 * var store = keigai.store();
+	 * var store = keigai.store(null, {key: "guid"});
+	 *
+	 * store.setUri( "http://..." ).then( function ( records ) {
+	 *   // Do something with the records
+	 * }, function ( e ) {
+	 *   // Handle `e`
+	 * } );
 	 */
 	factory : function ( recs, args ) {
 		var obj = new DataStore();
@@ -203,11 +209,11 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 			} );
 		}
 
-		utility.when( deferreds ).then( function () {
+		utility.when( deferreds ).then( function ( args ) {
 			self.loaded = true;
 
 			if ( events ) {
-				self.dispatch( "afterBatch", self.records );
+				self.dispatch( "afterBatch", args );
 			}
 
 			// Forcing a clear of views to deal with async nature of workers & staggered loading
@@ -223,7 +229,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 				self.save();
 			}
 
-			defer.resolve( self.records );
+			defer.resolve( args );
 		}, function ( e ) {
 			if ( events ) {
 				self.dispatch( "failedBatch", e );
@@ -572,7 +578,7 @@ DataStore.prototype.dump = function ( args, fields ) {
 			var record = {};
 
 			array.each( fields, function ( f ) {
-				record[f] = f === self.key ? i.key : ( !array.contains( self.collections, f ) ? utility.clone( i.data[f], true ) : i.data[f].data.uri );
+				record[f] = f === self.key ? i.key : ( !array.contains( self.collections, f ) ? utility.clone( i.data[f], true ) : i.data[f].uri );
 			} );
 
 			return record;
