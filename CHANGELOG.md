@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.5.5
+- Created `utility.curry()` as `keigai.util.curry()` to simplify currying
+- Created `utility.partial()` as `keigai.util.partial()` to simplify partial applications
+
 ## 0.5.4
 - Fixed a reference error in `store.delComplete()`
 - Updated a docblock example

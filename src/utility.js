@@ -277,6 +277,35 @@ var utility = {
 	},
 
 	/**
+	 * Curries a Function
+	 *
+	 * Note: Function to curry must return a Function
+	 *
+	 * @method curry
+	 * @memberOf utility
+	 * @return {Function} Curried Function
+	 * @example
+	 * function f ( a, b ) {
+	 *   return function ( n ) {
+	 *     return ( a + b ) * n;
+	 *   };
+	 * }
+	 *
+	 * var g = keigai.util.curry( f, 2, 8 );
+	 *
+	 * g( 5 ); // 50
+	 */
+	curry : function () {
+		var args = array.cast( arguments ),
+		    fn   = args.shift(),
+		    cfn  = fn.apply( fn, args );
+
+		return function () {
+			return cfn.apply( cfn, arguments );
+		};
+	},
+
+	/**
 	 * Defers the execution of Function by at least the supplied milliseconds.
 	 * Timing may vary under "heavy load" relative to the CPU & client JavaScript engine.
 	 *
@@ -637,6 +666,30 @@ var utility = {
 		parsed.query = utility.queryString( null, parsed.search );
 
 		return parsed;
+	},
+
+	/**
+	 * Creates a partially applied Function
+	 *
+	 * @method partial
+	 * @memberOf utility
+	 * @return {Function} Partial Function
+	 * @example
+	 * function f ( a, b ) {
+	 *   return a + b;
+	 * }
+	 *
+	 * var g = keigai.util.partial( f, 2 );
+	 *
+	 * g( 2 ); // 4
+	 */
+	partial : function () {
+		var args = array.cast( arguments ),
+		    fn   = args.shift();
+
+		return function () {
+			return fn.apply( fn, args.concat( array.cast( arguments ) ) );
+		};
 	},
 
 	/**
