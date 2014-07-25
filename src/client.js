@@ -227,6 +227,12 @@ var client = {
 		if ( ( regex.json_maybe.test( type ) || string.isEmpty( type ) ) && ( regex.json_wrap.test( xhr.responseText ) && Boolean( obj = json.decode( xhr.responseText, true ) ) ) ) {
 			result = obj;
 		}
+		else if ( type === "text/csv" ) {
+			result = csv.decode( xhr.responseText );
+		}
+		else if ( type === "text/tsv" ) {
+			result = csv.decode( xhr.responseText, "\t" );
+		}
 		else if ( regex.xml.test( type ) ) {
 			if ( type !== "text/xml" ) {
 				xhr.overrideMimeType( "text/xml" );

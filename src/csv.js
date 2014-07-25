@@ -5,7 +5,8 @@ var csv = {
 	/**
 	 * Converts CSV to an Array of Objects
 	 *
-	 * @method csvData
+	 * @method decode
+	 * @memberOf csv
 	 * @param  {String} arg       CSV string
 	 * @param  {String} delimiter [Optional] Delimiter to split columns on, default is ","
 	 * @return {Array}            Array of Objects
@@ -18,14 +19,16 @@ var csv = {
 		    result = [],
 		    nth    = rows.length,
 		    x      = keys.length,
-		    i, n, obj, row;
+		    i      = -1,
+		    n, obj, row;
 
-		for ( i = 0; i < nth; ++i ) {
+		while ( ++i < nth ) {
 			obj = {};
 			row = rows[i].split( regex );
 
-			for ( n = 0; n < x; ++n ) {
-				obj[keys[n]] = utility.coerce( row[n] );
+			n = -1;
+			while ( ++n  < x ) {
+				obj[keys[n]] = utility.coerce( row[n].replace( /^"|"$/g, "" ) );
 			}
 
 			result.push( obj );
@@ -37,7 +40,7 @@ var csv = {
 	/**
 	 * Encodes an Array, JSON, or Object as CSV
 	 *
-	 * @method csv
+	 * @method encode
 	 * @memberOf csv
 	 * @param  {Mixed}   arg       JSON, Array or Object
 	 * @param  {String}  delimiter [Optional] Character to separate fields

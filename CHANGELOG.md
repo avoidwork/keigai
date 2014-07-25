@@ -3,6 +3,7 @@
 ## 0.6.0
 - Moved `json.csv()` to `csv.encode()`
 - Created `csv.decode()`
+- Added automatic coercion for CSV/TSV documents retrieved with over HTTP
 
 ## 0.5.5
 - Created `utility.curry()` as `keigai.util.curry()` to simplify currying

@@ -12,11 +12,12 @@ exports["decode"] = {
 		done();
 	},
 	test: function (test) {
-		test.expect(4);
+		test.expect(5);
 		test.equal(this.result instanceof Array, true, "Should be `true`");
 		test.equal(this.result.length, 2, "Should be `2`");
 		test.equal(typeof this.result[0].a, "number", "Should be `number`");
 		test.equal(typeof this.result[1].a, "string", "Should be `string`");
+		test.equal(this.result[1].a, "hello, world", "Should be `hello, world`");
 		test.done();
 	}
 };
