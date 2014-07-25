@@ -37,6 +37,10 @@
 						</li>
 						
 						<li>
+							<a href="csv.html">csv</a>
+						</li>
+						
+						<li>
 							<a href="deferred.html">deferred</a>
 						</li>
 						
@@ -117,6 +121,10 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
+							<a href="keigai.Base.html">Base</a>
+						</li>
+						
+						<li>
 							<a href="keigai.DataGrid.html">DataGrid</a>
 						</li>
 						
@@ -137,19 +145,15 @@
 						</li>
 						
 						<li>
+							<a href="keigai.KXMLHttpRequest.html">KXMLHttpRequest</a>
+						</li>
+						
+						<li>
 							<a href="keigai.LRU.html">LRU</a>
 						</li>
 						
 						<li>
-							<a href="keigai.LRUItem.html">LRUItem</a>
-						</li>
-						
-						<li>
 							<a href="keigai.Observable.html">Observable</a>
-						</li>
-						
-						<li>
-							<a href="keigai.Promise.html">Promise</a>
 						</li>
 						
 
@@ -163,15 +167,7 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="global.html#css">css</a>
-						</li>
-						
-						<li>
-							<a href="global.html#html">html</a>
-						</li>
-						
-						<li>
-							<a href="global.html#is">is</a>
+							<a href="global.html#csvData">csvData</a>
 						</li>
 						
 
@@ -260,7 +256,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="css"><span class="type-signature"></span>css<span class="signature">(obj, key, value)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="csvData"><span class="type-signature"></span>csvData<span class="signature">(arg, delimiter)</span><span class="type-signature"> &rarr; {Array}</span></h4>
     
     
 </dt>
@@ -268,7 +264,7 @@
     
     
     <div class="description">
-        <p>Gets or sets a CSS style attribute on an Element</p>
+        <p>Converts CSV to an Array of Objects</p>
     </div>
     
 
@@ -298,223 +294,6 @@
 	</thead>
 
 	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>obj</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Mixed</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Element</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>key</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>CSS to put in a style tag</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>[Optional] Value to set</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4210">line 4210</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>Element</p>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Object</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">keigai.util.element.css( document.querySelector( "#something" ), "font-weight", "bold" );
-keigai.util.element.css( document.querySelector( "#something" ), "font-weight" ); // "bold"</pre>
-
-
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="html"><span class="type-signature"></span>html<span class="signature">(obj, arg)</span><span class="type-signature"> &rarr; {Object}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Gets or sets an Elements innerHTML</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>obj</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Element</p></td>
-        </tr>
-
 	
 
         <tr>
@@ -535,162 +314,14 @@ keigai.util.element.css( document.querySelector( "#something" ), "font-weight" )
 
             
 
-            <td class="description last"><p>[Optional] innerHTML value</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4440">line 4440</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>Element</p>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Object</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">keigai.util.element.html( document.querySelector( "#something" ), "Hello World!" );
-keigai.util.element.html( document.querySelector( "#something" ) ); // "Hello World!"</pre>
-
-
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="is"><span class="type-signature"></span>is<span class="signature">(obj, arg)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Determines if Element is equal to arg, supports nodeNames &amp; CSS2+ selectors</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>obj</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Mixed</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Element</p></td>
+            <td class="description last"><p>CSV string</p></td>
         </tr>
 
 	
 
         <tr>
             
-                <td class="name"><code>arg</code></td>
+                <td class="name"><code>delimiter</code></td>
             
 
             <td class="type">
@@ -706,7 +337,7 @@ keigai.util.element.html( document.querySelector( "#something" ) ); // "Hello Wo
 
             
 
-            <td class="description last"><p>Property to query</p></td>
+            <td class="description last"><p>[Optional] Delimiter to split columns on, default is &quot;,&quot;</p></td>
         </tr>
 
 	
@@ -738,7 +369,7 @@ keigai.util.element.html( document.querySelector( "#something" ) ); // "Hello Wo
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-4461">line 4461</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3100">line 3100</a>
     </li></ul></dd>
     
 
@@ -763,7 +394,7 @@ keigai.util.element.html( document.querySelector( "#something" ) ); // "Hello Wo
     
             
 <div class="param-desc">
-    <p>True if a match</p>
+    <p>Array of Objects</p>
 </div>
 
 
@@ -774,7 +405,7 @@ keigai.util.element.html( document.querySelector( "#something" ) ); // "Hello Wo
 	</dt>
 	<dd>
 		
-<span class="param-type">Boolean</span>
+<span class="param-type">Array</span>
 
 
 	</dd>
@@ -812,7 +443,7 @@ keigai.util.element.html( document.querySelector( "#something" ) ); // "Hello Wo
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Sat Mar 08 2014 16:47:25 GMT-0500 (EST) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Fri Jul 25 2014 06:41:01 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

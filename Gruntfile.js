@@ -24,6 +24,7 @@ module.exports = function (grunt) {
 					"src/array.js",
 					"src/cache.js",
 					"src/client.js",
+					"src/csv.js",
 					"src/filter.js",
 					"src/grid.js",
 					"src/list.js",

@@ -14,6 +14,7 @@ return {
 		clone    : utility.clone,
 		coerce   : utility.coerce,
 		curry    : utility.curry,
+		csv      : csv,
 		defer    : deferred.factory,
 		element  : element,
 		extend   : utility.extend,

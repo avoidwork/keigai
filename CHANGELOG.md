@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.6.0
+- Moved `json.csv()` to `csv.encode()`
+- Created `csv.decode()`
+
 ## 0.5.5
 - Created `utility.curry()` as `keigai.util.curry()` to simplify currying
 - Created `utility.partial()` as `keigai.util.partial()` to simplify partial applications

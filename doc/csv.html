@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>keigai Class: KXMLHttpRequest</title>
+	<title>keigai Namespace: csv</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -187,12 +187,12 @@
 					
 
 
-	<h1 class="page-title">Class: KXMLHttpRequest</h1>
+	<h1 class="page-title">Namespace: csv</h1>
 <section>
 
 <header>
     <h2>
-    KXMLHttpRequest
+    csv
     </h2>
     
 </header>
@@ -203,8 +203,65 @@
 
     
         
+
+        
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3096">line 3096</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
 <dt>
-    <h4 class="name" id="KXMLHttpRequest"><span class="type-signature"></span>new KXMLHttpRequest<span class="signature">(xhr)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="csv"><span class="type-signature">&lt;static> </span>csv<span class="signature">(arg, delimiter, header)</span><span class="type-signature"> &rarr; {String}</span></h4>
     
     
 </dt>
@@ -212,7 +269,7 @@
     
     
     <div class="description">
-        <p>Custom Object returned from <code>client.request()</code></p>
+        <p>Encodes an Array, JSON, or Object as CSV</p>
     </div>
     
 
@@ -246,13 +303,13 @@
 
         <tr>
             
-                <td class="name"><code>xhr</code></td>
+                <td class="name"><code>arg</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">Mixed</span>
 
 
             
@@ -262,7 +319,53 @@
 
             
 
-            <td class="description last"><p>XMLHttpRequest</p></td>
+            <td class="description last"><p>JSON, Array or Object</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>delimiter</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[Optional] Character to separate fields</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>header</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[Optional] <code>false</code> to disable keys names as first row</p></td>
         </tr>
 
 	
@@ -294,7 +397,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2394">line 2394</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-3132">line 3132</a>
     </li></ul></dd>
     
 
@@ -315,104 +418,45 @@
     
     
     
+    <h5>Returns:</h5>
     
-    
-</dd>
-
-    
-    </div>
-
-    
-        <h3 class="subsection-title">Extends</h3>
-
-        <ul>
-            <li><a href="keigai.Base.html">keigai.Base</a></li>
-        </ul>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        <dl>
             
-<dt>
-    <h4 class="name" id="observer"><span class="type-signature">&lt;virtual> </span>observer<span class="type-signature"> :Object</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p><a href="keigai.Observable.html">keigai.Observable</a></p>
-    </div>
-    
-    
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">Object</span>
+<div class="param-desc">
+    <p>CSV string</p>
+</div>
 
 
-            </li>
-        </ul>
-    
 
-    
-<dl class="details">
-    
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">String</span>
 
-    
 
-    
-
-    
-    <dt class="inherited-from">Inherited From:</dt>
-    <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="keigai.Base.html#observer">keigai.Base#observer</a>
-    </li></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-541">line 541</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
+	</dd>
 </dl>
 
+
+        
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var csv = keigai.util.csv.encode( [{prop:"value"}, {prop:"value2"}] );
+
+console.log( csv );
+"prop
+ value
+ value2"</pre>
+
+
     
 </dd>
 
         </dl>
-    
-
     
 
     
@@ -438,7 +482,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Fri Jul 25 2014 06:41:03 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Fri Jul 25 2014 06:41:02 GMT-0400 (EDT) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
