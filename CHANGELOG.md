@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.6.1
+- Fixing `string.escape('/');`
+
 ## 0.6.0
 - Moved `json.csv()` to `csv.encode()`
 - Created `csv.decode()`

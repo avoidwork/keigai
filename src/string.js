@@ -41,7 +41,7 @@ var string = {
 	 * keigai.util.string.escape( "{hello}" ); // "\{hello\}"
 	 */
 	escape : function ( obj ) {
-		return obj.replace( /[\-\[\]{}()*+?.,\\\^\$|#\s]/g, "\\$&" );
+		return obj.replace( /[\-\[\]{}()*+?.,\\\/\^\$|#\s]/g, "\\$&" );
 	},
 
 	/**
