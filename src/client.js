@@ -457,6 +457,9 @@ var client = {
 					throw err;
 				}
 			}
+			else {
+				throw e;
+			}
 		} );
 
 		if ( !cors && !regex.get_headers.test( type ) && client.allows( uri, type ) === false ) {
@@ -511,7 +514,7 @@ var client = {
 						contentType = "application/xml";
 					}
 
-					if ( !( ab && payload instanceof ArrayBuffer ) && !( blob && payload instanceof Blob ) && ( !server && !( payload instanceof Buffer ) ) && payload instanceof Object ) {
+					if ( !( ab && payload instanceof ArrayBuffer ) && !( blob && payload instanceof Blob ) && !( payload instanceof Buffer ) && payload instanceof Object ) {
 						contentType = "application/json";
 						payload = json.encode( payload );
 					}
