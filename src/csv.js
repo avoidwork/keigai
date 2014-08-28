@@ -28,7 +28,7 @@ var csv = {
 
 			n = -1;
 			while ( ++n  < x ) {
-				obj[keys[n]] = utility.coerce( row[n].replace( /^"|"$/g, "" ) );
+				obj[keys[n]] = utility.coerce( ( row[n] || "" ).replace( /^"|"$/g, "" ) );
 			}
 
 			result.push( obj );
