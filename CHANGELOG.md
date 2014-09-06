@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.6.4
+- Rewriting `store.storage()`, & fixing mongodb interaction
+- Fixing `store.clear()` such that it can erase persistent storage (mongodb collections)
+- Fixing `store.setComplete()` such that `DataList` refreshing isn't tied to `DataStore` events
+
+## 0.6.3
+- Fixing `csv.decode()`
+
+## 0.6.2
+- Fixing `client.request()` by re-throwing an error if there is no handler defined
+- Removing `server` check when coercing `payload` as the `instanceof` will work with the shim provided in `intro.js`
+
 ## 0.6.1
 - Fixing `string.escape('/');`
 

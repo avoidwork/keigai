@@ -276,7 +276,8 @@ DataStore.prototype.buildUri = function ( key ) {
  */
 DataStore.prototype.clear = function ( sync ) {
 	sync       = ( sync === true );
-	var events = ( this.events === true );
+	var events = ( this.events === true ),
+	    resave = ( this.autosave === true );
 
 	if ( !sync ) {
 		if ( events ) {
@@ -326,6 +327,10 @@ DataStore.prototype.clear = function ( sync ) {
 		array.each( this.lists, function ( i ) {
 			i.refresh();
 		} );
+	}
+
+	if ( resave ) {
+		this.save();
 	}
 
 	return this;
@@ -1130,8 +1135,14 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, defer ) {
 		} );
 	}
 
-	if ( !batch && this.events ) {
-		self.dispatch( "afterSet", record );
+	if ( !batch ) {
+		if ( this.autosave ) {
+			this.save( record );
+		}
+
+		if ( this.events ) {
+			this.dispatch( "afterSet", record );
+		}
 
 		array.each( this.lists, function ( i ) {
 			i.refresh();
@@ -1346,13 +1357,13 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 	    mongo   = !string.isEmpty( this.mongodb ),
 	    session = ( type === "session" && typeof sessionStorage != "undefined" ),
 	    defer   = deferred.factory(),
-	    data, deferreds, key, result;
+	    data, key, result;
 
 	if ( !regex.number_string_object.test( typeof obj ) || !regex.get_remove_set.test( op ) ) {
 		throw new Error( label.invalidArguments );
 	}
 
-	record = ( regex.number_string.test( typeof obj ) || ( obj.hasOwnProperty( "key" ) && !obj.hasOwnProperty( "parentNode" ) ) );
+	record = ( regex.number_string.test( typeof obj ) || obj.hasOwnProperty( "data" ) );
 
 	if ( op !== "remove" ) {
 		if ( record && !( obj instanceof Object ) ) {
@@ -1365,74 +1376,155 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 		key = obj.key || obj;
 	}
 
-	if ( op === "get" ) {
-		if ( mongo ) {
-			mongodb.connect( this.mongodb, function( e, db ) {
-				if ( e ) {
-					if ( db ) {
-						db.close();
-					}
-
-					defer.reject( e );
+	if ( mongo ) {
+		mongodb.connect( this.mongodb, function ( e, db ) {
+			if ( e ) {
+				if ( db ) {
+					db.close();
 				}
-				else {
-					db.createCollection( self.id, function ( e, collection ) {
+
+				return defer.reject( e );
+			}
+
+			db.createCollection( self.id, function ( e, collection ) {
+				if ( e ) {
+					db.close();
+					return defer.reject( e );
+				}
+
+				if ( op === "get" ) {
+					if ( record ) {
+						collection.find( {_id: obj.key} ).limit( 1 ).toArray( function ( e, recs ) {
+							db.close();
+
+							if ( e ) {
+								defer.reject( e );
+							}
+							else if ( recs.length === 0 ) {
+								defer.resolve( null );
+							}
+							else {
+								delete recs[0]._id;
+
+								self.set( key, recs[0], true ).then( function ( rec ) {
+									defer.resolve( rec );
+								}, function ( e ) {
+									defer.reject( e );
+								} );
+							}
+						} );
+					}
+					else {
+						collection.find( {} ).toArray( function ( e, recs ) {
+							var i, nth;
+
+							if ( e ) {
+								db.close();
+								return defer.reject( e );
+							}
+
+							i   = -1;
+							nth = recs.length;
+
+							if ( nth > 0 ) {
+								self.records = recs.map( function ( r ) {
+									var rec = {key: r._id, index: ++i, data: {}};
+
+									self.keys[rec.key] = rec.index;
+									rec.data = r;
+									delete rec.data._id;
+
+									return rec;
+								} );
+
+								self.total = nth;
+							}
+
+							db.close();
+							defer.resolve( self.records );
+						} );
+					}
+				}
+				else if ( op === "remove" ) {
+					collection.remove( record ? {_id: key} : {}, {safe: true}, function ( e, arg ) {
+						db.close();
+
 						if ( e ) {
 							defer.reject( e );
-							db.close();
-						}
-						else if ( record ) {
-							collection.find( {_id: obj.key} ).limit( 1 ).toArray( function ( e, recs ) {
-								if ( e ) {
-									defer.reject( e );
-								}
-								else {
-									delete recs[0]._id;
-
-									self.set( key, recs[0], true ).then( function ( rec ) {
-										defer.resolve( rec );
-									}, function ( e ) {
-										defer.reject( e );
-									} );
-								}
-
-								db.close();
-							} );
 						}
 						else {
-							collection.find( {} ).toArray( function ( e, recs ) {
-								var i   = -1,
-								    nth = recs.length;
-								
-								if ( e ) {
-									defer.reject( e );
-								}
-								else {
-									if ( nth > 0 ) {
-										self.records = recs.map( function ( r ) {
-											var rec = {key: r._id, index: ++i, data: {}};
-
-											self.keys[rec.key] = rec.index;
-											rec.data = r;
-											delete rec.data._id;
-
-											return rec;
-										} );
-										
-										self.total = nth;
-									}
-									
-									defer.resolve( self.records );
-								}
-
-								db.close();
-							} );
+							defer.resolve( arg );
 						}
 					} );
 				}
+				else if ( op === "set" ) {
+					if ( record ) {
+						collection.update( {_id: obj.key}, {$set: obj.data}, {w: 1, safe: true, upsert: true}, function ( e, arg ) {
+							db.close();
+
+							if ( e ) {
+								defer.reject( e );
+							}
+							else {
+								defer.resolve( arg );
+							}
+						} );
+					}
+					else {
+						// Removing all documents & re-inserting
+						collection.remove( {}, {w: 1, safe: true}, function ( e ) {
+							var deferreds;
+
+							if ( e ) {
+								db.close();
+								return defer.reject( e );
+
+							}
+							else {
+								deferreds = [];
+
+								array.each( self.records, function ( i ) {
+									var data   = {},
+										defer2 = deferred.factory();
+
+									deferreds.push( defer2 );
+
+									utility.iterate( i.data, function ( v, k ) {
+										if ( !array.contains( self.collections, k ) ) {
+											data[k] = v;
+										}
+									} );
+
+									collection.update( {_id: i.key}, {$set: data}, {w:1, safe:true, upsert:true}, function ( e, arg ) {
+										if ( e ) {
+											defer2.reject( e );
+										}
+										else {
+											defer2.resolve( arg );
+										}
+									} );
+								} );
+
+								utility.when( deferreds ).then( function ( result ) {
+									db.close();
+									defer.resolve( result );
+								}, function ( e ) {
+									db.close();
+									defer.reject( e );
+								} );
+							}
+						} );
+					}
+				}
+				else {
+					db.close();
+					defer.reject( null );
+				}
 			} );
-		}
-		else {
+		} );
+	}
+	else {
+		if ( op === "get" ) {
 			result = session ? sessionStorage.getItem( key ) : localStorage.getItem( key );
 
 			if ( result !== null ) {
@@ -1454,125 +1546,17 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 				defer.resolve( self );
 			}
 		}
-	}
-	else if ( op === "remove" ) {
-		if ( mongo ) {
-			mongodb.connect( this.mongodb, function( e, db ) {
-				if ( e ) {
-					if ( db ) {
-						db.close();
-					}
-
-					defer.reject( e );
-				}
-				else {
-					db.createCollection( self.id, function ( e, collection ) {
-						if ( e ) {
-							if ( db ) {
-								db.close();
-							}
-
-							defer.reject( e );
-						}
-						else {
-							collection.remove( record ? {_id: key} : {}, {safe: true}, function ( e, arg ) {
-								if ( e ) {
-									defer.reject( e );
-								}
-								else {
-									defer.resolve( arg );
-								}
-
-								db.close();
-							} );
-						}
-					} );
-				}
-			} );
-		}
-		else {
+		else if ( op === "remove" ) {
 			session ? sessionStorage.removeItem( key ) : localStorage.removeItem( key );
 			defer.resolve( this );
 		}
-	}
-	else if ( op === "set" ) {
-		if ( mongo ) {
-			mongodb.connect( this.mongodb, function( e, db ) {
-				if ( e ) {
-					if ( db ) {
-						db.close();
-					}
-
-					defer.reject( e );
-				}
-				else {
-					db.createCollection( self.id, function ( e, collection ) {
-						if ( e ) {
-							defer.reject( e );
-							db.close();
-						}
-						else if ( record ) {
-							collection.update( {_id: obj.key}, {$set: obj.data}, {w: 1, safe: true, upsert: true}, function ( e, arg ) {
-								if ( e ) {
-									defer.reject( e );
-								}
-								else {
-									defer.resolve( arg );
-								}
-
-								db.close();
-							} );
-						}
-						else {
-							// Removing all documents & re-inserting
-							collection.remove( {}, {w: 1, safe: true}, function ( e ) {
-								if ( e ) {
-									defer.reject( e );
-									db.close();
-								}
-								else {
-									deferreds = [];
-
-									array.each( self.records, function ( i ) {
-										var data   = {},
-										    defer2 = deferred.factory();
-
-										deferreds.push( defer2 );
-
-										utility.iterate( i.data, function ( v, k ) {
-											if ( !array.contains( self.collections, k ) ) {
-												data[k] = v;
-											}
-										} );
-
-										collection.update( {_id: i.key}, {$set: data}, {w:1, safe:true, upsert:true}, function ( e, arg ) {
-											if ( e ) {
-												defer2.reject( e );
-											}
-											else {
-												defer2.resolve( arg );
-											}
-										} );
-									} );
-
-									utility.when( deferreds ).then( function ( result ) {
-										defer.resolve( result );
-										db.close();
-									}, function ( e ) {
-										defer.reject( e );
-										db.close();
-									} );
-								}
-							} );
-						}
-					} );
-				}
-			} );
-		}
-		else {
+		else if ( op === "set" ) {
 			data = json.encode( record ? obj.data : {total: this.total, keys: this.keys, records: this.records} );
 			session ? sessionStorage.setItem( key, data ) : localStorage.setItem( key, data );
 			defer.resolve( this );
+		}
+		else {
+			defer.reject( null );
 		}
 	}
 
