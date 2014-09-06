@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.6.5
+- Upgrading mongodb driver
+
 ## 0.6.4
 - Rewriting `store.storage()`, & fixing mongodb interaction
 - Fixing `store.clear()` such that it can erase persistent storage (mongodb collections)
