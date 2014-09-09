@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.6.6
+- Ensuring DataStore versioning works when restoring from mongodb
+- Adding an optional parameter to `data.set()` to overwrite the record in persistent storage
+- Fixing reference errors in `store.delComplete()`
+
 ## 0.6.5
 - Upgrading mongodb driver
 
