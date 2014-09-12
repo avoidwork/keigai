@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.6.7
+- Updating `string.trim()` to remove leading/trailing new lines
+- Adding nested quote support to `csv.decode()`, updating test
+
 ## 0.6.6
 - Ensuring DataStore versioning works when restoring from mongodb
 - Adding an optional parameter to `data.set()` to overwrite the record in persistent storage

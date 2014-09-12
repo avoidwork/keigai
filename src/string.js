@@ -240,7 +240,7 @@ var string = {
 	 * keigai.util.string.trim( "  hello world " ); // "hello world"
 	 */
 	trim : function ( obj ) {
-		return obj.replace( /^(\s+|\t+)|(\s+|\t+)$/g, "" );
+		return obj.replace( /^(\s+|\t+|\n+)|(\s+|\t+|\n+)$/g, "" );
 	},
 
 	/**

@@ -13,8 +13,8 @@ var csv = {
 	 */
 	decode : function ( arg, delimiter ) {
 		delimiter  = delimiter || ",";
-		var regex  = new RegExp( delimiter + "(?=(?:[^\"]|\"[^\"]*\")*$)" ),
-		    rows   = arg.split( "\n" ),
+		var regex  = new RegExp( delimiter + "(?=(?:[^\"]|\"(?:[^\"])[^\"]*\")*$)" ),
+		    rows   = string.trim( arg ).split( "\n" ),
 		    keys   = rows.shift().split( delimiter ),
 		    result = [],
 		    nth    = rows.length,
