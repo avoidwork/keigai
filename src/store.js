@@ -1404,7 +1404,7 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 				return defer.reject( e );
 			}
 
-			db.createCollection( self.id, function ( e, collection ) {
+			db.collection( self.id, function ( e, collection ) {
 				if ( e ) {
 					db.close();
 					return defer.reject( e );

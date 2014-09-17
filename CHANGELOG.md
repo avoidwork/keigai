@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.6.8
+- Changing how MongoDB collections are accessed from the driver to avoid an error from an evolving API
+
 ## 0.6.7
 - Updating `string.trim()` to remove leading/trailing new lines
 - Adding nested quote support to `csv.decode()`, updating test
