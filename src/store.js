@@ -500,12 +500,12 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
 			this.delComplete( record, reindex, batch, defer );
 		}
 		else {
-			client.request( this.buildUri( record.key ), "DELETE", function () {
+			client.request( this.buildUri( record.key ), "DELETE", null, utility.merge( {withCredentials: this.credentials}, this.headers ) ).then( function () {
 				self.delComplete( record, reindex, batch, defer );
 			}, function ( e ) {
 				self.dispatch( "failedDelete", e );
 				defer.reject( e );
-			}, undefined, utility.merge( {withCredentials: this.credentials}, this.headers ) );
+			} );
 		}
 	}
 
@@ -1018,12 +1018,12 @@ DataStore.prototype.set = function ( key, data, batch, overwrite ) {
 				self.dispatch( "beforeSet", {key: key, data: data} );
 			}
 
-			client.request( uri, "GET", function ( arg ) {
-				self.setComplete( record, key, self.source ? arg[self.source] : arg, batch, defer );
+			client.request( uri, "GET", null, utility.merge( {withCredentials: self.credentials}, self.headers ) ).then( function ( arg ) {
+				self.setComplete( record, key, self.source ? utility.walk( arg, self.source ) : arg, batch, overwrite, defer );
 			}, function ( e ) {
 				self.dispatch( "failedSet", e );
 				defer.reject( e );
-			}, undefined, utility.merge( {withCredentials: self.credentials}, self.headers ) );
+			} );
 		}
 	}
 	else {
@@ -1054,12 +1054,12 @@ DataStore.prototype.set = function ( key, data, batch, overwrite ) {
 				uri = this.uri;
 			}
 
-			client.request( uri, method, function ( arg ) {
-				self.setComplete( record, key, self.source ? arg[self.source] : arg, batch, overwrite, defer );
+			client.request( uri, method, data, utility.merge( {withCredentials: this.credentials}, this.headers ) ).then( function ( arg ) {
+				self.setComplete( record, key, self.source ? utility.walk( arg, self.source ) : arg, batch, overwrite, defer );
 			}, function ( e ) {
 				self.dispatch( "failedSet", e );
 				defer.reject( e );
-			}, data, utility.merge( {withCredentials: this.credentials}, this.headers ) );
+			} );
 		}
 	}
 
@@ -1665,10 +1665,10 @@ DataStore.prototype.sync = function () {
 	}
 
 	if ( this.callback !== null ) {
-		client.jsonp( this.uri, success, failure, {callback: this.callback} );
+		client.jsonp( this.uri, {callback: this.callback} ).then( success, failure );
 	}
 	else {
-		client.request( this.uri, "GET", success, failure, null, utility.merge( {withCredentials: this.credentials}, this.headers ) );
+		client.request( this.uri, "GET", null, utility.merge( {withCredentials: this.credentials}, this.headers ) ).then( success, failure );
 	}
 
 	return defer;

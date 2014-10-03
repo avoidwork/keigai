@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.7.1
+- Changing `client.request()` signature by removing the `success` & `failure` parameters to embrace the `Promise` API
+- Fixing `store.batch()` when dealing with an Array of URIs
+
 ## 0.7.0
 - Changing `client.request()` by removing the (last) parameter `timeout` & setting `x-request-with` header
 - Updating `xhr.send()` by deleting `x-request-with` header if the value is `XMLHttpRequest`

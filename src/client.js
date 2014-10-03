@@ -289,10 +289,8 @@ var client = {
 	 *
 	 * @method jsonp
 	 * @memberOf client
-	 * @param  {String}   uri     URI to request
-	 * @param  {Function} success A handler function to execute when an appropriate response been received
-	 * @param  {Function} failure [Optional] A handler function to execute on error
-	 * @param  {Mixed}    args    Custom JSONP handler parameter name, default is "callback"; or custom headers for GET request ( CORS )
+	 * @param  {String} uri  URI to request
+	 * @param  {Mixed}  args Custom JSONP handler parameter name, default is "callback"; or custom headers for GET request ( CORS )
 	 * @return {Object} {@link keigai.Deferred}
 	 * @example
 	 * keigai.util.jsonp( "http://somedomain.com/resource?callback=", function ( arg ) {
@@ -301,7 +299,7 @@ var client = {
 	 *   // Handle `err`
 	 * } );
 	 */
-	jsonp : function ( uri, success, failure, args ) {
+	jsonp : function ( uri, args ) {
 		var defer    = deferred.factory(),
 		    callback = "callback",
 		    cbid, s;
@@ -317,18 +315,6 @@ var client = {
 		if ( args instanceof Object && !args.callback ) {
 			callback = args.callback;
 		}
-
-		defer.then( function ( arg ) {
-			if ( typeof success == "function") {
-				success( arg );
-			}
-		}, function ( e ) {
-			if ( typeof failure == "function") {
-				failure( e );
-			}
-
-			throw e;
-		} );
 
 		do {
 			cbid = utility.genId().slice( 0, 10 );
@@ -389,8 +375,6 @@ var client = {
 	 * @memberOf client
 	 * @param  {String}   uri     URI to query
 	 * @param  {String}   type    [Optional] Type of request ( DELETE/GET/POST/PUT/PATCH/HEAD/OPTIONS ), default is `GET`
-	 * @param  {Function} success [Optional] Handler to execute when an appropriate response been received
-	 * @param  {Function} failure [Optional] Handler to execute on error
 	 * @param  {Mixed}    args    [Optional] Data to send with the request
 	 * @param  {Object}   headers [Optional] Custom request headers ( can be used to set withCredentials )
 	 * @return {Object}   {@link keigai.KXMLHttpRequest}
@@ -401,7 +385,7 @@ var client = {
 	 *   // Handle `err`
 	 * } );
 	 */
-	request : function ( uri, type, success, failure, args, headers ) {
+	request : function ( uri, type, args, headers ) {
 		var cors, kxhr, payload, cached, contentType, doc, ab, blob;
 
 		type = type || "GET";
@@ -436,27 +420,6 @@ var client = {
 				case 4:
 					this.dispatch( "afterXHR", this.xhr, ev );
 					break;
-			}
-		} );
-
-		// Using a deferred to resolve request
-		kxhr.then( function ( arg ) {
-			if ( typeof success == "function" ) {
-				success.call( kxhr.xhr, arg, kxhr.xhr );
-			}
-
-			return arg;
-		}, function ( e ) {
-			if ( typeof failure == "function" ) {
-				try {
-					return failure.call( kxhr.xhr, e, kxhr.xhr );
-				}
-				catch ( err ) {
-					throw err;
-				}
-			}
-			else {
-				throw e;
 			}
 		} );
 
@@ -619,7 +582,7 @@ var client = {
 										}
 										else {
 											redirect = string.trim ( o.headers.Location || r );
-											client.request( redirect, "GET", function ( arg ) {
+											client.request( redirect ).then( function ( arg ) {
 												self.resolve ( arg );
 											}, function ( e ) {
 												self.reject( e );
