@@ -338,6 +338,10 @@ function xhr () {
 
 		this._headers.host = parsed.host;
 
+		if ( this._headers["x-requested-with"] === "XMLHttpRequest" ) {
+			delete this._headers["x-requested-with"];
+		}
+
 		options = {
 			hostname : parsed.hostname,
 			path     : parsed.path,

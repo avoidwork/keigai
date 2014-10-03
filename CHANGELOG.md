@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.7.0
+- Changing `client.request()` by removing the (last) parameter `timeout` & setting `x-request-with` header
+- Updating `xhr.send()` by deleting `x-request-with` header if the value is `XMLHttpRequest`
+
 ## 0.6.8
 - Changing how MongoDB collections are accessed from the driver to avoid an error from an evolving API
 

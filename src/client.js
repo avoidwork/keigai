@@ -393,7 +393,6 @@ var client = {
 	 * @param  {Function} failure [Optional] Handler to execute on error
 	 * @param  {Mixed}    args    [Optional] Data to send with the request
 	 * @param  {Object}   headers [Optional] Custom request headers ( can be used to set withCredentials )
-	 * @param  {Number}   timeout [Optional] Timeout in milliseconds, default is 30000
 	 * @return {Object}   {@link keigai.KXMLHttpRequest}
 	 * @example
 	 * keigai.util.request( "http://keigai.io" ).then( function ( arg ) {
@@ -402,7 +401,7 @@ var client = {
 	 *   // Handle `err`
 	 * } );
 	 */
-	request : function ( uri, type, success, failure, args, headers, timeout ) {
+	request : function ( uri, type, success, failure, args, headers ) {
 		var cors, kxhr, payload, cached, contentType, doc, ab, blob;
 
 		type = type || "GET";
@@ -414,7 +413,6 @@ var client = {
 		uri         = utility.parse( uri ).href;
 		type        = type.toLowerCase();
 		headers     = headers instanceof Object ? headers : null;
-		timeout     = timeout || 30000;
 		cors        = client.cors( uri );
 		kxhr        = client.kxhr( !client.ie || ( !cors || client.version > 9 ) ? new XMLHttpRequest() : new XDomainRequest() );
 		payload     = ( regex.put_post.test( type ) || regex.patch.test( type ) ) && args ? args : null;
@@ -545,6 +543,8 @@ var client = {
 					if ( headers.hasOwnProperty( "callback" ) ) {
 						delete headers.callback;
 					}
+
+					headers["x-requested-with"] = "XMLHttpRequest";
 
 					utility.iterate( headers, function ( v, k ) {
 						if ( v !== null && k !== "withCredentials") {
