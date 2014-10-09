@@ -6,7 +6,7 @@
  * @license BSD-3 <https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.7.1
+ * @version 0.7.2
  */
 ( function ( global ) {
 
@@ -7043,8 +7043,11 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
 
 		this.keys[key]                = record.index;
 		this.records[record.index]    = record;
-		this.versions[record.key]     = lru.factory( VERSIONS );
-		this.versions[record.key].nth = 0;
+
+		if ( this.versioning ) {
+			this.versions[record.key] = lru.factory( VERSIONS );
+			this.versions[record.key].nth = 0;
+		}
 
 		if ( this.retrieve ) {
 			deferreds.push( this.crawl( record ) );
@@ -9113,7 +9116,7 @@ function xhr () {
 	    XMLHttpRequest, headers, dispatch, success, failure, state;
 
 	headers = {
-		"user-agent"   : "keigai/0.7.1 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"user-agent"   : "keigai/0.7.2 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
 	};
@@ -9799,7 +9802,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.7.1"
+	version : "0.7.2"
 };
 } )();
 
