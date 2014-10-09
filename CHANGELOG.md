@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.7.2
+- Fixing `store.setComplete()` such that it doesn't create a `versions` cache if `store.versioning` is `false`
+
 ## 0.7.1
 - Changing `client.request()` signature by removing the `success` & `failure` parameters to embrace the `Promise` API
 - Fixing `store.batch()` when dealing with an Array of URIs

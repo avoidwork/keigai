@@ -1112,8 +1112,11 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
 
 		this.keys[key]                = record.index;
 		this.records[record.index]    = record;
-		this.versions[record.key]     = lru.factory( VERSIONS );
-		this.versions[record.key].nth = 0;
+
+		if ( this.versioning ) {
+			this.versions[record.key] = lru.factory( VERSIONS );
+			this.versions[record.key].nth = 0;
+		}
 
 		if ( this.retrieve ) {
 			deferreds.push( this.crawl( record ) );
