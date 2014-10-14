@@ -170,73 +170,74 @@ DataStore.prototype.constructor = DataStore;
  * } );
  */
 DataStore.prototype.batch = function ( type, data, sync ) {
-	if ( !regex.set_del.test( type ) || ( sync && regex.del.test( type ) ) || typeof data != "object" ) {
-		throw new Error( label.invalidArguments );
-	}
-
 	sync          = ( sync === true );
 	var self      = this,
 	    events    = this.events,
 	    defer     = deferred.factory(),
 	    deferreds = [];
 
-	if ( events ) {
-		this.dispatch( "beforeBatch", data );
-	}
-
-	if ( sync ) {
-		this.clear( sync );
-	}
-
-	if ( data.length === 0 ) {
-		this.loaded = true;
-
-		if ( events ) {
-			this.dispatch( "afterBatch", this.records );
-		}
-
-		defer.resolve( this.records );
+	if ( !regex.set_del.test( type ) || ( sync && regex.del.test( type ) ) || typeof data != "object" ) {
+		defer.reject( new Error( label.invalidArguments ) );
 	}
 	else {
-		if ( type === "del" ) {
-			array.each( data, function ( i ) {
-				deferreds.push( self.del( i, false, true ) );
-			} );
+		if ( events ) {
+			this.dispatch( "beforeBatch", data );
+		}
+
+		if ( sync ) {
+			this.clear( sync );
+		}
+
+		if ( data.length === 0 ) {
+			this.loaded = true;
+
+			if ( events ) {
+				this.dispatch( "afterBatch", this.records );
+			}
+
+			defer.resolve( this.records );
 		}
 		else {
-			array.each( data, function ( i ) {
-				deferreds.push( self.set( null, i, true ) );
+			if ( type === "del" ) {
+				array.each( data, function ( i ) {
+					deferreds.push( self.del( i, false, true ) );
+				} );
+			}
+			else {
+				array.each( data, function ( i ) {
+					deferreds.push( self.set( null, i, true ) );
+				} );
+			}
+
+			utility.when( deferreds ).then( function ( args ) {
+				self.loaded = true;
+
+				if ( events ) {
+					self.dispatch( "afterBatch", args );
+				}
+
+				// Forcing a clear of views to deal with async nature of workers & staggered loading
+				array.each( self.lists, function ( i ) {
+					i.refresh( true );
+				} );
+
+				if ( type === "del" ) {
+					self.reindex();
+				}
+
+				if ( self.autosave ) {
+					self.save();
+				}
+
+				defer.resolve( args );
+			}, function ( e ) {
+				if ( events ) {
+					self.dispatch( "failedBatch", e );
+				}
+
+				defer.reject( e );
 			} );
 		}
-
-		utility.when( deferreds ).then( function ( args ) {
-			self.loaded = true;
-
-			if ( events ) {
-				self.dispatch( "afterBatch", args );
-			}
-
-			// Forcing a clear of views to deal with async nature of workers & staggered loading
-			array.each( self.lists, function ( i ) {
-				i.refresh( true );
-			} );
-
-			if ( type === "del" ) {
-				self.reindex();
-			}
-
-			if ( self.autosave ) {
-				self.save();
-			}
-
-			defer.resolve( args );
-		}, function ( e ) {
-			if ( events ) {
-				self.dispatch( "failedBatch", e );
-			}
-
-			defer.reject( e );
-		} );
 	}
 
 	return defer;
@@ -363,100 +364,101 @@ DataStore.prototype.crawl = function ( arg ) {
 	    clone;
 
 	if ( this.uri === null || record === undefined ) {
-		throw new Error( label.invalidArguments );
-	}
-
-	if ( events ) {
-		this.dispatch( "beforeRetrieve", record );
-	}
-
-	// An Array is considered a collection
-	if ( record.data instanceof Array ) {
-		clone       = utility.clone( record.data );
-		record.data = {};
-
-		array.each( clone, function ( i ) {
-			var key = i.replace( /.*\//, "" ),
-			    uri;
-
-			record.data[key] = store.factory( null, {id: record.key + "-" + key, key: self.key, pointer: self.pointer, source: self.source, ignore: self.ignore.slice(), leafs: self.leafs.slice(), depth: self.depth + 1, maxDepth: self.maxDepth, headers: self.headers, retrieve: true} );
-
-			if ( i.indexOf( "//" ) === -1 ) {
-				// Relative path to store, i.e. a child
-				if ( i.charAt( 0 ) !== "/" ) {
-					uri = self.buildUri( i );
-				}
-				// Root path, relative to store, i.e. a domain
-				else {
-					uri = parsed.protocol + "//" + parsed.host + i;
-				}
-			}
-			else {
-				uri = i;
-			}
-
-			deferreds.push( record.data[key].data.setUri( uri ) );
-		} );
+		defer.reject( new Error( label.invalidArguments ) );
 	}
 	else {
-		// Depth of recursion is controled by `maxDepth`
-		utility.iterate( record.data, function ( v, k ) {
-			var uri;
+		if ( events ) {
+			this.dispatch( "beforeRetrieve", record );
+		}
 
-			if ( array.contains( self.ignore, k ) || array.contains( self.leafs, k ) || self.depth >= self.maxDepth || ( !( v instanceof Array ) && typeof v != "string" ) || ( v.indexOf( "//" ) === -1 && v.charAt( 0 ) !== "/" ) ) {
-				return;
-			}
+		// An Array is considered a collection
+		if ( record.data instanceof Array ) {
+			clone = utility.clone( record.data );
+			record.data = {};
 
-			array.add( self.collections, k );
+			array.each( clone, function ( i ) {
+				var key = i.replace( /.*\//, "" ),
+					uri;
 
-			record.data[k] = store.factory( null, {id: record.key + "-" + k, key: self.key, source: self.source, ignore: self.ignore.slice(), leafs: self.leafs.slice(), depth: self.depth + 1, maxDepth: self.maxDepth, headers: self.headers, retrieve: true} );
+				record.data[key] = store.factory( null, {id: record.key + "-" + key, key: self.key, pointer: self.pointer, source: self.source, ignore: self.ignore.slice(), leafs: self.leafs.slice(), depth: self.depth + 1, maxDepth: self.maxDepth, headers: self.headers, retrieve: true} );
 
-			if ( !array.contains( self.leafs, k ) && ( record.data[k].data.maxDepth === 0 || record.data[k].data.depth <= record.data[k].data.maxDepth ) ) {
-				if ( v instanceof Array ) {
-					deferreds.push( record.data[k].data.batch( "set", v ) );
+				if ( i.indexOf( "//" ) === -1 ) {
+					// Relative path to store, i.e. a child
+					if ( i.charAt( 0 ) !== "/" ) {
+						uri = self.buildUri( i );
+					}
+					// Root path, relative to store, i.e. a domain
+					else {
+						uri = parsed.protocol + "//" + parsed.host + i;
+					}
 				}
 				else {
-					if ( v.indexOf( "//" ) === -1 ) {
-						// Relative path to store, i.e. a child
-						if ( v.charAt( 0 ) !== "/" ) {
-							uri = self.buildUri( v );
-						}
-						// Root path, relative to store, i.e. a domain
-						else {
-							uri = parsed.protocol + "//" + parsed.host + v;
-						}
+					uri = i;
+				}
+
+				deferreds.push( record.data[key].data.setUri( uri ) );
+			} );
+		}
+		else {
+			// Depth of recursion is controled by `maxDepth`
+			utility.iterate( record.data, function ( v, k ) {
+				var uri;
+
+				if ( array.contains( self.ignore, k ) || array.contains( self.leafs, k ) || self.depth >= self.maxDepth || ( !( v instanceof Array ) && typeof v != "string" ) || ( v.indexOf( "//" ) === -1 && v.charAt( 0 ) !== "/" ) ) {
+					return;
+				}
+
+				array.add( self.collections, k );
+
+				record.data[k] = store.factory( null, {id: record.key + "-" + k, key: self.key, source: self.source, ignore: self.ignore.slice(), leafs: self.leafs.slice(), depth: self.depth + 1, maxDepth: self.maxDepth, headers: self.headers, retrieve: true} );
+
+				if ( !array.contains( self.leafs, k ) && ( record.data[k].data.maxDepth === 0 || record.data[k].data.depth <= record.data[k].data.maxDepth ) ) {
+					if ( v instanceof Array ) {
+						deferreds.push( record.data[k].data.batch( "set", v ) );
 					}
 					else {
-						uri = v;
+						if ( v.indexOf( "//" ) === -1 ) {
+							// Relative path to store, i.e. a child
+							if ( v.charAt( 0 ) !== "/" ) {
+								uri = self.buildUri( v );
+							}
+							// Root path, relative to store, i.e. a domain
+							else {
+								uri = parsed.protocol + "//" + parsed.host + v;
+							}
+						}
+						else {
+							uri = v;
+						}
+
+						deferreds.push( record.data[k].data.setUri( uri ) );
 					}
-
-					deferreds.push( record.data[k].data.setUri( uri ) );
 				}
-			}
-		} );
-	}
+			} );
+		}
 
-	if ( deferreds.length > 0 ) {
-		utility.when( deferreds ).then( function () {
+		if ( deferreds.length > 0 ) {
+			utility.when( deferreds ).then( function () {
+				if ( events ) {
+					self.dispatch( "afterRetrieve", record );
+				}
+
+				defer.resolve( record );
+			}, function ( e ) {
+				if ( events ) {
+					self.dispatch( "failedRetrieve", record );
+				}
+
+				defer.reject( e );
+			} );
+		}
+		else {
 			if ( events ) {
 				self.dispatch( "afterRetrieve", record );
 			}
 
 			defer.resolve( record );
-		}, function ( e ) {
-			if ( events ) {
-				self.dispatch( "failedRetrieve", record );
-			}
-
-			defer.reject( e );
-		} );
-	}
-	else {
-		if ( events ) {
-			self.dispatch( "afterRetrieve", record );
 		}
-
-		defer.resolve( record );
 	}
 
 	return defer;
@@ -555,9 +557,7 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 		} );
 	}
 
-	defer.resolve( record.key );
-
-	return this;
+	return defer.resolve( record.key );
 };
 
 /**
@@ -887,72 +887,73 @@ DataStore.prototype.select = function ( where ) {
 	    clauses, cond, functions, worker;
 
 	if ( !( where instanceof Object ) ) {
-		throw new Error( label.invalidArguments );
-	}
-
-	if ( webWorker ) {
-		functions = [];
-
-		utility.iterate( where, function ( v, k ) {
-			if ( typeof v == "function" ) {
-				this[k] = v.toString();
-				functions.push( k );
-			}
-		} );
-
-		try {
-			worker = utility.worker( defer );
-			worker.postMessage( {cmd: "select", records: this.records, where: json.encode( where ), functions: functions} );
-		}
-		catch ( e ) {
-			// Probably IE10, which doesn't have the correct security flag for local loading
-			webWorker = false;
-
-			this.select( where ).then( function ( arg ) {
-				defer.resolve( arg );
-			}, function ( e ) {
-				defer.reject( e );
-			} );
-		}
+		defer.reject( new Error( label.invalidArguments ) );
 	}
 	else {
-		clauses = array.fromObject( where );
-		cond    = "return ( ";
+		if ( webWorker ) {
+			functions = [];
 
-		if ( clauses.length > 1 ) {
-			array.each( clauses, function ( i, idx ) {
-				var b1 = "( ";
-
-				if ( idx > 0 ) {
-					b1 = " && ( ";
-				}
-
-				if ( i[1] instanceof Function ) {
-					cond += b1 + i[1].toString() + "( rec.data[\"" + i[0] + "\"] ) )";
-				}
-				else if ( !isNaN( i[1] ) ) {
-					cond += b1 + "rec.data[\"" + i[0] + "\"] === " + i[1] + " )";
-				}
-				else {
-					cond += b1 + "rec.data[\"" + i[0] + "\"] === \"" + i[1] + "\" )";
+			utility.iterate( where, function ( v, k ) {
+				if ( typeof v == "function" ) {
+					this[k] = v.toString();
+					functions.push( k );
 				}
 			} );
+
+			try {
+				worker = utility.worker( defer );
+				worker.postMessage( {cmd: "select", records: this.records, where: json.encode( where ), functions: functions} );
+			}
+			catch ( e ) {
+				// Probably IE10, which doesn't have the correct security flag for local loading
+				webWorker = false;
+
+				this.select( where ).then( function ( arg ) {
+					defer.resolve( arg );
+				}, function ( e ) {
+					defer.reject( e );
+				} );
+			}
 		}
 		else {
-			if ( clauses[0][1] instanceof Function ) {
-				cond += clauses[0][1].toString() + "( rec.data[\"" + clauses[0][0] + "\"] )";
-			}
-			else if ( !isNaN( clauses[0][1] ) ) {
-				cond += "rec.data[\"" + clauses[0][0] + "\"] === " + clauses[0][1];
+			clauses = array.fromObject( where );
+			cond = "return ( ";
+
+			if ( clauses.length > 1 ) {
+				array.each( clauses, function ( i, idx ) {
+					var b1 = "( ";
+
+					if ( idx > 0 ) {
+						b1 = " && ( ";
+					}
+
+					if ( i[1] instanceof Function ) {
+						cond += b1 + i[1].toString() + "( rec.data[\"" + i[0] + "\"] ) )";
+					}
+					else if ( !isNaN( i[1] ) ) {
+						cond += b1 + "rec.data[\"" + i[0] + "\"] === " + i[1] + " )";
+					}
+					else {
+						cond += b1 + "rec.data[\"" + i[0] + "\"] === \"" + i[1] + "\" )";
+					}
+				} );
 			}
 			else {
-				cond += "rec.data[\"" + clauses[0][0] + "\"] === \"" + clauses[0][1] + "\"";
+				if ( clauses[0][1] instanceof Function ) {
+					cond += clauses[0][1].toString() + "( rec.data[\"" + clauses[0][0] + "\"] )";
+				}
+				else if ( !isNaN( clauses[0][1] ) ) {
+					cond += "rec.data[\"" + clauses[0][0] + "\"] === " + clauses[0][1];
+				}
+				else {
+					cond += "rec.data[\"" + clauses[0][0] + "\"] === \"" + clauses[0][1] + "\"";
+				}
 			}
+
+			cond += " );";
+
+			defer.resolve( this.records.slice().filter( new Function( "rec", cond ) ) );
 		}
-
-		cond += " );";
-
-		defer.resolve( this.records.slice().filter( new Function( "rec", cond ) ) );
 	}
 
 	return defer;
@@ -1244,36 +1245,23 @@ DataStore.prototype.setExpires = function ( arg ) {
  */
 DataStore.prototype.setUri = function ( arg ) {
 	var defer = deferred.factory(),
-	    parsed, uri;
+	    parsed;
 
 	if ( arg !== null && string.isEmpty( arg ) ) {
-		throw new Error( label.invalidArguments );
+		defer.reject( new Error( label.invalidArguments ) );
 	}
 
-	parsed = utility.parse( arg );
-	uri    = parsed.href;
-
-	// Re-encoding the query string for the request
-	if ( array.keys( parsed.query ).length > 0 ) {
-		uri = uri.replace( /\?.*/, "?" );
-
-		utility.iterate( parsed.query, function ( v, k ) {
-			if ( !( v instanceof Array ) ) {
-				uri += "&" + k + "=" + encodeURIComponent( v );
-			}
-			else {
-				array.each( v, function ( i ) {
-					uri += "&" + k + "=" + encodeURIComponent( i );
-				} );
-			}
-		} );
-
-		uri = uri.replace( "?&", "?" );
+	if ( arg === null ) {
+		this.uri = arg;
 	}
+	else {
+		parsed   = utility.parse( arg );
+		this.uri = parsed.protocol + "//" + parsed.host + parsed.path;
 
-	this.uri = uri;
+		if ( !string.isEmpty( parsed.auth ) && !this.headers.authorization && !this.headers.Authorization ) {
+			this.headers.Authorization = "Basic " + btoa( decodeURIComponent( parsed.auth ) );
+		}
 
-	if ( this.uri !== null ) {
 		this.on( "expire", function () {
 			this.sync();
 		}, "resync", this );
@@ -1284,7 +1272,7 @@ DataStore.prototype.setUri = function ( arg ) {
 			defer.resolve( arg );
 		}, function ( e ) {
 			defer.reject( e );
-		});
+		} );
 	}
 
 	return defer;
@@ -1381,106 +1369,93 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 	    data, key, result;
 
 	if ( !regex.number_string_object.test( typeof obj ) || !regex.get_remove_set.test( op ) ) {
-		throw new Error( label.invalidArguments );
+		defer.reject( new Error( label.invalidArguments ) );
 	}
+	else {
+		record = ( regex.number_string.test( typeof obj ) || obj.hasOwnProperty( "data" ) );
 
-	record = ( regex.number_string.test( typeof obj ) || obj.hasOwnProperty( "data" ) );
-
-	if ( op !== "remove" ) {
-		if ( record && !( obj instanceof Object ) ) {
-			obj = this.get( obj );
-		}
-
-		key = record ? obj.key : obj.id;
-	}
-	else if ( op === "remove" && record ) {
-		key = obj.key || obj;
-	}
-
-	if ( mongo ) {
-		mongodb.connect( this.mongodb, function ( e, db ) {
-			if ( e ) {
-				if ( db ) {
-					db.close();
-				}
-
-				return defer.reject( e );
+		if ( op !== "remove" ) {
+			if ( record && !( obj instanceof Object ) ) {
+				obj = this.get( obj );
 			}
 
-			db.collection( self.id, function ( e, collection ) {
+			key = record ? obj.key : obj.id;
+		}
+		else if ( op === "remove" && record ) {
+			key = obj.key || obj;
+		}
+
+		if ( mongo ) {
+			mongodb.connect( this.mongodb, function ( e, db ) {
 				if ( e ) {
-					db.close();
+					if ( db ) {
+						db.close();
+					}
+
 					return defer.reject( e );
 				}
 
-				if ( op === "get" ) {
-					if ( record ) {
-						collection.find( {_id: obj.key} ).limit( 1 ).toArray( function ( e, recs ) {
-							db.close();
-
-							if ( e ) {
-								defer.reject( e );
-							}
-							else if ( recs.length === 0 ) {
-								defer.resolve( null );
-							}
-							else {
-								delete recs[0]._id;
-
-								self.set( key, recs[0], true ).then( function ( rec ) {
-									defer.resolve( rec );
-								}, function ( e ) {
-									defer.reject( e );
-								} );
-							}
-						} );
-					}
-					else {
-						collection.find( {} ).toArray( function ( e, recs ) {
-							var i, nth;
-
-							if ( e ) {
-								db.close();
-								return defer.reject( e );
-							}
-
-							i   = -1;
-							nth = recs.length;
-
-							if ( nth > 0 ) {
-								self.records = recs.map( function ( r ) {
-									var rec = {key: r._id, index: ++i, data: {}};
-
-									self.keys[rec.key] = rec.index;
-									rec.data = r;
-									delete rec.data._id;
-
-									return rec;
-								} );
-
-								self.total = nth;
-							}
-
-							db.close();
-							defer.resolve( self.records );
-						} );
-					}
-				}
-				else if ( op === "remove" ) {
-					collection.remove( record ? {_id: key} : {}, {safe: true}, function ( e, arg ) {
+				db.collection( self.id, function ( e, collection ) {
+					if ( e ) {
 						db.close();
+						return defer.reject( e );
+					}
 
-						if ( e ) {
-							defer.reject( e );
+					if ( op === "get" ) {
+						if ( record ) {
+							collection.find( {_id: obj.key} ).limit( 1 ).toArray( function ( e, recs ) {
+								db.close();
+
+								if ( e ) {
+									defer.reject( e );
+								}
+								else if ( recs.length === 0 ) {
+									defer.resolve( null );
+								}
+								else {
+									delete recs[0]._id;
+
+									self.set( key, recs[0], true ).then( function ( rec ) {
+										defer.resolve( rec );
+									}, function ( e ) {
+										defer.reject( e );
+									} );
+								}
+							} );
 						}
 						else {
-							defer.resolve( arg );
+							collection.find( {} ).toArray( function ( e, recs ) {
+								var i, nth;
+
+								if ( e ) {
+									db.close();
+									return defer.reject( e );
+								}
+
+								i   = -1;
+								nth = recs.length;
+
+								if ( nth > 0 ) {
+									self.records = recs.map( function ( r ) {
+										var rec = {key: r._id, index: ++i, data: {}};
+
+										self.keys[rec.key] = rec.index;
+										rec.data = r;
+										delete rec.data._id;
+
+										return rec;
+									} );
+
+									self.total = nth;
+								}
+
+								db.close();
+								defer.resolve( self.records );
+							} );
 						}
-					} );
-				}
-				else if ( op === "set" ) {
-					if ( record ) {
-						collection.update( {_id: obj.key}, obj.data, {w: 1, safe: true, upsert: true}, function ( e, arg ) {
+					}
+					else if ( op === "remove" ) {
+						collection.remove( record ? {_id: key} : {}, {safe: true}, function ( e, arg ) {
 							db.close();
 
 							if ( e ) {
@@ -1491,93 +1466,107 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 							}
 						} );
 					}
-					else {
-						// Removing all documents & re-inserting
-						collection.remove( {}, {w: 1, safe: true}, function ( e ) {
-							var deferreds;
-
-							if ( e ) {
+					else if ( op === "set" ) {
+						if ( record ) {
+							collection.update( {_id: obj.key}, obj.data, {w: 1, safe: true, upsert: true}, function ( e, arg ) {
 								db.close();
-								return defer.reject( e );
 
-							}
-							else {
-								deferreds = [];
-
-								array.each( self.records, function ( i ) {
-									var data   = {},
-										defer2 = deferred.factory();
-
-									deferreds.push( defer2 );
-
-									utility.iterate( i.data, function ( v, k ) {
-										if ( !array.contains( self.collections, k ) ) {
-											data[k] = v;
-										}
-									} );
-
-									collection.update( {_id: i.key}, data, {w:1, safe:true, upsert:true}, function ( e, arg ) {
-										if ( e ) {
-											defer2.reject( e );
-										}
-										else {
-											defer2.resolve( arg );
-										}
-									} );
-								} );
-
-								utility.when( deferreds ).then( function ( result ) {
-									db.close();
-									defer.resolve( result );
-								}, function ( e ) {
-									db.close();
+								if ( e ) {
 									defer.reject( e );
-								} );
-							}
+								}
+								else {
+									defer.resolve( arg );
+								}
+							} );
+						}
+						else {
+							// Removing all documents & re-inserting
+							collection.remove( {}, {w: 1, safe: true}, function ( e ) {
+								var deferreds;
+
+								if ( e ) {
+									db.close();
+									return defer.reject( e );
+
+								}
+								else {
+									deferreds = [];
+
+									array.each( self.records, function ( i ) {
+										var data   = {},
+											defer2 = deferred.factory();
+
+										deferreds.push( defer2 );
+
+										utility.iterate( i.data, function ( v, k ) {
+											if ( !array.contains( self.collections, k ) ) {
+												data[k] = v;
+											}
+										} );
+
+										collection.update( {_id: i.key}, data, {w:1, safe:true, upsert:true}, function ( e, arg ) {
+											if ( e ) {
+												defer2.reject( e );
+											}
+											else {
+												defer2.resolve( arg );
+											}
+										} );
+									} );
+
+									utility.when( deferreds ).then( function ( result ) {
+										db.close();
+										defer.resolve( result );
+									}, function ( e ) {
+										db.close();
+										defer.reject( e );
+									} );
+								}
+							} );
+						}
+					}
+					else {
+						db.close();
+						defer.reject( null );
+					}
+				} );
+			} );
+		}
+		else {
+			if ( op === "get" ) {
+				result = session ? sessionStorage.getItem( key ) : localStorage.getItem( key );
+
+				if ( result !== null ) {
+					result = json.decode( result );
+
+					if ( record ) {
+						self.set( key, result, true ).then( function ( rec ) {
+							defer.resolve( rec );
+						}, function ( e ) {
+							defer.reject( e );
 						} );
+					}
+					else {
+						utility.merge( self, result );
+						defer.resolve( self );
 					}
 				}
 				else {
-					db.close();
-					defer.reject( null );
-				}
-			} );
-		} );
-	}
-	else {
-		if ( op === "get" ) {
-			result = session ? sessionStorage.getItem( key ) : localStorage.getItem( key );
-
-			if ( result !== null ) {
-				result = json.decode( result );
-
-				if ( record ) {
-					self.set( key, result, true ).then( function ( rec ) {
-						defer.resolve( rec );
-					}, function ( e ) {
-						defer.reject( e );
-					} );
-				}
-				else {
-					utility.merge( self, result );
 					defer.resolve( self );
 				}
 			}
-			else {
-				defer.resolve( self );
+			else if ( op === "remove" ) {
+				session ? sessionStorage.removeItem( key ) : localStorage.removeItem( key );
+				defer.resolve( this );
 			}
-		}
-		else if ( op === "remove" ) {
-			session ? sessionStorage.removeItem( key ) : localStorage.removeItem( key );
-			defer.resolve( this );
-		}
-		else if ( op === "set" ) {
-			data = json.encode( record ? obj.data : {total: this.total, keys: this.keys, records: this.records} );
-			session ? sessionStorage.setItem( key, data ) : localStorage.setItem( key, data );
-			defer.resolve( this );
-		}
-		else {
-			defer.reject( null );
+			else if ( op === "set" ) {
+				data = json.encode( record ? obj.data : {total: this.total, keys: this.keys, records: this.records} );
+				session ? sessionStorage.setItem( key, data ) : localStorage.setItem( key, data );
+				defer.resolve( this );
+			}
+			else {
+				defer.reject( null );
+			}
 		}
 	}
 
@@ -1601,10 +1590,6 @@ DataStore.prototype.storage = function ( obj, op, type ) {
  * } );
  */
 DataStore.prototype.sync = function () {
-	if ( this.uri === null || string.isEmpty( this.uri ) ) {
-		throw new Error( label.invalidArguments );
-	}
-
 	var self   = this,
 	    events = ( this.events === true ),
 	    defer  = deferred.factory(),
@@ -1623,7 +1608,7 @@ DataStore.prototype.sync = function () {
 		var data;
 
 		if ( typeof arg != "object" ) {
-			throw new Error( label.expectedObject );
+			return failure( new Error( label.expectedObject ) );
 		}
 
 		if ( self.source !== null ) {
@@ -1663,15 +1648,20 @@ DataStore.prototype.sync = function () {
 		defer.reject( e );
 	};
 
-	if ( events ) {
-		this.dispatch( "beforeSync", this.uri );
-	}
-
-	if ( this.callback !== null ) {
-		client.jsonp( this.uri, {callback: this.callback} ).then( success, failure );
+	if ( this.uri === null || string.isEmpty( this.uri ) ) {
+		defer.reject( new Error( label.invalidArguments ) );
 	}
 	else {
-		client.request( this.uri, "GET", null, utility.merge( {withCredentials: this.credentials}, this.headers ) ).then( success, failure );
+		if ( events ) {
+			this.dispatch( "beforeSync", this.uri );
+		}
+
+		if ( this.callback !== null ) {
+			client.jsonp( this.uri, {callback: this.callback} ).then( success, failure );
+		}
+		else {
+			client.request( this.uri, "GET", null, utility.merge( {withCredentials: this.credentials}, this.headers ) ).then( success, failure );
+		}
 	}
 
 	return defer;
@@ -1742,25 +1732,26 @@ DataStore.prototype.undo = function ( key, version ) {
 	    previous;
 
 	if ( record === undefined ) {
-		throw new Error( label.invalidArguments );
-	}
-
-	if ( versions ) {
-		previous = versions.get( version || versions.first );
-
-		if ( previous === undefined ) {
-			defer.reject( label.datastoreNoPrevVersion );
-		}
-		else {
-			this.set( key, previous ).then( function ( arg ) {
-				defer.resolve( arg );
-			}, function ( e ) {
-				defer.reject( e );
-			} );
-		}
+		defer.reject( new Error( label.invalidArguments ) );
 	}
 	else {
-		defer.reject( label.datastoreNoPrevVersion );
+		if ( versions ) {
+			previous = versions.get( version || versions.first );
+
+			if ( previous === undefined ) {
+				defer.reject( label.datastoreNoPrevVersion );
+			}
+			else {
+				this.set( key, previous ).then( function ( arg ) {
+					defer.resolve( arg );
+				}, function ( e ) {
+					defer.reject( e );
+				} );
+			}
+		}
+		else {
+			defer.reject( label.datastoreNoPrevVersion );
+		}
 	}
 
 	return defer;
@@ -1800,14 +1791,15 @@ DataStore.prototype.update = function ( key, data ) {
 	    defer  = deferred.factory();
 
 	if ( record === undefined ) {
-		throw new Error( label.invalidArguments );
+		defer.reject( new Error( label.invalidArguments ) );
 	}
-
-	this.set( key, utility.merge( record.data, data ) ).then( function ( arg ) {
-		defer.resolve( arg );
-	}, function ( e ) {
-		defer.reject( e );
-	} );
+	else {
+		this.set( key, utility.merge( record.data, data ) ).then( function ( arg ) {
+			defer.resolve( arg );
+		}, function ( e ) {
+			defer.reject( e );
+		} );
+	}
 
 	return defer;
 };

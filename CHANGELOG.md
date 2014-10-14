@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.7.3
+- Changing `store.setUri()` to create a `Basic Auth` header if one is absent & the URI contains a `user info` segment
+- Replacing all deprecated `throw` statements in various `DataStore` methods with `defer.reject()` statements
+- Fixing a reference error for a label
+
 ## 0.7.2
 - Fixing `store.setComplete()` such that it doesn't create a `versions` cache if `store.versioning` is `false`
 

@@ -92,6 +92,14 @@ var label = {
 	notAvailable : "Requested method is not available",
 
 	/**
+	 * No previous version of a record
+	 *
+	 * @type {String}
+	 * @memberOf label
+	 */
+	datastoreNoPrevVersion : "No previous version found",
+
+	/**
 	 * Server error has occurred
 	 *
 	 * @type {String}
