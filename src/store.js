@@ -391,6 +391,8 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
  * @private
  */
 DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
+	var self = this;
+
 	delete this.indexes.key[record.key];
 	delete this.versions[record.key];
 
@@ -402,6 +404,15 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 	if ( !batch ) {
 		if ( reindex ) {
 			this.reindex();
+		}
+		else {
+			array.each( record.indexes, function ( i ) {
+				array.remove( self.indexes[i[0]][i[1]], record.index );
+
+				if ( self.indexes[i[0]][i[1]].length === 0 ) {
+					delete self.indexes[i[0]][i[1]];
+				}
+			} );
 		}
 
 		if ( this.autosave ) {
@@ -687,7 +698,7 @@ DataStore.prototype.reindex = function () {
 	    tmp  = [];
 
 	this.views   = {};
-	this.indexes = {};
+	this.indexes = {key: {}};
 
 	if ( this.total > 0 ) {
 		array.each( this.records, function ( record ) {
@@ -968,9 +979,10 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
 	// Create
 	if ( record === null ) {
 		record = {
-			index : this.total++,
-			key   : key,
-			data  : data
+			index   : this.total++,
+			key     : key,
+			data    : data,
+			indexes : []
 		};
 
 		this.indexes.key[key]         = record.index;
@@ -1082,6 +1094,8 @@ DataStore.prototype.setIndexes = function ( arg ) {
 	var self     = this,
 	    delimter = "|";
 
+	arg.indexes = [];
+
 	array.each( this.index, function ( i ) {
 		var keys   = i.split( delimter ),
 		    values = "";
@@ -1099,6 +1113,7 @@ DataStore.prototype.setIndexes = function ( arg ) {
 		}
 
 		self.indexes[i][values].push( arg.index );
+		arg.indexes.push( [i, values] );
 	} );
 
 	return this;
