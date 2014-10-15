@@ -769,7 +769,7 @@ DataStore.prototype.select = function ( where ) {
 
 			try {
 				worker = utility.worker( defer );
-				worker.postMessage( {cmd: "select", records: this.records, where: json.encode( where ), functions: functions} );
+				worker.postMessage( {cmd: "select", indexes: this.indexes, records: this.records, where: json.encode( where ), functions: functions} );
 			}
 			catch ( e ) {
 				// Probably IE10, which doesn't have the correct security flag for local loading
@@ -1190,12 +1190,12 @@ DataStore.prototype.sort = function ( query, create, where ) {
 
 				return self.views[view];
 			}, function ( e ) {
-				throw e;
+				utility.error( e );
 			} );
 
 			try {
 				worker = utility.worker( defer );
-				worker.postMessage( {cmd: "sort", records: records, query: query} );
+				worker.postMessage( {cmd: "sort", indexes: self.indexes, records: records, query: query} );
 			}
 			catch ( e ) {
 				// Probably IE10, which doesn't have the correct security flag for local loading
@@ -1215,7 +1215,9 @@ DataStore.prototype.sort = function ( query, create, where ) {
 		next( this.records );
 	}
 	else {
-		this.select( where ).then( next );
+		this.select( where ).then( next, function ( e ) {
+			defer.reject( e );
+		} );
 	}
 
 	return defer;
