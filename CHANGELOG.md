@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.8.0
+- Removing an unneeded initialization from `array.mode()`
+- Refactoring `DataStores` to have multiple indexes via `store.index[]` & `store.indexes{}`
+- Creating `store.setIndexes()` & wiring into `store.setComplete()` for non-batch operations
+- Refactoring `store.reindex()` to fix sparse array shuffling, & wiring in `store.setIndexes()`
+- Replacing `store.records.slice()` statements for `utility.clone( store.records )` for deep copies
+- Removing API crawling / retrieval, too many issues with circular loops and very little value in this kind of 'auto-pilot'
+- Removing `store.collections`, `store.depth`, `store.leafs` & `store.maxDepth` properties
+
 ## 0.7.3
 - Changing `store.setUri()` to create a `Basic Auth` header if one is absent & the URI contains a `user info` segment
 - Replacing all deprecated `throw` statements in various `DataStore` methods with `defer.reject()` statements

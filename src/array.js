@@ -829,9 +829,8 @@ var array = {
 	mode : function ( obj ) {
 		var values = {},
 		    count  = 0,
-		    nth    = 0,
 		    mode   = [],
-		    result;
+		    nth, result;
 
 		// Counting values
 		array.each( obj, function ( i ) {
