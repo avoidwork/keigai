@@ -1478,6 +1478,13 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 				else {
 					defer.resolve( self );
 				}
+
+				// Decorating loaded state for various code paths
+				defer.then( function () {
+					self.loaded = true;
+				}, function ( e ) {
+					throw e;
+				} );
 			}
 			else if ( op === "remove" ) {
 				session ? sessionStorage.removeItem( key ) : localStorage.removeItem( key );

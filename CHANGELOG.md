@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.8.2
+- Fixing `DataStore.loaded` state upon restore
+
 ## 0.8.1
 - Fixing `DataStore` "over the wire batch deletion" by creating a sparse array and compacting it upon completion before re-indexing
 - Adding unit tests for `DataStore`

@@ -61,3 +61,19 @@
 		}
 	}
 }
+
+.list.pages {
+	li {
+		display: inline-block;
+		width: 20px;
+		text-align: center;
+
+		a {
+			padding: 4px;
+
+			&:hover {
+				cursor: pointer;
+			}
+		}
+	}
+}
