@@ -1048,7 +1048,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
 
 	if ( !batch ) {
 		if ( this.autosave ) {
-			this.save( record );
+			this.save();
 		}
 
 		if ( this.events ) {
