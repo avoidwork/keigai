@@ -201,7 +201,8 @@ var array = {
 	 * keigai.util.array.compact( ["a", "b", "c", "d"], true );       // null
 	 */
 	compact : function ( obj, diff ) {
-		var result = [];
+		diff = ( diff === true );
+		var result;
 
 		result = obj.filter( function ( i ) {
 			return !regex.null_undefined.test( i );

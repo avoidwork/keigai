@@ -206,6 +206,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 			defer.resolve( this.records );
 		}
 		else {
+			// Batch deletion will create a sparse array, which will be compacted before re-indexing
 			if ( type === "del" ) {
 				array.each( data, function ( i ) {
 					deferreds.push( self.del( i, false, true ) );
@@ -216,6 +217,8 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 					deferreds.push( self.set( null, i, true ) );
 				} );
 			}
+
+			this.loaded = false;
 
 			utility.when( deferreds ).then( function ( args ) {
 				self.loaded = true;
@@ -230,6 +233,7 @@ DataStore.prototype.batch = function ( type, data, sync ) {
 				} );
 
 				if ( type === "del" ) {
+					self.records = array.compact( self.records );
 					self.reindex();
 				}
 
@@ -408,12 +412,12 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 	delete this.indexes.key[record.key];
 	delete this.versions[record.key];
 
-	array.remove( this.records, record.index );
-
 	this.total--;
 	this.views = {};
 
 	if ( !batch ) {
+		array.remove( this.records, record.index );
+
 		if ( reindex ) {
 			this.reindex();
 		}
@@ -438,6 +442,9 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 		array.each( this.lists, function ( i ) {
 			i.refresh();
 		} );
+	}
+	else {
+		this.records[record.index] = null;
 	}
 
 	return defer.resolve( record.key );

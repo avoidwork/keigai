@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.8.1
+- Fixing `DataStore` "over the wire batch deletion" by creating a sparse array and compacting it upon completion before re-indexing
+- Adding unit tests for `DataStore`
+
 ## 0.8.0
 - Removing an unneeded initialization from `array.mode()`
 - Refactoring `DataStores` to have multiple indexes via `store.index[]` & `store.indexes{}`
