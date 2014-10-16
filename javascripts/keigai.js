@@ -6,7 +6,7 @@
  * @license BSD-3 <https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.7.3
+ * @version 0.8.0
  */
 ( function ( global ) {
 
@@ -1593,9 +1593,8 @@ var array = {
 	mode : function ( obj ) {
 		var values = {},
 		    count  = 0,
-		    nth    = 0,
 		    mode   = [],
-		    result;
+		    nth, result;
 
 		// Counting values
 		array.each( obj, function ( i ) {
@@ -5982,52 +5981,64 @@ var store = {
 	 * @private
 	 */
 	worker : function ( ev ) {
-		var cmd = ev.data.cmd,
-		    clauses, cond, result, where, functions;
+		var cmd     = ev.data.cmd,
+		    records = ev.data.records,
+		    clauses, cond, functions, indexes, index, result, sorted, where, values;
 
 		if ( cmd === "select" ) {
 			where     = JSON.parse( ev.data.where );
 			functions = ev.data.functions;
 			clauses   = array.fromObject( where );
+			sorted    = array.flat( clauses ).filter( function ( i, idx ) { return idx % 2 === 0; } ).sort( array.sort );
+			index     = sorted.join( "|" );
+			values    = sorted.map( function ( i ) { return where[i]; } ).join( "|" );
+			indexes   = ev.data.indexes;
 			cond      = "return ( ";
 
-			if ( clauses.length > 1 ) {
-				array.each( clauses, function ( i, idx ) {
-					var b1 = "( ";
-
-					if ( idx > 0 ) {
-						b1 = " && ( ";
-					}
-
-					if ( array.contains( functions, i[0] ) ) {
-						cond += b1 + i[1] + "( rec.data[\"" + i[0] + "\"] ) )";
-					}
-					else if ( !isNaN( i[1] ) ) {
-						cond += b1 + "rec.data[\"" + i[0] + "\"] === " + i[1] + " )";
-					}
-					else {
-						cond += b1 + "rec.data[\"" + i[0] + "\"] === \"" + i[1] + "\" )";
-					}
+			if ( functions.length === 0 && indexes[index] ) {
+				result = ( indexes[index][values] || [] ).map( function ( i ) {
+					return records[i];
 				} );
 			}
 			else {
-				if ( array.contains( functions, clauses[0][0] ) ) {
-					cond += clauses[0][1] + "( rec.data[\"" + clauses[0][0] + "\"] )";
-				}
-				else if ( !isNaN( clauses[0][1] ) ) {
-					cond += "rec.data[\"" + clauses[0][0] + "\"] === " + clauses[0][1];
+				if ( clauses.length > 1 ) {
+					array.each( clauses, function ( i, idx ) {
+						var b1 = "( ";
+
+						if ( idx > 0 ) {
+							b1 = " && ( ";
+						}
+
+						if ( array.contains( functions, i[0] ) ) {
+							cond += b1 + i[1] + "( rec.data[\"" + i[0] + "\"] ) )";
+						}
+						else if (!isNaN(i[1])) {
+							cond += b1 + "rec.data[\"" + i[0] + "\"] === " + i[1] + " )";
+						}
+						else {
+							cond += b1 + "rec.data[\"" + i[0] + "\"] === \"" + i[1] + "\" )";
+						}
+					} );
 				}
 				else {
-					cond += "rec.data[\"" + clauses[0][0] + "\"] === \"" + clauses[0][1] + "\"";
+					if ( array.contains( functions, clauses[0][0] ) ) {
+						cond += clauses[0][1] + "( rec.data[\"" + clauses[0][0] + "\"] )";
+					}
+					else if ( !isNaN( clauses[0][1] ) ) {
+						cond += "rec.data[\"" + clauses[0][0] + "\"] === " + clauses[0][1];
+					}
+					else {
+						cond += "rec.data[\"" + clauses[0][0] + "\"] === \"" + clauses[0][1] + "\"";
+					}
 				}
+
+				cond += " );";
+
+				result = records.filter( new Function("rec", cond ) );
 			}
-
-			cond += " );";
-
-			result = ev.data.records.filter( new Function( "rec", cond ) );
 		}
 		else if ( cmd === "sort" ) {
-			result = array.keySort( ev.data.records, ev.data.query, "data" );
+			result = array.keySort( records, ev.data.query, "data" );
 		}
 
 		postMessage( result );
@@ -6046,23 +6057,19 @@ var store = {
 function DataStore () {
 	this.autosave    = false;
 	this.callback    = null;
-	this.collections = [];
 	this.credentials = null;
 	this.lists       = [];
-	this.depth       = 0;
 	this.events      = true;
 	this.expires     = null;
 	this.headers     = {Accept: "application/json"};
 	this.ignore      = [];
+	this.index       = [];
+	this.indexes     = {key: {}};
 	this.key         = null;
-	this.keys        = {};
-	this.leafs       = [];
 	this.loaded      = false;
-	this.maxDepth    = 0;
 	this.mongodb     = "";
 	this.observer    = observable.factory();
 	this.records     = [];
-	this.retrieve    = false;
 	this.source      = null;
 	this.total       = 0;
 	this.versions    = {};
@@ -6230,21 +6237,17 @@ DataStore.prototype.clear = function ( sync ) {
 
 		this.autosave    = false;
 		this.callback    = null;
-		this.collections = [];
 		this.credentials = null;
 		this.lists       = [];
-		this.depth       = 0;
 		this.events      = true;
 		this.expires     = null;
 		this.headers     = {Accept: "application/json"};
 		this.ignore      = [];
+		this.index       = [];
+		this.indexes     = {key: {}};
 		this.key         = null;
-		this.keys        = {};
-		this.leafs       = [];
 		this.loaded      = false;
-		this.maxDepth    = 0;
 		this.records     = [];
-		this.retrieve    = false;
 		this.source      = null;
 		this.total       = 0;
 		this.versions    = {};
@@ -6257,8 +6260,7 @@ DataStore.prototype.clear = function ( sync ) {
 		}
 	}
 	else {
-		this.collections = [];
-		this.keys        = {};
+		this.indexes     = {key: {}};
 		this.loaded      = false;
 		this.records     = [];
 		this.total       = 0;
@@ -6274,133 +6276,6 @@ DataStore.prototype.clear = function ( sync ) {
 	}
 
 	return this;
-};
-
-/**
- * Crawls a record's properties and creates DataStores when URIs are detected
- *
- * @method crawl
- * @memberOf keigai.DataStore
- * @param  {Mixed}  arg Record, key or index
- * @return {Object} {@link keigai.Deferred}
- * @fires keigai.DataStore#beforeRetrieve Fires before crawling a record
- * @fires keigai.DataStore#afterRetrieve Fires after the store has retrieved all data from crawling
- * @fires keigai.DataStore#failedRetrieve Fires if an exception occurs
- * @example
- * store.crawl( "key" ).then( function () {
- *   ...
- * }, function ( err ) {
- *   ...
- * } );
- */
-DataStore.prototype.crawl = function ( arg ) {
-	var self      = this,
-	    events    = ( this.events === true ),
-	    record    = ( arg instanceof Object ) ? arg : this.get( arg ),
-	    defer     = deferred.factory(),
-	    deferreds = [],
-	    parsed    = utility.parse( this.uri || "" ),
-	    clone;
-
-	if ( this.uri === null || record === undefined ) {
-		defer.reject( new Error( label.invalidArguments ) );
-	}
-	else {
-		if ( events ) {
-			this.dispatch( "beforeRetrieve", record );
-		}
-
-		// An Array is considered a collection
-		if ( record.data instanceof Array ) {
-			clone = utility.clone( record.data );
-			record.data = {};
-
-			array.each( clone, function ( i ) {
-				var key = i.replace( /.*\//, "" ),
-					uri;
-
-				record.data[key] = store.factory( null, {id: record.key + "-" + key, key: self.key, pointer: self.pointer, source: self.source, ignore: self.ignore.slice(), leafs: self.leafs.slice(), depth: self.depth + 1, maxDepth: self.maxDepth, headers: self.headers, retrieve: true} );
-
-				if ( i.indexOf( "//" ) === -1 ) {
-					// Relative path to store, i.e. a child
-					if ( i.charAt( 0 ) !== "/" ) {
-						uri = self.buildUri( i );
-					}
-					// Root path, relative to store, i.e. a domain
-					else {
-						uri = parsed.protocol + "//" + parsed.host + i;
-					}
-				}
-				else {
-					uri = i;
-				}
-
-				deferreds.push( record.data[key].data.setUri( uri ) );
-			} );
-		}
-		else {
-			// Depth of recursion is controled by `maxDepth`
-			utility.iterate( record.data, function ( v, k ) {
-				var uri;
-
-				if ( array.contains( self.ignore, k ) || array.contains( self.leafs, k ) || self.depth >= self.maxDepth || ( !( v instanceof Array ) && typeof v != "string" ) || ( v.indexOf( "//" ) === -1 && v.charAt( 0 ) !== "/" ) ) {
-					return;
-				}
-
-				array.add( self.collections, k );
-
-				record.data[k] = store.factory( null, {id: record.key + "-" + k, key: self.key, source: self.source, ignore: self.ignore.slice(), leafs: self.leafs.slice(), depth: self.depth + 1, maxDepth: self.maxDepth, headers: self.headers, retrieve: true} );
-
-				if ( !array.contains( self.leafs, k ) && ( record.data[k].data.maxDepth === 0 || record.data[k].data.depth <= record.data[k].data.maxDepth ) ) {
-					if ( v instanceof Array ) {
-						deferreds.push( record.data[k].data.batch( "set", v ) );
-					}
-					else {
-						if ( v.indexOf( "//" ) === -1 ) {
-							// Relative path to store, i.e. a child
-							if ( v.charAt( 0 ) !== "/" ) {
-								uri = self.buildUri( v );
-							}
-							// Root path, relative to store, i.e. a domain
-							else {
-								uri = parsed.protocol + "//" + parsed.host + v;
-							}
-						}
-						else {
-							uri = v;
-						}
-
-						deferreds.push( record.data[k].data.setUri( uri ) );
-					}
-				}
-			} );
-		}
-
-		if ( deferreds.length > 0 ) {
-			utility.when( deferreds ).then( function () {
-				if ( events ) {
-					self.dispatch( "afterRetrieve", record );
-				}
-
-				defer.resolve( record );
-			}, function ( e ) {
-				if ( events ) {
-					self.dispatch( "failedRetrieve", record );
-				}
-
-				defer.reject( e );
-			} );
-		}
-		else {
-			if ( events ) {
-				self.dispatch( "afterRetrieve", record );
-			}
-
-			defer.resolve( record );
-		}
-	}
-
-	return defer;
 };
 
 /**
@@ -6466,7 +6341,9 @@ DataStore.prototype.del = function ( record, reindex, batch ) {
  * @private
  */
 DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
-	delete this.keys[record.key];
+	var self = this;
+
+	delete this.indexes.key[record.key];
 	delete this.versions[record.key];
 
 	array.remove( this.records, record.index );
@@ -6474,13 +6351,18 @@ DataStore.prototype.delComplete = function ( record, reindex, batch, defer ) {
 	this.total--;
 	this.views = {};
 
-	array.each( this.collections, function ( i ) {
-		record.data[i].teardown();
-	} );
-
 	if ( !batch ) {
 		if ( reindex ) {
 			this.reindex();
+		}
+		else {
+			array.each( record.indexes, function ( i ) {
+				array.remove( self.indexes[i[0]][i[1]], record.index );
+
+				if ( self.indexes[i[0]][i[1]].length === 0 ) {
+					delete self.indexes[i[0]][i[1]];
+				}
+			} );
 		}
 
 		if ( this.autosave ) {
@@ -6522,7 +6404,7 @@ DataStore.prototype.dump = function ( args, fields ) {
 			var record = {};
 
 			array.each( fields, function ( f ) {
-				record[f] = f === self.key ? i.key : ( !array.contains( self.collections, f ) ? utility.clone( i.data[f], true ) : i.data[f].uri );
+				record[f] = f === self.key ? i.key : utility.clone( i.data[f], true );
 			} );
 
 			return record;
@@ -6537,7 +6419,7 @@ DataStore.prototype.dump = function ( args, fields ) {
 			}
 
 			utility.iterate( i.data, function ( v, k ) {
-				record[k] = !array.contains( self.collections, k ) ? utility.clone( v, true ) : v.data.uri;
+				record[k] = utility.clone( v, true );
 			} );
 
 			return record;
@@ -6561,39 +6443,38 @@ DataStore.prototype.dump = function ( args, fields ) {
  * var record = store.get( "key" );
  */
 DataStore.prototype.get = function ( record, offset ) {
-	var records = this.records,
-	    type    = typeof record,
-	    self    = this,
-	    r;
+	var type = typeof record,
+	    self = this,
+	    result;
 
 	if ( type === "undefined" ) {
-		r = records;
+		result = this.records;
 	}
 	else if ( type === "string" ) {
 		if ( record.indexOf( "," ) === -1 ) {
-			r = records[self.keys[record]];
+			result = this.records[this.indexes.key[record]];
 		}
 		else {
-			r = string.explode( record ).map( function ( i ) {
+			result = string.explode( record ).map( function ( i ) {
 				if ( !isNaN( i ) ) {
-					return records[parseInt( i, 10 )];
+					return self.records[parseInt( i, 10 )];
 				}
 				else {
-					return records[self.keys[i]];
+					return self.records[self.indexes.key[i]];
 				}
 			} );
 		}
 	}
 	else if ( type === "number" ) {
 		if ( isNaN( offset ) ) {
-			r = records[parseInt( record, 10 )];
+			result = this.records[parseInt( record, 10 )];
 		}
 		else {
-			r = array.limit( records, parseInt( record, 10 ), parseInt( offset, 10 ) );
+			result = array.limit( this.records, parseInt( record, 10 ), parseInt( offset, 10 ) );
 		}
 	}
 
-	return r;
+	return result;
 },
 
 /**
@@ -6762,17 +6643,25 @@ DataStore.prototype.purge = function ( arg ) {
  * store.reindex();
  */
 DataStore.prototype.reindex = function () {
-	var nth = this.total,
-	    i   = -1;
+	var self = this,
+	    i    = -1,
+	    tmp  = [];
 
-	this.views = {};
+	this.views   = {};
+	this.indexes = {key: {}};
 
-	if ( nth > 0 ) {
-		while ( ++i < nth ) {
-			this.records[i].index = i;
-			this.keys[this.records[i].key] = i;
-		}
+	if ( this.total > 0 ) {
+		array.each( this.records, function ( record ) {
+			if ( record !== undefined ) {
+				tmp[++i]     = record;
+				record.index = i;
+				self.indexes.key[record.key] = i;
+				self.setIndexes( record );
+			}
+		} );
 	}
+
+	this.records = tmp;
 
 	return this;
 };
@@ -6822,26 +6711,26 @@ DataStore.prototype.save = function ( arg ) {
  * } );
  */
 DataStore.prototype.select = function ( where ) {
-	var defer = deferred.factory(),
-	    clauses, cond, functions, worker;
+	var self      = this,
+	    defer     = deferred.factory(),
+	    functions = [],
+	    clauses, cond, index, result, sorted, values, worker;
 
 	if ( !( where instanceof Object ) ) {
 		defer.reject( new Error( label.invalidArguments ) );
 	}
 	else {
+		utility.iterate( where, function ( v, k ) {
+			if ( typeof v == "function" ) {
+				this[k] = v.toString();
+				functions.push( k );
+			}
+		} );
+
 		if ( webWorker ) {
-			functions = [];
-
-			utility.iterate( where, function ( v, k ) {
-				if ( typeof v == "function" ) {
-					this[k] = v.toString();
-					functions.push( k );
-				}
-			} );
-
 			try {
 				worker = utility.worker( defer );
-				worker.postMessage( {cmd: "select", records: this.records, where: json.encode( where ), functions: functions} );
+				worker.postMessage( {cmd: "select", indexes: this.indexes, records: this.records, where: json.encode( where ), functions: functions} );
 			}
 			catch ( e ) {
 				// Probably IE10, which doesn't have the correct security flag for local loading
@@ -6856,42 +6745,54 @@ DataStore.prototype.select = function ( where ) {
 		}
 		else {
 			clauses = array.fromObject( where );
-			cond = "return ( ";
+			sorted  = array.flat( clauses ).filter( function ( i, idx ) { return idx % 2 === 0; } ).sort( array.sort );
+			index   = sorted.join( "|" );
+			values  = sorted.map( function ( i ) { return where[i]; } ).join( "|" );
+			cond    = "return ( ";
 
-			if ( clauses.length > 1 ) {
-				array.each( clauses, function ( i, idx ) {
-					var b1 = "( ";
-
-					if ( idx > 0 ) {
-						b1 = " && ( ";
-					}
-
-					if ( i[1] instanceof Function ) {
-						cond += b1 + i[1].toString() + "( rec.data[\"" + i[0] + "\"] ) )";
-					}
-					else if ( !isNaN( i[1] ) ) {
-						cond += b1 + "rec.data[\"" + i[0] + "\"] === " + i[1] + " )";
-					}
-					else {
-						cond += b1 + "rec.data[\"" + i[0] + "\"] === \"" + i[1] + "\" )";
-					}
+			if ( functions.length === 0 && this.indexes[index] ) {
+				result = ( this.indexes[index][values] || [] ).map( function ( i ) {
+					return self.records[i];
 				} );
 			}
 			else {
-				if ( clauses[0][1] instanceof Function ) {
-					cond += clauses[0][1].toString() + "( rec.data[\"" + clauses[0][0] + "\"] )";
-				}
-				else if ( !isNaN( clauses[0][1] ) ) {
-					cond += "rec.data[\"" + clauses[0][0] + "\"] === " + clauses[0][1];
+				if ( clauses.length > 1 ) {
+					array.each( clauses, function ( i, idx ) {
+						var b1 = "( ";
+
+						if ( idx > 0 ) {
+							b1 = " && ( ";
+						}
+
+						if ( i[1] instanceof Function ) {
+							cond += b1 + i[1].toString() + "( rec.data[\"" + i[0] + "\"] ) )";
+						}
+						else if ( !isNaN( i[1] ) ) {
+							cond += b1 + "rec.data[\"" + i[0] + "\"] === " + i[1] + " )";
+						}
+						else {
+							cond += b1 + "rec.data[\"" + i[0] + "\"] === \"" + i[1] + "\" )";
+						}
+					} );
 				}
 				else {
-					cond += "rec.data[\"" + clauses[0][0] + "\"] === \"" + clauses[0][1] + "\"";
+					if ( clauses[0][1] instanceof Function ) {
+						cond += clauses[0][1].toString() + "( rec.data[\"" + clauses[0][0] + "\"] )";
+					}
+					else if ( !isNaN( clauses[0][1] ) ) {
+						cond += "rec.data[\"" + clauses[0][0] + "\"] === " + clauses[0][1];
+					}
+					else {
+						cond += "rec.data[\"" + clauses[0][0] + "\"] === \"" + clauses[0][1] + "\"";
+					}
 				}
+
+				cond += " );";
+
+				result = utility.clone( this.records, true ).filter( new Function( "rec", cond ) );
 			}
 
-			cond += " );";
-
-			defer.resolve( this.records.slice().filter( new Function( "rec", cond ) ) );
+			defer.resolve( result );
 		}
 	}
 
@@ -6984,9 +6885,7 @@ DataStore.prototype.set = function ( key, data, batch, overwrite ) {
 				}
 				else if ( record !== null && !overwrite ) {
 					utility.iterate( record.data, function ( v, k ) {
-						if ( !array.contains( self.collections, k ) && !data[k] ) {
-							data[k] = v;
-						}
+						data[k] = v;
 					} );
 				}
 			}
@@ -7021,9 +6920,6 @@ DataStore.prototype.set = function ( key, data, batch, overwrite ) {
  * @private
  */
 DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite, defer ) {
-	var self      = this,
-	    deferreds = [];
-
 	// Clearing views
 	this.views = {};
 
@@ -7045,21 +6941,18 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
 	// Create
 	if ( record === null ) {
 		record = {
-			index : this.total++,
-			key   : key,
-			data  : data
+			index   : this.total++,
+			key     : key,
+			data    : data,
+			indexes : []
 		};
 
-		this.keys[key]                = record.index;
+		this.indexes.key[key]         = record.index;
 		this.records[record.index]    = record;
 
 		if ( this.versioning ) {
 			this.versions[record.key] = lru.factory( VERSIONS );
 			this.versions[record.key].nth = 0;
-		}
-
-		if ( this.retrieve ) {
-			deferreds.push( this.crawl( record ) );
 		}
 	}
 	// Update
@@ -7074,27 +6967,15 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
 		}
 
 		if ( overwrite ) {
-			array.each( this.collections, function ( i ) {
-				if ( record.data[i] && typeof record.data[i].teardown == "function" ) {
-					record.data[i].teardown();
-				}
-			} );
-
 			record.data = {};
 		}
 
 		utility.iterate( data, function ( v, k ) {
-			if ( !array.contains( self.collections, k ) ) {
-				record.data[k] = v;
-			}
-			else if ( typeof v == "string" ) {
-				deferreds.push( record.data[k].setUri( record.data[k].uri + "/" + v, true ) );
-			}
-			else {
-				deferreds.push( record.data[k].batch( "set", v, true ) );
-			}
+			record.data[k] = v;
 		} );
 	}
+
+	this.setIndexes( record );
 
 	if ( !batch ) {
 		if ( this.autosave ) {
@@ -7110,14 +6991,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
 		} );
 	}
 
-	if ( deferreds.length === 0 ) {
-		defer.resolve( record );
-	}
-	else {
-		utility.when( deferreds ).then( function () {
-			defer.resolve( record );
-		} );
-	}
+	defer.resolve( record );
 
 	return this;
 };
@@ -7133,6 +7007,10 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
  * store.setExpires( 5 * 60 * 1000 ); // Resyncs every 5 minutes
  */
 DataStore.prototype.setExpires = function ( arg ) {
+	var id      = this.id + "Expire",
+	    expires = arg,
+	    self    = this;
+
 	// Expiry cannot be less than a second, and must be a valid scenario for consumption; null will disable repetitive expiration
 	if ( ( arg !== null && this.uri === null ) || ( arg !== null && ( isNaN( arg ) || arg < 1000 ) ) ) {
 		throw new Error( label.invalidArguments );
@@ -7143,10 +7021,6 @@ DataStore.prototype.setExpires = function ( arg ) {
 	}
 
 	this.expires = arg;
-
-	var id      = this.id + "Expire",
-	    expires = arg,
-	    self    = this;
 
 	utility.clearTimers( id );
 
@@ -7166,6 +7040,47 @@ DataStore.prototype.setExpires = function ( arg ) {
 		self.dispatch( "expire");
 		self.dispatch( "afterExpire");
 	}, expires, id, false );
+};
+
+/**
+ * Sets indexes for a record using `store.indexes`
+ *
+ * Composite indexes are supported, but require keys be in alphabetical order, e.g. "age|name"
+ *
+ * @method setIndexes
+ * @memberOf keigai.DataStore
+ * @param  {Object} arg DataStore Record
+ * @return {Object} {@link keigai.DataStore}
+ * @example
+ * store.setIndexes( record );
+ */
+DataStore.prototype.setIndexes = function ( arg ) {
+	var self     = this,
+	    delimter = "|";
+
+	arg.indexes = [];
+
+	array.each( this.index, function ( i ) {
+		var keys   = i.split( delimter ),
+		    values = "";
+
+		if ( self.indexes[i] === undefined ) {
+			self.indexes[i] = {};
+		}
+
+		array.each( keys, function ( k, kdx ) {
+			values += ( kdx > 0 ? delimter : "" ) + arg.data[k];
+		} );
+
+		if ( self.indexes[i][values] === undefined ) {
+			self.indexes[i][values] = [];
+		}
+
+		self.indexes[i][values].push( arg.index );
+		arg.indexes.push( [i, values] );
+	} );
+
+	return this;
 };
 
 /**
@@ -7254,23 +7169,23 @@ DataStore.prototype.sort = function ( query, create, where ) {
 
 				return self.views[view];
 			}, function ( e ) {
-				throw e;
+				utility.error( e );
 			} );
 
 			try {
 				worker = utility.worker( defer );
-				worker.postMessage( {cmd: "sort", records: records, query: query} );
+				worker.postMessage( {cmd: "sort", indexes: self.indexes, records: records, query: query} );
 			}
 			catch ( e ) {
 				// Probably IE10, which doesn't have the correct security flag for local loading
 				webWorker = false;
 
-				self.views[view] = array.keySort( records.slice(), query, "data" );
+				self.views[view] = array.keySort( utility.clone( records ), query, "data" );
 				defer.resolve( self.views[view] );
 			}
 		}
 		else {
-			self.views[view] = array.keySort( records.slice(), query, "data" );
+			self.views[view] = array.keySort( utility.clone( records ), query, "data" );
 			defer.resolve( self.views[view] );
 		}
 	};
@@ -7279,7 +7194,9 @@ DataStore.prototype.sort = function ( query, create, where ) {
 		next( this.records );
 	}
 	else {
-		this.select( where ).then( next );
+		this.select( where ).then( next, function ( e ) {
+			defer.reject( e );
+		} );
 	}
 
 	return defer;
@@ -7378,9 +7295,10 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 									self.records = recs.map( function ( r ) {
 										var rec = {key: r._id, index: ++i, data: {}};
 
-										self.keys[rec.key] = rec.index;
+										self.indexes.key[rec.key] = rec.index;
 										rec.data = r;
 										delete rec.data._id;
+										self.setIndexes( rec );
 
 										return rec;
 									} );
@@ -7438,9 +7356,7 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 										deferreds.push( defer2 );
 
 										utility.iterate( i.data, function ( v, k ) {
-											if ( !array.contains( self.collections, k ) ) {
-												data[k] = v;
-											}
+											data[k] = v;
 										} );
 
 										collection.update( {_id: i.key}, data, {w:1, safe:true, upsert:true}, function ( e, arg ) {
@@ -7499,7 +7415,7 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 				defer.resolve( this );
 			}
 			else if ( op === "set" ) {
-				data = json.encode( record ? obj.data : {total: this.total, keys: this.keys, records: this.records} );
+				data = json.encode( record ? obj.data : {total: this.total, index: this.index, indexes: this.indexes, records: this.records} );
 				session ? sessionStorage.setItem( key, data ) : localStorage.setItem( key, data );
 				defer.resolve( this );
 			}
@@ -9116,7 +9032,7 @@ function xhr () {
 	    XMLHttpRequest, headers, dispatch, success, failure, state;
 
 	headers = {
-		"user-agent"   : "keigai/0.7.3 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"user-agent"   : "keigai/0.8.0 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
 	};
@@ -9802,7 +9718,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.7.3"
+	version : "0.8.0"
 };
 } )();
 
