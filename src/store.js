@@ -43,52 +43,64 @@ var store = {
 	 * @private
 	 */
 	worker : function ( ev ) {
-		var cmd = ev.data.cmd,
-		    clauses, cond, result, where, functions;
+		var cmd     = ev.data.cmd,
+		    records = ev.data.records,
+		    clauses, cond, functions, indexes, index, result, sorted, where, values;
 
 		if ( cmd === "select" ) {
 			where     = JSON.parse( ev.data.where );
 			functions = ev.data.functions;
 			clauses   = array.fromObject( where );
+			sorted    = array.flat( clauses ).filter( function ( i, idx ) { return idx % 2 === 0; } ).sort( array.sort );
+			index     = sorted.join( "|" );
+			values    = sorted.map( function ( i ) { return where[i]; } ).join( "|" );
+			indexes   = ev.data.indexes;
 			cond      = "return ( ";
 
-			if ( clauses.length > 1 ) {
-				array.each( clauses, function ( i, idx ) {
-					var b1 = "( ";
-
-					if ( idx > 0 ) {
-						b1 = " && ( ";
-					}
-
-					if ( array.contains( functions, i[0] ) ) {
-						cond += b1 + i[1] + "( rec.data[\"" + i[0] + "\"] ) )";
-					}
-					else if ( !isNaN( i[1] ) ) {
-						cond += b1 + "rec.data[\"" + i[0] + "\"] === " + i[1] + " )";
-					}
-					else {
-						cond += b1 + "rec.data[\"" + i[0] + "\"] === \"" + i[1] + "\" )";
-					}
+			if ( functions.length === 0 && indexes[index] ) {
+				result = ( indexes[index][values] || [] ).map( function ( i ) {
+					return records[i];
 				} );
 			}
 			else {
-				if ( array.contains( functions, clauses[0][0] ) ) {
-					cond += clauses[0][1] + "( rec.data[\"" + clauses[0][0] + "\"] )";
-				}
-				else if ( !isNaN( clauses[0][1] ) ) {
-					cond += "rec.data[\"" + clauses[0][0] + "\"] === " + clauses[0][1];
+				if ( clauses.length > 1 ) {
+					array.each( clauses, function ( i, idx ) {
+						var b1 = "( ";
+
+						if ( idx > 0 ) {
+							b1 = " && ( ";
+						}
+
+						if ( array.contains( functions, i[0] ) ) {
+							cond += b1 + i[1] + "( rec.data[\"" + i[0] + "\"] ) )";
+						}
+						else if (!isNaN(i[1])) {
+							cond += b1 + "rec.data[\"" + i[0] + "\"] === " + i[1] + " )";
+						}
+						else {
+							cond += b1 + "rec.data[\"" + i[0] + "\"] === \"" + i[1] + "\" )";
+						}
+					} );
 				}
 				else {
-					cond += "rec.data[\"" + clauses[0][0] + "\"] === \"" + clauses[0][1] + "\"";
+					if ( array.contains( functions, clauses[0][0] ) ) {
+						cond += clauses[0][1] + "( rec.data[\"" + clauses[0][0] + "\"] )";
+					}
+					else if ( !isNaN( clauses[0][1] ) ) {
+						cond += "rec.data[\"" + clauses[0][0] + "\"] === " + clauses[0][1];
+					}
+					else {
+						cond += "rec.data[\"" + clauses[0][0] + "\"] === \"" + clauses[0][1] + "\"";
+					}
 				}
+
+				cond += " );";
+
+				result = records.filter( new Function("rec", cond ) );
 			}
-
-			cond += " );";
-
-			result = ev.data.records.filter( new Function( "rec", cond ) );
 		}
 		else if ( cmd === "sort" ) {
-			result = array.keySort( ev.data.records, ev.data.query, "data" );
+			result = array.keySort( records, ev.data.query, "data" );
 		}
 
 		postMessage( result );
@@ -761,23 +773,23 @@ DataStore.prototype.save = function ( arg ) {
  * } );
  */
 DataStore.prototype.select = function ( where ) {
-	var defer = deferred.factory(),
-	    clauses, cond, functions, worker;
+	var self      = this,
+	    defer     = deferred.factory(),
+	    functions = [],
+	    clauses, cond, index, result, sorted, values, worker;
 
 	if ( !( where instanceof Object ) ) {
 		defer.reject( new Error( label.invalidArguments ) );
 	}
 	else {
+		utility.iterate( where, function ( v, k ) {
+			if ( typeof v == "function" ) {
+				this[k] = v.toString();
+				functions.push( k );
+			}
+		} );
+
 		if ( webWorker ) {
-			functions = [];
-
-			utility.iterate( where, function ( v, k ) {
-				if ( typeof v == "function" ) {
-					this[k] = v.toString();
-					functions.push( k );
-				}
-			} );
-
 			try {
 				worker = utility.worker( defer );
 				worker.postMessage( {cmd: "select", indexes: this.indexes, records: this.records, where: json.encode( where ), functions: functions} );
@@ -795,42 +807,54 @@ DataStore.prototype.select = function ( where ) {
 		}
 		else {
 			clauses = array.fromObject( where );
-			cond = "return ( ";
+			sorted  = array.flat( clauses ).filter( function ( i, idx ) { return idx % 2 === 0; } ).sort( array.sort );
+			index   = sorted.join( "|" );
+			values  = sorted.map( function ( i ) { return where[i]; } ).join( "|" );
+			cond    = "return ( ";
 
-			if ( clauses.length > 1 ) {
-				array.each( clauses, function ( i, idx ) {
-					var b1 = "( ";
-
-					if ( idx > 0 ) {
-						b1 = " && ( ";
-					}
-
-					if ( i[1] instanceof Function ) {
-						cond += b1 + i[1].toString() + "( rec.data[\"" + i[0] + "\"] ) )";
-					}
-					else if ( !isNaN( i[1] ) ) {
-						cond += b1 + "rec.data[\"" + i[0] + "\"] === " + i[1] + " )";
-					}
-					else {
-						cond += b1 + "rec.data[\"" + i[0] + "\"] === \"" + i[1] + "\" )";
-					}
+			if ( functions.length === 0 && this.indexes[index] ) {
+				result = ( this.indexes[index][values] || [] ).map( function ( i ) {
+					return self.records[i];
 				} );
 			}
 			else {
-				if ( clauses[0][1] instanceof Function ) {
-					cond += clauses[0][1].toString() + "( rec.data[\"" + clauses[0][0] + "\"] )";
-				}
-				else if ( !isNaN( clauses[0][1] ) ) {
-					cond += "rec.data[\"" + clauses[0][0] + "\"] === " + clauses[0][1];
+				if ( clauses.length > 1 ) {
+					array.each( clauses, function ( i, idx ) {
+						var b1 = "( ";
+
+						if ( idx > 0 ) {
+							b1 = " && ( ";
+						}
+
+						if ( i[1] instanceof Function ) {
+							cond += b1 + i[1].toString() + "( rec.data[\"" + i[0] + "\"] ) )";
+						}
+						else if ( !isNaN( i[1] ) ) {
+							cond += b1 + "rec.data[\"" + i[0] + "\"] === " + i[1] + " )";
+						}
+						else {
+							cond += b1 + "rec.data[\"" + i[0] + "\"] === \"" + i[1] + "\" )";
+						}
+					} );
 				}
 				else {
-					cond += "rec.data[\"" + clauses[0][0] + "\"] === \"" + clauses[0][1] + "\"";
+					if ( clauses[0][1] instanceof Function ) {
+						cond += clauses[0][1].toString() + "( rec.data[\"" + clauses[0][0] + "\"] )";
+					}
+					else if ( !isNaN( clauses[0][1] ) ) {
+						cond += "rec.data[\"" + clauses[0][0] + "\"] === " + clauses[0][1];
+					}
+					else {
+						cond += "rec.data[\"" + clauses[0][0] + "\"] === \"" + clauses[0][1] + "\"";
+					}
 				}
+
+				cond += " );";
+
+				result = utility.clone( this.records, true ).filter( new Function( "rec", cond ) );
 			}
 
-			cond += " );";
-
-			defer.resolve( utility.clone( this.records, true ).filter( new Function( "rec", cond ) ) );
+			defer.resolve( result );
 		}
 	}
 
@@ -1081,7 +1105,9 @@ DataStore.prototype.setExpires = function ( arg ) {
 };
 
 /**
- * Sets indexes for a record
+ * Sets indexes for a record using `store.indexes`
+ *
+ * Composite indexes are supported, but require keys be in alphabetical order, e.g. "age|name"
  *
  * @method setIndexes
  * @memberOf keigai.DataStore

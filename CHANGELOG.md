@@ -8,6 +8,8 @@
 - Replacing `store.records.slice()` statements for `utility.clone( store.records )` for deep copies
 - Removing API crawling / retrieval, too many issues with circular loops and very little value in this kind of 'auto-pilot'
 - Removing `store.collections`, `store.depth`, `store.leafs` & `store.maxDepth` properties
+- Refactoring `store.select()` to use `store.indexes` when predicates are `Boolean`, `Number` or `String` types
+- Composite indexes are supported, but must be sorted alphabetically to align with `store.select()`, e.g. `"age|name"`
 
 ## 0.7.3
 - Changing `store.setUri()` to create a `Basic Auth` header if one is absent & the URI contains a `user info` segment
