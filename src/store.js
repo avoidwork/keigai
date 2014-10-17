@@ -298,7 +298,9 @@ DataStore.prototype.clear = function ( sync ) {
 		}
 
 		array.each( this.lists, function ( i ) {
-			i.teardown( true );
+			if ( i ) {
+				i.teardown( true );
+			}
 		} );
 
 		this.autosave    = false;
@@ -333,7 +335,9 @@ DataStore.prototype.clear = function ( sync ) {
 		this.views       = {};
 
 		array.each( this.lists, function ( i ) {
-			i.refresh();
+			if ( i ) {
+				i.refresh();
+			}
 		} );
 	}
 

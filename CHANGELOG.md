@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.8.4
+- Fixing async `teardown()`
+
 ## 0.8.3
 - Creating `{listFiltered: true, listFilter: "some_field"}` option for `list()`
 
