@@ -29,6 +29,12 @@ var list = {
 		obj = new DataList( element.create( "ul", {"class": "list"}, target ), ref[0], template );
 
 		if ( options instanceof Object ) {
+			if ( options.listFiltered && options.listFilter ) {
+				obj.listFilter = filter.factory( element.create( "input", {"id": obj.element.id + "-filter", "class": "filter", placeholder: "Filter"}, target, "first" ), obj, options.listFilter, options.debounce || 250 );
+				delete options.listFilter;
+				delete options.listFiltered;
+			}
+
 			utility.merge( obj, options );
 		}
 
@@ -129,6 +135,7 @@ function DataList ( element, store, template ) {
 	this.filtered    = [];
 	this.id          = utility.genId();
 	this.items       = [];
+	this.listFilter  = null;
 	this.mutation    = null;
 	this.observer    = observable.factory();
 	this.pageIndex   = 1;
@@ -622,10 +629,14 @@ DataList.prototype.teardown = function ( destroy ) {
 
 	delete this.observer.hooks[id];
 
+	if ( this.listFilter ) {
+		this.listFilter.teardown();
+	}
+
 	if ( destroy ) {
 		element.destroy( this.element );
 
-		array.each( utility.$( "#" + id + "-pages-top, #" + id + "-pages-bottom"), function ( i ) {
+		array.each( utility.$( "#" + id + "-filter, #" + id + "-pages-top, #" + id + "-pages-bottom"), function ( i ) {
 			element.destroy( i );
 		} );
 

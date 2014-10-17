@@ -1621,21 +1621,11 @@ DataStore.prototype.teardown = function () {
 			var recordUri = uri + "/" + i.key;
 
 			cache.expire( recordUri, true );
-
-			utility.iterate( i.data, function ( v ) {
-				if ( v === null ) {
-					return;
-				}
-
-				if ( v && typeof v.teardown == "function" ) {
-					v.teardown();
-				}
-			} );
 		} );
 	}
 
 	array.each( this.lists, function ( i ) {
-		i.teardown();
+		i.teardown( true );
 	} );
 
 	this.clear( true );

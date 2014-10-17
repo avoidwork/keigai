@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.8.3
+- Creating `{listFiltered: true, listFilter: "some_field"}` option for `list()`
+
 ## 0.8.2
 - Fixing `store.loaded` state upon restore
 - Fixing `store.setComplete()` such that `store.autosave` doesn't save an individual record
