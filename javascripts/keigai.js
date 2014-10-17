@@ -6,7 +6,7 @@
  * @license BSD-3 <https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.8.1
+ * @version 0.8.2
  */
 ( function ( global ) {
 
@@ -4292,20 +4292,26 @@ DataList.prototype.sort = function ( order ) {
  */
 DataList.prototype.teardown = function ( destroy ) {
 	destroy  = ( destroy === true );
-	var self = this;
+	var self = this,
+	    id   = this.element.id;
 
 	array.each( this.store.lists, function ( i, idx ) {
 		if ( i.id === self.id ) {
-			this.remove( idx );
+			array.remove( this, idx );
 
 			return false;
 		}
 	} );
 
-	delete this.observer.hooks[this.element.id];
+	delete this.observer.hooks[id];
 
 	if ( destroy ) {
 		element.destroy( this.element );
+
+		array.each( utility.$( "#" + id + "-pages-top, #" + id + "-pages-bottom"), function ( i ) {
+			element.destroy( i );
+		} );
+
 		this.element = null;
 	}
 
@@ -5219,23 +5225,24 @@ var element = {
 	serialize : function ( obj, string, encode ) {
 		string       = ( string === true );
 		encode       = ( encode !== false );
-		var children = [],
-		    registry = {},
-		    result;
+		var registry = {},
+		    children, result;
 
 		children = obj.nodeName === "FORM" ? ( obj.elements ? array.cast( obj.elements ) : obj.find( "button, input, select, textarea" ) ) : [obj];
 
 		array.each( children, function ( i ) {
+			var id = i.id || i.name || i.type;
+
 			if ( i.nodeName === "FORM" ) {
 				utility.merge( registry, json.decode( element.serialize( i ) ) );
 			}
-			else if ( !registry[i.name] ) {
-				registry[i.name] = element.val( i );
+			else if ( !registry[id] ) {
+				registry[id] = element.val( i );
 			}
 		} );
 
 		if ( !string ) {
-			result = json.encode( registry );
+			result = registry;
 		}
 		else {
 			result = "";
@@ -6438,7 +6445,7 @@ DataStore.prototype.dump = function ( args, fields ) {
 };
 
 /**
- * Retrieves a record based on key or index
+ * Retrieves the current version of a record(s) based on key or index
  *
  * If the key is an integer, cast to a string before sending as an argument!
  *
@@ -6482,7 +6489,7 @@ DataStore.prototype.get = function ( record, offset ) {
 		}
 	}
 
-	return result;
+	return utility.clone( result, true );
 },
 
 /**
@@ -6503,13 +6510,13 @@ DataStore.prototype.join = function ( arg, field, join ) {
 	    results   = [],
 	    deferreds = [],
 	    key       = field === this.key,
-	    keys      = array.merge( array.cast( this.records[0].data, true ), array.cast( arg.records[0].data, true ) ),
-		fn;
+	    keys      = array.merge( array.keys( this.records[0].data ), array.keys( arg.records[0].data ) ),
+	    fn;
 
 	if ( join === "inner" ) {
 		fn = function ( i ) {
 			var where  = {},
-			    record = utility.clone( i.data, true ),
+			    record = i.data,
 			    defer  = deferred.factory();
 
 			where[field] = key ? i.key : record[field];
@@ -6533,7 +6540,7 @@ DataStore.prototype.join = function ( arg, field, join ) {
 	else if ( join === "left" ) {
 		fn = function ( i ) {
 			var where  = {},
-			    record = utility.clone( i.data, true ),
+				record = i.data,
 			    defer  = deferred.factory();
 
 			where[field] = key ? i.key : record[field];
@@ -6564,7 +6571,7 @@ DataStore.prototype.join = function ( arg, field, join ) {
 	else if ( join === "right" ) {
 		fn = function ( i ) {
 			var where  = {},
-			    record = utility.clone( i.data, true ),
+			    record = i.data,
 			    defer  = deferred.factory();
 
 			where[field] = key ? i.key : record[field];
@@ -6593,7 +6600,7 @@ DataStore.prototype.join = function ( arg, field, join ) {
 		};
 	}
 
-	array.each( join === "right" ? arg.records : this.records, fn );
+	array.each( utility.clone( join === "right" ? arg.records : this.records, true ), fn );
 
 	utility.when( deferreds ).then( function () {
 		defer.resolve( results );
@@ -6987,7 +6994,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
 
 	if ( !batch ) {
 		if ( this.autosave ) {
-			this.save( record );
+			this.save();
 		}
 
 		if ( this.events ) {
@@ -7188,18 +7195,18 @@ DataStore.prototype.sort = function ( query, create, where ) {
 				// Probably IE10, which doesn't have the correct security flag for local loading
 				webWorker = false;
 
-				self.views[view] = array.keySort( utility.clone( records ), query, "data" );
+				self.views[view] = array.keySort( records, query, "data" );
 				defer.resolve( self.views[view] );
 			}
 		}
 		else {
-			self.views[view] = array.keySort( utility.clone( records ), query, "data" );
+			self.views[view] = array.keySort( records, query, "data" );
 			defer.resolve( self.views[view] );
 		}
 	};
 
 	if ( !where ) {
-		next( this.records );
+		next( utility.clone( this.records, true ) );
 	}
 	else {
 		this.select( where ).then( next, function ( e ) {
@@ -7417,6 +7424,13 @@ DataStore.prototype.storage = function ( obj, op, type ) {
 				else {
 					defer.resolve( self );
 				}
+
+				// Decorating loaded state for various code paths
+				defer.then( function () {
+					self.loaded = true;
+				}, function ( e ) {
+					throw e;
+				} );
 			}
 			else if ( op === "remove" ) {
 				session ? sessionStorage.removeItem( key ) : localStorage.removeItem( key );
@@ -8142,7 +8156,7 @@ var utility = {
 		var clone;
 
 		if ( shallow === true ) {
-			return json.decode( json.encode( obj ) );
+			return obj !== undefined && obj !== null ? json.decode( json.encode( obj ) ) : obj;
 		}
 		else if ( !obj || regex.primitive.test( typeof obj ) || ( obj instanceof RegExp ) ) {
 			return obj;
@@ -9040,7 +9054,7 @@ function xhr () {
 	    XMLHttpRequest, headers, dispatch, success, failure, state;
 
 	headers = {
-		"user-agent"   : "keigai/0.8.1 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"user-agent"   : "keigai/0.8.2 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
 	};
@@ -9726,7 +9740,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.8.1"
+	version : "0.8.2"
 };
 } )();
 
