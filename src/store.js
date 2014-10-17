@@ -499,7 +499,7 @@ DataStore.prototype.dump = function ( args, fields ) {
 };
 
 /**
- * Retrieves a record based on key or index
+ * Retrieves the current version of a record(s) based on key or index
  *
  * If the key is an integer, cast to a string before sending as an argument!
  *
@@ -543,7 +543,7 @@ DataStore.prototype.get = function ( record, offset ) {
 		}
 	}
 
-	return result;
+	return utility.clone( result, true );
 },
 
 /**
@@ -564,13 +564,13 @@ DataStore.prototype.join = function ( arg, field, join ) {
 	    results   = [],
 	    deferreds = [],
 	    key       = field === this.key,
-	    keys      = array.merge( array.cast( this.records[0].data, true ), array.cast( arg.records[0].data, true ) ),
-		fn;
+	    keys      = array.merge( array.keys( this.records[0].data ), array.keys( arg.records[0].data ) ),
+	    fn;
 
 	if ( join === "inner" ) {
 		fn = function ( i ) {
 			var where  = {},
-			    record = utility.clone( i.data, true ),
+			    record = i.data,
 			    defer  = deferred.factory();
 
 			where[field] = key ? i.key : record[field];
@@ -594,7 +594,7 @@ DataStore.prototype.join = function ( arg, field, join ) {
 	else if ( join === "left" ) {
 		fn = function ( i ) {
 			var where  = {},
-			    record = utility.clone( i.data, true ),
+				record = i.data,
 			    defer  = deferred.factory();
 
 			where[field] = key ? i.key : record[field];
@@ -625,7 +625,7 @@ DataStore.prototype.join = function ( arg, field, join ) {
 	else if ( join === "right" ) {
 		fn = function ( i ) {
 			var where  = {},
-			    record = utility.clone( i.data, true ),
+			    record = i.data,
 			    defer  = deferred.factory();
 
 			where[field] = key ? i.key : record[field];
@@ -654,7 +654,7 @@ DataStore.prototype.join = function ( arg, field, join ) {
 		};
 	}
 
-	array.each( join === "right" ? arg.records : this.records, fn );
+	array.each( utility.clone( join === "right" ? arg.records : this.records, true ), fn );
 
 	utility.when( deferreds ).then( function () {
 		defer.resolve( results );
@@ -1249,18 +1249,18 @@ DataStore.prototype.sort = function ( query, create, where ) {
 				// Probably IE10, which doesn't have the correct security flag for local loading
 				webWorker = false;
 
-				self.views[view] = array.keySort( utility.clone( records ), query, "data" );
+				self.views[view] = array.keySort( records, query, "data" );
 				defer.resolve( self.views[view] );
 			}
 		}
 		else {
-			self.views[view] = array.keySort( utility.clone( records ), query, "data" );
+			self.views[view] = array.keySort( records, query, "data" );
 			defer.resolve( self.views[view] );
 		}
 	};
 
 	if ( !where ) {
-		next( this.records );
+		next( utility.clone( this.records, true ) );
 	}
 	else {
 		this.select( where ).then( next, function ( e ) {

@@ -176,7 +176,7 @@ var utility = {
 		var clone;
 
 		if ( shallow === true ) {
-			return json.decode( json.encode( obj ) );
+			return obj !== undefined && obj !== null ? json.decode( json.encode( obj ) ) : obj;
 		}
 		else if ( !obj || regex.primitive.test( typeof obj ) || ( obj instanceof RegExp ) ) {
 			return obj;
