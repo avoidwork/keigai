@@ -682,23 +682,24 @@ var element = {
 	serialize : function ( obj, string, encode ) {
 		string       = ( string === true );
 		encode       = ( encode !== false );
-		var children = [],
-		    registry = {},
-		    result;
+		var registry = {},
+		    children, result;
 
 		children = obj.nodeName === "FORM" ? ( obj.elements ? array.cast( obj.elements ) : obj.find( "button, input, select, textarea" ) ) : [obj];
 
 		array.each( children, function ( i ) {
+			var id = i.id || i.name || i.type;
+
 			if ( i.nodeName === "FORM" ) {
 				utility.merge( registry, json.decode( element.serialize( i ) ) );
 			}
-			else if ( !registry[i.name] ) {
-				registry[i.name] = element.val( i );
+			else if ( !registry[id] ) {
+				registry[id] = element.val( i );
 			}
 		} );
 
 		if ( !string ) {
-			result = json.encode( registry );
+			result = registry;
 		}
 		else {
 			result = "";

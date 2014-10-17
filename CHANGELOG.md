@@ -4,6 +4,7 @@
 - Fixing `store.setComplete()` such that `store.autosave` doesn't save an individual record
 - Changing `store.get()` such that records are clones, and not by reference (for sanity)
 - Fixing a reference error in `list.teardown()`, and cleaning up the pagination elements (orphaned)
+- Fixing `element.serialize()`
 
 ## 0.8.2
 - Fixing `DataStore.loaded` state upon restore
