@@ -1149,8 +1149,10 @@ DataStore.prototype.setIndexes = function ( arg ) {
 			self.indexes[i][values] = [];
 		}
 
-		self.indexes[i][values].push( arg.index );
-		arg.indexes.push( [i, values] );
+		if ( !array.contains( self.indexes[i][values], arg.index ) ) {
+			self.indexes[i][values].push( arg.index );
+			arg.indexes.push( [i, values] );
+		}
 	} );
 
 	return this;
