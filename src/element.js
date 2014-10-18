@@ -325,6 +325,10 @@ var element = {
 	dispatch : function ( obj, type, data, bubbles, cancelable ) {
 		var ev;
 
+		if ( !obj ) {
+			return;
+		}
+
 		try {
 			ev = new CustomEvent( type );
 		}
