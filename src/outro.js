@@ -18,6 +18,7 @@ return {
 		defer    : deferred.factory,
 		element  : element,
 		extend   : utility.extend,
+		genId    : utility.genId,
 		iterate  : utility.iterate,
 		json     : json,
 		jsonp    : client.jsonp,

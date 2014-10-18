@@ -3,6 +3,7 @@
 ## 0.8.5
 - Fixing a flaw in `store.setIndexes()` such that duplicate values aren't created
 - Fixing a MutationObserver event dispatch error
+- Exposing `utility.genId()` as `util.genId()`
 
 ## 0.8.4
 - Fixing async `teardown()`
