@@ -316,6 +316,64 @@ var array = {
 	},
 
 	/**
+	 * Iterates `obj` in reverse and executes `fn` with arguments [`value`, `index`].
+	 * Returning `false` halts iteration.
+	 *
+	 * @method eachReverse
+	 * @memberOf array
+	 * @param  {Array}    obj   Array to iterate
+	 * @param  {Function} fn    Function to execute on index values
+	 * @param  {Boolean}  async [Optional] Asynchronous iteration
+	 * @param  {Number}   size  [Optional] Batch size for async iteration, default is 10
+	 * @return {Array}          Array
+	 * @example
+	 * keigai.util.array.eachReverse( [ ... ], function ( ... ) { ... } );
+	 * keigai.util.array.eachReverse( [ ... ], function ( ... ) { ... }, true, 100 ); // processing batches of a 100
+	 */
+	eachReverse : function ( obj, fn, async, size ) {
+		var nth = obj.length,
+			i, offset;
+
+		if ( async !== true ) {
+			i = nth;
+			while ( --i > -1 ) {
+				if ( fn.call( obj, obj[i], i ) === false ) {
+					break;
+				}
+			}
+		}
+		else {
+			size   = size || 10;
+			offset = nth - 1;
+
+			if ( size > nth ) {
+				size = nth;
+			}
+
+			utility.repeat( function () {
+				var i = -1,
+					idx;
+
+				while ( ++i < size ) {
+					idx = offset - i;
+
+					if ( idx < 0 || fn.call( obj, obj[idx], idx ) === false ) {
+						return false;
+					}
+				}
+
+				offset -= size;
+
+				if ( offset < 0 ) {
+					return false;
+				}
+			}, undefined, undefined, false );
+		}
+
+		return obj;
+	},
+
+	/**
 	 * Determines if an Array is empty
 	 *
 	 * @method empty

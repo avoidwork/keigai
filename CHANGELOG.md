@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.8.6
+- Creating `array.eachReverse()` to simplify those times when you want to go backwards
+
 ## 0.8.5
 - Fixing a flaw in `store.setIndexes()` such that duplicate values aren't created
 - Fixing a MutationObserver event dispatch error

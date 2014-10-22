@@ -148,13 +148,42 @@ exports["diff"] = {
 
 exports["each"] = {
 	setUp: function (done) {
-		this.val = ["abc"];
-		self     = this;
+		this.val = ["abc", "def"];
 		done();
 	},
 	test: function (test) {
-		test.expect(1);
-		test.equal(array.each(this.val, function (i, idx) { self.val[idx] = "blah"; })[0], "blah", "Should be 'blah'");
+		var result = [];
+
+		array.each(this.val, function (i, idx) {
+			result.push( {value: i, index: idx} );
+		} );
+
+		test.expect(4);
+		test.equal(result[0].value, "abc", "Should be 'abc'");
+		test.equal(result[0].index, 0, "Should be '0'");
+		test.equal(result[1].value, "def", "Should be 'def'");
+		test.equal(result[1].index, 1, "Should be '1'");
+		test.done();
+	}
+};
+
+exports["eachReverse"] = {
+	setUp: function (done) {
+		this.val = ["abc", "def"];
+		done();
+	},
+	test: function (test) {
+		var result = [];
+
+		array.eachReverse(this.val, function (i, idx) {
+			result.push( {value: i, index: idx} );
+		} );
+
+		test.expect(4);
+		test.equal(result[0].value, "def", "Should be 'def'");
+		test.equal(result[0].index, 1, "Should be '1'");
+		test.equal(result[1].value, "abc", "Should be 'abc'");
+		test.equal(result[1].index, 0, "Should be '0'");
 		test.done();
 	}
 };
