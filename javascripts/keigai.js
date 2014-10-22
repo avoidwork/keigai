@@ -6,7 +6,7 @@
  * @license BSD-3 <https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.8.2
+ * @version 0.8.6
  */
 ( function ( global ) {
 
@@ -1071,6 +1071,64 @@ var array = {
 				offset += size;
 
 				if ( offset >= nth ) {
+					return false;
+				}
+			}, undefined, undefined, false );
+		}
+
+		return obj;
+	},
+
+	/**
+	 * Iterates `obj` in reverse and executes `fn` with arguments [`value`, `index`].
+	 * Returning `false` halts iteration.
+	 *
+	 * @method eachReverse
+	 * @memberOf array
+	 * @param  {Array}    obj   Array to iterate
+	 * @param  {Function} fn    Function to execute on index values
+	 * @param  {Boolean}  async [Optional] Asynchronous iteration
+	 * @param  {Number}   size  [Optional] Batch size for async iteration, default is 10
+	 * @return {Array}          Array
+	 * @example
+	 * keigai.util.array.eachReverse( [ ... ], function ( ... ) { ... } );
+	 * keigai.util.array.eachReverse( [ ... ], function ( ... ) { ... }, true, 100 ); // processing batches of a 100
+	 */
+	eachReverse : function ( obj, fn, async, size ) {
+		var nth = obj.length,
+			i, offset;
+
+		if ( async !== true ) {
+			i = nth;
+			while ( --i > -1 ) {
+				if ( fn.call( obj, obj[i], i ) === false ) {
+					break;
+				}
+			}
+		}
+		else {
+			size   = size || 10;
+			offset = nth - 1;
+
+			if ( size > nth ) {
+				size = nth;
+			}
+
+			utility.repeat( function () {
+				var i = -1,
+					idx;
+
+				while ( ++i < size ) {
+					idx = offset - i;
+
+					if ( idx < 0 || fn.call( obj, obj[idx], idx ) === false ) {
+						return false;
+					}
+				}
+
+				offset -= size;
+
+				if ( offset < 0 ) {
 					return false;
 				}
 			}, undefined, undefined, false );
@@ -3712,6 +3770,12 @@ var list = {
 		obj = new DataList( element.create( "ul", {"class": "list"}, target ), ref[0], template );
 
 		if ( options instanceof Object ) {
+			if ( options.listFiltered && options.listFilter ) {
+				obj.listFilter = filter.factory( element.create( "input", {"id": obj.element.id + "-filter", "class": "filter", placeholder: "Filter"}, target, "first" ), obj, options.listFilter, options.debounce || 250 );
+				delete options.listFilter;
+				delete options.listFiltered;
+			}
+
 			utility.merge( obj, options );
 		}
 
@@ -3812,6 +3876,7 @@ function DataList ( element, store, template ) {
 	this.filtered    = [];
 	this.id          = utility.genId();
 	this.items       = [];
+	this.listFilter  = null;
 	this.mutation    = null;
 	this.observer    = observable.factory();
 	this.pageIndex   = 1;
@@ -4305,10 +4370,14 @@ DataList.prototype.teardown = function ( destroy ) {
 
 	delete this.observer.hooks[id];
 
+	if ( this.listFilter ) {
+		this.listFilter.teardown();
+	}
+
 	if ( destroy ) {
 		element.destroy( this.element );
 
-		array.each( utility.$( "#" + id + "-pages-top, #" + id + "-pages-bottom"), function ( i ) {
+		array.each( utility.$( "#" + id + "-filter, #" + id + "-pages-top, #" + id + "-pages-bottom"), function ( i ) {
 			element.destroy( i );
 		} );
 
@@ -4867,6 +4936,10 @@ var element = {
 	 */
 	dispatch : function ( obj, type, data, bubbles, cancelable ) {
 		var ev;
+
+		if ( !obj ) {
+			return;
+		}
 
 		try {
 			ev = new CustomEvent( type );
@@ -6244,7 +6317,9 @@ DataStore.prototype.clear = function ( sync ) {
 		}
 
 		array.each( this.lists, function ( i ) {
-			i.teardown( true );
+			if ( i ) {
+				i.teardown( true );
+			}
 		} );
 
 		this.autosave    = false;
@@ -6279,7 +6354,9 @@ DataStore.prototype.clear = function ( sync ) {
 		this.views       = {};
 
 		array.each( this.lists, function ( i ) {
-			i.refresh();
+			if ( i ) {
+				i.refresh();
+			}
 		} );
 	}
 
@@ -7091,8 +7168,10 @@ DataStore.prototype.setIndexes = function ( arg ) {
 			self.indexes[i][values] = [];
 		}
 
-		self.indexes[i][values].push( arg.index );
-		arg.indexes.push( [i, values] );
+		if ( !array.contains( self.indexes[i][values], arg.index ) ) {
+			self.indexes[i][values].push( arg.index );
+			arg.indexes.push( [i, values] );
+		}
 	} );
 
 	return this;
@@ -7567,21 +7646,11 @@ DataStore.prototype.teardown = function () {
 			var recordUri = uri + "/" + i.key;
 
 			cache.expire( recordUri, true );
-
-			utility.iterate( i.data, function ( v ) {
-				if ( v === null ) {
-					return;
-				}
-
-				if ( v && typeof v.teardown == "function" ) {
-					v.teardown();
-				}
-			} );
 		} );
 	}
 
 	array.each( this.lists, function ( i ) {
-		i.teardown();
+		i.teardown( true );
 	} );
 
 	this.clear( true );
@@ -9054,7 +9123,7 @@ function xhr () {
 	    XMLHttpRequest, headers, dispatch, success, failure, state;
 
 	headers = {
-		"user-agent"   : "keigai/0.8.2 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"user-agent"   : "keigai/0.8.6 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
 	};
@@ -9717,6 +9786,7 @@ return {
 		defer    : deferred.factory,
 		element  : element,
 		extend   : utility.extend,
+		genId    : utility.genId,
 		iterate  : utility.iterate,
 		json     : json,
 		jsonp    : client.jsonp,
@@ -9740,7 +9810,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.8.2"
+	version : "0.8.6"
 };
 } )();
 
