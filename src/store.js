@@ -974,10 +974,9 @@ DataStore.prototype.set = function ( key, data, batch, overwrite ) {
 		else {
 			if ( key !== null ) {
 				uri    = this.buildUri( key );
-				odata  = utility.clone( data, true );
-
 				method = "PATCH";
-				data = patch( overwrite, data, this.dump( [ record ] )[ 0 ] );
+				odata  = utility.clone( data, true );
+				data   = patch( overwrite, data, this.dump( [ record ] )[ 0 ] );
 			}
 			else {
 				// Dropping query string
@@ -985,7 +984,6 @@ DataStore.prototype.set = function ( key, data, batch, overwrite ) {
 			}
 
 			rdefer = client.request( uri, method, data, utility.merge( {withCredentials: this.credentials}, this.headers ) );
-
 			rdefer.then( function ( arg ) {
 				var change;
 
