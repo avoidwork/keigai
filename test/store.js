@@ -7,7 +7,7 @@ var keigai = require("../lib/keigai"),
 
 server = tenso( {
 	logs: {
-		level: "info"
+		level: "warn"
 	},
 	routes: {
 		get: {
