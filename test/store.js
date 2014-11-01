@@ -1,5 +1,42 @@
-var store = require("../lib/keigai.js").store,
-    data  = require("./store.json");
+var keigai = require("../lib/keigai"),
+    clone  = keigai.util.clone,
+	store  = keigai.store,
+    tenso  = require( "tenso" ),
+    data   = require("./store.json" ),
+    server;
+
+server = tenso( {
+	logs: {
+		level: "info"
+	},
+	routes: {
+		get: {
+			"/data.*" : function ( req, res ) {
+				res.respond( data );
+			}
+		},
+		put: {
+			"/data.*" : function ( req, res ) {
+				res.respond( req.body );
+			}
+		},
+		post: {
+			"/data.*" : function ( req, res ) {
+				res.respond( req.body );
+			}
+		},
+		patch: {
+			"/data.*" : function ( req, res ) {
+				res.respond( { success: true } );
+			}
+		},
+		"delete": {
+			"/data.*" : function ( req, res ) {
+				res.respond( { success: true } );
+			}
+		}
+	}
+} );
 
 exports["empty"] = {
 	setUp: function (done) {
@@ -259,6 +296,170 @@ exports["delete (indexed)"] = {
 				throw e;
 			});
 		}).catch( function (e) {
+			console.error(e);
+			test.done();
+		});
+	}
+};
+
+exports["setUri"] = {
+	setUp: function (done) {
+		this.store = store(null, {source: "data.result", key: "id"});
+		done();
+	},
+	test: function (test) {
+		var self = this;
+
+		test.expect(6);
+		test.equal(this.store.total, 0, "Should be '0'");
+		test.equal(this.store.records.length, 0, "Should be '0'");
+		this.store.setUri("http://localhost:8000/data?page_size=10").then(function(args) {
+			test.equal(args.length, 6, "Should be '6'");
+			test.equal(self.store.total, 6, "Should be '6'");
+			test.equal(self.store.records.length, 6, "Should be '6'");
+			test.equal(self.store.records[0].key, args[0].key, "Should be a match");
+			test.done();
+		}, function (e) {
+			console.error(e);
+			test.done();
+		});
+	}
+};
+
+exports["create (wired)"] = {
+	setUp: function (done) {
+		this.store     = store(null, {source: "data.result", key: "id"});
+		this.record    = clone( data[0], true );
+		this.record.id = 6;
+		done();
+	},
+	test: function (test) {
+		var self = this;
+
+		test.expect(3);
+		this.store.setUri("http://localhost:8000/data?page_size=10").then(function() {
+			self.store.set(null, self.record).then(function (arg) {
+				test.equal(arg.index, self.record.id, "Should be a match");
+				test.equal(self.store.records[6].index, self.record.id, "Should be a match");
+				test.equal(self.store.records[6].data.guid, arg.data.guid, "Should be a match");
+				test.done();
+			}, function (e) {
+				console.error(e);
+				test.done();
+			});
+		}, function (e) {
+			console.error(e);
+			test.done();
+		});
+	}
+};
+
+exports["delete (wired)"] = {
+	setUp: function (done) {
+		this.store = store(null, {source: "data.result", key: "id"});
+		done();
+	},
+	test: function (test) {
+		var self = this;
+
+		test.expect(3);
+		this.store.setUri("http://localhost:8000/data?page_size=10").then(function() {
+			self.store.del(0).then(function () {
+				test.equal(self.store.total, self.store.records.length, "Should be a match");
+				test.equal(self.store.records.length, 5, "Should be a match");
+				test.equal(self.store.records[0].key, '1', "Should be a match");
+				test.done();
+			}, function (e) {
+				console.error(e);
+				test.done();
+			});
+		}, function (e) {
+			console.error(e);
+			test.done();
+		});
+	}
+};
+
+exports["update (wired / full)"] = {
+	setUp: function (done) {
+		this.store = store(null, {source: "data.result", key: "id"});
+		done();
+	},
+	test: function (test) {
+		var self = this;
+
+		test.expect(3);
+		this.store.setUri("http://localhost:8000/data?page_size=10").then(function(args) {
+			var obj = self.store.dump( [args[0]] )[0];
+
+			obj.guid = keigai.util.uuid();
+			self.store.set(obj.id, obj).then(function (arg) {
+				test.equal(arg.key, self.store.records[0].key, "Should be a match");
+				test.equal(arg.index, self.store.records[0].index, "Should be a match");
+				test.equal(arg.data.guid, obj.guid, "Should be a match");
+				test.done();
+			}, function (e) {
+				console.error(e);
+				test.done();
+			});
+		}, function (e) {
+			console.error(e);
+			test.done();
+		});
+	}
+};
+
+exports["update (wired / patch)"] = {
+	setUp: function (done) {
+		this.store = store(null, {source: "data.result", key: "id"});
+		done();
+	},
+	test: function (test) {
+		var self = this;
+
+		test.expect(3);
+		this.store.setUri("http://localhost:8000/data?page_size=10").then(function(args) {
+			var obj = args[0];
+
+			self.store.set(obj.key, {blah: true}).then(function (arg) {
+				test.equal(arg.key, self.store.records[0].key, "Should be a match");
+				test.equal(arg.index, self.store.records[0].index, "Should be a match");
+				test.equal(arg.data.blah, true, "Should be a match");
+				test.done();
+			}, function (e) {
+				console.error(e);
+				test.done();
+			});
+		}, function (e) {
+			console.error(e);
+			test.done();
+		});
+	}
+};
+
+exports["update (wired / overwrite)"] = {
+	setUp: function (done) {
+		this.store = store(null, {source: "data.result", key: "id"});
+		done();
+	},
+	test: function (test) {
+		var self = this;
+
+		test.expect(4);
+		this.store.setUri("http://localhost:8000/data?page_size=10").then(function(args) {
+			var obj = args[0];
+
+			self.store.set(obj.key, {blah: true}, false, true).then(function (arg) {
+				test.equal(arg.key, self.store.records[0].key, "Should be a match");
+				test.equal(arg.index, self.store.records[0].index, "Should be a match");
+				test.equal(arg.data.blah, true, "Should be a match");
+				test.equal(Object.keys(arg.data ).length, 1, "Should be a match");
+				test.done();
+			}, function (e) {
+				console.error(e);
+				test.done();
+			});
+		}, function (e) {
 			console.error(e);
 			test.done();
 		});

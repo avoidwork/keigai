@@ -44,7 +44,8 @@
     "grunt-contrib-watch": "~0.2",
     "grunt-contrib-sass": "~0.4.0",
     "grunt-jsdoc": "~0.5.1",
-    "ink-docstrap" : "~0.3.0"
+    "ink-docstrap" : "~0.3.0",
+    "tenso": "~0.9.15"
   },
   "keywords": [
     "data",

@@ -3,6 +3,9 @@
 ## 0.9.0
 - Refactoring `store.set()` to implement `rfc6902` (JSONPatch)
 - Fixing `store.setComplete()` when receiving `0` for the key, and for deltas
+- Fixing `store.set()` such that a wired request will drop the query string
+- Fixing `store.dump()` such that numeric keys are re-cast to `Numbers`
+- Created `DataStore` tests which are wired to an API
 
 ## 0.8.6
 - Creating `array.eachReverse()` to simplify those times when you want to go backwards

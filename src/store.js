@@ -477,7 +477,7 @@ DataStore.prototype.dump = function ( args, fields ) {
 			var record = {};
 
 			array.each( fields, function ( f ) {
-				record[f] = f === self.key ? i.key : utility.clone( i.data[f], true );
+				record[f] = f === self.key ? ( isNaN( i.key ) ? i.key : Number( i.key ) ) : utility.clone( i.data[f], true );
 			} );
 
 			return record;
@@ -488,7 +488,7 @@ DataStore.prototype.dump = function ( args, fields ) {
 			var record = {};
 
 			if ( key ) {
-				record[self.key] = i.key;
+				record[self.key] = isNaN( i.key ) ? i.key : Number( i.key );
 			}
 
 			utility.iterate( i.data, function ( v, k ) {
@@ -988,7 +988,8 @@ DataStore.prototype.set = function ( key, data, batch, overwrite ) {
 				}
 			}
 			else {
-				uri = this.uri;
+				// Dropping query string
+				uri = parsed.protocol + "//" + parsed.host + parsed.pathname;
 			}
 
 			client.request( uri, method, data, utility.merge( {withCredentials: this.credentials}, this.headers ) ).then( function ( arg ) {
@@ -1036,7 +1037,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
 
 	// Setting key
 	if ( key === null ) {
-		if ( this.key !== null && data[this.key] ) {
+		if ( this.key !== null && data[this.key] !== undefined && data[this.key] !== null ) {
 			key = data[this.key].toString();
 		}
 		else {
