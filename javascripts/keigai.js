@@ -6,7 +6,7 @@
  * @license BSD-3 <https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.8.6
+ * @version 0.9.0
  */
 ( function ( global ) {
 
@@ -6496,7 +6496,7 @@ DataStore.prototype.dump = function ( args, fields ) {
 			var record = {};
 
 			array.each( fields, function ( f ) {
-				record[f] = f === self.key ? i.key : utility.clone( i.data[f], true );
+				record[f] = f === self.key ? ( isNaN( i.key ) ? i.key : Number( i.key ) ) : utility.clone( i.data[f], true );
 			} );
 
 			return record;
@@ -6507,7 +6507,7 @@ DataStore.prototype.dump = function ( args, fields ) {
 			var record = {};
 
 			if ( key ) {
-				record[self.key] = i.key;
+				record[self.key] = isNaN( i.key ) ? i.key : Number( i.key );
 			}
 
 			utility.iterate( i.data, function ( v, k ) {
@@ -6921,7 +6921,30 @@ DataStore.prototype.set = function ( key, data, batch, overwrite ) {
 	    record = key !== null ? this.get( key ) || null : data[this.key] ? this.get( data[this.key] ) || null : null,
 	    method = "POST",
 	    parsed = utility.parse( self.uri || "" ),
-	    uri;
+	    uri, odata, rdefer;
+
+	function patch ( overwrite, data, ogdata ) {
+		var ndata = [];
+
+		if ( overwrite ) {
+			array.each( array.keys( ogdata ), function ( k ) {
+				if ( k !== self.key && data[k] === undefined ) {
+					ndata.push( { op: "remove", path: "/" + k } );
+				}
+			} );
+		}
+
+		utility.iterate( data, function ( v, k ) {
+			if ( k !== self.key && ogdata[k] === undefined ) {
+				ndata.push( { op: "add", path: "/" + k, value: v } );
+			}
+			else if ( json.encode( ogdata[k] ) !== json.encode( v ) ) {
+				ndata.push( { op: "replace", path: "/" + k, value: v } );
+			}
+		} );
+
+		return ndata;
+	}
 
 	if ( typeof data == "string" ) {
 		if ( data.indexOf( "//" ) === -1 ) {
@@ -6969,27 +6992,48 @@ DataStore.prototype.set = function ( key, data, batch, overwrite ) {
 		}
 		else {
 			if ( key !== null ) {
-				method = "PUT";
 				uri    = this.buildUri( key );
+				method = "PATCH";
+				odata  = utility.clone( data, true );
+				data   = patch( overwrite, data, this.dump( [ record ] )[ 0 ] );
+			}
+			else {
+				// Dropping query string
+				uri = parsed.protocol + "//" + parsed.host + parsed.pathname;
+			}
 
-				if ( client.allows( uri, "patch" ) ) {
-					method = "PATCH";
+			rdefer = client.request( uri, method, data, utility.merge( {withCredentials: this.credentials}, this.headers ) );
+			rdefer.then( function ( arg ) {
+				var change;
+
+				if ( rdefer.xhr.status !== 204 && rdefer.xhr.status < 300 ) {
+					change = key === null ? ( self.source ? utility.walk( arg, self.source ) : arg ) : odata;
 				}
-				else if ( record !== null && !overwrite ) {
+				else {
+					change = odata;
+				}
+
+				self.setComplete( record, key, change, batch, overwrite, defer );
+			}, function ( e ) {
+				if ( method == "PATCH" ) {
+					method = "PUT";
+					data   = utility.clone( odata, true );
+
 					utility.iterate( record.data, function ( v, k ) {
 						data[k] = v;
 					} );
-				}
-			}
-			else {
-				uri = this.uri;
-			}
 
-			client.request( uri, method, data, utility.merge( {withCredentials: this.credentials}, this.headers ) ).then( function ( arg ) {
-				self.setComplete( record, key, self.source ? utility.walk( arg, self.source ) : arg, batch, overwrite, defer );
-			}, function ( e ) {
-				self.dispatch( "failedSet", e );
-				defer.reject( e );
+					client.request( uri, method, data, utility.merge( {withCredentials: self.credentials}, self.headers ) ).then( function () {
+						self.setComplete( record, key, odata, batch, overwrite, defer );
+					}, function ( e ) {
+						self.dispatch( "failedSet", e );
+						defer.reject( e );
+					} );
+				}
+				else {
+					self.dispatch( "failedSet", e );
+					defer.reject( e );
+				}
 			} );
 		}
 	}
@@ -7016,8 +7060,8 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
 	this.views = {};
 
 	// Setting key
-	if ( !key ) {
-		if ( this.key !== null && data[this.key] ) {
+	if ( key === null ) {
+		if ( this.key !== null && data[this.key] !== undefined && data[this.key] !== null ) {
 			key = data[this.key].toString();
 		}
 		else {
@@ -7058,6 +7102,9 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
 			this.versions[record.key].set( "v" + ( ++this.versions[record.key].nth ), this.dump( [record] )[0] );
 		}
 
+		// By reference
+		record = this.records[record.index];
+
 		if ( overwrite ) {
 			record.data = {};
 		}
@@ -7065,6 +7112,9 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
 		utility.iterate( data, function ( v, k ) {
 			record.data[k] = v;
 		} );
+
+		// Snapshot that's safe to hand out
+		record = utility.clone( record, true );
 	}
 
 	this.setIndexes( record );
@@ -9123,7 +9173,7 @@ function xhr () {
 	    XMLHttpRequest, headers, dispatch, success, failure, state;
 
 	headers = {
-		"user-agent"   : "keigai/0.8.6 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"user-agent"   : "keigai/0.9.0 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
 	};
@@ -9628,7 +9678,7 @@ function bootstrap () {
 		// Cache garbage collector (every minute)
 		utility.repeat( function () {
 			cache.clean();
-		}, 60000, "cacheGarbageCollector");
+		}, 60000, "cacheGarbageCollector" );
 	}
 
 	// Repeating function to call init()
@@ -9810,7 +9860,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.8.6"
+	version : "0.9.0"
 };
 } )();
 
