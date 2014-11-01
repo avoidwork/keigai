@@ -380,35 +380,6 @@ exports["delete (wired)"] = {
 	}
 };
 
-exports["update (wired / full)"] = {
-	setUp: function (done) {
-		this.store = store(null, {source: "data.result", key: "id"});
-		done();
-	},
-	test: function (test) {
-		var self = this;
-
-		test.expect(3);
-		this.store.setUri("http://localhost:8000/data?page_size=10").then(function(args) {
-			var obj = self.store.dump( [args[0]] )[0];
-
-			obj.guid = keigai.util.uuid();
-			self.store.set(obj.id, obj).then(function (arg) {
-				test.equal(arg.key, self.store.records[0].key, "Should be a match");
-				test.equal(arg.index, self.store.records[0].index, "Should be a match");
-				test.equal(arg.data.guid, obj.guid, "Should be a match");
-				test.done();
-			}, function (e) {
-				console.error(e);
-				test.done();
-			});
-		}, function (e) {
-			console.error(e);
-			test.done();
-		});
-	}
-};
-
 exports["update (wired / patch)"] = {
 	setUp: function (done) {
 		this.store = store(null, {source: "data.result", key: "id"});
