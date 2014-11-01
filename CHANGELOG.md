@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.9.0
+- Refactoring `store.set()` to implement `rfc6902` (JSONPatch)
+- Fixing `store.setComplete()` when receiving `0` for the key, and for deltas
+
 ## 0.8.6
 - Creating `array.eachReverse()` to simplify those times when you want to go backwards
 

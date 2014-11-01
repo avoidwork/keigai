@@ -902,7 +902,30 @@ DataStore.prototype.set = function ( key, data, batch, overwrite ) {
 	    record = key !== null ? this.get( key ) || null : data[this.key] ? this.get( data[this.key] ) || null : null,
 	    method = "POST",
 	    parsed = utility.parse( self.uri || "" ),
-	    uri;
+	    uri, odata;
+
+	function patch ( overwrite, data, ogdata ) {
+		var ndata = [];
+
+		if ( overwrite ) {
+			array.each( array.keys( ogdata ), function ( k ) {
+				if ( data[k] === undefined ) {
+					ndata.push( { op: "remove", path: "/" + k } );
+				}
+			} );
+		}
+
+		utility.iterate( data, function ( v, k ) {
+			if ( ogdata[k] === undefined ) {
+				ndata.push( { op: "add", path: "/" + k, value: v } );
+			}
+			else {
+				ndata.push( { op: "replace", path: "/" + k, value: v } );
+			}
+		} );
+
+		return ndata;
+	}
 
 	if ( typeof data == "string" ) {
 		if ( data.indexOf( "//" ) === -1 ) {
@@ -952,9 +975,11 @@ DataStore.prototype.set = function ( key, data, batch, overwrite ) {
 			if ( key !== null ) {
 				method = "PUT";
 				uri    = this.buildUri( key );
+				odata  = utility.clone( data, true );
 
 				if ( client.allows( uri, "patch" ) ) {
 					method = "PATCH";
+					data   = patch( overwrite, data, record.data );
 				}
 				else if ( record !== null && !overwrite ) {
 					utility.iterate( record.data, function ( v, k ) {
@@ -967,10 +992,23 @@ DataStore.prototype.set = function ( key, data, batch, overwrite ) {
 			}
 
 			client.request( uri, method, data, utility.merge( {withCredentials: this.credentials}, this.headers ) ).then( function ( arg ) {
-				self.setComplete( record, key, self.source ? utility.walk( arg, self.source ) : arg, batch, overwrite, defer );
+				self.setComplete( record, key, key === null ? ( self.source ? utility.walk( arg, self.source ) : arg ) : odata || data, batch, overwrite, defer );
 			}, function ( e ) {
-				self.dispatch( "failedSet", e );
-				defer.reject( e );
+				if ( key !== null && method == "PUT" ) {
+					method = "PATCH";
+					data   = patch( overwrite, odata, record.data );
+
+					client.request( uri, method, data, utility.merge( {withCredentials: self.credentials}, self.headers ) ).then( function () {
+						self.setComplete( record, key, odata, batch, overwrite, defer );
+					}, function ( e ) {
+						self.dispatch( "failedSet", e );
+						defer.reject( e );
+					} );
+				}
+				else {
+					self.dispatch( "failedSet", e );
+					defer.reject( e );
+				}
 			} );
 		}
 	}
@@ -997,7 +1035,7 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
 	this.views = {};
 
 	// Setting key
-	if ( !key ) {
+	if ( key === null ) {
 		if ( this.key !== null && data[this.key] ) {
 			key = data[this.key].toString();
 		}
@@ -1039,6 +1077,9 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
 			this.versions[record.key].set( "v" + ( ++this.versions[record.key].nth ), this.dump( [record] )[0] );
 		}
 
+		// By reference
+		record = this.records[record.index];
+
 		if ( overwrite ) {
 			record.data = {};
 		}
@@ -1046,6 +1087,9 @@ DataStore.prototype.setComplete = function ( record, key, data, batch, overwrite
 		utility.iterate( data, function ( v, k ) {
 			record.data[k] = v;
 		} );
+
+		// Snapshot that's safe to hand out
+		record = utility.clone( record, true );
 	}
 
 	this.setIndexes( record );
