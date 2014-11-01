@@ -902,7 +902,7 @@ DataStore.prototype.set = function ( key, data, batch, overwrite ) {
 	    record = key !== null ? this.get( key ) || null : data[this.key] ? this.get( data[this.key] ) || null : null,
 	    method = "POST",
 	    parsed = utility.parse( self.uri || "" ),
-	    uri, odata;
+	    uri, odata, rdefer;
 
 	function patch ( overwrite, data, ogdata ) {
 		var ndata = [];
@@ -989,8 +989,19 @@ DataStore.prototype.set = function ( key, data, batch, overwrite ) {
 				uri = parsed.protocol + "//" + parsed.host + parsed.pathname;
 			}
 
-			client.request( uri, method, data, utility.merge( {withCredentials: this.credentials}, this.headers ) ).then( function ( arg ) {
-				self.setComplete( record, key, key === null ? ( self.source ? utility.walk( arg, self.source ) : arg ) : odata, batch, overwrite, defer );
+			rdefer = client.request( uri, method, data, utility.merge( {withCredentials: this.credentials}, this.headers ) );
+
+			rdefer.then( function ( arg ) {
+				var change;
+
+				if ( rdefer.xhr.status !== 204 ) {
+					change = key === null ? ( self.source ? utility.walk( arg, self.source ) : arg ) : odata;
+				}
+				else {
+					change = odata;
+				}
+
+				self.setComplete( record, key, change, batch, overwrite, defer );
 			}, function ( e ) {
 				if ( key !== null && method == "PATCH" ) {
 					method = "PUT";

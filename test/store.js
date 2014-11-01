@@ -22,7 +22,7 @@ server = tenso( {
 		},
 		post: {
 			"/data.*" : function ( req, res ) {
-				res.respond( req.body );
+				res.respond( req.body, 201 );
 			}
 		},
 		patch: {
