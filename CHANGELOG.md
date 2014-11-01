@@ -4,6 +4,7 @@
 - Refactoring `store.set()` to implement `rfc6902` (JSONPatch)
 - Fixing `store.setComplete()` when receiving `0` for the key, and for deltas
 - Fixing `store.set()` such that a wired request will drop the query string
+- Fixing `store.set()` such that it handles multiple response status codes (`3xx` series not supported atm)
 - Fixing `store.dump()` such that numeric keys are re-cast to `Numbers`
 - Created `DataStore` tests which are wired to an API
 
