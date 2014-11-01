@@ -1003,7 +1003,7 @@ DataStore.prototype.set = function ( key, data, batch, overwrite ) {
 
 				self.setComplete( record, key, change, batch, overwrite, defer );
 			}, function ( e ) {
-				if ( key !== null && method == "PATCH" ) {
+				if ( method == "PATCH" ) {
 					method = "PUT";
 					data   = utility.clone( odata, true );
 
