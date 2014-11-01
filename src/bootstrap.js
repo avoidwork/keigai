@@ -13,7 +13,7 @@ function bootstrap () {
 		// Cache garbage collector (every minute)
 		utility.repeat( function () {
 			cache.clean();
-		}, 60000, "cacheGarbageCollector");
+		}, 60000, "cacheGarbageCollector" );
 	}
 
 	// Repeating function to call init()
