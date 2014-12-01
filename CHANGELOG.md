@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.9.1
+- Removed `cache.clean()`
+- Removed internal cache garbage collection, opting to rely on lazy expiration; disables 'long lived' behavior in node.js
+
 ## 0.9.0
 - Refactoring `store.set()` to implement `rfc6902` (JSONPatch)
 - Fixing `store.setComplete()` when receiving `0` for the key, and for deltas

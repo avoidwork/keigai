@@ -12,21 +12,6 @@ var cache = {
 	lru : lru.factory( CACHE ),
 
 	/**
-	 * Garbage collector for the cached items
-	 *
-	 * @method clean
-	 * @memberOf cache
-	 * @return {Undefined} undefined
-	 */
-	clean : function () {
-		array.each( array.keys( cache.lru.cache ), function ( i ) {
-			if ( cache.expired( i ) ) {
-				cache.expire( i );
-			}
-		} );
-	},
-
-	/**
 	 * Expires a URI from the local cache
 	 *
 	 * @method expire

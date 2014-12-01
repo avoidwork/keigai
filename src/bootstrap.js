@@ -6,25 +6,6 @@
  * @return {Undefined} undefined
  */
 function bootstrap () {
-	// Second phase
-	function init () {
-		TIME = new Date().getTime();
-
-		// Cache garbage collector (every minute)
-		utility.repeat( function () {
-			cache.clean();
-		}, 60000, "cacheGarbageCollector" );
-	}
-
-	// Repeating function to call init()
-	function fn () {
-		if ( regex.complete_loaded.test( document.readyState ) ) {
-			init();
-
-			return false;
-		}
-	}
-
 	// Describing the Client
 	if ( !server ) {
 		client.version = client.version();
@@ -125,6 +106,8 @@ function bootstrap () {
 		WORKER = global.URL.createObjectURL( utility.blob( "var " + string.fromObject( array, "array" ) + ", " + string.fromObject( regex, "regex" ) + ", " + string.fromObject( string, "string" ) + ", " + string.fromObject( utility, "utility" ) + "; onmessage = " + store.worker.toString() + ";" ) );
 	}
 
+	TIME = new Date().getTime();
+
 	// Setting up `utility.render()`
 	RENDER = global.requestAnimationFrame || function ( fn ) {
 		var offset = new Date().getTime() - TIME;
@@ -133,20 +116,4 @@ function bootstrap () {
 			fn( offset );
 		}, 16, offset );
 	};
-
-	// Initializing
-	if ( typeof exports != "undefined" || typeof define == "function" || regex.complete_loaded.test( document.readyState ) ) {
-		init();
-	}
-	else if ( typeof document.addEventListener == "function" ) {
-		document.addEventListener( "DOMContentLoaded" , function () {
-			init();
-		}, false );
-	}
-	else if ( typeof document.attachEvent == "function" ) {
-		document.attachEvent( "onreadystatechange" , fn );
-	}
-	else {
-		utility.repeat( fn );
-	}
 }
