@@ -1,8 +1,10 @@
 # Change Log
 
-## 0.9.1
-- Removed `cache.clean()`
-- Removed internal cache garbage collection, opting to rely on lazy expiration; disables 'long lived' behavior in node.js
+## 1.0.0
+- Removing `cache.clean()`
+- Removing internal cache garbage collection, opting to rely on lazy expiration; disables 'long lived' behavior in node.js
+- Updating `array.clone()` with an optional second parameter for disabling shallow copies
+- Updating `utility.clone()` with deep cloning of `Arrays`
 
 ## 0.9.0
 - Refactoring `store.set()` to implement `rfc6902` (JSONPatch)

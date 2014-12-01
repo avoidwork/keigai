@@ -1082,7 +1082,7 @@ myArray.length; // 0</pre>
         
             
 <dt>
-    <h4 class="name" id="clone"><span class="type-signature">&lt;static> </span>clone<span class="signature">(obj)</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    <h4 class="name" id="clone"><span class="type-signature">&lt;static> </span>clone<span class="signature">(obj, shallow)</span><span class="type-signature"> &rarr; {Array}</span></h4>
     
     
 </dt>
@@ -1141,6 +1141,29 @@ myArray.length; // 0</pre>
             
 
             <td class="description last"><p>Array to clone</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>shallow</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[Optional] Default is <code>true</code></p></td>
         </tr>
 
 	
@@ -1348,7 +1371,7 @@ myArrayClone.length; // 6</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-934">line 934</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-935">line 935</a>
     </li></ul></dd>
     
 
@@ -1518,7 +1541,7 @@ myArrayClone.length; // 6</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-955">line 955</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-956">line 956</a>
     </li></ul></dd>
     
 
@@ -1689,7 +1712,7 @@ keigai.util.array.compact( ["a", "b", "c", "d"], true );       // null</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-919">line 919</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-920">line 920</a>
     </li></ul></dd>
     
 
@@ -1859,7 +1882,7 @@ keigai.util.array.compact( ["a", "b", "c", "d"], true );       // null</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-978">line 978</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-979">line 979</a>
     </li></ul></dd>
     
 
@@ -2029,7 +2052,7 @@ keigai.util.array.compact( ["a", "b", "c", "d"], true );       // null</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-995">line 995</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-996">line 996</a>
     </li></ul></dd>
     
 
@@ -2246,7 +2269,7 @@ Returning <code>false</code> halts iteration.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1024">line 1024</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1025">line 1025</a>
     </li></ul></dd>
     
 
@@ -2464,7 +2487,7 @@ Returning <code>false</code> halts iteration.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1082">line 1082</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1083">line 1083</a>
     </li></ul></dd>
     
 
@@ -2612,7 +2635,7 @@ keigai.util.array.eachReverse( [ ... ], function ( ... ) { ... }, true, 100 ); /
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1140">line 1140</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1141">line 1141</a>
     </li></ul></dd>
     
 
@@ -2783,7 +2806,7 @@ keigai.util.array.empty( ["a"] ); // false</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1155">line 1155</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1156">line 1156</a>
     </li></ul></dd>
     
 
@@ -2931,7 +2954,7 @@ keigai.util.array.equal( ["a"], ["a", "b"] ); // false</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1171">line 1171</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1172">line 1172</a>
     </li></ul></dd>
     
 
@@ -3148,7 +3171,7 @@ keigai.util.array.fib( 6 ) // [1, 1, 2, 3, 5, 8];</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1205">line 1205</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1206">line 1206</a>
     </li></ul></dd>
     
 
@@ -3298,7 +3321,7 @@ myArray[0]; // "aa"</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1239">line 1239</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1240">line 1240</a>
     </li></ul></dd>
     
 
@@ -3445,7 +3468,7 @@ myArray[0]; // "aa"</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1253">line 1253</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1254">line 1254</a>
     </li></ul></dd>
     
 
@@ -3662,7 +3685,7 @@ Returning <code>false</code> halts iteration.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1273">line 1273</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1274">line 1274</a>
     </li></ul></dd>
     
 
@@ -3817,7 +3840,7 @@ keigai.util.array.forEach( [ ... ], function ( ... ) { ... }, true, 100 ); // pr
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1293">line 1293</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1294">line 1294</a>
     </li></ul></dd>
     
 
@@ -3987,7 +4010,7 @@ keigai.util.array.forEach( [ ... ], function ( ... ) { ... }, true, 100 ); // pr
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1307">line 1307</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1308">line 1308</a>
     </li></ul></dd>
     
 
@@ -4134,7 +4157,7 @@ keigai.util.array.forEach( [ ... ], function ( ... ) { ... }, true, 100 ); // pr
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1322">line 1322</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1323">line 1323</a>
     </li></ul></dd>
     
 
@@ -4307,7 +4330,7 @@ keigai.util.array.indexed( myArray ); ["a", "b", "c", "d"];</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1345">line 1345</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1346">line 1346</a>
     </li></ul></dd>
     
 
@@ -4477,7 +4500,7 @@ keigai.util.array.indexed( myArray ); ["a", "b", "c", "d"];</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1365">line 1365</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1366">line 1366</a>
     </li></ul></dd>
     
 
@@ -4627,7 +4650,7 @@ myArray[1]; // "c"</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1397">line 1397</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1398">line 1398</a>
     </li></ul></dd>
     
 
@@ -4820,7 +4843,7 @@ myArray[1]; // "c"</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1411">line 1411</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1412">line 1412</a>
     </li></ul></dd>
     
 
@@ -4993,7 +5016,7 @@ keigai.util.array.keySort( myArray, "abc, xyz desc" ); // [{abc: 2, xyz: 5}, {ab
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1475">line 1475</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1476">line 1476</a>
     </li></ul></dd>
     
 
@@ -5189,7 +5212,7 @@ keigai.util.array.last( myArray, 2 ); // [3, 4]</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1503">line 1503</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1504">line 1504</a>
     </li></ul></dd>
     
 
@@ -5339,7 +5362,7 @@ keigai.util.array.limit( myArray, 2, 2 ); // [3, 4]</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1533">line 1533</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1534">line 1534</a>
     </li></ul></dd>
     
 
@@ -5486,7 +5509,7 @@ keigai.util.array.limit( myArray, 2, 2 ); // [3, 4]</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1547">line 1547</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1548">line 1548</a>
     </li></ul></dd>
     
 
@@ -5633,7 +5656,7 @@ keigai.util.array.limit( myArray, 2, 2 ); // [3, 4]</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1561">line 1561</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1562">line 1562</a>
     </li></ul></dd>
     
 
@@ -5804,7 +5827,7 @@ keigai.util.array.median( [5, 1, 3] );    // 3</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1580">line 1580</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1581">line 1581</a>
     </li></ul></dd>
     
 
@@ -5955,7 +5978,7 @@ a[3]; // "d"</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1603">line 1603</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1604">line 1604</a>
     </li></ul></dd>
     
 
@@ -6125,7 +6148,7 @@ a[3]; // "d"</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1617">line 1617</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1618">line 1618</a>
     </li></ul></dd>
     
 
@@ -6275,7 +6298,7 @@ keigai.util.array.mingle( a, b ); // [["a", "c"], ["b", "d"]]</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1641">line 1641</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1642">line 1642</a>
     </li></ul></dd>
     
 
@@ -6469,7 +6492,7 @@ keigai.util.array.mode( [1, 3, 7, 1, 2, 10, 7, 7, 3, 10, 10] ); // [7, 10]</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1688">line 1688</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1689">line 1689</a>
     </li></ul></dd>
     
 
@@ -6616,7 +6639,7 @@ keigai.util.array.mode( [1, 3, 7, 1, 2, 10, 7, 7, 3, 10, 10] ); // [7, 10]</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1737">line 1737</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1738">line 1738</a>
     </li></ul></dd>
     
 
@@ -6786,7 +6809,7 @@ keigai.util.array.mode( [1, 3, 7, 1, 2, 10, 7, 7, 3, 10, 10] ); // [7, 10]</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1751">line 1751</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1752">line 1752</a>
     </li></ul></dd>
     
 
@@ -6956,7 +6979,7 @@ keigai.util.array.mode( [1, 3, 7, 1, 2, 10, 7, 7, 3, 10, 10] ); // [7, 10]</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1776">line 1776</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1777">line 1777</a>
     </li></ul></dd>
     
 
@@ -7149,7 +7172,7 @@ keigai.util.array.mode( [1, 3, 7, 1, 2, 10, 7, 7, 3, 10, 10] ); // [7, 10]</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1791">line 1791</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1792">line 1792</a>
     </li></ul></dd>
     
 
@@ -7322,7 +7345,7 @@ myArray[2]; // "e"</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1827">line 1827</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1828">line 1828</a>
     </li></ul></dd>
     
 
@@ -7495,7 +7518,7 @@ myArray[0]; // "b"</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1857">line 1857</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1858">line 1858</a>
     </li></ul></dd>
     
 
@@ -7669,7 +7692,7 @@ myArray.length; // 2</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1895">line 1895</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1896">line 1896</a>
     </li></ul></dd>
     
 
@@ -7843,7 +7866,7 @@ myArray.length; // 2</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1919">line 1919</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1920">line 1920</a>
     </li></ul></dd>
     
 
@@ -8014,7 +8037,7 @@ keigai.util.array.rest( [1, 2, 3, 4, 5, 6], 3 ); // [4, 5, 6]</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1941">line 1941</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1942">line 1942</a>
     </li></ul></dd>
     
 
@@ -8184,7 +8207,7 @@ keigai.util.array.rest( [1, 2, 3, 4, 5, 6], 3 ); // [4, 5, 6]</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1964">line 1964</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1965">line 1965</a>
     </li></ul></dd>
     
 
@@ -8378,7 +8401,7 @@ keigai.util.array.rotate( [0, 1, 2, 3, 4], -2 )[0] // 3;</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1998">line 1998</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-1999">line 1999</a>
     </li></ul></dd>
     
 
@@ -8549,7 +8572,7 @@ keigai.util.array.series( 0, 25, 5 ); // [0, 5, 10, 15, 20]</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2027">line 2027</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2028">line 2028</a>
     </li></ul></dd>
     
 
@@ -8696,7 +8719,7 @@ keigai.util.array.series( 0, 25, 5 ); // [0, 5, 10, 15, 20]</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2069">line 2069</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2070">line 2070</a>
     </li></ul></dd>
     
 
@@ -8869,7 +8892,7 @@ myArray[0]; // 2</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2086">line 2086</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2087">line 2087</a>
     </li></ul></dd>
     
 
@@ -9030,7 +9053,7 @@ results[20][0];     // 100</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2145">line 2145</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2146">line 2146</a>
     </li></ul></dd>
     
 
@@ -9177,7 +9200,7 @@ results[20][0];     // 100</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2159">line 2159</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2160">line 2160</a>
     </li></ul></dd>
     
 
@@ -9347,7 +9370,7 @@ results[20][0];     // 100</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2181">line 2181</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2182">line 2182</a>
     </li></ul></dd>
     
 
@@ -9494,7 +9517,7 @@ results[20][0];     // 100</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2196">line 2196</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2197">line 2197</a>
     </li></ul></dd>
     
 
@@ -9641,7 +9664,7 @@ results[20][0];     // 100</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2217">line 2217</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2218">line 2218</a>
     </li></ul></dd>
     
 
@@ -9791,7 +9814,7 @@ keigai.util.array.total( myArray ); // 4</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2234">line 2234</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2235">line 2235</a>
     </li></ul></dd>
     
 
@@ -9938,7 +9961,7 @@ keigai.util.array.total( myArray ); // 4</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2254">line 2254</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2255">line 2255</a>
     </li></ul></dd>
     
 
@@ -10108,7 +10131,7 @@ keigai.util.array.total( myArray ); // 4</pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2283">line 2283</a>
+        <a href="keigai.js.html">keigai.js</a>, <a href="keigai.js.html#sunlight-1-line-2284">line 2284</a>
     </li></ul></dd>
     
 
@@ -10188,7 +10211,7 @@ keigai.util.array.total( myArray ); // 4</pre>
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Mon Dec 01 2014 11:15:06 GMT-0500 (EST) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Mon Dec 01 2014 11:22:22 GMT-0500 (EST) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
