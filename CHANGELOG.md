@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.1
+- Switching to uglifyjs for minification
+
 ## 1.0.0
 - Removing `cache.clean()`
 - Removing internal cache garbage collection, opting to rely on lazy expiration; disables 'long lived' behavior in node.js
