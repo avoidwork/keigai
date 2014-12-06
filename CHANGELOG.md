@@ -2,6 +2,8 @@
 
 ## 1.0.1
 - Switching to uglifyjs for minification
+- Removing `typeof` conditional from a few iteration functions
+- Added `bower.json`
 
 ## 1.0.0
 - Removing `cache.clean()`

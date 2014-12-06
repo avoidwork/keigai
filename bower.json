@@ -1,0 +1,33 @@
+{
+  "name": "keigai",
+  "version": "1.0.1",
+  "homepage": "http://keigai.io",
+  "authors": [
+    "Jason Mulligan <jason.mulligan@avoidwork.com>"
+  ],
+  "description": "Lightweight data store library, with a utility belt",
+  "main": "lib/keigai.min.js",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "data",
+    "datastore",
+    "store",
+    "structure",
+    "database",
+    "nosql",
+    "reactive",
+    "components"
+  ],
+  "license": "BSD-3",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
