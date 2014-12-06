@@ -6,7 +6,7 @@
  * @license BSD-3 <https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 0.9.0
+ * @version 1.0.1
  */
 ( function ( global ) {
 
@@ -901,8 +901,9 @@ var array = {
 	 *
 	 * @method clone
 	 * @memberOf array
-	 * @param  {Array} obj Array to clone
-	 * @return {Array}     Clone of Array
+	 * @param  {Array}   obj     Array to clone
+	 * @param  {Boolean} shallow [Optional] Default is `true`
+	 * @return {Array}           Clone of Array
 	 * @example
 	 * var myArray      = [1, 2, 3, 4, 5],
 	 *     myArrayClone = keigai.util.array.clone( myArray );
@@ -912,8 +913,8 @@ var array = {
 	 * myArray.length;      // 5
 	 * myArrayClone.length; // 6
 	 */
-	clone : function ( obj ) {
-		return obj.slice();
+	clone : function ( obj, shallow ) {
+		return utility.clone( obj, shallow !== false );
 	},
 
 	/**
@@ -1377,10 +1378,6 @@ var array = {
 	 * myArray[1]; // "c"
 	 */
 	keepIf : function ( obj, fn ) {
-		if ( typeof fn != "function" ) {
-			throw new Error( label.invalidArguments );
-		}
-
 		var result = [],
 		    remove = [];
 
@@ -1839,13 +1836,7 @@ var array = {
 	 * myArray[0]; // "b"
 	 */
 	removeIf : function ( obj, fn ) {
-		var remove;
-
-		if ( typeof fn != "function" ) {
-			throw new Error( label.invalidArguments );
-		}
-
-		remove = obj.filter( fn );
+		var remove = obj.filter( fn );
 
 		array.each( remove, function ( i ) {
 			array.remove( obj, array.index ( obj, i ) );
@@ -1870,10 +1861,6 @@ var array = {
 	 * myArray.length; // 2
 	 */
 	removeWhile : function ( obj, fn ) {
-		if ( typeof fn != "function" ) {
-			throw new Error( label.invalidArguments );
-		}
-
 		var remove = [];
 
 		array.each( obj, function ( i ) {
@@ -2329,21 +2316,6 @@ var cache = {
 	 * @type {Object}
 	 */
 	lru : lru.factory( CACHE ),
-
-	/**
-	 * Garbage collector for the cached items
-	 *
-	 * @method clean
-	 * @memberOf cache
-	 * @return {Undefined} undefined
-	 */
-	clean : function () {
-		array.each( array.keys( cache.lru.cache ), function ( i ) {
-			if ( cache.expired( i ) ) {
-				cache.expire( i );
-			}
-		} );
-	},
 
 	/**
 	 * Expires a URI from the local cache
@@ -8272,7 +8244,7 @@ var utility = {
 	 * y.a; // true
 	 */
 	clone : function ( obj, shallow ) {
-		var clone;
+		var clone, result;
 
 		if ( shallow === true ) {
 			return obj !== undefined && obj !== null ? json.decode( json.encode( obj ) ) : obj;
@@ -8281,7 +8253,13 @@ var utility = {
 			return obj;
 		}
 		else if ( obj instanceof Array ) {
-			return obj.slice();
+			result = [];
+
+			array.each( obj, function ( i, idx ) {
+				result[ idx ] = utility.clone( i );
+			} );
+
+			return result;
 		}
 		else if ( !server && !client.ie && obj instanceof Document ) {
 			return xml.decode( xml.encode( obj ) );
@@ -8618,10 +8596,6 @@ var utility = {
 	 * } );
 	 */
 	iterate : function ( obj, fn ) {
-		if ( typeof fn != "function" ) {
-			throw new Error( label.invalidArguments );
-		}
-
 		array.each( Object.keys( obj ), function ( i ) {
 			return fn.call( obj, obj[i], i );
 		} );
@@ -9173,7 +9147,7 @@ function xhr () {
 	    XMLHttpRequest, headers, dispatch, success, failure, state;
 
 	headers = {
-		"user-agent"   : "keigai/0.9.0 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"user-agent"   : "keigai/1.0.1 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
 	};
@@ -9671,25 +9645,6 @@ var xml = {
  * @return {Undefined} undefined
  */
 function bootstrap () {
-	// Second phase
-	function init () {
-		TIME = new Date().getTime();
-
-		// Cache garbage collector (every minute)
-		utility.repeat( function () {
-			cache.clean();
-		}, 60000, "cacheGarbageCollector" );
-	}
-
-	// Repeating function to call init()
-	function fn () {
-		if ( regex.complete_loaded.test( document.readyState ) ) {
-			init();
-
-			return false;
-		}
-	}
-
 	// Describing the Client
 	if ( !server ) {
 		client.version = client.version();
@@ -9790,6 +9745,8 @@ function bootstrap () {
 		WORKER = global.URL.createObjectURL( utility.blob( "var " + string.fromObject( array, "array" ) + ", " + string.fromObject( regex, "regex" ) + ", " + string.fromObject( string, "string" ) + ", " + string.fromObject( utility, "utility" ) + "; onmessage = " + store.worker.toString() + ";" ) );
 	}
 
+	TIME = new Date().getTime();
+
 	// Setting up `utility.render()`
 	RENDER = global.requestAnimationFrame || function ( fn ) {
 		var offset = new Date().getTime() - TIME;
@@ -9798,22 +9755,6 @@ function bootstrap () {
 			fn( offset );
 		}, 16, offset );
 	};
-
-	// Initializing
-	if ( typeof exports != "undefined" || typeof define == "function" || regex.complete_loaded.test( document.readyState ) ) {
-		init();
-	}
-	else if ( typeof document.addEventListener == "function" ) {
-		document.addEventListener( "DOMContentLoaded" , function () {
-			init();
-		}, false );
-	}
-	else if ( typeof document.attachEvent == "function" ) {
-		document.attachEvent( "onreadystatechange" , fn );
-	}
-	else {
-		utility.repeat( fn );
-	}
 }
 
 // Bootstrapping
@@ -9860,7 +9801,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "0.9.0"
+	version : "1.0.1"
 };
 } )();
 
