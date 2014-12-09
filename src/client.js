@@ -57,7 +57,7 @@ var client = {
 
 		if ( this.ie ) {
 			version = navigator.userAgent.replace(/(.*msie|;.*)/gi, "");
-			version = number.parse( string.trim( version ) );
+			version = number.parse( string.trim( version ) || 9, 10 );
 		}
 
 		return version;

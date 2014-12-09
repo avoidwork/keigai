@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.2
+- Fixing Internet Explorer detection via `navigator.userAgent`
+- Fixing `utility.parse()` for Internet Explorer
+
 ## 1.0.1
 - Switching to uglifyjs for minification
 - Removing `typeof` conditional from a few iteration functions

@@ -610,15 +610,18 @@ var utility = {
 	 */
 	parse : function ( uri ) {
 		var obj    = {},
-		    parsed = {};
+		    parsed = {},
+		    host, protocol;
 
 		if ( uri === undefined ) {
 			uri = !server ? location.href : "";
 		}
 
 		if ( !server ) {
-			obj = document.createElement( "a" );
+			obj      = document.createElement( "a" );
 			obj.href = uri;
+			host     = obj.href.match( regex.host )[1];
+			protocol = obj.href.match( regex.protocol )[1];
 		}
 		else {
 			obj = url.parse( uri );
@@ -634,13 +637,13 @@ var utility = {
 
 		parsed = {
 			auth     : server ? null : regex.auth.exec( uri ),
-			protocol : obj.protocol || "http:",
-			hostname : obj.hostname || "localhost",
+			protocol : obj.protocol || protocol,
+			hostname : obj.hostname || host,
 			port     : obj.port ? number.parse( obj.port, 10 ) : "",
 			pathname : obj.pathname,
 			search   : obj.search   || "",
 			hash     : obj.hash     || "",
-			host     : obj.host     || "localhost"
+			host     : obj.host     || host
 		};
 
 		// 'cause IE is ... IE; required for data.batch()
