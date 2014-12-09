@@ -6,7 +6,7 @@
  * @license BSD-3 <https://raw.github.com/avoidwork/keigai/master/LICENSE>
  * @link http://keigai.io
  * @module keigai
- * @version 1.0.1
+ * @version 1.0.2
  */
 ( function ( global ) {
 
@@ -89,7 +89,8 @@ var regex = {
 	html                 : /^<.*>$/,
 	http_body            : /200|201|202|203|206/,
 	http_ports           : /80|443/,
-	ie                   : /msie|ie/i,
+	host                 : /\/\/(.*)\//,
+	ie                   : /msie|ie|\.net|windows\snt/i,
 	ip                   : /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
 	is_xml               : /^<\?xml.*\?>/,
 	json_maybe           : /json|plain|javascript/,
@@ -109,6 +110,7 @@ var regex = {
 	patch                : /^patch$/,
 	primitive            : /^(boolean|function|number|string)$/,
 	priv                 : /private/,
+	protocol             : /^(.*)\/\//,
 	put_post             : /^(post|put)$/i,
 	radio_checkbox       : /^(radio|checkbox)$/i,
 	root                 : /^\/[^\/]/,
@@ -2472,7 +2474,7 @@ var client = {
 
 		if ( this.ie ) {
 			version = navigator.userAgent.replace(/(.*msie|;.*)/gi, "");
-			version = number.parse( string.trim( version ) );
+			version = number.parse( string.trim( version ) || 9, 10 );
 		}
 
 		return version;
@@ -8681,15 +8683,18 @@ var utility = {
 	 */
 	parse : function ( uri ) {
 		var obj    = {},
-		    parsed = {};
+		    parsed = {},
+		    host, protocol;
 
 		if ( uri === undefined ) {
 			uri = !server ? location.href : "";
 		}
 
 		if ( !server ) {
-			obj = document.createElement( "a" );
+			obj      = document.createElement( "a" );
 			obj.href = uri;
+			host     = obj.href.match( regex.host )[1];
+			protocol = obj.href.match( regex.protocol )[1];
 		}
 		else {
 			obj = url.parse( uri );
@@ -8705,13 +8710,13 @@ var utility = {
 
 		parsed = {
 			auth     : server ? null : regex.auth.exec( uri ),
-			protocol : obj.protocol || "http:",
-			hostname : obj.hostname || "localhost",
+			protocol : obj.protocol || protocol,
+			hostname : obj.hostname || host,
 			port     : obj.port ? number.parse( obj.port, 10 ) : "",
 			pathname : obj.pathname,
 			search   : obj.search   || "",
 			hash     : obj.hash     || "",
-			host     : obj.host     || "localhost"
+			host     : obj.host     || host
 		};
 
 		// 'cause IE is ... IE; required for data.batch()
@@ -9147,7 +9152,7 @@ function xhr () {
 	    XMLHttpRequest, headers, dispatch, success, failure, state;
 
 	headers = {
-		"user-agent"   : "keigai/1.0.1 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
+		"user-agent"   : "keigai/1.0.2 node.js/" + process.versions.node.replace( /^v/, "" ) + " (" + string.capitalize( process.platform ) + " V8/" + process.versions.v8 + " )",
 		"content-type" : "text/plain",
 		"accept"       : "*/*"
 	};
@@ -9801,7 +9806,7 @@ return {
 		walk     : utility.walk,
 		when     : utility.when
 	},
-	version : "1.0.1"
+	version : "1.0.2"
 };
 } )();
 
