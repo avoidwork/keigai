@@ -16,6 +16,7 @@ return {
 		curry    : utility.curry,
 		csv      : csv,
 		defer    : deferred.factory,
+		delay    : utility.defer,
 		element  : element,
 		extend   : utility.extend,
 		genId    : utility.genId,

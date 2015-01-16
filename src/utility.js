@@ -322,7 +322,6 @@ var utility = {
 	 * @param  {Number}   id     [Optional] ID of the deferred function
 	 * @param  {Boolean}  repeat [Optional] Describes the execution, default is `false`
 	 * @return {String}          ID of the timer
-	 * @private
 	 */
 	defer : function ( fn, ms, id, repeat ) {
 		var op;

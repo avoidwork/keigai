@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.3
+- Exposing `utility.defer()` as `util.delay()`
+
 ## 1.0.2
 - Fixing Internet Explorer detection via `navigator.userAgent`
 - Fixing `utility.parse()` for Internet Explorer
