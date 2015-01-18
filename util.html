@@ -19,12 +19,15 @@
 				<ul class="blank">
 					<li><a href="#dom" title="View DOM helper details">$</a></li>
 					<li><a href="#array" title="View array details">array</a></li>
+					<li><a href="#base" title="View clone details">base</a></li>
 					<li><a href="#clone" title="View clone details">clone</a></li>
 					<li><a href="#coerce" title="View coerce details">coerce</a></li>
+					<li><a href="#curry" title="View curry details">curry</a></li>
 					<li><a href="#defer" title="View defer details">defer</a></li>
 					<li><a href="#delay" title="View delay details">delay</a></li>
 					<li><a href="#element" title="View element details">element</a></li>
 					<li><a href="#extend" title="View extend details">extend</a></li>
+					<li><a href="#genId" title="View genId details">genId</a></li>
 					<li><a href="#iterate" title="View iterate details">iterate</a></li>
 					<li><a href="#json" title="View json details">json</a></li>
 					<li><a href="#jsonp" title="View jsonp details">jsonp</a></li>
@@ -57,26 +60,35 @@
 				<p>Collection of Array functions.</p>
 				<p><a href="http://api.keigai.io/array.html" title="Array API">API documentation</a></p>
 
+				<h2><a name="base" class="anchor" href="#base"><span class="octicon octicon-link"></span></a>base</h2>
+				<p><strong>keigai.util.base()</strong></p>
+				<p>Base factory, wired for an Observerable.</p>
+				<p><a href="http://api.keigai.io/utility.html#toc4" title="Base API">API documentation</a></p>
 
 				<h2><a name="clone" class="anchor" href="#clone"><span class="octicon octicon-link"></span></a>clone</h2>
 				<p><strong>keigai.util.clone(arg[, shallow])</strong></p>
 				<p>Creates a deep or shallow clone of an Object.</p>
-				<p><a href="http://api.keigai.io/utility.html#toc4" title="Clone API">API documentation</a></p>
+				<p><a href="http://api.keigai.io/utility.html#toc5" title="Clone API">API documentation</a></p>
 
 				<h2><a name="coerce" class="anchor" href="#coerce"><span class="octicon octicon-link"></span></a>coerce</h2>
 				<p><strong>keigai.util.coerce(arg)</strong></p>
 				<p>Coerces a String to a Type.</p>
-				<p><a href="http://api.keigai.io/utility.html#toc5" title="Clone API">API documentation</a></p>
+				<p><a href="http://api.keigai.io/utility.html#toc6" title="Coerce API">API documentation</a></p>
+
+				<h2><a name="curry" class="anchor" href="#curry"><span class="octicon octicon-link"></span></a>curry</h2>
+				<p><strong>keigai.util.curry(arg)</strong></p>
+				<p>Curries a Function; Function to curry must return a Function.</p>
+				<p><a href="http://api.keigai.io/utility.html#toc7" title="Curry API">API documentation</a></p>
 
 				<h2><a name="defer" class="anchor" href="#defer"><span class="octicon octicon-link"></span></a>defer</h2>
 				<p><strong>keigai.util.defer()</strong></p>
-				<p>Creates a Deferred (encapsulates a Promise). Compatible with Promises/A+ libraries.</p>
+				<p>Creates a Deferred (encapsulates a Promise). Compatible with ES6 Promise, &amp; Promises/A+ libraries.</p>
 				<p><a href="http://api.keigai.io/deferred.html" title="Deferred API">API documentation</a></p>
 
 				<h2><a name="delay" class="anchor" href="#delay"><span class="octicon octicon-link"></span></a>delay</h2>
-				<p><strong>keigai.util.delay()</strong></p>
+				<p><strong>keigai.util.delay(fn, ms[, id, repeat])</strong></p>
 				<p>Defers the execution of Function by at least the supplied milliseconds. Timing may vary under "heavy load" relative to the CPU &amp; client JavaScript engine.</p>
-				<p><a href="http://api.keigai.io/deferred.html" title="Deferred API">API documentation</a></p>
+				<p><a href="http://api.keigai.io/utility.html#toc7" title="Delay API">API documentation</a></p>
 
 				<h2><a name="element" class="anchor" href="#el"><span class="octicon octicon-link"></span></a>element</h2>
 				<p><strong>keigai.util.element</strong></p>
@@ -86,12 +98,17 @@
 				<h2><a name="extend" class="anchor" href="#extend"><span class="octicon octicon-link"></span></a>extend</h2>
 				<p><strong>keigai.util.extend(obj[, args])</strong></p>
 				<p>Creates a "class" extending Object, with optional decoration.</p>
-				<p><a href="http://api.keigai.io/utility.html#toc6" title="Extend API">API documentation</a></p>
+				<p><a href="http://api.keigai.io/utility.html#toc9" title="Extend API">API documentation</a></p>
 
 				<h2><a name="iterate" class="anchor" href="#iterate"><span class="octicon octicon-link"></span></a>iterate</h2>
 				<p><strong>keigai.util.iterate(arg, fn)</strong></p>
 				<p>Iterates an Object and executes a function against the properties. Returning `false` halts iteration.</p>
-				<p><a href="http://api.keigai.io/utility.html#toc7" title="Iterate API">API documentation</a></p>
+				<p><a href="http://api.keigai.io/utility.html#toc10" title="Iterate API">API documentation</a></p>
+
+				<h2><a name="iterate" class="anchor" href="#iterate"><span class="octicon octicon-link"></span></a>iterate</h2>
+				<p><strong>keigai.util.iterate(arg, fn)</strong></p>
+				<p>Iterates an Object and executes a function against the properties. Returning `false` halts iteration.</p>
+				<p><a href="http://api.keigai.io/utility.html#toc10" title="Iterate API">API documentation</a></p>
 
 				<h2><a name="json" class="anchor" href="#json"><span class="octicon octicon-link"></span></a>json</h2>
 				<p><strong>keigai.util.json</strong></p>
