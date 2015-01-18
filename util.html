@@ -20,8 +20,10 @@
 					<li><a href="#dom" title="View DOM helper details">$</a></li>
 					<li><a href="#array" title="View array details">array</a></li>
 					<li><a href="#base" title="View clone details">base</a></li>
+					<li><a href="#clearTimers" title="View clearTimers details">clearTimers</a></li>
 					<li><a href="#clone" title="View clone details">clone</a></li>
 					<li><a href="#coerce" title="View coerce details">coerce</a></li>
+					<li><a href="#csv" title="View csv details">csv</a></li>
 					<li><a href="#curry" title="View curry details">curry</a></li>
 					<li><a href="#defer" title="View defer details">defer</a></li>
 					<li><a href="#delay" title="View delay details">delay</a></li>
@@ -38,7 +40,11 @@
 					<li><a href="#number" title="View number details">number</a></li>
 					<li><a href="#observer" title="View observer details">observer</a></li>
 					<li><a href="#parse" title="View parse details">parse</a></li>
+					<li><a href="#partial" title="View partial details">partial</a></li>
 					<li><a href="#prevent" title="View prevent details">prevent</a></li>
+					<li><a href="#race" title="View race details">race</a></li>
+					<li><a href="#render" title="View render details">render</a></li>
+					<li><a href="#repeat" title="View repeat details">repeat</a></li>
 					<li><a href="#request" title="View request details">request</a></li>
 					<li><a href="#stop" title="View stop details">stop</a></li>
 					<li><a href="#string" title="View string details">string</a></li>
@@ -65,20 +71,30 @@
 				<p>Base factory, wired for an Observerable.</p>
 				<p><a href="http://api.keigai.io/utility.html#toc4" title="Base API">API documentation</a></p>
 
+				<h2><a name="clearTimers" class="anchor" href="#clearTimers"><span class="octicon octicon-link"></span></a>clearTimers</h2>
+				<p><strong>keigai.util.clearTimers(id)</strong></p>
+				<p>Clears deferred & repeating functions.</p>
+				<p><a href="http://api.keigai.io/utility.html#toc5" title="Clone API">API documentation</a></p>
+
 				<h2><a name="clone" class="anchor" href="#clone"><span class="octicon octicon-link"></span></a>clone</h2>
 				<p><strong>keigai.util.clone(arg[, shallow])</strong></p>
 				<p>Creates a deep or shallow clone of an Object.</p>
-				<p><a href="http://api.keigai.io/utility.html#toc5" title="Clone API">API documentation</a></p>
+				<p><a href="http://api.keigai.io/utility.html#toc6" title="Clone API">API documentation</a></p>
 
 				<h2><a name="coerce" class="anchor" href="#coerce"><span class="octicon octicon-link"></span></a>coerce</h2>
 				<p><strong>keigai.util.coerce(arg)</strong></p>
 				<p>Coerces a String to a Type.</p>
-				<p><a href="http://api.keigai.io/utility.html#toc6" title="Coerce API">API documentation</a></p>
+				<p><a href="http://api.keigai.io/utility.html#toc7" title="Coerce API">API documentation</a></p>
+
+				<h2><a name="csv" class="anchor" href="#csv"><span class="octicon octicon-link"></span></a>csv</h2>
+				<p><strong>keigai.util.csv</strong></p>
+				<p>Collection of CSV functions for easy encode/decode/transformation.</p>
+				<p><a href="http://api.keigai.io/csv.html" title="CSV API">API documentation</a></p>
 
 				<h2><a name="curry" class="anchor" href="#curry"><span class="octicon octicon-link"></span></a>curry</h2>
 				<p><strong>keigai.util.curry(arg)</strong></p>
 				<p>Curries a Function; Function to curry must return a Function.</p>
-				<p><a href="http://api.keigai.io/utility.html#toc7" title="Curry API">API documentation</a></p>
+				<p><a href="http://api.keigai.io/utility.html#toc8" title="Curry API">API documentation</a></p>
 
 				<h2><a name="defer" class="anchor" href="#defer"><span class="octicon octicon-link"></span></a>defer</h2>
 				<p><strong>keigai.util.defer()</strong></p>
@@ -88,7 +104,7 @@
 				<h2><a name="delay" class="anchor" href="#delay"><span class="octicon octicon-link"></span></a>delay</h2>
 				<p><strong>keigai.util.delay(fn, ms[, id, repeat])</strong></p>
 				<p>Defers the execution of Function by at least the supplied milliseconds. Timing may vary under "heavy load" relative to the CPU &amp; client JavaScript engine.</p>
-				<p><a href="http://api.keigai.io/utility.html#toc7" title="Delay API">API documentation</a></p>
+				<p><a href="http://api.keigai.io/utility.html#toc9" title="Delay API">API documentation</a></p>
 
 				<h2><a name="element" class="anchor" href="#el"><span class="octicon octicon-link"></span></a>element</h2>
 				<p><strong>keigai.util.element</strong></p>
@@ -98,17 +114,17 @@
 				<h2><a name="extend" class="anchor" href="#extend"><span class="octicon octicon-link"></span></a>extend</h2>
 				<p><strong>keigai.util.extend(obj[, args])</strong></p>
 				<p>Creates a "class" extending Object, with optional decoration.</p>
-				<p><a href="http://api.keigai.io/utility.html#toc9" title="Extend API">API documentation</a></p>
+				<p><a href="http://api.keigai.io/utility.html#toc10" title="Extend API">API documentation</a></p>
+
+				<h2><a name="genId" class="anchor" href="#genId"><span class="octicon octicon-link"></span></a>genId</h2>
+				<p><strong>keigai.util.genId([obj, dom])</strong></p>
+				<p>Generates an ID value.</p>
+				<p><a href="http://api.keigai.io/utility.html#toc11" title="Extend API">API documentation</a></p>
 
 				<h2><a name="iterate" class="anchor" href="#iterate"><span class="octicon octicon-link"></span></a>iterate</h2>
 				<p><strong>keigai.util.iterate(arg, fn)</strong></p>
 				<p>Iterates an Object and executes a function against the properties. Returning `false` halts iteration.</p>
-				<p><a href="http://api.keigai.io/utility.html#toc10" title="Iterate API">API documentation</a></p>
-
-				<h2><a name="iterate" class="anchor" href="#iterate"><span class="octicon octicon-link"></span></a>iterate</h2>
-				<p><strong>keigai.util.iterate(arg, fn)</strong></p>
-				<p>Iterates an Object and executes a function against the properties. Returning `false` halts iteration.</p>
-				<p><a href="http://api.keigai.io/utility.html#toc10" title="Iterate API">API documentation</a></p>
+				<p><a href="http://api.keigai.io/utility.html#toc12" title="Iterate API">API documentation</a></p>
 
 				<h2><a name="json" class="anchor" href="#json"><span class="octicon octicon-link"></span></a>json</h2>
 				<p><strong>keigai.util.json</strong></p>
@@ -123,7 +139,7 @@
 				<h2><a name="log" class="anchor" href="#log"><span class="octicon octicon-link"></span></a>log</h2>
 				<p><strong>keigai.util.log(arg[, target])</strong></p>
 				<p>Writes argument to the console.</p>
-				<p><a href="http://api.keigai.io/utility.html#toc8" title="Log API">API documentation</a></p>
+				<p><a href="http://api.keigai.io/utility.html#toc13" title="Log API">API documentation</a></p>
 
 				<h2><a name="lru" class="anchor" href="#lru"><span class="octicon octicon-link"></span></a>lru</h2>
 				<p><strong>keigai.util.lru([max])</strong></p>
@@ -138,7 +154,7 @@
 				<h2><a name="merge" class="anchor" href="#merge"><span class="octicon octicon-link"></span></a>merge</h2>
 				<p><strong>keigai.util.merge(a, b)</strong></p>
 				<p>Merges `b` into `a`.</p>
-				<p><a href="http://api.keigai.io/utility.html#toc9" title="Merge API">API documentation</a></p>
+				<p><a href="http://api.keigai.io/utility.html#toc14" title="Merge API">API documentation</a></p>
 
 				<h2><a name="number" class="anchor" href="#number"><span class="octicon octicon-link"></span></a>number</h2>
 				<p><strong>keigai.util.number</strong></p>
@@ -153,12 +169,32 @@
 				<h2><a name="parse" class="anchor" href="#parse"><span class="octicon octicon-link"></span></a>parse</h2>
 				<p><strong>keigai.util.parse(arg)</strong></p>
 				<p>Parses a URI into an Object.</p>
-				<p><a href="http://api.keigai.io/utility.html#coerce" title="Parse API">API documentation</a></p>
+				<p><a href="http://api.keigai.io/utility.html#toc15" title="Parse API">API documentation</a></p>
+
+				<h2><a name="partial" class="anchor" href="#partial"><span class="octicon octicon-link"></span></a>partial</h2>
+				<p><strong>keigai.util.partial()</strong></p>
+				<p>Creates a partially applied Function.</p>
+				<p><a href="http://api.keigai.io/utility.html#toc16" title="Partial API">API documentation</a></p>
 
 				<h2><a name="prevent" class="anchor" href="#prevent"><span class="octicon octicon-link"></span></a>prevent</h2>
 				<p><strong>keigai.util.prevent(ev)</strong></p>
 				<p>Prevents default behavior of an Event.</p>
-				<p><a href="http://api.keigai.io/utility.html#toc11" title="Prevent API">API documentation</a></p>
+				<p><a href="http://api.keigai.io/utility.html#toc17" title="Prevent API">API documentation</a></p>
+
+				<h2><a name="race" class="anchor" href="#race"><span class="octicon octicon-link"></span></a>race</h2>
+				<p><strong>keigai.util.race()</strong></p>
+				<p>Accepts Deferreds or Promises as arguments, or an Array of either.</p>
+				<p><a href="http://api.keigai.io/utility.html#toc18" title="Race API">API documentation</a></p>
+
+				<h2><a name="render" class="anchor" href="#render"><span class="octicon octicon-link"></span></a>render</h2>
+				<p><strong>keigai.util.render(fn)</strong></p>
+				<p>Asynchronous DOM rendering (cannot be cancelled, suggested for reactive behavior).</p>
+				<p><a href="http://api.keigai.io/utility.html#toc19" title="Render API">API documentation</a></p>
+
+				<h2><a name="repeat" class="anchor" href="#repeat"><span class="octicon octicon-link"></span></a>repeat</h2>
+				<p><strong>keigai.util.repeat(fn, ms[, id, now])</strong></p>
+				<p>Creates a recursive function. Return false from the function to halt recursion.</p>
+				<p><a href="http://api.keigai.io/utility.html#toc20" title="Repeat API">API documentation</a></p>
 
 				<h2><a name="request" class="anchor" href="#request"><span class="octicon octicon-link"></span></a>request</h2>
 				<p><strong>keigai.util.request(uri[, type, args, headers])</strong></p>
