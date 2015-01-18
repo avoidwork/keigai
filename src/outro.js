@@ -11,6 +11,7 @@ return {
 		$        : utility.$,
 		array    : array,
 		base     : utility.base,
+		clearTimers : utility.clearTimers,
 		clone    : utility.clone,
 		coerce   : utility.coerce,
 		curry    : utility.curry,

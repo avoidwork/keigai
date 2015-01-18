@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.4
+- Fixing documentation
+- Exposing `utility.clearTimers()` as `util.clearTimers()`, to manage repeating timers created from `util.delay()`
+- Refactored `utility.extend()` to create a `super` property on the output to reference call prototype methods from decorated methods
+- Fixing `utility.merge()` when using `utility.extend()` to override a prototype method via `super`
+
 ## 1.0.3
 - Exposing `utility.defer()` as `util.delay()`
 

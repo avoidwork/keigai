@@ -138,7 +138,8 @@ var utility = {
 	 * @memberOf utility
 	 * @param  {String} id ID of timer( s )
 	 * @return {Undefined} undefined
-	 * @private
+	 * @example
+	 * keigai.util.clearTimers( 'helloWorld' );
 	 */
 	clearTimers : function ( id ) {
 		if ( id === undefined || string.isEmpty( id ) ) {
@@ -322,6 +323,10 @@ var utility = {
 	 * @param  {Number}   id     [Optional] ID of the deferred function
 	 * @param  {Boolean}  repeat [Optional] Describes the execution, default is `false`
 	 * @return {String}          ID of the timer
+	 * @example
+	 * keigai.util.defer( function () {
+	 *   console.log( 'hello world' );
+	 * }, 1000, 'helloWorld', true );
 	 */
 	defer : function ( fn, ms, id, repeat ) {
 		var op;
@@ -445,7 +450,7 @@ var utility = {
 	},
 
 	/**
-	 * Creates a "class" extending Object, with optional decoration
+	 * Creates a "class" extending Object, with optional decoration. SuperClass can be called from `super` property.
 	 *
 	 * @method extend
 	 * @memberOf utility
@@ -468,6 +473,8 @@ var utility = {
 			utility.merge( o, arg );
 		}
 
+		o["super"] = obj;
+
 		return o;
 	},
 
@@ -479,7 +486,8 @@ var utility = {
 	 * @param  {Mixed}   obj [Optional] Object to receive id
 	 * @param  {Boolean} dom [Optional] Verify the ID is unique in the DOM, default is false
 	 * @return {Mixed}       Object or id
-	 * @private
+	 * @example
+	 * var id = keigai.util.genId();
 	 */
 	genId : function ( obj, dom ) {
 		dom = ( dom === true );
@@ -564,20 +572,28 @@ var utility = {
 	 * var obj = {a: true};
 	 *
 	 * keigai.util.merge( obj, {b: false} )
-	 * obj.b; // false
+	 * console.log(obj); // {a: true, b: false}
 	 */
 	merge : function ( obj, arg ) {
+		var keys = array.keys( obj );
+
 		utility.iterate( arg, function ( v, k ) {
-			if ( ( obj[k] instanceof Array ) && ( v instanceof Array ) ) {
-				array.merge( obj[k], v );
+			if ( !array.contains( keys, k ) || ( v instanceof Function ) ) {
+				obj[ k ] = v;
 			}
-			else if ( ( obj[k] instanceof Object ) && ( v instanceof Object ) ) {
+			else if ( ( obj[ k ] instanceof Array ) && ( v instanceof Array ) ) {
+				array.merge( obj[ k ], v );
+			}
+			else if ( v instanceof Function ) {
+				obj[ k ] = v;
+			}
+			else if ( ( obj[ k ] instanceof Object ) && ( v instanceof Object ) ) {
 				utility.iterate( v, function ( x, y ) {
-					obj[k][y] = utility.clone( x );
+					obj[ k ][ y ] = utility.clone( x );
 				} );
 			}
 			else {
-				obj[k] = utility.clone( v );
+				obj[ k ] = utility.clone( v );
 			}
 		} );
 
