@@ -44,7 +44,7 @@ var grid = {
 
 			// Adding CSS class if "column" is sortable
 			if ( array.contains( obj.sortable, i ) ) {
-				element.klass( el, "sortable", true );
+				element.addClass( el, "sortable" );
 
 				// Applying default sort, if specified
 				if ( sort.filter( function ( x ) { return ( x.indexOf( i ) === 0 ); } ).length > 0 ) {

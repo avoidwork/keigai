@@ -187,8 +187,10 @@ Observable.prototype.once = function ( ev, handler, id, scope  ) {
  * observer.unhook( document.querySelector( "a" ), "click" );
  */
 Observable.prototype.unhook = function ( target, ev ) {
-	target.removeEventListener( ev, this.hooks[target.id], false );
-	delete this.hooks[target.id];
+	if ( !string.isEmpty( target.id ) ) {
+		target.removeEventListener( ev, this.hooks[ target.id ], false );
+		delete this.hooks[ target.id ];
+	}
 
 	return target;
 };

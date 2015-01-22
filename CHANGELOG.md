@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.6
+- Creating `element.addClass()`, & `element.removeClass()` facades of `element.klass()` for a familiar syntax
+- Fixing `element.attr()` such that `optgroup` is supported
+- Removing `id` assignment from `element.create()`
+- Refactored to utilize `element.addClass()` & `element.removeClass()`
+
 ## 1.0.5
 - Fixing `element.val()` such that `optgroup` is supported for getting the value
 

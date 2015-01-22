@@ -306,7 +306,7 @@ DataList.prototype.pages = function () {
 		element.create( last ? "span" : "a", {"class": "last page", "data-page": last ? null : total, innerHTML: "&gt;&gt;"}, element.create( "li", {}, el ) );
 
 		// Adding to DOM
-		element.klass( el, "hidden", false );
+		element.removeClass( el, "hidden" );
 
 		// Pagination listener
 		self.observer.hook( el, "click" );

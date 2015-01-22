@@ -3,9 +3,24 @@
  */
 var element = {
 	/**
+	 * Adds a CSS class to an Element
+	 *
+	 * @method addClass
+	 * @memberOf element
+	 * @param  {Object} obj Element
+	 * @param  {String} arg CSS class
+	 * @return {Object}     Element
+	 * @example
+	 * keigai.util.element.addClass( document.querySelector( "#target" ), "newClass" );
+	 */
+	addClass : function ( obj, arg ) {
+		element.klass( obj, arg, true );
+	},
+
+	/**
 	 * Appends an Element to an Element
 	 *
-	 * @memberOf appendTo
+	 * @method appendTo
 	 * @memberOf element
 	 * @param  {Object} obj   Element
 	 * @param  {Object} child Child Element
@@ -137,7 +152,7 @@ var element = {
 	create : function ( type, args, obj, pos ) {
 		var svg  = false,
 		    frag = false,
-		    fragment, uid, result;
+		    fragment, result;
 
 		// Removing potential HTML template formatting
 		type = type.replace( /\t|\n|\r/g, "" );
@@ -147,14 +162,6 @@ var element = {
 		}
 		else {
 			obj = document.body;
-		}
-		
-		if ( args instanceof Object && args.id && !utility.dom( "#" + args.id ) ) {
-			uid = args.id;
-			delete args.id;
-		}
-		else if ( !svg ) {
-			uid = utility.genId( undefined, true );
 		}
 
 		// String injection, create a frag and apply it
@@ -170,10 +177,6 @@ var element = {
 			}
 			else {
 				fragment = document.createElementNS( "http://www.w3.org/2000/svg", type );
-			}
-
-			if ( uid ) {
-				fragment.id = uid;
 			}
 
 			if ( args instanceof Object ) {
@@ -377,10 +380,8 @@ var element = {
 	find : function ( obj, arg ) {
 		var result = [];
 
-		utility.genId( obj, true );
-
 		array.each( string.explode( arg ), function ( i ) {
-			result = result.concat( utility.dom( "#" + obj.id + " " + i ) );
+			result = result.concat( array.cast( obj.querySelectorAll( i ) ) );
 		} );
 
 		return result;
@@ -620,19 +621,18 @@ var element = {
 	 * keigai.util.element.removeAttr( document.querySelector( "a" ), "href" );
 	 */
 	removeAttr : function ( obj, key ) {
-		var target;
-
 		if ( regex.svg.test( obj.namespaceURI ) ) {
 			obj.removeAttributeNS( obj.namespaceURI, key );
 		}
 		else {
 			if ( obj.nodeName === "SELECT" && key === "selected") {
-				target = utility.dom( "#" + obj.id + " option[selected=\"selected\"]" )[0];
-
-				if ( target ) {
-					target.selected = false;
-					target.removeAttribute( "selected" );
-				}
+				array.each( element.find( obj, "option" ), function ( i ) {
+					if ( i.selected === true ) {
+						i.selected = false;
+						i.removeAttribute( "selected" );
+						return false;
+					}
+				} );
 			}
 			else {
 				obj.removeAttribute( key );
@@ -640,6 +640,21 @@ var element = {
 		}
 
 		return obj;
+	},
+
+	/**
+	 * Removes a CSS class from Element
+	 *
+	 * @method removeClass
+	 * @memberOf element
+	 * @param  {Object} obj Element
+	 * @param  {String} arg CSS class
+	 * @return {Object}     Element
+	 * @example
+	 * keigai.util.element.removeClass( document.querySelector( "#target" ), "existingClass" );
+	 */
+	removeClass : function ( obj, arg ) {
+		element.klass( obj, arg, false );
 	},
 
 	/**
@@ -800,7 +815,7 @@ var element = {
 				obj[k] = v;
 			}
 			else if ( k === "class" ) {
-				!string.isEmpty( v ) ? element.klass( obj, v ) : element.klass( obj, "*", false );
+				!string.isEmpty( v ) ? element.addClass( obj, v ) : element.removeClass( obj, "*" );
 			}
 			else if ( k.indexOf( "data-" ) === 0 ) {
 				element.data( obj, k.replace( "data-", "" ), v );
