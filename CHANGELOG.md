@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.5
+- Fixing `element.val()` such that `optgroup` is supported for getting the value
+
 ## 1.0.4
 - Fixing documentation
 - Exposing `utility.clearTimers()` as `util.clearTimers()`, to manage repeating timers created from `util.delay()`

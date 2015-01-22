@@ -842,7 +842,13 @@ var element = {
 				} );
 			}
 			else if ( regex.select.test( obj.type ) ) {
-				output = obj.options[obj.selectedIndex].value;
+				output = null;
+				array.each( element.find( obj, "option" ), function ( i ) {
+					if ( i.selected === true ) {
+						output = i.value;
+						return false;
+					}
+				} );
 			}
 			else if ( obj.value ) {
 				output = obj.value;
@@ -879,7 +885,7 @@ var element = {
 			else if ( regex.select.test( obj.type ) ) {
 				ev = "change";
 
-				array.each( element.find( obj, "> *" ), function ( i ) {
+				array.each( element.find( obj, " option" ), function ( i ) {
 					if ( i.value === value ) {
 						i.selected = true;
 						output = i;

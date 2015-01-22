@@ -125,7 +125,7 @@ module.exports = function (grunt) {
 
 	// aliases
 	grunt.registerTask("test", ["jshint", "nodeunit"]);
-	grunt.registerTask("build", ["concat", "sed", "test"]);
-	grunt.registerTask("default", ["build", "sass", "uglify"]);
+	grunt.registerTask("build", ["concat", "sed"]);
+	grunt.registerTask("default", ["build", "test", "sass", "uglify"]);
 	grunt.registerTask("package", ["default", "jsdoc"]);
 };
