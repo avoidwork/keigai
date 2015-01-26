@@ -1,7 +1,7 @@
 /**
  * @namespace array
  */
-var array = {
+let array = {
 	/**
 	 * Adds 'arg' to 'obj' if it is not found
 	 *
@@ -11,12 +11,12 @@ var array = {
 	 * @param  {Mixed} arg Argument to set in 'obj'
 	 * @return {Array}     Array that was queried
 	 * @example
-	 * var myArray = [1, 2];
+	 * let myArray = [1, 2];
 	 *
 	 * keigai.util.array.add( myArray, 3 ); // [1, 2, 3]
 	 * keigai.util.array.add( myArray, 1 ); // [1, 2, 3]
 	 */
-	add : function ( obj, arg ) {
+	add: ( obj, arg ) => {
 		if ( !array.contains( obj, arg ) ) {
 			obj.push( arg );
 		}
@@ -33,18 +33,19 @@ var array = {
 	 * @param  {Mixed} arg Value to find index of
 	 * @return {Number}    Index of `arg` within `obj`
 	 * @example
-	 * var myArray = [1, 5, 10, 15, 20, 25, ...];
+	 * let myArray = [1, 5, 10, 15, 20, 25, ...];
 	 *
 	 * keigai.util.array.binIndex( myArray, 5 ); // 1
 	 */
-	binIndex : function ( obj, arg ) {
-		var min = 0,
-		    max = obj.length - 1,
-		    idx, val;
+	binIndex: ( obj, arg ) => {
+		let max = obj.length - 1;
+		let min = 0;
+		let idx = 0;
+		let val = 0;
 
 		while ( min <= max ) {
 			idx = Math.floor( ( min + max ) / 2 );
-			val = obj[idx];
+			val = obj[ idx ];
 
 			if ( val < arg ) {
 				min = idx + 1;
@@ -71,18 +72,17 @@ var array = {
 	 * @example
 	 * keigai.util.array.cast( document.querySelectorAll( "..." ) );
 	 */
-	cast : function ( obj, key ) {
-		key   = ( key === true );
-		var o = [];
+	cast: ( obj, key ) => {
+		let o = [];
 
 		if ( !isNaN( obj.length ) ) {
-			o = slice.call( obj );
+			o = Array.from( obj );
 		}
-		else if ( key ) {
+		else if ( key === true ) {
 			o = array.keys( obj );
 		}
 		else {
-			utility.iterate( obj, function ( i ) {
+			utility.iterate( obj, ( i ) => {
 				o.push( i );
 			} );
 		}
@@ -101,11 +101,11 @@ var array = {
 	 * @example
 	 * keigai.util.array.chunk( [0, 1, 2, 3], 2 ); // [[0, 1], [2, 3]]
 	 */
-	chunk : function ( obj, size ) {
-		var result = [],
-		    nth    = number.round( ( obj.length / size ), "up" ),
-		    start  = 0,
-		    i      = -1;
+	chunk: ( obj, size ) => {
+		let result = [];
+		let nth = number.round( ( obj.length / size ), "up" );
+		let start = 0;
+		let i = -1;
 
 		while ( ++i < nth ) {
 			start = i * size;
@@ -123,12 +123,12 @@ var array = {
 	 * @param  {Array} obj Array to clear
 	 * @return {Array}     Cleared Array
 	 * @example
-	 * var myArray = [1, 2, 3, 4, 5];
+	 * let myArray = [1, 2, 3, 4, 5];
 	 *
 	 * keigai.util.array.clear( myArray );
 	 * myArray.length; // 0
 	 */
-	clear : function ( obj ) {
+	clear: ( obj ) => {
 		return obj.length > 0 ? array.remove( obj, 0, obj.length ) : obj;
 	},
 
@@ -141,7 +141,7 @@ var array = {
 	 * @param  {Boolean} shallow [Optional] Default is `true`
 	 * @return {Array}           Clone of Array
 	 * @example
-	 * var myArray      = [1, 2, 3, 4, 5],
+	 * let myArray      = [1, 2, 3, 4, 5],
 	 *     myArrayClone = keigai.util.array.clone( myArray );
 	 *
 	 * myArrayClone.push( 6 );
@@ -149,7 +149,7 @@ var array = {
 	 * myArray.length;      // 5
 	 * myArrayClone.length; // 6
 	 */
-	clone : function ( obj, shallow ) {
+	clone: ( obj, shallow ) => {
 		return utility.clone( obj, shallow !== false );
 	},
 
@@ -164,7 +164,7 @@ var array = {
 	 * @example
 	 * if ( keigai.util.array.contains( [1], 1 ) ) { ... }
 	 */
-	contains : function ( obj, arg ) {
+	contains: ( obj, arg ) => {
 		return obj.indexOf( arg ) > -1;
 	},
 
@@ -177,12 +177,12 @@ var array = {
 	 * @param  {Function} fn  Function to execute against indices
 	 * @return {Array}        New Array
 	 * @example
-	 * var results = keigai.util.array.collect( [...], function ( ... ) { ... } );
+	 * let results = keigai.util.array.collect( [...], function ( ... ) { ... } );
 	 */
-	collect : function ( obj, fn ) {
-		var result = [];
+	collect: ( obj, fn ) => {
+		let result = [];
 
-		array.each( obj, function ( i ) {
+		array.each( obj, ( i ) => {
 			result.push( fn( i ) );
 		} );
 
@@ -201,15 +201,12 @@ var array = {
 	 * keigai.util.array.compact( [null, "a", "b", "c", null, "d"] ); // ["a", "b", "c", "d"]
 	 * keigai.util.array.compact( ["a", "b", "c", "d"], true );       // null
 	 */
-	compact : function ( obj, diff ) {
-		diff = ( diff === true );
-		var result;
-
-		result = obj.filter( function ( i ) {
+	compact: ( obj, diff ) => {
+		let result = obj.filter( ( i ) => {
 			return !regex.null_undefined.test( i );
 		} );
 
-		return !diff ? result : ( result.length < obj.length ? result : null );
+		return diff !== true ? result : ( result.length < obj.length ? result : null );
 	},
 
 	/**
@@ -223,8 +220,8 @@ var array = {
 	 * @example
 	 * keigai.util.array.count( ["apple", "banana", "orange", "apple"], "apple" ); // 2
 	 */
-	count : function ( obj, value ) {
-		return obj.filter( function ( i ) {
+	count: ( obj, value ) => {
+		return obj.filter( ( i ) => {
 			return ( i === value );
 		} ).length;
 	},
@@ -240,16 +237,16 @@ var array = {
 	 * @example
 	 * keigai.util.array.diff( ["a"], ["a", "b"] ); // ["b"]
 	 */
-	diff : function ( obj1, obj2 ) {
-		var result = [];
+	diff: ( obj1, obj2 ) => {
+		let result = [];
 
-		array.each( obj1, function ( i ) {
+		array.each( obj1, ( i ) => {
 			if ( !array.contains( obj2, i ) ) {
 				array.add( result, i );
 			}
 		} );
 
-		array.each( obj2, function ( i ) {
+		array.each( obj2, ( i ) => {
 			if ( !array.contains( obj1, i ) ) {
 				array.add( result, i );
 			}
@@ -273,34 +270,34 @@ var array = {
 	 * keigai.util.array.each( [ ... ], function ( ... ) { ... } );
 	 * keigai.util.array.each( [ ... ], function ( ... ) { ... }, true, 100 ); // processing batches of a 100
 	 */
-	each : function ( obj, fn, async, size ) {
-		var nth = obj.length,
-		    i, offset;
+	each: ( obj, fn, async, size ) => {
+		let nth = obj.length;
+		let i, offset;
 
 		if ( async !== true ) {
 			i = -1;
 			while ( ++i < nth ) {
-				if ( fn.call( obj, obj[i], i ) === false ) {
+				if ( fn.call( obj, obj[ i ], i ) === false ) {
 					break;
 				}
 			}
 		}
 		else {
-			size   = size || 10;
+			size = size || 10;
 			offset = 0;
 
 			if ( size > nth ) {
 				size = nth;
 			}
 
-			utility.repeat( function () {
-				var i = -1,
-				    idx;
+			utility.repeat( () => {
+				let i = -1;
+				let idx;
 
 				while ( ++i < size ) {
 					idx = i + offset;
 
-					if ( idx === nth || fn.call( obj, obj[idx], idx ) === false ) {
+					if ( idx === nth || fn.call( obj, obj[ idx ], idx ) === false ) {
 						return false;
 					}
 				}
@@ -331,34 +328,34 @@ var array = {
 	 * keigai.util.array.eachReverse( [ ... ], function ( ... ) { ... } );
 	 * keigai.util.array.eachReverse( [ ... ], function ( ... ) { ... }, true, 100 ); // processing batches of a 100
 	 */
-	eachReverse : function ( obj, fn, async, size ) {
-		var nth = obj.length,
-			i, offset;
+	eachReverse: ( obj, fn, async, size ) => {
+		let nth = obj.length;
+		let i, offset;
 
 		if ( async !== true ) {
 			i = nth;
 			while ( --i > -1 ) {
-				if ( fn.call( obj, obj[i], i ) === false ) {
+				if ( fn.call( obj, obj[ i ], i ) === false ) {
 					break;
 				}
 			}
 		}
 		else {
-			size   = size || 10;
+			size = size || 10;
 			offset = nth - 1;
 
 			if ( size > nth ) {
 				size = nth;
 			}
 
-			utility.repeat( function () {
-				var i = -1,
-					idx;
+			utility.repeat( () => {
+				let i = -1;
+				let idx;
 
 				while ( ++i < size ) {
 					idx = offset - i;
 
-					if ( idx < 0 || fn.call( obj, obj[idx], idx ) === false ) {
+					if ( idx < 0 || fn.call( obj, obj[ idx ], idx ) === false ) {
 						return false;
 					}
 				}
@@ -385,8 +382,8 @@ var array = {
 	 * keigai.util.array.empty( [] );    // true
 	 * keigai.util.array.empty( ["a"] ); // false
 	 */
-	empty : function ( obj ) {
-		return ( obj.length === 0 );
+	empty: ( obj ) => {
+		return obj.length === 0;
 	},
 
 	/**
@@ -401,42 +398,8 @@ var array = {
 	 * keigai.util.array.equal( ["a"], ["a"] );      // true
 	 * keigai.util.array.equal( ["a"], ["a", "b"] ); // false
 	 */
-	equal : function ( obj1, obj2 ) {
-		return ( json.encode( obj1 ) === json.encode( obj2 ) );
-	},
-
-	/**
-	 * Fibonacci generator
-	 *
-	 * @method fib
-	 * @memberOf array
-	 * @param  {Number} arg [Optional] Amount of numbers to generate, default is 100
-	 * @return {Array}      Array of numbers
-	 * @example
-	 * keigai.util.array.fib( 5 ) // [1, 1, 2, 3, 5];
-	 * keigai.util.array.fib( 6 ) // [1, 1, 2, 3, 5, 8];
-	 */
-	fib : function ( arg ) {
-		var result = [1, 1],
-		    first  = result[0],
-		    second = result[1],
-		    sum;
-
-		// Subtracting 1 to account for `first` & `second`
-		arg = ( arg || 100 ) - 1;
-		
-		if ( isNaN( arg ) || arg < 2 ) {
-			throw new Error( label.invalidArguments );
-		}
-
-		while ( --arg ) {
-			sum    = first + second;
-			first  = second;
-			second = sum;
-			result.push( sum );
-		}
-
-		return result;
+	equal: ( obj1, obj2 ) => {
+		return json.encode( obj1 ) === json.encode( obj2 );
 	},
 
 	/**
@@ -450,24 +413,32 @@ var array = {
 	 * @param  {Number} end   [Optional] Offset from start to stop filling at
 	 * @return {Array}        Filled Array
 	 * @example
-	 * var myArray = ["a", "b", "c"];
+	 * let myArray = ["a", "b", "c"];
 	 *
 	 * keigai.util.array.fill( myArray, function ( i ) { return i + "a"; } );
 	 * myArray[0]; // "aa"
 	 */
-	fill : function ( obj, arg, start, offset ) {
-		var fn  = typeof arg == "function",
-		    l   = obj.length,
-		    i   = !isNaN( start ) ? start : 0,
-		    nth = !isNaN( offset ) ? i + offset : l - 1;
+	fill: ( obj, arg, start, offset ) => {
+		let fn = typeof arg == "function";
+		let l = obj.length;
+		let i = !isNaN( start ) ? start : 0;
+		let nth = !isNaN( offset ) ? i + offset : l - 1;
 
 		if ( nth > ( l - 1 ) ) {
 			nth = l - 1;
 		}
 
-		while ( i <= nth ) {
-			obj[i] = fn ? arg( obj[i] ) : arg;
-			i++;
+		if ( fn ) {
+			while ( i <= nth ) {
+				obj[ i ] = arg( obj[ i ] );
+				i++;
+			}
+		}
+		else {
+			while ( i <= nth ) {
+				obj[ i ] = arg;
+				i++;
+			}
 		}
 
 		return obj;
@@ -483,8 +454,8 @@ var array = {
 	 * @example
 	 * keigai.util.array.first( ["a", "b"] ); // "a"
 	 */
-	first : function ( obj ) {
-		return obj[0];
+	first: ( obj ) => {
+		return obj[ 0 ];
 	},
 
 	/**
@@ -497,10 +468,10 @@ var array = {
 	 * @example
 	 * keigai.util.array.flat( [[0, 1], [2, 3]] ); // [0, 1, 2, 3]
 	 */
-	flat : function ( obj ) {
-		var result = [];
+	flat: ( obj ) => {
+		let result = [];
 
-		result = obj.reduce( function ( a, b ) {
+		result = obj.reduce( ( a, b ) => {
 			return a.concat( b );
 		}, result );
 
@@ -523,7 +494,7 @@ var array = {
 	 * keigai.util.array.forEach( [ ... ], function ( ... ) { ... } );
 	 * keigai.util.array.forEach( [ ... ], function ( ... ) { ... }, true, 100 ); // processing batches of a 100
 	 */
-	forEach : function ( obj, fn, async, size ) {
+	forEach: ( obj, fn, async, size ) => {
 		return array.each( obj, fn, async, size );
 	},
 
@@ -537,7 +508,7 @@ var array = {
 	 * @example
 	 * keigai.util.array.fromObject( {name: "John", sex: "male"} ); // [["name", "John"], ["sex", "male"]]
 	 */
-	fromObject : function ( obj ) {
+	fromObject: ( obj ) => {
 		return array.mingle( array.keys( obj ), array.cast( obj ) );
 	},
 
@@ -552,7 +523,7 @@ var array = {
 	 * @example
 	 * keigai.util.array.index( ["a", "b", "c"], "b" ); // 1
 	 */
-	index : function ( obj, arg ) {
+	index: ( obj, arg ) => {
 		return obj.indexOf( arg );
 	},
 
@@ -564,19 +535,19 @@ var array = {
 	 * @param  {Array} obj Array to index
 	 * @return {Array}     Indexed Array
 	 * @example
-	 * var myArray = ["a", "b", "c"];
+	 * let myArray = ["a", "b", "c"];
 	 *
 	 * myArray.prop = "d";
 	 * keigai.util.array.indexed( myArray ); ["a", "b", "c", "d"];
 	 */
-	indexed : function ( obj ) {
-		var indexed = [];
+	indexed: ( obj ) => {
+		let result = [];
 
-		utility.iterate( obj, function ( v ) {
-			indexed.push( v );
+		utility.iterate( obj, ( v ) => {
+			result.push( v );
 		} );
 
-		return indexed;
+		return result;
 	},
 
 	/**
@@ -590,11 +561,11 @@ var array = {
 	 * @example
 	 * keigai.util.array.intersect( ["a", "b", "d"], ["b", "c", "d"] ); // ["b", "d"]
 	 */
-	intersect : function ( obj1, obj2 ) {
-		var a = obj1.length > obj2.length ? obj1 : obj2,
-		    b = ( a === obj1 ? obj2 : obj1 );
+	intersect: ( obj1, obj2 ) => {
+		let a = obj1.length > obj2.length ? obj1 : obj2;
+		let b = ( a === obj1 ? obj2 : obj1 );
 
-		return a.filter( function ( key ) {
+		return a.filter( ( key ) => {
 			return array.contains( b, key );
 		} );
 	},
@@ -608,14 +579,14 @@ var array = {
 	 * @param  {Function} fn  Function to test indices against
 	 * @return {Array}        Array
 	 * @example
-	 * var myArray = ["a", "b", "c"];
+	 * let myArray = ["a", "b", "c"];
 	 *
 	 * keigai.util.array.keepIf( myArray, function ( i ) { return /a|c/.test( i ); } );
 	 * myArray[1]; // "c"
 	 */
-	keepIf : function ( obj, fn ) {
-		var result = [],
-		    remove = [];
+	keepIf: ( obj, fn ) => {
+		let result = [];
+		let remove = [];
 
 		result = obj.filter( fn );
 		remove = array.diff( obj, result );
@@ -637,7 +608,7 @@ var array = {
 	 * @example
 	 * keigai.util.array.keys( {abc: true, xyz: false} ); // ["abc", "xyz"]
 	 */
-	keys : function ( obj ) {
+	keys: ( obj ) => {
 		return Object.keys( obj );
 	},
 
@@ -651,17 +622,18 @@ var array = {
 	 * @param  {String} sub   [Optional] Key which holds data, e.g. "{data: {}}" = "data"
 	 * @return {Array}        Sorted Array
 	 * @example
-	 * var myArray = [{abc: 123124, xyz: 5}, {abc: 123124, xyz: 6}, {abc: 2, xyz: 5}];
+	 * let myArray = [{abc: 123124, xyz: 5}, {abc: 123124, xyz: 6}, {abc: 2, xyz: 5}];
 	 *
 	 * keigai.util.array.keySort( myArray, "abc" );           // [{abc: 2, xyz: 5}, {abc: 123124, xyz: 5}, {abc: 123124, xyz: 6}];
 	 * keigai.util.array.keySort( myArray, "abc, xyz desc" ); // [{abc: 2, xyz: 5}, {abc: 123124, xyz: 6}, {abc: 123124, xyz: 5}];
 	 */
-	keySort : function ( obj, query, sub ) {
-		query       = query.replace( /\s*asc/ig, "" ).replace( /\s*desc/ig, " desc" );
-		var queries = string.explode( query ).map( function ( i ) { return i.split( " " ); } ),
-		    sorts   = [],
-		    braceS  = "[\"",
-		    braceE  = "\"]";
+	keySort: ( obj, query, sub ) => {
+		query = query.replace( /\s*asc/ig, "" ).replace( /\s*desc/ig, " desc" );
+
+		let queries = string.explode( query ).map( ( i ) => { return i.split( " " ); } );
+		let sorts = [];
+		let braceS = "[\"";
+		let braceE = "\"]";
 
 		if ( sub && sub !== "" ) {
 			sub = "." + sub;
@@ -670,32 +642,32 @@ var array = {
 			sub = "";
 		}
 
-		array.each( queries, function ( i ) {
-			var s = ".",
-			    e = "";
+		array.each( queries, ( i ) => {
+			let s = ".";
+			let e = "";
 
-			if ( regex.not_dotnotation.test( i[0] ) ) {
+			if ( regex.not_dotnotation.test( i[ 0 ] ) ) {
 				s = braceS;
 				e = braceE;
 			}
 
 			sorts.push( "try {" );
 
-			if ( i[1] === "desc" ) {
-				sorts.push( "if ( a" + sub + s + i[0] + e + " < b" + sub + s + i[0] + e + " ) return 1;" );
-				sorts.push( "if ( a" + sub + s + i[0] + e + " > b" + sub + s + i[0] + e + " ) return -1;" );
+			if ( i[ 1 ] === "desc" ) {
+				sorts.push( "if ( a" + sub + s + i[ 0 ] + e + " < b" + sub + s + i[ 0 ] + e + " ) return 1;" );
+				sorts.push( "if ( a" + sub + s + i[ 0 ] + e + " > b" + sub + s + i[ 0 ] + e + " ) return -1;" );
 			}
 			else {
-				sorts.push( "if ( a" + sub + s + i[0] + e + " < b" + sub + s + i[0] + e + " ) return -1;" );
-				sorts.push( "if ( a" + sub + s + i[0] + e + " > b" + sub + s + i[0] + e + " ) return 1;" );
+				sorts.push( "if ( a" + sub + s + i[ 0 ] + e + " < b" + sub + s + i[ 0 ] + e + " ) return -1;" );
+				sorts.push( "if ( a" + sub + s + i[ 0 ] + e + " > b" + sub + s + i[ 0 ] + e + " ) return 1;" );
 			}
 
 			sorts.push( "} catch (e) {" );
 			sorts.push( "try {" );
-			sorts.push( "if ( a" + sub + s + i[0] + e + " !== undefined ) return " + ( i[1] === "desc" ? "-1" : "1") + ";" );
+			sorts.push( "if ( a" + sub + s + i[ 0 ] + e + " !== undefined ) return " + ( i[ 1 ] === "desc" ? "-1" : "1") + ";" );
 			sorts.push( "} catch (e) {}" );
 			sorts.push( "try {" );
-			sorts.push( "if ( b" + sub + s + i[0] + e + " !== undefined ) return " + ( i[1] === "desc" ? "1" : "-1") + ";" );
+			sorts.push( "if ( b" + sub + s + i[ 0 ] + e + " !== undefined ) return " + ( i[ 1 ] === "desc" ? "1" : "-1") + ";" );
 			sorts.push( "} catch (e) {}" );
 			sorts.push( "}" );
 		} );
@@ -714,19 +686,19 @@ var array = {
 	 * @param  {Number} arg [Optional] Negative offset from last index to return
 	 * @return {Mixed}      Last index( s ) of Array
 	 * @example
-	 * var myArray = [1, 2, 3, 4];
+	 * let myArray = [1, 2, 3, 4];
 	 *
 	 * keigai.util.array.last( myArray );    // 4
 	 * keigai.util.array.last( myArray, 2 ); // [3, 4]
 	 */
-	last : function ( obj, arg ) {
-		var n = obj.length - 1;
+	last: ( obj, arg ) => {
+		let n = obj.length - 1;
 
 		if ( arg >= ( n + 1 ) ) {
 			return obj;
 		}
 		else if ( isNaN( arg ) || arg === 1 ) {
-			return obj[n];
+			return obj[ n ];
 		}
 		else {
 			return array.limit( obj, ( n - ( --arg ) ), n );
@@ -743,20 +715,20 @@ var array = {
 	 * @param  {Number} offset Number of indices to return
 	 * @return {Array}         Array of indices
 	 * @example
-	 * var myArray = [1, 2, 3, 4];
+	 * let myArray = [1, 2, 3, 4];
 	 *
 	 * keigai.util.array.limit( myArray, 0, 2 ); // [1, 2]
 	 * keigai.util.array.limit( myArray, 2, 2 ); // [3, 4]
 	 */
-	limit : function ( obj, start, offset ) {
-		var result = [],
-		    i      = start - 1,
-		    nth    = start + offset,
-		    max    = obj.length;
+	limit: ( obj, start, offset ) => {
+		let result = [];
+		let i = start - 1;
+		let nth = start + offset;
+		let max = obj.length;
 
 		if ( max > 0 ) {
 			while ( ++i < nth && i < max ) {
-				result.push( obj[i] );
+				result.push( obj[ i ] );
 			}
 		}
 
@@ -773,8 +745,8 @@ var array = {
 	 * @example
 	 * keigai.util.array.max( [5, 3, 9, 1, 4] ); // 9
 	 */
-	max : function ( obj ) {
-		return array.last( obj.sort( array.sort ) );
+	max: ( obj ) => {
+		return array.last( array.sorted( array.clone( obj ) ) );
 	},
 
 	/**
@@ -787,7 +759,7 @@ var array = {
 	 * @example
 	 * keigai.util.array.mean( [1, 3, 5] ); // 3
 	 */
-	mean : function ( obj ) {
+	mean: ( obj ) => {
 		return obj.length > 0 ? ( array.sum( obj ) / obj.length ) : undefined;
 	},
 
@@ -802,12 +774,12 @@ var array = {
 	 * keigai.util.array.median( [5, 1, 3, 8] ); // 4
 	 * keigai.util.array.median( [5, 1, 3] );    // 3
 	 */
-	median : function ( obj ) {
-		var nth    = obj.length,
-		    mid    = number.round( nth / 2, "down" ),
-		    sorted = obj.sort( array.sort );
+	median: ( obj ) => {
+		let dupe = array.sorted( array.clone( obj ) );
+		let nth = dupe.length;
+		let mid = number.round( nth / 2, "down" );
 
-		return number.odd( nth ) ? sorted[mid] : ( ( sorted[mid - 1] + sorted[mid] ) / 2 );
+		return number.odd( nth ) ? dupe[ mid ]: ( ( dupe[ mid - 1 ] + dupe[ mid ] ) / 2 );
 	},
 
 	/**
@@ -819,14 +791,14 @@ var array = {
 	 * @param  {Array} obj2 Array to merge
 	 * @return {Array}      First argument
 	 * @example
-	 * var a = ["a", "b", "c"],
+	 * let a = ["a", "b", "c"],
 	 *     b = ["d"];
 	 *
 	 * keigai.util.array.merge( a, b );
 	 * a[3]; // "d"
 	 */
-	merge : function ( obj1, obj2 ) {
-		array.each( obj2, function ( i ) {
+	merge: ( obj1, obj2 ) => {
+		array.each( obj2, ( i ) => {
 			array.add( obj1, i );
 		} );
 
@@ -843,8 +815,8 @@ var array = {
 	 * @example
 	 * keigai.util.array.min( [5, 3, 9, 1, 4] ); // 1
 	 */
-	min : function ( obj ) {
-		return obj.sort( array.sort )[0];
+	min: ( obj ) => {
+		return array.sorted( array.clone( obj ) )[ 0 ];
 	},
 
 	/**
@@ -856,16 +828,14 @@ var array = {
 	 * @param  {Array} obj2 Array to mingle
 	 * @return {Array}      2D Array
 	 * @example
-	 * var a = ["a", "b"],
+	 * let a = ["a", "b"],
 	 *     b = ["c", "d"];
 	 *
 	 * keigai.util.array.mingle( a, b ); // [["a", "c"], ["b", "d"]]
 	 */
-	mingle : function ( obj1, obj2 ) {
-		var result;
-
-		result = obj1.map( function ( i, idx ) {
-			return [i, obj2[idx]];
+	mingle: ( obj1, obj2 ) => {
+		let result = obj1.map( ( i, idx ) => {
+			return [ i, obj2[ idx ] ];
 		} );
 
 		return result;
@@ -882,19 +852,19 @@ var array = {
 	 * keigai.util.array.mode( [1, 3, 7, 1, 2, 10, 7, 7, 3, 10] );     // 7
 	 * keigai.util.array.mode( [1, 3, 7, 1, 2, 10, 7, 7, 3, 10, 10] ); // [7, 10]
 	 */
-	mode : function ( obj ) {
-		var values = {},
-		    count  = 0,
-		    mode   = [],
-		    nth, result;
+	mode: ( obj ) => {
+		let values = {};
+		let count = 0;
+		let mode = [];
+		let nth, result;
 
 		// Counting values
-		array.each( obj, function ( i ) {
-			if ( !isNaN( values[i] ) ) {
-				values[i]++;
+		array.each( obj, ( i ) => {
+			if ( !isNaN( values[ i ] ) ) {
+				values[ i ]++;
 			}
 			else {
-				values[i] = 1;
+				values[ i ] = 1;
 			}
 		} );
 
@@ -902,7 +872,7 @@ var array = {
 		count = array.max( array.cast( values ) );
 
 		// Finding values that match the count
-		utility.iterate( values, function ( v, k ) {
+		utility.iterate( values, ( v, k ) => {
 			if ( v === count ) {
 				mode.push( number.parse( k ) );
 			}
@@ -912,56 +882,7 @@ var array = {
 		nth = mode.length;
 
 		if ( nth > 0 ) {
-			result = nth === 1 ? mode[0] : mode;
-		}
-
-		return result;
-	},
-
-	/**
-	 * Creates an Array of percentages from an Array of Numbers (ints/floats)
-	 *
-	 * @method percents
-	 * @memberOf array
-	 * @param  {Array}  obj       Array to iterate
-	 * @param  {Number} precision [Optional] Rounding precision
-	 * @param  {Number} total     [Optional] Value to compare against
-	 * @return {Array}            Array of percents
-	 * @example
-	 * keigai.util.array.percents( [1, 2, 3, 37] ); // [2, 5, 7, 86]
-	 */
-	percents : function ( obj, precision, total ) {
-		var result = [],
-		    custom = false,
-		    last, padding, sum;
-
-		precision = precision || 0;
-		
-		if ( total === undefined ) {
-			total = array.sum( obj );
-		}
-		else {
-			custom = true;
-		}
-
-		array.each( obj, function ( i ) {
-			result.push( number.parse( ( ( i / total ) * 100 ).toFixed( precision ) ) );
-		} );
-
-		// Dealing with the awesomeness of JavaScript "integers"
-		if ( !custom ) {
-			sum = array.sum( result );
-
-			if ( sum < 100 ) {
-				padding = number.parse( number.diff( sum, 100 ).toFixed( precision ) );
-				last    = array.last( result ) + padding;
-				result[result.length - 1] = last;
-			}
-			else if ( sum > 100 ) {
-				padding = number.parse( number.diff( sum, 100 ).toFixed( precision ) );
-				last    = number.parse( ( array.last( result ) - padding ).toFixed( precision ) );
-				result[result.length - 1] = last;
-			}
+			result = nth === 1 ? mode[ 0 ] : mode;
 		}
 
 		return result;
@@ -977,7 +898,7 @@ var array = {
 	 * @example
 	 * keigai.util.array.range( [5, 1, 3, 8] ); // 7
 	 */
-	range : function ( obj ) {
+	range: ( obj ) => {
 		return array.max( obj ) - array.min( obj );
 	},
 
@@ -992,12 +913,12 @@ var array = {
 	 * @example
 	 * keigai.util.array.rassoc( [[1, 3], [7, 2], [4, 3]], 3 ); // [1, 3]
 	 */
-	rassoc : function ( obj, arg ) {
-		var result;
+	rassoc: ( obj, arg ) => {
+		let result;
 
-		array.each( obj, function ( i, idx ) {
-			if ( i[1] === arg ) {
-				result = obj[idx];
+		array.each( obj, ( i, idx ) => {
+			if ( i[ 1 ] === arg ) {
+				result = utility.clone( obj[ idx ], true );
 
 				return false;
 			}
@@ -1017,7 +938,7 @@ var array = {
 	 * @example
 	 * keigai.util.array.reject( [0, 1, 2, 3, 4, 5], function ( i ) { return i % 2 > 0; } ); // [0, 2, 4]
 	 */
-	reject : function ( obj, fn ) {
+	reject: ( obj, fn ) => {
 		return array.diff( obj, obj.filter( fn ) );
 	},
 
@@ -1031,14 +952,14 @@ var array = {
 	 * @param  {Number} end   [Optional] Ending index
 	 * @return {Array}        Modified Array
 	 * @example
-	 * var myArray = ["a", "b", "c", "d", "e"];
+	 * let myArray = ["a", "b", "c", "d", "e"];
 	 *
 	 * keigai.util.array.remove( myArray, 2, 3 );
 	 * myArray[2]; // "e"
 	 */
-	remove : function ( obj, start, end ) {
+	remove: ( obj, start, end ) => {
 		if ( isNaN( start ) ) {
-			start = obj.indexOf( start );
+			start = array.index( obj, start );
 
 			if ( start === -1 ) {
 				return obj;
@@ -1048,8 +969,8 @@ var array = {
 			start = start || 0;
 		}
 
-		var length    = obj.length,
-		    remaining = obj.slice( ( end || start ) + 1 || length );
+		let length = obj.length;
+		let remaining = obj.slice( ( end || start ) + 1 || length );
 
 		obj.length = start < 0 ? ( length + start ) : start;
 		obj.push.apply( obj, remaining );
@@ -1066,16 +987,16 @@ var array = {
 	 * @param  {Function} fn  Function to test indices against
 	 * @return {Array}        Array
 	 * @example
-	 * var myArray = ["a", "b", "c"];
+	 * let myArray = ["a", "b", "c"];
 	 *
 	 * keigai.util.array.removeIf( myArray, function ( i ) { return /a|c/.test( i ); } );
 	 * myArray[0]; // "b"
 	 */
-	removeIf : function ( obj, fn ) {
-		var remove = obj.filter( fn );
+	removeIf: ( obj, fn ) => {
+		let remove = obj.filter( fn );
 
-		array.each( remove, function ( i ) {
-			array.remove( obj, array.index ( obj, i ) );
+		array.each( remove, ( i ) => {
+			array.remove( obj, array.index( obj, i ) );
 		} );
 
 		return obj;
@@ -1090,16 +1011,16 @@ var array = {
 	 * @param  {Function} fn  Function to test indices against
 	 * @return {Array}        Array
 	 * @example
-	 * var myArray = ["a", "b", "c"];
+	 * let myArray = ["a", "b", "c"];
 	 *
 	 * keigai.util.array.removeWhile( myArray, function ( i ) { return /a|c/.test( i ); } );
 	 * myArray[0];     // "b"
 	 * myArray.length; // 2
 	 */
-	removeWhile : function ( obj, fn ) {
-		var remove = [];
+	removeWhile: ( obj, fn ) => {
+		let remove = [];
 
-		array.each( obj, function ( i ) {
+		array.each( obj, ( i ) => {
 			if ( fn( i ) !== false ) {
 				remove.push( i );
 			}
@@ -1108,7 +1029,7 @@ var array = {
 			}
 		} );
 
-		array.each( remove, function ( i ) {
+		array.each( remove, ( i ) => {
 			array.remove( obj, array.index( obj, i ) );
 		} );
 
@@ -1124,15 +1045,15 @@ var array = {
 	 * @param  {Array} obj2 Array to values to push into `obj1`
 	 * @return {Array}      Array to modify
 	 * @example
-	 * var myArray = ["a", "b", "c"];
+	 * let myArray = ["a", "b", "c"];
 	 *
 	 * keigai.util.array.replace( myArray, [true, false] );
 	 * myArray[0];     // true
 	 * myArray.length; // 2
 	 */
-	replace : function ( obj1, obj2 ) {
+	replace: ( obj1, obj2 ) => {
 		array.remove( obj1, 0, obj1.length );
-		array.each( obj2, function ( i ) {
+		array.each( obj2, ( i ) => {
 			obj1.push( i );
 		} );
 
@@ -1151,9 +1072,7 @@ var array = {
 	 * keigai.util.array.rest( [1, 2, 3, 4, 5, 6] );    // [2, 3, 4, 5, 6]
 	 * keigai.util.array.rest( [1, 2, 3, 4, 5, 6], 3 ); // [4, 5, 6]
 	 */
-	rest : function ( obj, arg ) {
-		arg = arg || 1;
-
+	rest: ( obj, arg=1 ) => {
 		if ( arg < 1 ) {
 			arg = 1;
 		}
@@ -1172,10 +1091,10 @@ var array = {
 	 * @example
 	 * keigai.util.array.rindex( [1, 2, 3, 2, 1], 2 ); // 3
 	 */
-	rindex : function ( obj, arg ) {
-		var result = -1;
+	rindex: ( obj, arg ) => {
+		let result = -1;
 
-		array.each( obj, function ( i, idx ) {
+		array.each( obj, ( i, idx ) => {
 			if ( i === arg ) {
 				result = idx;
 			}
@@ -1196,9 +1115,9 @@ var array = {
 	 * keigai.util.array.rotate( [0, 1, 2, 3, 4],  3 )[0] // 2;
 	 * keigai.util.array.rotate( [0, 1, 2, 3, 4], -2 )[0] // 3;
 	 */
-	rotate : function ( obj, arg ) {
-		var nth = obj.length,
-		    result;
+	rotate: ( obj, arg ) => {
+		let nth = obj.length;
+		let result;
 
 		if ( arg === 0 ) {
 			result = obj;
@@ -1231,17 +1150,16 @@ var array = {
 	 * keigai.util.array.series( 0, 5 );     // [0, 1, 2, 3, 4]
 	 * keigai.util.array.series( 0, 25, 5 ); // [0, 5, 10, 15, 20]
 	 */
-	series : function ( start, end, offset ) {
-		start      = start  || 0;
-		end        = end    || start;
-		offset     = offset || 1;
-		var result = [],
-		    n      = -1,
-		    nth    = Math.max( 0, Math.ceil( ( end - start ) / offset ) );
+	series: ( start=0, end, offset=1 ) => {
+		end = end || start;
+
+		let result = [];
+		let n = -1;
+		let nth = Math.max( 0, Math.ceil( ( end - start ) / offset ) );
 
 		while ( ++n < nth ) {
-			result[n]  = start;
-			start     += offset;
+			result[ n ] = start;
+			start += offset;
 		}
 
 		return result;
@@ -1258,11 +1176,11 @@ var array = {
 	 * @example
 	 * keigai.util.array.sort( 2, 3 ); // -1
 	 */
-	sort : function ( a, b ) {
-		var types = {a: typeof a, b: typeof b},
-		    c, d, result;
+	sort: ( a, b ) => {
+		let types = { a: typeof a, b: typeof b };
+		let c, d, result;
 
-		if ( types.a === "number" && types.b === "number" ) {
+		if ( types.a == "number" && types.b == "number" ) {
 			result = a - b;
 		}
 		else {
@@ -1275,10 +1193,10 @@ var array = {
 			else if ( c > d ) {
 				result = 1;
 			}
-			else if ( types.a === types.b ) {
+			else if ( types.a == types.b ) {
 				result = 0;
 			}
-			else if ( types.a === "boolean" ) {
+			else if ( types.a == "boolean" ) {
 				result = -1;
 			}
 			else {
@@ -1297,12 +1215,12 @@ var array = {
 	 * @param  {Array} obj Array to sort
 	 * @return {Array}     Sorted Array
 	 * @example
-	 * var myArray = [5, 9, 2, 4];
+	 * let myArray = [5, 9, 2, 4];
 	 *
 	 * keigai.util.array.sorted( myArray );
 	 * myArray[0]; // 2
 	 */
-	sorted : function ( obj ) {
+	sorted: ( obj ) => {
 		return obj.sort( array.sort );
 	},
 
@@ -1315,13 +1233,13 @@ var array = {
 	 * @param  {Number} divisor Integer to divide the Array by
 	 * @return {Array}          Split Array
 	 * @example
-	 * var myArray = [],
+	 * let myArray = [],
 	 *     i       = -1,
 	 *     results;
 	 *
 	 * while ( ++i < 100 ) {
-	 *   myArray.push( i + 1 );
-	 * }
+		 *   myArray.push( i + 1 );
+		 * }
 	 *
 	 * results = keigai.util.array.split( myArray, 21 );
 	 * results.length;     // 21
@@ -1331,15 +1249,15 @@ var array = {
 	 * results[20].length; // 1
 	 * results[20][0];     // 100
 	 */
-	split : function ( obj, divisor ) {
-		var result  = [],
-		    total   = obj.length,
-		    nth     = Math.ceil( total / divisor ),
-		    low     = Math.floor( total / divisor ),
-		    lower   = Math.ceil( total / nth ),
-		    lowered = false,
-		    start   = 0,
-		    i       = -1;
+	split: ( obj, divisor ) => {
+		let result = [];
+		let total = obj.length;
+		let nth = Math.ceil( total / divisor );
+		let low = Math.floor( total / divisor );
+		let lower = Math.ceil( total / nth );
+		let lowered = false;
+		let start = 0;
+		let i = -1;
 
 		// Finding the fold
 		if ( number.diff( total, ( divisor * nth ) ) > nth ) {
@@ -1375,7 +1293,7 @@ var array = {
 	 * @example
 	 * keigai.util.array.stddev( [1, 3, 5] ); // 1.632993161855452
 	 */
-	stddev : function ( obj ) {
+	stddev: ( obj ) => {
 		return Math.sqrt( array.variance( obj ) );
 	},
 
@@ -1389,11 +1307,11 @@ var array = {
 	 * @example
 	 * keigai.util.array.sum( [2, 4, 3, 1] ); // 10
 	 */
-	sum : function ( obj ) {
-		var result = 0;
+	sum: ( obj ) => {
+		let result = 0;
 
 		if ( obj.length > 0 ) {
-			result = obj.reduce( function ( prev, cur ) {
+			result = obj.reduce( ( prev, cur ) => {
 				return prev + cur;
 			} );
 		}
@@ -1412,7 +1330,7 @@ var array = {
 	 * @example
 	 * keigai.util.array.take( [1, 2, 3, 4], 2 ); // [1, 2]
 	 */
-	take : function ( obj, n ) {
+	take: ( obj, n ) => {
 		return array.limit( obj, 0, n );
 	},
 
@@ -1426,12 +1344,12 @@ var array = {
 	 * @example
 	 * keigai.util.array.toObject( ["abc", "def"] ); // {0: "abc", 1: "def"}
 	 */
-	toObject : function ( ar ) {
-		var obj = {},
-		    i   = ar.length;
+	toObject: ( ar ) => {
+		let obj = {};
+		let i = ar.length;
 
 		while ( i-- ) {
-			obj[i.toString()] = ar[i];
+			obj[ i.toString() ] = ar[ i ];
 		}
 
 		return obj;
@@ -1445,12 +1363,12 @@ var array = {
 	 * @param  {Array} obj Array to find the length of
 	 * @return {Number}    Number of keys in Array
 	 * @example
-	 * var myArray = [true, true, false];
+	 * let myArray = [true, true, false];
 	 *
 	 * myArray.extra = true;
 	 * keigai.util.array.total( myArray ); // 4
 	 */
-	total : function ( obj ) {
+	total: ( obj ) => {
 		return array.indexed( obj ).length;
 	},
 
@@ -1464,10 +1382,10 @@ var array = {
 	 * @example
 	 * keigai.util.array.unique( ["a", "b", "a", "c", "b", "d"] ); // ["a", "b", "c", "d"]
 	 */
-	unique : function ( obj ) {
-		var result = [];
+	unique: ( obj ) => {
+		let result = [];
 
-		array.each( obj, function ( i ) {
+		array.each( obj, ( i ) => {
 			array.add( result, i );
 		} );
 
@@ -1484,15 +1402,15 @@ var array = {
 	 * @example
 	 * keigai.util.array.variance( [1, 3, 5] ); // 2.6666666666666665
 	 */
-	variance : function ( obj ) {
-		var nth = obj.length,
-		    n   = 0,
-		    mean;
+	variance: ( obj ) => {
+		let nth = obj.length;
+		let n = 0;
+		let mean;
 
 		if ( nth > 0 ) {
 			mean = array.mean( obj );
 
-			array.each( obj, function ( i ) {
+			array.each( obj, ( i ) => {
 				n += math.sqr( i - mean );
 			} );
 
@@ -1514,25 +1432,25 @@ var array = {
 	 * @example
 	 * keigai.util.array.zip( [0, 1], 1 ); // [[0, 1], [1, null]]
 	 */
-	zip : function ( obj, args ) {
-		var result = [];
+	zip: ( obj, args ) => {
+		let result = [];
 
 		// Preparing args
 		if ( !( args instanceof Array ) ) {
-			args = typeof args == "object" ? array.cast( args ) : [args];
+			args = typeof args == "object" ? array.cast( args ) : [ args ];
 		}
 
-		array.each( args, function ( i, idx ) {
+		array.each( args, ( i, idx ) => {
 			if ( !( i instanceof Array ) ) {
-				this[idx] = [i];
+				this[ idx ] = [ i ];
 			}
 		} );
 
 		// Building result Array
-		array.each( obj, function ( i, idx ) {
-			result[idx] = [i];
-			array.each( args, function ( x ) {
-				result[idx].push( x[idx] || null );
+		array.each( obj, ( i, idx ) => {
+			result[ idx ] = [ i ];
+			array.each( args, ( x ) => {
+				result[ idx ].push( x[ idx ] || null );
 			} );
 		} );
 

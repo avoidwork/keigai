@@ -5,91 +5,91 @@
  * @private
  * @return {Undefined} undefined
  */
-function bootstrap () {
+let bootstrap = () => {
+	let defineProperty = Object.defineProperty !== undefined;
+	let target;
+
+	Array.from = Array.from || ( arg ) => {
+		return [].slice.call( arg );
+	};
+
 	// Describing the Client
 	if ( !server ) {
 		client.version = client.version();
 
 		// IE8 and older is not supported
-		if ( client.ie && client.version < 9 ) {
-			throw new Error( label.upgrade );
-		}
+		if ( client.ie ) {
+			if ( client.version < 9 ) {
+				throw new Error( label.upgrade );
+			}
 
-		// getElementsByClassName shim for IE9
-		if ( Element.prototype.getElementsByClassName === undefined ) {
-			Element.prototype.getElementsByClassName = function ( arg ) {
-				return document.querySelectorAll( "." + arg );
-			};
-		}
+			target = ( global.HTMLElement || global.Element ).prototype;
 
-		// classList shim for IE9
-		if ( !document.documentElement.classList ) {
-			( function ( view ) {
-				var ClassList, getter, proto, target, descriptor;
+			class ClassList extends Array {
+				constructor ( obj ) {
+					let classes = string.explode( obj.className, " " );
+					let self = this;
 
-				if ( !( "HTMLElement" in view ) && !( "Element" in view ) ) {
-					return;
-				}
-
-				ClassList = function ( obj ) {
-					var classes = string.explode( obj.className, " " ),
-					    self    = this;
-
-					array.each( classes, function ( i ) {
+					array.each( classes, ( i ) => {
 						self.push( i );
 					} );
 
 					this.updateClassName = function () {
 						obj.className = this.join( " " );
 					};
-				};
+				}
 
-				getter = function () {
-					return new ClassList( this );
-				};
-
-				proto  = ClassList.prototype = [];
-				target = ( view.HTMLElement || view.Element ).prototype;
-
-				proto.add = function ( arg ) {
+				add ( arg ) {
 					if ( !array.contains( this, arg ) ) {
 						this.push( arg );
 						this.updateClassName();
 					}
-				};
+				}
 
-				proto.contains = function ( arg ) {
+				contains ( arg ) {
 					return array.contains( this, arg );
-				};
+				}
 
-				proto.remove = function ( arg ) {
+				remove ( arg ) {
 					if ( array.contains( this, arg ) ) {
 						array.remove( this, arg );
 						this.updateClassName();
 					}
-				};
+				}
 
-				proto.toggle = function ( arg ) {
-					array[array.contains( this, arg ) ? "remove" : "add"]( this, arg );
+				toggle ( arg ) {
+					array[ array.contains( this, arg ) ? "remove" : "add" ]( this, arg );
 					this.updateClassName();
-				};
+				}
+			}
 
-				if ( Object.defineProperty ) {
-					descriptor = {
-						get          : getter,
-						enumerable   : true,
-						configurable : true
-					};
+			if ( defineProperty ) {
+				Object.defineProperty( target, "classList", {
+					get: () => { return new ClassList( this ); },
+					enumerable: true,
+					configurable: true
+				} );
+			}
+			else if ( Object.prototype.__defineGetter__ ) {
+				target.__defineGetter__( "classList", () => { return new ClassList( this ); } );
+			}
+			else {
+				throw new Error( "Could not create classList shim" );
+			}
 
-					Object.defineProperty( target, "classList", descriptor );
-				}
-				else if ( Object.prototype.__defineGetter__) {
-					target.__defineGetter__( "classList", getter );
-				}
-				else {
-					throw new Error( "Could not create classList shim" );
-				}
-			} )( global );
+			if ( defineProperty ) {
+				Object.defineProperty( Element, "getElementsByClassName", {
+					get: ( arg ) => { return this.querySelectorAll( "." + arg ); },
+					enumerable: true,
+					configurable: true
+				} );
+			}
+			else if ( Object.prototype.__defineGetter__ ) {
+				target.__defineGetter__( "getElementsByClassName", ( arg ) => { return this.querySelectorAll( "." + arg ); } );
+			}
+			else {
+				throw new Error( "Could not create getElementsByClassName shim" );
+			}
 		}
 	}
 	else {
@@ -97,9 +97,13 @@ function bootstrap () {
 		XMLHttpRequest = xhr();
 	}
 
+	// WeakMap shim for client & server
+	if ( WeakMap === null ) {
+		WeakMap = WeakMapShim;
+	}
+
 	// Caching functions
-	has   = Object.prototype.hasOwnProperty;
-	slice = Array.prototype.slice;
+	has = Object.prototype.hasOwnProperty;
 
 	// DataStore Worker "script"
 	if ( webWorker ) {
@@ -109,10 +113,10 @@ function bootstrap () {
 	TIME = new Date().getTime();
 
 	// Setting up `utility.render()`
-	RENDER = global.requestAnimationFrame || function ( fn ) {
-		var offset = new Date().getTime() - TIME;
+	RENDER = global.requestAnimationFrame || ( fn ) => {
+		let offset = new Date().getTime() - TIME;
 
-		utility.defer( function () {
+		utility.defer( () => {
 			fn( offset );
 		}, 16, offset );
 	};

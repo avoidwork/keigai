@@ -6,34 +6,45 @@
  * @extends {keigai.Base}
  * @param {Object} xhr XMLHttpRequest
  */
-function KXMLHttpRequest ( xhr ) {
-	this.observer = observable.factory();
-	this.defer    = deferred.factory();
-	this.xhr      = xhr;
+class KXMLHttpRequest extends Base {
+	constructor ( xhr ) {
+		this.observer = observable.factory();
+		this.defer = deferred.factory();
+		this.xhr = xhr;
+	}
 }
-
-/**
- * Extending Base
- *
- * @memberOf keigai.KXMLHttpRequest
- * @type {Object} {@link keigai.Base}
- */
-KXMLHttpRequest.prototype = base.factory();
-
-/**
- * Setting constructor loop
- *
- * @method constructor
- * @memberOf keigai.KXMLHttpRequest
- * @type {Function}
- * @private
- */
-KXMLHttpRequest.prototype.constructor = KXMLHttpRequest;
 
 /**
  * @namespace client
  */
-var client = {
+let client = {
+	/**
+	 * Array Buffer is available
+	 *
+	 * @memberOf client
+	 * @type {Boolean}
+	 * @private
+	 */
+	ab: typeof ArrayBuffer != "undefined",
+
+	/**
+	 * Blob is available
+	 *
+	 * @memberOf client
+	 * @type {Boolean}
+	 * @private
+	 */
+	blob: typeof Blob != "undefined",
+
+	/**
+	 * Document is available
+	 *
+	 * @memberOf client
+	 * @type {Boolean}
+	 * @private
+	 */
+	doc: typeof Document != "undefined",
+
 	/**
 	 * Internet Explorer browser
 	 *
@@ -41,9 +52,7 @@ var client = {
 	 * @type {Boolean}
 	 * @private
 	 */
-	ie : function () {
-		return !server && regex.ie.test( navigator.userAgent );
-	}(),
+	ie: () => { return !server && regex.ie.test( navigator.userAgent ); }(),
 
 	/**
 	 * Client version
@@ -52,15 +61,14 @@ var client = {
 	 * @type {Number}
 	 * @private
 	 */
-	version : function () {
-		var version = 0;
+	version: () => {
+		let result = 0;
 
 		if ( this.ie ) {
-			version = navigator.userAgent.replace(/(.*msie|;.*)/gi, "");
-			version = number.parse( string.trim( version ) || 9, 10 );
+			result = number.parse( string.trim( navigator.userAgent.replace( /(.*msie|;.*)/gi, "" ) ) || 9, 10 );
 		}
 
-		return version;
+		return result;
 	},
 
 	/**
@@ -73,15 +81,12 @@ var client = {
 	 * @return {Boolean}     `true` if the verb is allowed, undefined if unknown
 	 * @private
 	 */
-	allows : function ( uri, verb ) {
-		if ( string.isEmpty( uri ) || string.isEmpty( verb ) ) {
-			throw new Error( label.invalidArguments );
-		}
+	allows: ( uri, verb ) => {
+		uri = utility.parse( uri ).href;
+		verb = verb.toLowerCase();
 
-		uri        = utility.parse( uri ).href;
-		verb       = verb.toLowerCase();
-		var result = false,
-		    bit    = 0;
+		let result = false;
+		let bit = 0;
 
 		if ( !cache.get( uri, false ) ) {
 			result = undefined;
@@ -115,10 +120,10 @@ var client = {
 	 * @return {Number} To be set as a bit
 	 * @private
 	 */
-	bit : function ( args ) {
-		var result = 0;
+	bit: ( args ) => {
+		let result = 0;
 
-		array.each( args, function ( verb ) {
+		array.each( args, ( verb ) => {
 			verb = verb.toLowerCase();
 
 			if ( regex.get_headers.test( verb ) ) {
@@ -147,7 +152,7 @@ var client = {
 	 * @return {Boolean}     True if CORS
 	 * @private
 	 */
-	cors : function ( uri ) {
+	cors: ( uri ) => {
 		return ( !server && uri.indexOf( "//" ) > -1 && uri.indexOf( "//" + location.host ) === -1 );
 	},
 
@@ -162,31 +167,31 @@ var client = {
 	 * @return {Object}      Cached URI representation
 	 * @private
 	 */
-	headers : function ( xhr, uri, type ) {
-		var headers = string.trim( xhr.getAllResponseHeaders() ).split( "\n" ),
-		    items   = {},
-		    o       = {},
-		    allow   = null,
-		    expires = new Date(),
-		    cors    = client.cors( uri );
+	headers: ( xhr, uri, type ) => {
+		let headers = string.trim( xhr.getAllResponseHeaders() ).split( "\n" );
+		let items = {};
+		let o = {};
+		let allow = null;
+		let expires = new Date();
+		let cors = client.cors( uri );
 
-		array.each( headers, function ( i ) {
-			var header = i.split( ": " );
+		array.each( headers, ( i ) => {
+			let header = i.split( ": " );
 
-			items[header[0].toLowerCase()] = string.trim( header[1] );
+			items[ header[ 0 ].toLowerCase() ] = string.trim( header[ 1 ] );
 
 			if ( allow === null ) {
 				if ( ( !cors && regex.allow.test( header ) ) || ( cors && regex.allow_cors.test( header ) ) ) {
-					allow = header[1];
+					allow = header[ 1 ];
 				}
 			}
 		} );
 
-		if ( regex.no.test( items["cache-control"] ) ) {
+		if ( regex.no.test( items[ "cache-control" ] ) ) {
 			expires = expires.getTime();
 		}
-		else if ( items["cache-control"] && regex.number_present.test( items["cache-control"] ) ) {
-			expires = expires.setSeconds( expires.getSeconds() + number.parse( regex.number_present.exec( items["cache-control"] )[0], 10 ) );
+		else if ( items[ "cache-control" ] && regex.number_present.test( items[ "cache-control" ] ) ) {
+			expires = expires.setSeconds( expires.getSeconds() + number.parse( regex.number_present.exec( items[ "cache-control" ] )[ 0 ], 10 ) );
 		}
 		else if ( items.expires ) {
 			expires = new Date( items.expires ).getTime();
@@ -195,15 +200,15 @@ var client = {
 			expires = expires.getTime();
 		}
 
-		o.expires    = expires;
-		o.headers    = items;
-		o.timestamp  = new Date();
-		o.permission = client.bit( allow !== null ? string.explode( allow ) : [type] );
+		o.expires = expires;
+		o.headers = items;
+		o.timestamp = new Date();
+		o.permission = client.bit( allow !== null ? string.explode( allow ) : [ type ] );
 
 		if ( type === "get" ) {
-			cache.set( uri, "expires",    o.expires );
-			cache.set( uri, "headers",    o.headers );
-			cache.set( uri, "timestamp",  o.timestamp );
+			cache.set( uri, "expires", o.expires );
+			cache.set( uri, "headers", o.headers );
+			cache.set( uri, "timestamp", o.timestamp );
 			cache.set( uri, "permission", o.permission );
 		}
 
@@ -220,9 +225,8 @@ var client = {
 	 * @return {Mixed}       Array, Boolean, Document, Number, Object or String
 	 * @private
 	 */
-	parse : function ( xhr, type ) {
-		type = type || "";
-		var result, obj;
+	parse: ( xhr, type="" ) => {
+		let result, obj;
 
 		if ( ( regex.json_maybe.test( type ) || string.isEmpty( type ) ) && ( regex.json_wrap.test( xhr.responseText ) && Boolean( obj = json.decode( xhr.responseText, true ) ) ) ) {
 			result = obj;
@@ -259,10 +263,10 @@ var client = {
 	 * @return {Object}     Contains an Array of available commands, the permission bit and a map
 	 * @private
 	 */
-	permissions : function ( uri ) {
-		var cached = cache.get( uri, false ),
-		    bit    = !cached ? 0 : cached.permission,
-		    result = {allows: [], bit: bit, map: {partial: 8, read: 4, write: 2, "delete": 1, unknown: 0}};
+	permissions: ( uri ) => {
+		let cached = cache.get( uri, false );
+		let bit = !cached ? 0 : cached.permission;
+		let result = { allows: [], bit: bit, map: { partial: 8, read: 4, write: 2, "delete": 1, unknown: 0 } };
 
 		if ( bit & 1 ) {
 			result.allows.push( "DELETE" );
@@ -299,14 +303,14 @@ var client = {
 	 *   // Handle `err`
 	 * } );
 	 */
-	jsonp : function ( uri, args ) {
-		var defer    = deferred.factory(),
-		    callback = "callback",
-		    cbid, s;
+	jsonp: ( uri, args ) => {
+		let defer = deferred.factory();
+		let callback = "callback";
+		let cbid, s;
 
 		if ( external === undefined ) {
 			if ( !global.keigai ) {
-				global.keigai = {callback: {}};
+				global.keigai = { callback: {} };
 			}
 
 			external = "keigai";
@@ -319,21 +323,21 @@ var client = {
 		do {
 			cbid = utility.genId().slice( 0, 10 );
 		}
-		while ( global.callback[cbid] );
+		while ( global.callback[ cbid ] );
 
 		uri = uri.replace( callback + "=?", callback + "=" + external + ".callback." + cbid );
 
-		global.callback[cbid] = function ( arg ) {
+		global.callback[ cbid ] = ( arg ) => {
 			utility.clearTimers( cbid );
-			delete global.callback[cbid];
+			delete global.callback[ cbid ];
 			defer.resolve( arg );
 			element.destroy( s );
 		};
 
-		s = element.create( "script", {src: uri, type: "text/javascript"}, utility.dom( "head" )[0] );
-		
-		utility.defer( function () {
-			defer.reject( undefined );
+		s = element.create( "script", { src: uri, type: "text/javascript" }, utility.dom( "head" )[ 0 ] );
+
+		utility.defer( () => {
+			defer.reject( new Error( label.requestTimeout ) );
 		}, 30000, cbid );
 
 		return defer;
@@ -348,18 +352,18 @@ var client = {
 	 * @return {Object} {@link keigai.KXMLHttpRequest}
 	 * @private
 	 */
-	kxhr : function ( xhr ) {
-		var obj = new KXMLHttpRequest( xhr );
+	kxhr: ( xhr ) => {
+		let obj = new KXMLHttpRequest( xhr );
 
 		// Wrapping deferred methods on obj
-		array.each( array.keys( Deferred.prototype ), function ( i ) {
-			obj[i] = function () {
-				return obj.defer[i].apply( obj.defer, array.cast( arguments ) );
+		array.each( array.keys( Deferred.prototype ), ( i ) => {
+			obj[ i ] = (...args) => {
+				return obj.defer[ i ].apply( obj.defer, args );
 			};
 		} );
 
 		// Hooking observer for standard events
-		array.each( EVENTS, function ( i ) {
+		array.each( EVENTS, ( i ) => {
 			obj.hook( obj.xhr, i );
 		} );
 
@@ -385,250 +389,245 @@ var client = {
 	 *   // Handle `err`
 	 * } );
 	 */
-	request : function ( uri, type, args, headers ) {
-		var cors, kxhr, payload, cached, contentType, doc, ab, blob;
+	request: ( uri, type="GET", args, headers ) => {
+		uri = utility.parse( uri ).href;
+		type = type.toLowerCase();
+		headers = headers instanceof Object ? headers : null;
 
-		type = type || "GET";
-
-		if ( ( regex.put_post.test( type ) || regex.patch.test( type ) ) && args === undefined ) {
-			throw new Error( label.invalidArguments );
-		}
-
-		uri         = utility.parse( uri ).href;
-		type        = type.toLowerCase();
-		headers     = headers instanceof Object ? headers : null;
-		cors        = client.cors( uri );
-		kxhr        = client.kxhr( !client.ie || ( !cors || client.version > 9 ) ? new XMLHttpRequest() : new XDomainRequest() );
-		payload     = ( regex.put_post.test( type ) || regex.patch.test( type ) ) && args ? args : null;
-		cached      = type === "get" ? cache.get( uri ) : false;
-		contentType = null;
-		doc         = typeof Document != "undefined";
-		ab          = typeof ArrayBuffer != "undefined";
-		blob        = typeof Blob != "undefined";
+		let cors = client.cors( uri );
+		let kxhr = client.kxhr( !client.ie || ( !cors || client.version > 9 ) ? new XMLHttpRequest() : new XDomainRequest() );
+		let payload = ( regex.put_post.test( type ) || regex.patch.test( type ) ) && args ? args : null;
+		let cached = type === "get" ? cache.get( uri ) : false;
+		let contentType = null;
+		let doc = client.doc;
+		let ab = client.ab;
+		let blob = client.blob;
 
 		// Only GET & POST is supported by XDomainRequest (so useless!)
-		if ( cors && client.ie && client.version === 9 && !regex.xdomainrequest.test( type ) ) {
+		if ( client.ie && client.version === 9 && cors && !regex.xdomainrequest.test( type ) ) {
 			throw new Error( label.notAvailable );
 		}
 
 		// Hooking custom events
-		kxhr.on( "readystatechange", function ( ev ) {
-			switch ( this.xhr.readyState ) {
+		kxhr.on( "readystatechange", ( ev ) => {
+			switch ( kxhr.xhr.readyState ) {
 				case 1:
-					this.dispatch( "beforeXHR", this.xhr, ev );
+					kxhr.dispatch( "beforeXHR", kxhr.xhr, ev );
 					break;
 				case 4:
-					this.dispatch( "afterXHR", this.xhr, ev );
+					kxhr.dispatch( "afterXHR", kxhr.xhr, ev );
 					break;
 			}
 		} );
 
 		if ( !cors && !regex.get_headers.test( type ) && client.allows( uri, type ) === false ) {
-			utility.delay( function () {
-				kxhr.dispatch( "beforeXHR", kxhr.xhr, null );
+			kxhr.dispatch( "beforeXHR", kxhr.xhr, null );
+			kxhr.xhr.status = 405;
+			kxhr.reject( new Error( label.methodNotAllowed ) );
+			utility.delay( () => {
 				kxhr.dispatch( "afterXHR", kxhr.xhr, null );
 			} );
 
-			kxhr.xhr.status = 405;
-			kxhr.reject( null );
+			return;
 		}
 
 		if ( type === "get" && Boolean( cached ) ) {
 			// Decorating XHR for proxy behavior
 			if ( server ) {
-				kxhr.xhr.readyState  = 4;
-				kxhr.xhr.status      = 200;
+				kxhr.xhr.readyState = 4;
+				kxhr.xhr.status = 200;
 				kxhr.xhr._resheaders = cached.headers;
 			}
 
-			utility.delay( function () {
-				kxhr.dispatch( "beforeXHR", kxhr.xhr, null );
+			kxhr.dispatch( "beforeXHR", kxhr.xhr, null );
+			kxhr.resolve( cached.response );
+
+			utility.delay( () => {
 				kxhr.dispatch( "afterXHR", kxhr.xhr, null );
 			} );
 
-			kxhr.resolve( cached.response );
+			return;
 		}
-		else {
-			utility.delay( function () {
-				kxhr.xhr.open( type.toUpperCase(), uri, true );
 
-				// Setting content-type value
-				if ( headers !== null && headers.hasOwnProperty( "content-type" ) ) {
-					contentType = headers["content-type"];
+		utility.delay( () => {
+			kxhr.xhr.open( type.toUpperCase(), uri, true );
+
+			// Setting content-type value
+			if ( headers !== null && headers.hasOwnProperty( "content-type" ) ) {
+				contentType = headers[ "content-type" ];
+			}
+
+			if ( cors && contentType === null ) {
+				contentType = "text/plain";
+			}
+
+			// Transforming payload
+			if ( payload !== null ) {
+				if ( payload.hasOwnProperty( "xml" ) ) {
+					payload = payload.xml;
 				}
 
-				if ( cors && contentType === null ) {
-					contentType = "text/plain";
+				if ( doc && payload instanceof Document ) {
+					payload = xml.decode( payload );
 				}
 
-				// Transforming payload
-				if ( payload !== null ) {
-					if ( payload.hasOwnProperty( "xml" ) ) {
-						payload = payload.xml;
-					}
-
-					if ( doc && payload instanceof Document ) {
-						payload = xml.decode( payload );
-					}
-
-					if ( typeof payload == "string" && regex.is_xml.test( payload ) ) {
-						contentType = "application/xml";
-					}
-
-					if ( !( ab && payload instanceof ArrayBuffer ) && !( blob && payload instanceof Blob ) && !( payload instanceof Buffer ) && payload instanceof Object ) {
-						contentType = "application/json";
-						payload = json.encode( payload );
-					}
-
-					if ( contentType === null && ( ( ab && payload instanceof ArrayBuffer ) || ( blob && payload instanceof Blob ) ) ) {
-						contentType = "application/octet-stream";
-					}
-
-					if ( contentType === null ) {
-						contentType = "application/x-www-form-urlencoded; charset=UTF-8";
-					}
+				if ( typeof payload == "string" && regex.is_xml.test( payload ) ) {
+					contentType = "application/xml";
 				}
 
-				// Setting headers for everything except IE9 CORS requests
-				if ( !client.ie || ( !cors || client.version > 9 ) ) {
-					if ( headers === null ) {
-						headers = {};
-					}
-
-					if ( typeof cached == "object" && cached.headers.hasOwnProperty( "etag" ) ) {
-						headers.etag = cached.headers.etag;
-					}
-
-					if ( contentType !== null ) {
-						headers["content-type"] = contentType;
-					}
-
-					if ( headers.hasOwnProperty( "callback" ) ) {
-						delete headers.callback;
-					}
-
-					headers["x-requested-with"] = "XMLHttpRequest";
-
-					utility.iterate( headers, function ( v, k ) {
-						if ( v !== null && k !== "withCredentials") {
-							kxhr.xhr.setRequestHeader( k, v );
-						}
-					} );
-
-					// Cross Origin Resource Sharing ( CORS )
-					if ( typeof kxhr.xhr.withCredentials == "boolean" && headers !== null && typeof headers.withCredentials == "boolean" ) {
-						kxhr.xhr.withCredentials = headers.withCredentials;
-					}
+				if ( !( ab && payload instanceof ArrayBuffer ) && !( blob && payload instanceof Blob ) && !( payload instanceof Buffer ) && payload instanceof Object ) {
+					contentType = "application/json";
+					payload = json.encode( payload );
 				}
 
-				kxhr.on( "load", function () {
-					var self   = this,
-					    xdr    = client.ie && this.xhr.readyState === undefined,
-					    shared = true,
-					    o, r, t, redirect;
+				if ( contentType === null && ( ( ab && payload instanceof ArrayBuffer ) || ( blob && payload instanceof Blob ) ) ) {
+					contentType = "application/octet-stream";
+				}
 
-					if ( !xdr && this.xhr.readyState === 4 ) {
-						switch ( this.xhr.status ) {
-							case 200:
-							case 201:
-							case 202:
-							case 203:
-							case 204:
-							case 205:
-							case 206:
-								o = client.headers( this.xhr, uri, type );
+				if ( contentType === null ) {
+					contentType = "application/x-www-form-urlencoded; charset=UTF-8";
+				}
+			}
 
-								if ( type === "head" ) {
-									return this.resolve( o.headers );
+			// Setting headers for everything except IE9 CORS requests
+			if ( !client.ie || ( !cors || client.version > 9 ) ) {
+				if ( headers === null ) {
+					headers = {};
+				}
+
+				if ( typeof cached == "object" && cached.headers.hasOwnProperty( "etag" ) ) {
+					headers.etag = cached.headers.etag;
+				}
+
+				if ( contentType !== null ) {
+					headers[ "content-type" ] = contentType;
+				}
+
+				if ( headers.hasOwnProperty( "callback" ) ) {
+					delete headers.callback;
+				}
+
+				headers[ "x-requested-with" ] = "XMLHttpRequest";
+
+				utility.iterate( headers, ( v, k ) => {
+					if ( v !== null && k !== "withCredentials" ) {
+						kxhr.xhr.setRequestHeader( k, v );
+					}
+				} );
+
+				// Cross Origin Resource Sharing ( CORS )
+				if ( typeof kxhr.xhr.withCredentials == "boolean" && headers !== null && typeof headers.withCredentials == "boolean" ) {
+					kxhr.xhr.withCredentials = headers.withCredentials;
+				}
+			}
+
+			kxhr.on( "load", () => {
+				let self = kxhr;
+				let xdr = client.ie && self.xhr.readyState === undefined;
+				let shared = true;
+				let o, r, t, redirect;
+
+				if ( !xdr && kxhr.xhr.readyState === 4 ) {
+					switch ( kxhr.xhr.status ) {
+						case 200:
+						case 201:
+						case 202:
+						case 203:
+						case 204:
+						case 205:
+						case 206:
+							o = client.headers( kxhr.xhr, uri, type );
+
+							if ( type === "head" ) {
+								return kxhr.resolve( o.headers );
+							}
+							else if ( type === "options" ) {
+								return kxhr.resolve( o.headers );
+							}
+							else if ( type !== "delete" ) {
+								if ( server && regex.priv.test( o.headers[ "cache-control" ] ) ) {
+									shared = false;
 								}
-								else if ( type === "options" ) {
-									return this.resolve( o.headers );
-								}
-								else if ( type !== "delete" ) {
-									if ( server && regex.priv.test( o.headers["cache-control"] ) ) {
-										shared = false;
-									}
 
-									if ( regex.http_body.test( this.xhr.status ) ) {
-										t = o.headers["content-type"] || "";
-										r = client.parse( this.xhr, t );
+								if ( regex.http_body.test( kxhr.xhr.status ) ) {
+									t = o.headers[ "content-type" ] || "";
+									r = client.parse( kxhr.xhr, t );
 
-										if ( r === undefined ) {
-											this.reject( new Error( label.serverError ) );
-										}
-									}
-
-									if ( type === "get" && shared ) {
-										cache.set( uri, "response", ( o.response = utility.clone( r, true ) ) );
-									}
-									else {
-										cache.expire( uri, true );
+									if ( r === undefined ) {
+										kxhr.reject( new Error( label.serverError ) );
 									}
 								}
-								else if ( type === "delete" ) {
+
+								if ( type === "get" && shared ) {
+									cache.set( uri, "response", ( o.response = utility.clone( r, true ) ) );
+								}
+								else {
 									cache.expire( uri, true );
 								}
+							}
+							else if ( type === "delete" ) {
+								cache.expire( uri, true );
+							}
 
-								switch ( this.xhr.status ) {
-									case 200:
-									case 202:
-									case 203:
-									case 206:
-										this.resolve( r );
-										break;
-									case 201:
-										if ( ( o.headers.location === undefined || string.isEmpty( o.headers.location ) ) && !string.isUrl( r ) ) {
-											this.resolve( r );
-										}
-										else {
-											redirect = string.trim ( o.headers.Location || r );
-											client.request( redirect ).then( function ( arg ) {
-												self.resolve ( arg );
-											}, function ( e ) {
-												self.reject( e );
-											} );
-										}
-										break;
-									case 204:
-									case 205:
-										this.resolve( null );
-										break;
-								}
-								break;
-							case 304:
-								this.resolve( r );
-								break;
-							case 401:
-								this.reject( new Error( this.xhr.responseText || label.serverUnauthorized ) );
-								break;
-							case 403:
-								cache.set( uri, "!permission", client.bit( [type] ) );
-								this.reject( new Error( this.xhr.responseText || label.serverForbidden ) );
-								break;
-							case 405:
-								cache.set( uri, "!permission", client.bit( [type] ) );
-								this.reject( new Error( this.xhr.responseText || label.serverInvalidMethod ) );
-								break;
-							default:
-								this.reject( new Error( this.xhr.responseText || label.serverError ) );
-						}
+							switch ( kxhr.xhr.status ) {
+								case 200:
+								case 202:
+								case 203:
+								case 206:
+									kxhr.resolve( r );
+									break;
+								case 201:
+									if ( ( o.headers.location === undefined || string.isEmpty( o.headers.location ) ) && !string.isUrl( r ) ) {
+										kxhr.resolve( r );
+									}
+									else {
+										redirect = string.trim( o.headers.Location || r );
+										client.request( redirect ).then( ( arg ) => {
+											self.resolve( arg );
+										}, ( e ) => {
+											self.reject( e );
+										} );
+									}
+									break;
+								case 204:
+								case 205:
+									kxhr.resolve( null );
+									break;
+							}
+							break;
+						case 304:
+							kxhr.resolve( r );
+							break;
+						case 401:
+							kxhr.reject( new Error( kxhr.xhr.responseText || label.serverUnauthorized ) );
+							break;
+						case 403:
+							cache.set( uri, "!permission", client.bit( [ type ] ) );
+							kxhr.reject( new Error( kxhr.xhr.responseText || label.serverForbidden ) );
+							break;
+						case 405:
+							cache.set( uri, "!permission", client.bit( [ type ] ) );
+							kxhr.reject( new Error( kxhr.xhr.responseText || label.serverInvalidMethod ) );
+							break;
+						default:
+							kxhr.reject( new Error( kxhr.xhr.responseText || label.serverError ) );
 					}
-					else if ( xdr ) {
-						r = client.parse( this.xhr, "text/plain" );
-						cache.set( uri, "permission", client.bit( ["get"] ) );
-						cache.set( uri, "response", r );
-						this.resolve( r );
-					}
-				} );
-
-				kxhr.on( "error", function ( e ) {
-					this.reject( e );
-				} );
-
-				// Sending request
-				kxhr.xhr.send( payload !== null ? payload : undefined );
+				}
+				else if ( xdr ) {
+					r = client.parse( kxhr.xhr, "text/plain" );
+					cache.set( uri, "permission", client.bit( [ "get" ] ) );
+					cache.set( uri, "response", r );
+					kxhr.resolve( r );
+				}
 			} );
-		}
+
+			kxhr.on( "error", ( e ) => {
+				kxhr.reject( e );
+			} );
+
+			// Sending request
+			kxhr.xhr.send( payload !== null ? payload : undefined );
+		} );
 
 		return kxhr;
 	},
@@ -643,17 +642,17 @@ var client = {
 	 * @return {Object} {@link Deferred}
 	 * @private
 	 */
-	scroll : function ( dest, ms ) {
-		var defer = deferred(),
-		    start = client.scrollPos(),
-		    t     = 0;
+	scroll: ( dest, ms ) => {
+		let defer = deferred();
+		let start = client.scrollPos();
+		let t = 0;
 
 		ms = ( !isNaN( ms ) ? ms : 250 ) / 100;
 
-		utility.repeat( function () {
-			var pos = math.bezier( start[0], start[1], dest[0], dest[1], ++t / 100 );
+		utility.repeat( () => {
+			let pos = math.bezier( start[ 0 ], start[ 1 ], dest[ 0 ], dest[ 1 ], ++t / 100 );
 
-			window.scrollTo( pos[0], pos[1] );
+			window.scrollTo( pos[ 0 ], pos[ 1 ] );
 
 			if ( t === 100 ) {
 				defer.resolve( true );
@@ -672,7 +671,7 @@ var client = {
 	 * @return {Array} Describes the scroll position
 	 * @private
 	 */
-	scrollPos : function () {
+	scrollPos: () => {
 		return [
 			window.scrollX || 0,
 			window.scrollY || 0

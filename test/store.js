@@ -68,7 +68,6 @@ exports["create"] = {
 			test.equal(self.store.records[0].key, arg.key, "Should be a match");
 			test.done();
 		}, function (e) {
-			console.error(e);
 			test.done();
 		});
 	}
@@ -91,7 +90,6 @@ exports["create (batch)"] = {
 			test.equal(self.store.records[0].key, arg[0].key, "Should be a match");
 			test.done();
 		}, function (e) {
-			console.error(e);
 			test.done();
 		});
 	}
@@ -115,7 +113,6 @@ exports["read (valid)"] = {
 			test.equal(record.data.name, "Decker Merrill", "Should be a match");
 			test.done();
 		}, function (e) {
-			console.error(e);
 			test.done();
 		});
 	}
@@ -136,7 +133,6 @@ exports["read (invalid)"] = {
 			test.equal(self.store.get(1), undefined, "Should be 'undefined'");
 			test.done();
 		}, function (e) {
-			console.error(e);
 			test.done();
 		});
 	}
@@ -161,10 +157,9 @@ exports["read (indexed & filtered)"] = {
 				test.equal(args[1].data.name, "Leann Sosa", "Should be a match");
 				test.done();
 			}, function (e) {
-				throw e;
+				test.done();
 			});
 		}).catch( function (e) {
-			console.error(e);
 			test.done();
 		});
 	}
@@ -186,10 +181,9 @@ exports["update (delta)"] = {
 				test.equal(arg.data.name, "John Doe", "Should be a match");
 				test.done();
 			}, function (e) {
-				throw e;
+				test.done();
 			});
 		}).catch(function (e) {
-			console.error(e);
 			test.done();
 		});
 	}
@@ -212,10 +206,9 @@ exports["update (overwrite)"] = {
 				test.equal(Object.keys(arg.data ).length, 1, "Should be '1'");
 				test.done();
 			}, function (e) {
-				throw e;
+				test.done();
 			});
 		}).catch(function (e) {
-			console.error(e);
 			test.done();
 		});
 	}
@@ -238,10 +231,9 @@ exports["delete"] = {
 				test.equal(self.store.records.length, 0, "Should be '0'");
 				test.done();
 			}, function (e) {
-				throw e;
+				test.done();
 			});
 		}).catch(function (e) {
-			console.error(e);
 			test.done();
 		});
 	}
@@ -266,10 +258,9 @@ exports["delete (batch)"] = {
 				test.equal(self.store.records[0].index, 0, "Should be '0'");
 				test.done();
 			}, function (e) {
-				throw e;
+				test.done();
 			});
 		}).catch(function (e) {
-			console.error(e);
 			test.done();
 		});
 	}
@@ -293,10 +284,9 @@ exports["delete (indexed)"] = {
 				test.equal(Object.keys(self.store.indexes.age["20"]).length, 1, "Should be '1'");
 				test.done();
 			}, function (e) {
-				throw e;
+				test.done();
 			});
 		}).catch( function (e) {
-			console.error(e);
 			test.done();
 		});
 	}
@@ -320,7 +310,6 @@ exports["setUri"] = {
 			test.equal(self.store.records[0].key, args[0].key, "Should be a match");
 			test.done();
 		}, function (e) {
-			console.error(e);
 			test.done();
 		});
 	}
@@ -344,11 +333,9 @@ exports["create (wired)"] = {
 				test.equal(self.store.records[6].data.guid, arg.data.guid, "Should be a match");
 				test.done();
 			}, function (e) {
-				console.error(e);
 				test.done();
 			});
 		}, function (e) {
-			console.error(e);
 			test.done();
 		});
 	}
@@ -370,11 +357,9 @@ exports["delete (wired)"] = {
 				test.equal(self.store.records[0].key, '1', "Should be a match");
 				test.done();
 			}, function (e) {
-				console.error(e);
 				test.done();
 			});
 		}, function (e) {
-			console.error(e);
 			test.done();
 		});
 	}
@@ -398,11 +383,9 @@ exports["update (wired / patch)"] = {
 				test.equal(arg.data.blah, true, "Should be a match");
 				test.done();
 			}, function (e) {
-				console.error(e);
 				test.done();
 			});
 		}, function (e) {
-			console.error(e);
 			test.done();
 		});
 	}
@@ -427,11 +410,9 @@ exports["update (wired / overwrite)"] = {
 				test.equal(Object.keys(arg.data ).length, 1, "Should be a match");
 				test.done();
 			}, function (e) {
-				console.error(e);
 				test.done();
 			});
 		}, function (e) {
-			console.error(e);
 			test.done();
 		});
 	}

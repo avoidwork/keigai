@@ -1,7 +1,7 @@
 /**
  * @namespace string
  */
-var string = {
+let string = {
 	/**
 	 * Capitalizes the String
 	 *
@@ -13,15 +13,13 @@ var string = {
 	 * @example
 	 * keigai.util.string.capitalize( "hello" ); // "Hello"
 	 */
-	capitalize : function ( obj, all ) {
-		all = ( all === true );
-
-		var result;
+	capitalize: ( obj, all=false ) => {
+		let result;
 
 		if ( all ) {
-			result = string.explode( obj, " " ).map( function ( i ) {
+			result = string.explode( obj, " " ).map( ( i ) => {
 				return i.charAt( 0 ).toUpperCase() + i.slice( 1 );
-			} ).join(" ");
+			} ).join( " " );
 		}
 		else {
 			result = obj.charAt( 0 ).toUpperCase() + obj.slice( 1 );
@@ -40,7 +38,7 @@ var string = {
 	 * @example
 	 * keigai.util.string.escape( "{hello}" ); // "\{hello\}"
 	 */
-	escape : function ( obj ) {
+	escape: ( obj ) => {
 		return obj.replace( /[\-\[\]{}()*+?.,\\\/\^\$|#\s]/g, "\\$&" );
 	},
 
@@ -53,13 +51,11 @@ var string = {
 	 * @param  {String} arg String to split on
 	 * @return {Array}      Array of the exploded String
 	 * @example
-	 * keigai.util.array.each( keigai.util.string.explode( "abc, def" ), function ( i ) {
+	 * keigai.util.array.each( keigai.util.string.explode( "abc, def" ), ( i ) => {
 	 *   ...
 	 * } );
 	 */
-	explode : function ( obj, arg ) {
-		arg = arg || ",";
-
+	explode: ( obj, arg="," ) => {
 		return string.trim( obj ).split( new RegExp( "\\s*" + arg + "\\s*" ) );
 	},
 
@@ -76,10 +72,10 @@ var string = {
 	 * @example
 	 * keigai.util.string.fromObject( {a: true, b: false}, "stats" ); // "stats = {'a': true,'b':false}"
 	 */
-	fromObject : function ( obj, name ) {
-		var result = ( name ? name + " = {" : "{" ) + "\n";
+	fromObject: ( obj, name ) => {
+		let result = ( name ? name + " = {" : "{" ) + "\n";
 
-		utility.iterate( obj, function ( v, k ) {
+		utility.iterate( obj, ( v, k ) => {
 			result += "\"" + k + "\":" + v.toString() + ",\n";
 		} );
 
@@ -99,8 +95,8 @@ var string = {
 	 * @example
 	 * keigai.util.string.hyphenate( "hello world" ); // "hello-world"
 	 */
-	hyphenate : function ( obj, camel ) {
-		var result = string.trim( obj ).replace( /\s+/g, "-" );
+	hyphenate: ( obj, camel=false ) => {
+		let result = string.trim( obj ).replace( /\s+/g, "-" );
 
 		if ( camel === true ) {
 			result = result.replace( /([A-Z])/g, "-$1" ).toLowerCase();
@@ -121,7 +117,7 @@ var string = {
 	 *   ...
 	 * } );
 	 */
-	isBoolean : function ( obj ) {
+	isBoolean: ( obj ) => {
 		return regex.bool.test( obj );
 	},
 
@@ -137,7 +133,7 @@ var string = {
 	 *   ...
 	 * } );
 	 */
-	isEmpty : function ( obj ) {
+	isEmpty: ( obj ) => {
 		return string.trim( obj ) === "";
 	},
 
@@ -153,7 +149,7 @@ var string = {
 	 *   ...
 	 * } );
 	 */
-	isNumber : function ( obj ) {
+	isNumber: ( obj ) => {
 		return regex.number.test( obj );
 	},
 
@@ -169,7 +165,7 @@ var string = {
 	 *   ...
 	 * } );
 	 */
-	isUrl : function ( obj ) {
+	isUrl: ( obj ) => {
 		return regex.url.test( obj );
 	},
 
@@ -183,13 +179,13 @@ var string = {
 	 * @example
 	 * keigai.util.string.toCamelCase( "hello world" ); // "helloWorld"
 	 */
-	toCamelCase : function ( obj ) {
-		var s = string.trim( obj ).replace( /\.|_|-|\@|\[|\]|\(|\)|\#|\$|\%|\^|\&|\*|\s+/g, " " ).toLowerCase().split( regex.space_hyphen ),
-		    r = [];
+	toCamelCase: ( obj ) => {
+		let s = string.trim( obj ).replace( /\.|_|-|\@|\[|\]|\(|\)|\#|\$|\%|\^|\&|\*|\s+/g, " " ).toLowerCase().split( regex.space_hyphen );
+		let r = [];
 
-		array.each( s, function ( i, idx ) {
+		array.each( s, ( i, idx ) => {
 			r.push( idx === 0 ? i : string.capitalize( i ) );
-		});
+		} );
 
 		return r.join( "" );
 	},
@@ -204,7 +200,7 @@ var string = {
 	 * @example
 	 * keigai.util.string.singular( "cans" ); // "can"
 	 */
-	singular : function ( obj ) {
+	singular: ( obj ) => {
 		return obj.replace( /oe?s$/, "o" ).replace( /ies$/, "y" ).replace( /ses$/, "se" ).replace( /s$/, "" );
 	},
 
@@ -216,17 +212,17 @@ var string = {
 	 * @param  {String} obj String to cast
 	 * @return {Function}   Function
 	 * @example
-	 * var fn = someFunction.toString();
+	 * let fn = someFunction.toString();
 	 *
 	 * ...
 	 *
-	 * var func = keigai.util.string.toFunction( fn );
+	 * let func = keigai.util.string.toFunction( fn );
 	 */
-	toFunction : function ( obj ) {
-		var args = string.trim( obj.replace( /^.*\(/, "" ).replace( /[\t|\r|\n|\"|\']+/g, "" ).replace( /\).*/, "" ) ),
-		    body = string.trim( obj.replace( /^.*\{/, "" ).replace( /\}$/, "" ) );
+	toFunction: ( obj ) => {
+		let args = string.trim( obj.replace( /^.*\(/, "" ).replace( /[\t|\r|\n|\"|\']+/g, "" ).replace( /\).*/, "" ) );
+		let body = string.trim( obj.replace( /^.*\{/, "" ).replace( /\}$/, "" ) );
 
-		return Function.apply( Function, string.explode( args ).concat( [body] ) );
+		return Function.apply( Function, string.explode( args ).concat( [ body ] ) );
 	},
 
 	/**
@@ -239,7 +235,7 @@ var string = {
 	 * @example
 	 * keigai.util.string.trim( "  hello world " ); // "hello world"
 	 */
-	trim : function ( obj ) {
+	trim: ( obj ) => {
 		return obj.replace( /^(\s+|\t+|\n+)|(\s+|\t+|\n+)$/g, "" );
 	},
 
@@ -251,7 +247,7 @@ var string = {
 	 * @param  {String} obj String to uncamelcase
 	 * @return {String}     Uncamelcased String
 	 */
-	unCamelCase : function ( obj ) {
+	unCamelCase: ( obj ) => {
 		return string.trim( obj.replace( /([A-Z])/g, " $1" ).toLowerCase() );
 	},
 
@@ -265,10 +261,10 @@ var string = {
 	 * @example
 	 * keigai.util.string.uncapitalize( "Hello" ); // "hello"
 	 */
-	uncapitalize : function ( obj ) {
-		obj = string.trim( obj );
+	uncapitalize: ( obj ) => {
+		let result = string.trim( obj );
 
-		return obj.charAt( 0 ).toLowerCase() + obj.slice( 1 );
+		return result.charAt( 0 ).toLowerCase() + result.slice( 1 );
 	},
 
 	/**
@@ -283,12 +279,12 @@ var string = {
 	 * keigai.util.string.unhyphenate( "hello-world" );       // "hello world"
 	 * keigai.util.string.unhyphenate( "hello-world", true ); // "Hello World"
 	 */
-	unhyphenate : function ( obj, caps ) {
+	unhyphenate: ( obj, caps=false ) => {
 		if ( caps !== true ) {
 			return string.explode( obj, "-" ).join( " " );
 		}
 		else {
-			return string.explode( obj, "-" ).map( function ( i ) {
+			return string.explode( obj, "-" ).map( ( i ) => {
 				return string.capitalize( i );
 			} ).join( " " );
 		}

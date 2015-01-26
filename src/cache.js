@@ -2,14 +2,14 @@
  * @namespace cache
  * @private
  */
-var cache = {
+let cache = {
 	/**
 	 * Collection URIs
 	 *
 	 * @memberOf cache
 	 * @type {Object}
 	 */
-	lru : lru.factory( CACHE ),
+	lru: lru.factory( CACHE ),
 
 	/**
 	 * Expires a URI from the local cache
@@ -19,15 +19,14 @@ var cache = {
 	 * @param  {String} uri URI of the local representation
 	 * @return {Boolean} `true` if successful
 	 */
-	expire : function ( uri ) {
-		if ( cache.lru.cache[uri] ) {
+	expire: ( uri ) => {
+		if ( cache.lru.cache[ uri ] ) {
 			cache.lru.remove( uri );
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	},
 
 	/**
@@ -38,8 +37,8 @@ var cache = {
 	 * @param  {Object} uri Cached URI object
 	 * @return {Boolean}    True if the URI has expired
 	 */
-	expired : function ( uri ) {
-		var item = cache.lru.cache[uri];
+	expired: ( uri ) => {
+		let item = cache.lru.cache[ uri ];
 
 		return item && item.value.expires < new Date().getTime();
 	},
@@ -54,9 +53,9 @@ var cache = {
 	 * @param  {Boolean} silent [Optional] If 'true', the event will not fire
 	 * @return {Mixed}          URI Object {headers, response} or False
 	 */
-	get : function ( uri, expire ) {
-		uri      = utility.parse( uri ).href;
-		var item = cache.lru.get( uri );
+	get: ( uri, expire ) => {
+		uri = utility.parse( uri ).href;
+		let item = cache.lru.get( uri );
 
 		if ( !item ) {
 			return false;
@@ -81,13 +80,13 @@ var cache = {
 	 * @param  {Mixed} value     Value to set
 	 * @return {Mixed}           URI Object {headers, response} or undefined
 	 */
-	set : function ( uri, property, value ) {
-		uri      = utility.parse( uri ).href;
-		var item = cache.lru.get( uri );
+	set: ( uri, property, value ) => {
+		uri = utility.parse( uri ).href;
+		let item = cache.lru.get( uri );
 
 		if ( !item ) {
 			item = {
-				permission : 0
+				permission: 0
 			};
 		}
 
@@ -98,7 +97,7 @@ var cache = {
 			item.permission &= ~value;
 		}
 		else {
-			item[property] = value;
+			item[ property ] = value;
 		}
 
 		cache.lru.set( uri, item );

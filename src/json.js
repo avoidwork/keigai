@@ -1,7 +1,7 @@
 /**
  * @namespace json
  */
-var json = {
+let json = {
 	/**
 	 * Decodes the argument
 	 *
@@ -11,7 +11,7 @@ var json = {
 	 * @param  {Boolean} silent [Optional] Silently fail
 	 * @return {Mixed}          Entity resulting from parsing JSON, or undefined
 	 * @example
-	 * var x = keigai.util.json.decode( ..., true );
+	 * let x = keigai.util.json.decode( ..., true );
 	 *
 	 * if ( x ) {
 	 *   ...
@@ -20,13 +20,13 @@ var json = {
 	 *   ... // invalid JSON, with `Error` suppressed by `silent`
 	 * }
 	 */
-	decode : function ( arg, silent ) {
+	decode: ( arg, silent ) => {
 		try {
 			return JSON.parse( arg );
 		}
 		catch ( e ) {
 			if ( silent !== true ) {
-				utility.error( e, arguments, this );
+				utility.error( e, [arg, silent], this );
 			}
 
 			return undefined;
@@ -42,7 +42,7 @@ var json = {
 	 * @param  {Boolean} silent [Optional] Silently fail
 	 * @return {String}         JSON, or undefined
 	 * @example
-	 * var x = keigai.util.json.encode( ..., true );
+	 * let x = keigai.util.json.encode( ..., true );
 	 *
 	 * if ( x ) {
 	 *   ...
@@ -51,13 +51,13 @@ var json = {
 	 *   ... // invalid JSON, with `Error` suppressed by `silent`
 	 * }
 	 */
-	encode : function ( arg, silent ) {
+	encode: ( arg, silent ) => {
 		try {
 			return JSON.stringify( arg );
 		}
 		catch ( e ) {
 			if ( silent !== true ) {
-				utility.error( e, arguments, this );
+				utility.error( e, [arg, silent], this );
 			}
 
 			return undefined;

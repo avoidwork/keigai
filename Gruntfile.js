@@ -39,11 +39,22 @@ module.exports = function (grunt) {
 					"src/string.js",
 					"src/utility.js",
 					"src/xhr.js",
+					"src/weakmap.js",
 					"src/xml.js",
 					"src/bootstrap.js",
 					"src/outro.js"
 				],
-				dest : "lib/<%= pkg.name %>.js"
+				dest : "lib/<%= pkg.name %>.es6.js"
+			}
+		},
+		"6to5": {
+			options: {
+				sourceMap: false
+			},
+			dist: {
+				files: {
+					"lib/<%= pkg.name %>.js": "lib/<%= pkg.name %>.es6.js"
+				}
 			}
 		},
 		jsdoc : {
@@ -56,12 +67,6 @@ module.exports = function (grunt) {
 				    "private"   : false
 				}
 			}
-		},
-		jshint : {
-			options : {
-				jshintrc : ".jshintrc"
-			},
-			src : "lib/<%= pkg.name %>.js"
 		},
 		nodeunit : {
 			all : ["test/*.js"]
@@ -118,14 +123,14 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-jsdoc");
 	grunt.loadNpmTasks("grunt-contrib-concat");
 	grunt.loadNpmTasks("grunt-contrib-nodeunit");
-	grunt.loadNpmTasks("grunt-contrib-jshint");
 	grunt.loadNpmTasks("grunt-contrib-watch");
 	grunt.loadNpmTasks("grunt-contrib-sass");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
+	grunt.loadNpmTasks("grunt-6to5");
 
 	// aliases
-	grunt.registerTask("test", ["jshint", "nodeunit"]);
-	grunt.registerTask("build", ["concat", "sed"]);
+	grunt.registerTask("test", ["nodeunit"]);
+	grunt.registerTask("build", ["concat", "sed", "6to5"]);
 	grunt.registerTask("default", ["build", "test", "sass", "uglify"]);
 	grunt.registerTask("package", ["default", "jsdoc"]);
 };

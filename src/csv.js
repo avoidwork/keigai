@@ -1,7 +1,7 @@
 /**
  * @namespace csv
  */
-var csv = {
+let csv = {
 	/**
 	 * Converts CSV to an Array of Objects
 	 *
@@ -11,24 +11,23 @@ var csv = {
 	 * @param  {String} delimiter [Optional] Delimiter to split columns on, default is ","
 	 * @return {Array}            Array of Objects
 	 */
-	decode : function ( arg, delimiter ) {
-		delimiter  = delimiter || ",";
-		var regex  = new RegExp( delimiter + "(?=(?:[^\"]|\"(?:[^\"])[^\"]*\")*$)" ),
-		    rows   = string.trim( arg ).split( "\n" ),
-		    keys   = rows.shift().split( delimiter ),
-		    result = [],
-		    nth    = rows.length,
-		    x      = keys.length,
-		    i      = -1,
-		    n, obj, row;
+	decode: ( arg, delimiter="," ) => {
+		let regex = new RegExp( delimiter + "(?=(?:[^\"]|\"(?:[^\"])[^\"]*\")*$)" );
+		let rows = string.trim( arg ).split( "\n" );
+		let keys = rows.shift().split( delimiter );
+		let result = [];
+		let nth = rows.length;
+		let x = keys.length;
+		let i = -1;
+		let n, obj, row;
 
 		while ( ++i < nth ) {
 			obj = {};
-			row = rows[i].split( regex );
+			row = rows[ i ].split( regex );
 
 			n = -1;
-			while ( ++n  < x ) {
-				obj[keys[n]] = utility.coerce( ( row[n] || "" ).replace( /^"|"$/g, "" ) );
+			while ( ++n < x ) {
+				obj[ keys[ n ] ] = utility.coerce( ( row[ n ] || "" ).replace( /^"|"$/g, "" ) );
 			}
 
 			result.push( obj );
@@ -47,23 +46,20 @@ var csv = {
 	 * @param  {Boolean} header    [Optional] `false` to disable keys names as first row
 	 * @return {String}            CSV string
 	 * @example
-	 * var csv = keigai.util.csv.encode( [{prop:"value"}, {prop:"value2"}] );
+	 * let csv = keigai.util.csv.encode( [{prop:"value"}, {prop:"value2"}] );
 	 *
 	 * console.log( csv );
 	 * "prop
 	 *  value
 	 *  value2"
 	 */
-	encode : function ( arg, delimiter, header ) {
-		var obj    = json.decode( arg, true ) || arg,
-		    result = "";
-
-		delimiter  = delimiter || ",";
-		header     = ( header !== false );
+	encode: ( arg, delimiter=",", header=true ) => {
+		let obj = json.decode( arg, true ) || arg;
+		let result = "";
 
 		// Prepares input based on CSV rules
-		function prepare ( input ) {
-			var output;
+		let prepare = ( input ) => {
+			let output;
 
 			if ( input instanceof Array ) {
 				output = "\"" + input.toString() + "\"";
@@ -86,12 +82,12 @@ var csv = {
 		}
 
 		if ( obj instanceof Array ) {
-			if ( obj[0] instanceof Object ) {
+			if ( obj[ 0 ] instanceof Object ) {
 				if ( header ) {
-					result = ( array.keys( obj[0] ).join( delimiter ) + "\n" );
+					result = ( array.keys( obj[ 0 ] ).join( delimiter ) + "\n" );
 				}
 
-				result += obj.map( function ( i ) {
+				result += obj.map( ( i ) => {
 					return csv.encode( i, delimiter, false );
 				} ).join( "\n" );
 			}
@@ -108,6 +104,6 @@ var csv = {
 			result += ( array.cast( obj ).map( prepare ).join( delimiter ) + "\n" );
 		}
 
-		return result.replace( regex.eol_nl , "");
+		return result.replace( regex.eol_nl, "" );
 	}
 };

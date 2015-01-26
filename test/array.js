@@ -217,21 +217,6 @@ exports["equal"] = {
 	}
 };
 
-exports["fib"] = {
-	setUp: function (done) {
-		this.test = [];
-		done();
-	},
-	test: function (test) {
-		test.expect(4);
-		test.equal(array.fib(5).length, 5, "Should be '5'");
-		test.equal(array.fib(5).toString(), "1,1,2,3,5", "Should be '1,1,2,3,5'");
-		test.equal(array.fib(7).toString(), "1,1,2,3,5,8,13", "Should be '1,1,2,3,5,8,13'");
-		test.equal(array.fib().length, 100, "Should be '100'");
-		test.done();
-	}
-};
-
 exports["fill"] = {
 	setUp: function (done) {
 		this.val = ["a", "b"];
@@ -524,21 +509,6 @@ exports["mode"] = {
 		test.equal(array.mode(this.single), 7, "Should be '7'");
 		test.equal(array.mode(this.many).length, 2, "Should be '2' ([7, 10])");
 		test.equal(array.mode(this.none), undefined, "Should be 'undefined'");
-		test.done();
-	}
-};
-
-exports["percents"] = {
-	setUp: function (done) {
-		this.val = [1, 2, 3, 37];
-		done();
-	},
-	test: function (test) {
-		test.expect(4);
-		test.equal(array.sum(array.percents(this.val)), 100, "Should be '100'");
-		test.equal(array.percents(this.val).toString(), "2,5,7,86", "Should be '2,5,7,86'");
-		test.equal(array.sum(array.percents(this.val, 1)), 100, "Should be '100'");
-		test.equal(array.sum(array.percents(this.val, 7)), 100, "Should be '100'");
 		test.done();
 	}
 };

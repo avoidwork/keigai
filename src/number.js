@@ -1,7 +1,7 @@
 /**
  * @namespace number
  */
-var number = {
+let number = {
 	/**
 	 * Returns the difference of arg
 	 *
@@ -12,11 +12,7 @@ var number = {
 	 * @example
 	 * keigai.util.number.diff( -3, 8 ); // 11
 	 */
-	diff : function ( num1, num2 ) {
-		if ( isNaN( num1 ) || isNaN( num2 ) ) {
-			throw new Error( label.expectedNumber );
-		}
-
+	diff: ( num1, num2 ) => {
 		return Math.abs( num1 - num2 );
 	},
 
@@ -28,13 +24,13 @@ var number = {
 	 * @param {Number} arg Number to test
 	 * @return {Boolean}   True if even, or undefined
 	 * @example
-	 * var n = keigai.util.number.random( 10 );
+	 * let n = keigai.util.number.random( 10 );
 	 *
 	 * if ( keigai.util.number.even( n ) ) {
 	 *   ...
 	 * }
 	 */
-	even : function ( arg ) {
+	even: ( arg ) => {
 		return arg % 2 === 0;
 	},
 
@@ -50,22 +46,17 @@ var number = {
 	 * @example
 	 * keigai.util.number.format( 1000 ); // "1,000"
 	 */
-	format : function ( arg, delimiter, every ) {
-		if ( isNaN( arg ) ) {
-			throw new Error( label.expectedNumber );
-		}
+	format: ( arg, delimiter=",", every=3 ) => {
+		arg = arg.toString();
 
-		arg       = arg.toString();
-		delimiter = delimiter || ",";
-		every     = every     || 3;
-
-		var d = arg.indexOf( "." ) > -1 ? "." + arg.replace( regex.number_format_1, "" ) : "",
-		    a = arg.replace( regex.number_format_2, "" ).split( "" ).reverse(),
-		    p = Math.floor( a.length / every ),
-		    i = 1, n, b;
+		let d = arg.indexOf( "." ) > -1 ? "." + arg.replace( regex.number_format_1, "" ) : "";
+		let a = arg.replace( regex.number_format_2, "" ).split( "" ).reverse();
+		let p = Math.floor( a.length / every );
+		let i = 1;
+		let n, b;
 
 		for ( b = 0; b < p; b++ ) {
-			n = i === 1 ? every : ( every * i ) + ( i === 2 ? 1 : ( i - 1 ) );
+			n = i === 1 ? every: ( every * i ) + ( i === 2 ? 1: ( i - 1 ) );
 			a.splice( n, 0, delimiter );
 			i++;
 		}
@@ -92,8 +83,8 @@ var number = {
 	 *   ...
 	 * } );
 	 */
-	half : function ( a, b ) {
-		return b ? ( ( a / b ) === 0.5 ) : ( a / 2 );
+	half: ( a, b ) => {
+		return b ? ( ( a / b ) === 0.5 ): ( a / 2 );
 	},
 
 	/**
@@ -104,13 +95,13 @@ var number = {
 	 * @param  {Number} arg Number to test
 	 * @return {Boolean}    True if odd, or undefined
 	 * @example
-	 * var n = keigai.util.number.random( 10 );
+	 * let n = keigai.util.number.random( 10 );
 	 *
 	 * if ( keigai.util.number.odd( n ) ) {
 	 *   ...
 	 * }
 	 */
-	odd : function ( arg ) {
+	odd: ( arg ) => {
 		return !number.even( arg );
 	},
 
@@ -126,7 +117,7 @@ var number = {
 	 * // Unsure if `n` is an int or a float
 	 * keigai.util.number.parse( n );
 	 */
-	parse : function ( arg, base ) {
+	parse: ( arg, base ) => {
 		return ( base === undefined ) ? parseFloat( arg ) : parseInt( arg, base );
 	},
 
@@ -138,11 +129,9 @@ var number = {
 	 * @param  {Number} arg Ceiling for random number, default is 100
 	 * @return {Number}     Random number
 	 * @example
-	 * var n = keigai.util.math.random( 10 );
+	 * let n = keigai.util.math.random( 10 );
 	 */
-	random : function ( arg ) {
-		arg = arg || 100;
-
+	random: ( arg=100 ) => {
 		return Math.floor( Math.random() * ( arg + 1 ) );
 	},
 
@@ -157,7 +146,7 @@ var number = {
 	 * @example
 	 * keigai.util.math.round( n, "down" );
 	 */
-	round : function ( arg, direction ) {
+	round: ( arg, direction ) => {
 		arg = number.parse( arg );
 
 		if ( direction === undefined || string.isEmpty( direction ) ) {

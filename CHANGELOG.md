@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.0
+- Refactored to ES6, utilizing `6to5` to transpile to ES5
+- Creating ES6 build artifact in `/lib`
+
 ## 1.0.6
 - Creating `element.addClass()`, & `element.removeClass()` facades of `element.klass()` for a familiar syntax
 - Fixing `element.attr()` such that `optgroup` is supported

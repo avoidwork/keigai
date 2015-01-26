@@ -2,14 +2,14 @@
  * @namespace label
  * @private
  */
-var label = {
+let label = {
 	/**
 	 * Expected a Number
 	 *
 	 * @type {String}
 	 * @memberOf label
 	 */
-	expectedNumber : "Expected a Number",
+	expectedNumber: "Expected a Number",
 
 	/**
 	 * Expected a property, and it was not set
@@ -17,7 +17,7 @@ var label = {
 	 * @type {String}
 	 * @memberOf label
 	 */
-	expectedProperty : "Expected a property, and it was not set",
+	expectedProperty: "Expected a property, and it was not set",
 
 	/**
 	 * Expected an Object
@@ -25,7 +25,7 @@ var label = {
 	 * @type {String}
 	 * @memberOf label
 	 */
-	expectedObject : "Expected an Object",
+	expectedObject: "Expected an Object",
 
 	/**
 	 * One or more arguments is invalid
@@ -33,7 +33,7 @@ var label = {
 	 * @type {String}
 	 * @memberOf label
 	 */
-	invalidArguments : "One or more arguments is invalid",
+	invalidArguments: "One or more arguments is invalid",
 
 	/**
 	 * INVALID_STATE_ERR: Headers have not been received
@@ -41,7 +41,7 @@ var label = {
 	 * @type {String}
 	 * @memberOf label
 	 */
-	invalidStateNoHeaders : "INVALID_STATE_ERR: Headers have not been received",
+	invalidStateNoHeaders: "INVALID_STATE_ERR: Headers have not been received",
 
 	/**
 	 * Synchronous XMLHttpRequest requests are not supported
@@ -49,7 +49,7 @@ var label = {
 	 * @type {String}
 	 * @memberOf label
 	 */
-	invalidStateNoSync : "Synchronous XMLHttpRequest requests are not supported",
+	invalidStateNoSync: "Synchronous XMLHttpRequest requests are not supported",
 
 	/**
 	 * INVALID_STATE_ERR: Object is not open
@@ -57,7 +57,7 @@ var label = {
 	 * @type {String}
 	 * @memberOf label
 	 */
-	invalidStateNotOpen : "INVALID_STATE_ERR: Object is not open",
+	invalidStateNotOpen: "INVALID_STATE_ERR: Object is not open",
 
 	/**
 	 * INVALID_STATE_ERR: Object is sending
@@ -65,7 +65,7 @@ var label = {
 	 * @type {String}
 	 * @memberOf label
 	 */
-	invalidStateNotSending : "INVALID_STATE_ERR: Object is sending",
+	invalidStateNotSending: "INVALID_STATE_ERR: Object is sending",
 
 	/**
 	 * INVALID_STATE_ERR: Object is not usable
@@ -73,15 +73,23 @@ var label = {
 	 * @type {String}
 	 * @memberOf label
 	 */
-	invalidStateNotUsable : "INVALID_STATE_ERR: Object is not usable",
+	invalidStateNotUsable: "INVALID_STATE_ERR: Object is not usable",
 
 	/**
-	 * Defauly `emptyMsg` of DataLists
+	 * Error when deferred is rejected for invalid request
 	 *
 	 * @type {String}
 	 * @memberOf label
 	 */
-	noData : "Nothing to display",
+	methodNotAllowed: "Method not allowed",
+
+	/**
+	 * Default `emptyMsg` of DataLists
+	 *
+	 * @type {String}
+	 * @memberOf label
+	 */
+	noData: "Nothing to display",
 
 	/**
 	 * Requested method is not available
@@ -89,7 +97,7 @@ var label = {
 	 * @type {String}
 	 * @memberOf label
 	 */
-	notAvailable : "Requested method is not available",
+	notAvailable: "Requested method is not available",
 
 	/**
 	 * No previous version of a record
@@ -97,7 +105,15 @@ var label = {
 	 * @type {String}
 	 * @memberOf label
 	 */
-	datastoreNoPrevVersion : "No previous version found",
+	datastoreNoPrevVersion: "No previous version found",
+
+	/**
+	 * HTTP request timed out
+	 *
+	 * @type {String}
+	 * @memberOf label
+	 */
+	requestTimeout: "Request timed out",
 
 	/**
 	 * Server error has occurred
@@ -105,7 +121,7 @@ var label = {
 	 * @type {String}
 	 * @memberOf label
 	 */
-	serverError : "Server error has occurred",
+	serverError: "Server error has occurred",
 
 	/**
 	 * Forbidden to access URI
@@ -113,7 +129,7 @@ var label = {
 	 * @type {String}
 	 * @memberOf label
 	 */
-	serverForbidden : "Forbidden to access URI",
+	serverForbidden: "Forbidden to access URI",
 
 	/**
 	 * Method not allowed
@@ -121,7 +137,7 @@ var label = {
 	 * @type {String}
 	 * @memberOf label
 	 */
-	serverInvalidMethod : "Method not allowed",
+	serverInvalidMethod: "Method not allowed",
 
 	/**
 	 * Authorization required to access URI
@@ -129,7 +145,7 @@ var label = {
 	 * @type {String}
 	 * @memberOf label
 	 */
-	serverUnauthorized : "Authorization required to access URI",
+	serverUnauthorized: "Authorization required to access URI",
 
 	/**
 	 * Your browser is too old to use keigai, please upgrade
@@ -137,5 +153,5 @@ var label = {
 	 * @type {String}
 	 * @memberOf label
 	 */
-	upgrade : "Your browser is too old to use keigai, please upgrade"
+	upgrade: "Your browser is too old to use keigai, please upgrade"
 };

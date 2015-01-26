@@ -1,33 +1,33 @@
-( function ( global ) {
-
-var document  = global.document,
-    location  = global.location,
-    navigator = global.navigator,
-    server    = typeof process != "undefined",
-    webWorker = typeof Blob != "undefined" && typeof Worker != "undefined",
-    MAX       = 10,
-    VERSIONS  = 100,
-    CACHE     = 500,
-    EVENTS    = ["readystatechange", "abort", "load", "loadstart", "loadend", "error", "progress", "timeout"],
-    format, http, https, lib, mongodb, url, RENDER, TIME, WORKER;
+( global ) => {
+let document = global.document;
+let location = global.location;
+let navigator = global.navigator;
+let server = typeof process != "undefined";
+let webWorker = typeof Blob != "undefined" && typeof Worker != "undefined";
+let MAX = 10;
+let VERSIONS = 100;
+let CACHE = 500;
+let EVENTS = [ "readystatechange", "abort", "load", "loadstart", "loadend", "error", "progress", "timeout" ];
+let Promise = global.Promise || undefined;
+let localStorage = global.localStorage || undefined;
+let XMLHttpRequest = global.XMLHttpRequest || null;
+let WeakMap = global.WeakMap || null;
+let btoa = global.btoa || undefined;
+let format, http, https, lib, mongodb, url, RENDER, TIME, WORKER;
 
 if ( server ) {
-	url     = require( "url" );
-	http    = require( "http" );
-	https   = require( "https" );
+	url = require( "url" );
+	http = require( "http" );
+	https = require( "https" );
 	mongodb = require( "mongodb" ).MongoClient;
-	format  = require( "util" ).format;
+	format = require( "util" ).format;
 
 	if ( typeof Promise == "undefined" ) {
 		Promise = require( "es6-promise" ).Promise;
 	}
 
-	if ( typeof Storage == "undefined" ) {
+	if ( typeof localStorage == "undefined" ) {
 		localStorage = require( "localStorage" );
-	}
-
-	if ( typeof XMLHttpRequest == "undefined" ) {
-		XMLHttpRequest = null;
 	}
 
 	if ( typeof btoa == "undefined" ) {
@@ -35,10 +35,8 @@ if ( server ) {
 	}
 }
 else if ( typeof Buffer == "undefined" ) {
-	Buffer = function () {};
+	Buffer = () => {};
 }
 
-lib = ( function () {
-"use strict";
-
-var external, has, slice;
+let lib = () => {
+	let external, has;

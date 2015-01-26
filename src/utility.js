@@ -1,7 +1,7 @@
 /**
  * @namespace utility
  */
-var utility = {
+let utility = {
 	/**
 	 * Collection of timers
 	 *
@@ -9,7 +9,7 @@ var utility = {
 	 * @type {Object}
 	 * @private
 	 */
-	timer : {},
+	timer: {},
 
 	/**
 	 * Collection of repeating functions
@@ -28,27 +28,27 @@ var utility = {
 	 * @param  {Mixed} arg HTML, or Comma delimited string of CSS selectors
 	 * @return {Array}     Array of matching Elements
 	 * @example
-	 * var $ = keigai.util.$;
+	 * let $ = keigai.util.$;
 	 *
 	 * // Looking for Elements
-	 * $( ".someClass" ).forEach( function ( i ) {
+	 * $( ".someClass" ).forEach( ( i ) => {
 	 *   ...
 	 * } );
 	 *
 	 * // Creating an H1 Element
-	 * $( "&lt;h1&gt;" ).forEach( function ( i ) {
+	 * $( "&lt;h1&gt;" ).forEach( ( i ) => {
 	 *   ...
 	 * } );
 	 */
-	$ : function ( arg ) {
-		var result;
+	$: ( arg ) => {
+		let result;
 
 		// Nothing
 		if ( !arg ) {
 		}
 		// HTML
 		else if ( regex.html.test( arg ) ) {
-			result = [element.create( arg )];
+			result = [ element.create( arg ) ];
 		}
 		// CSS selector(s)
 		else {
@@ -59,7 +59,7 @@ var utility = {
 
 				if ( result ) {
 					if ( isNaN( result.length ) ) {
-						result = [result];
+						result = [ result ];
 					}
 				}
 				else {
@@ -69,8 +69,8 @@ var utility = {
 			else {
 				result = [];
 
-				array.each( string.explode( arg ), function ( query ) {
-					var obj = utility.dom( query );
+				array.each( string.explode( arg ), ( query ) => {
+					let obj = utility.dom( query );
 
 					if ( obj instanceof Array ) {
 						result = result.concat( obj );
@@ -93,8 +93,8 @@ var utility = {
 	 * @param  {Object} arg [Optional] Decorative Object
 	 * @return {Object}     Instance of Base
 	 */
-	base : function ( arg ) {
-		var obj = new Base();
+	base: ( arg ) => {
+		let obj = new Base();
 
 		if ( arg instanceof Object ) {
 			utility.merge( obj, arg );
@@ -114,11 +114,11 @@ var utility = {
 	 * @return {Object}     Blob
 	 * @private
 	 */
-	blob : function ( arg ) {
-		var obj;
+	blob: ( arg ) => {
+		let obj;
 
 		try {
-			obj = new Blob( [arg], {type: "application/javascript"} );
+			obj = new Blob( [ arg ], { type: "application/javascript" } );
 		}
 		catch ( e ) {
 			if ( !global.BlobBuilder ) {
@@ -141,21 +141,17 @@ var utility = {
 	 * @example
 	 * keigai.util.clearTimers( 'helloWorld' );
 	 */
-	clearTimers : function ( id ) {
-		if ( id === undefined || string.isEmpty( id ) ) {
-			throw new Error( label.invalidArguments );
-		}
-
+	clearTimers: ( id ) => {
 		// deferred
-		if ( utility.timer[id] ) {
-			clearTimeout( utility.timer[id] );
-			delete utility.timer[id];
+		if ( utility.timer[ id ] ) {
+			clearTimeout( utility.timer[ id ] );
+			delete utility.timer[ id ];
 		}
 
 		// repeating
-		if ( utility.repeating[id] ) {
-			clearTimeout( utility.repeating[id] );
-			delete utility.repeating[id];
+		if ( utility.repeating[ id ] ) {
+			clearTimeout( utility.repeating[ id ] );
+			delete utility.repeating[ id ];
 		}
 	},
 
@@ -168,13 +164,13 @@ var utility = {
 	 * @param  {Boolean} shallow [Optional] Create a shallow clone, which doesn't maintain prototypes, default is `false`
 	 * @return {Object}          Clone of obj
 	 * @example
-	 * var x = {a: true, b: false},
+	 * let x = {a: true, b: false},
 	 *     y = keigai.util.clone( x, true );
 	 *
 	 * y.a; // true
 	 */
-	clone : function ( obj, shallow ) {
-		var clone, result;
+	clone: ( obj, shallow ) => {
+		let clone, result;
 
 		if ( shallow === true ) {
 			return obj !== undefined && obj !== null ? json.decode( json.encode( obj ) ) : obj;
@@ -185,7 +181,7 @@ var utility = {
 		else if ( obj instanceof Array ) {
 			result = [];
 
-			array.each( obj, function ( i, idx ) {
+			array.each( obj, ( i, idx ) => {
 				result[ idx ] = utility.clone( i );
 			} );
 
@@ -205,9 +201,9 @@ var utility = {
 				clone = json.decode( clone );
 
 				// Decorating Functions that would be lost with JSON encoding/decoding
-				utility.iterate( obj, function ( v, k ) {
+				utility.iterate( obj, ( v, k ) => {
 					if ( typeof v == "function" ) {
-						clone[k] = v;
+						clone[ k ] = v;
 					}
 				} );
 			}
@@ -232,8 +228,8 @@ var utility = {
 	 * @example
 	 * keigai.util.coerce( "1" ); // 1
 	 */
-	coerce : function ( value ) {
-		var tmp;
+	coerce: ( value ) => {
+		let tmp;
 
 		if ( value === null || value === undefined ) {
 			return undefined;
@@ -277,7 +273,7 @@ var utility = {
 	 * @return {Boolean}          true
 	 * @private
 	 */
-	compile : function ( reg, pattern, modifiers ) {
+	compile: ( reg, pattern, modifiers ) => {
 		reg.compile( pattern, modifiers );
 
 		return true;
@@ -293,22 +289,21 @@ var utility = {
 	 * @return {Function} Curried Function
 	 * @example
 	 * function f ( a, b ) {
-	 *   return function ( n ) {
+	 *   return ( n ) => {
 	 *     return ( a + b ) * n;
 	 *   };
 	 * }
 	 *
-	 * var g = keigai.util.curry( f, 2, 8 );
+	 * let g = keigai.util.curry( f, 2, 8 );
 	 *
 	 * g( 5 ); // 50
 	 */
-	curry : function () {
-		var args = array.cast( arguments ),
-		    fn   = args.shift(),
-		    cfn  = fn.apply( fn, args );
+	curry: (...args) => {
+		let fn = args.shift();
+		let cfn = fn.apply( fn, args );
 
-		return function () {
-			return cfn.apply( cfn, arguments );
+		return (...args) => {
+			return cfn.apply( cfn, args );
 		};
 	},
 
@@ -324,15 +319,12 @@ var utility = {
 	 * @param  {Boolean}  repeat [Optional] Describes the execution, default is `false`
 	 * @return {String}          ID of the timer
 	 * @example
-	 * keigai.util.defer( function () {
+	 * keigai.util.defer( () => {
 	 *   console.log( 'hello world' );
 	 * }, 1000, 'helloWorld', true );
 	 */
-	defer : function ( fn, ms, id, repeat ) {
-		var op;
-
-		ms     = ms || 0;
-		repeat = ( repeat === true );
+	defer: ( fn, ms=0, id, repeat=false ) => {
+		let op;
 
 		if ( id !== undefined ) {
 			utility.clearTimers( id );
@@ -341,12 +333,12 @@ var utility = {
 			id = utility.uuid( true );
 		}
 
-		op = function () {
+		op = () => {
 			utility.clearTimers( id );
 			fn();
 		};
 
-		utility[repeat ? "repeating" : "timer"][id] = setTimeout( op, ms );
+		utility[ repeat ? "repeating" : "timer" ][ id ] = setTimeout( op, ms );
 
 		return id;
 	},
@@ -359,9 +351,9 @@ var utility = {
 	 * @return {Function} Delay method
 	 * @private
 	 */
-	delay : function () {
+	delay: () => {
 		if ( typeof setImmediate != "undefined" ) {
-			return function ( arg ) {
+			return ( arg ) => {
 				setImmediate( arg );
 			};
 		}
@@ -369,7 +361,7 @@ var utility = {
 			return process.nextTick;
 		}
 		else {
-			return function ( arg ) {
+			return ( arg ) => {
 				setTimeout( arg, 0 );
 			};
 		}
@@ -384,8 +376,8 @@ var utility = {
 	 * @return {Mixed}      undefined, Element, or Array of Elements
 	 * @private
 	 */
-	dom : function ( arg ) {
-		var result;
+	dom: ( arg ) => {
+		let result;
 
 		if ( !regex.selector_complex.test( arg ) ) {
 			if ( regex.hash.test( arg ) ) {
@@ -417,7 +409,7 @@ var utility = {
 	 * @return {String} DOM friendly ID
 	 * @private
 	 */
-	domId : function ( arg ) {
+	domId: ( arg ) => {
 		return "a" + arg.replace( /-/g, "" ).slice( 1 );
 	},
 
@@ -433,15 +425,15 @@ var utility = {
 	 * @return {Undefined}       undefined
 	 * @private
 	 */
-	error : function ( e, args, scope, warning ) {
-		var o = {
-			"arguments" : args ? array.cast( args ) : [],
-			message     : e.message || e,
-			number      : e.number ? ( e.number & 0xFFFF ) : undefined,
-			scope       : scope,
-			stack       : e.stack || undefined,
-			timestamp   : new Date().toUTCString(),
-			type        : e.type || "TypeError"
+	error: ( e, args, scope, warning ) => {
+		let o = {
+			"arguments": args ? array.cast( args ) : [],
+			message: e.message || e,
+			number: e.number ? ( e.number & 0xFFFF ) : undefined,
+			scope: scope,
+			stack: e.stack || undefined,
+			timestamp: new Date().toUTCString(),
+			type: e.type || "TypeError"
 		};
 
 		utility.log( o.stack || o.message, warning !== true ? "error" : "warn" );
@@ -458,22 +450,16 @@ var utility = {
 	 * @param  {Object} arg [Optional] Object for decoration
 	 * @return {Object}     Decorated obj
 	 * @example
-	 * var extendObj = keigai.util.extend( someObj, {newProperty: value} );
+	 * let extendObj = keigai.util.extend( someObj, {newProperty: value} );
 	 */
-	extend : function ( obj, arg ) {
-		var o;
-
-		if ( obj === undefined ) {
-			throw new Error( label.invalidArguments );
-		}
-
-		o = Object.create( obj );
+	extend: ( obj, arg ) => {
+		let o = Object.create( obj );
 
 		if ( arg instanceof Object ) {
 			utility.merge( o, arg );
 		}
 
-		o["super"] = obj;
+		o[ "super" ] = obj;
 
 		return o;
 	},
@@ -487,11 +473,10 @@ var utility = {
 	 * @param  {Boolean} dom [Optional] Verify the ID is unique in the DOM, default is false
 	 * @return {Mixed}       Object or id
 	 * @example
-	 * var id = keigai.util.genId();
+	 * let id = keigai.util.genId();
 	 */
-	genId : function ( obj, dom ) {
-		dom = ( dom === true );
-		var id;
+	genId: ( obj, dom=false ) => {
+		let id;
 
 		if ( obj && ( obj.id || ( obj instanceof Array ) || ( typeof obj == "string" || obj instanceof String ) ) ) {
 			return obj;
@@ -527,13 +512,13 @@ var utility = {
 	 * @param  {Function} fn  Function to execute against properties
 	 * @return {Object}       Object
 	 * @example
-	 * keigai.util.iterate( {...}, function ( value, key ) {
+	 * keigai.util.iterate( {...}, ( value, key ) => {
 	 *   ...
 	 * } );
 	 */
-	iterate : function ( obj, fn ) {
-		array.each( Object.keys( obj ), function ( i ) {
-			return fn.call( obj, obj[i], i );
+	iterate: ( obj, fn ) => {
+		array.each( Object.keys( obj ), ( i ) => {
+			return fn.call( obj, obj[ i ], i );
 		} );
 
 		return obj;
@@ -550,15 +535,19 @@ var utility = {
 	 * @example
 	 * keigai.util.log( "Something bad happened", "warn" );
 	 */
-	log : function ( arg, target ) {
-		var ts, msg;
-
+	log: () => {
 		if ( typeof console != "undefined" ) {
-			ts  = typeof arg != "object";
-			msg = ts ? "[" + new Date().toLocaleTimeString() + "] " + arg : arg;
-			console[target || "log"]( msg );
+			return ( arg, target="log" ) => {
+				let ts = typeof arg != "object";
+				let msg = ts ? "[" + new Date().toLocaleTimeString() + "] " + arg : arg;
+
+				console[ target ]( msg );
+			}
 		}
-	},
+		else {
+			return () => {};
+		}
+	}(),
 
 	/**
 	 * Merges obj with arg
@@ -569,15 +558,15 @@ var utility = {
 	 * @param  {Object} arg Decoration
 	 * @return {Object}     Decorated Object
 	 * @example
-	 * var obj = {a: true};
+	 * let obj = {a: true};
 	 *
 	 * keigai.util.merge( obj, {b: false} )
 	 * console.log(obj); // {a: true, b: false}
 	 */
-	merge : function ( obj, arg ) {
-		var keys = array.keys( obj );
+	merge: ( obj, arg ) => {
+		let keys = array.keys( obj );
 
-		utility.iterate( arg, function ( v, k ) {
+		utility.iterate( arg, ( v, k ) => {
 			if ( !array.contains( keys, k ) || ( v instanceof Function ) ) {
 				obj[ k ] = v;
 			}
@@ -588,7 +577,7 @@ var utility = {
 				obj[ k ] = v;
 			}
 			else if ( ( obj[ k ] instanceof Object ) && ( v instanceof Object ) ) {
-				utility.iterate( v, function ( x, y ) {
+				utility.iterate( v, ( x, y ) => {
 					obj[ k ][ y ] = utility.clone( x );
 				} );
 			}
@@ -608,7 +597,7 @@ var utility = {
 	 * @param  {String} uri URI to parse
 	 * @return {Object}     Parsed URI
 	 * @example
-	 * var parsed = keigai.util.parse( location.href );
+	 * let parsed = keigai.util.parse( location.href );
 	 *
 	 * parsed;
 	 * {
@@ -623,42 +612,42 @@ var utility = {
 	 *   search   : "",
 	 * }
 	 */
-	parse : function ( uri ) {
-		var obj    = {},
-		    parsed = {},
-		    host, protocol;
+	parse: ( uri ) => {
+		let obj = {};
+		let parsed = {};
+		let host, protocol;
 
 		if ( uri === undefined ) {
 			uri = !server ? location.href : "";
 		}
 
 		if ( !server ) {
-			obj      = document.createElement( "a" );
+			obj = document.createElement( "a" );
 			obj.href = uri;
-			host     = obj.href.match( regex.host )[1];
-			protocol = obj.href.match( regex.protocol )[1];
+			host = obj.href.match( regex.host )[ 1 ];
+			protocol = obj.href.match( regex.protocol )[ 1 ];
 		}
 		else {
 			obj = url.parse( uri );
 		}
 
 		if ( server ) {
-			utility.iterate( obj, function ( v, k ) {
+			utility.iterate( obj, ( v, k ) => {
 				if ( v === null ) {
-					obj[k] = undefined;
+					obj[ k ] = undefined;
 				}
 			} );
 		}
 
 		parsed = {
-			auth     : server ? null : regex.auth.exec( uri ),
-			protocol : obj.protocol || protocol,
-			hostname : obj.hostname || host,
-			port     : obj.port ? number.parse( obj.port, 10 ) : "",
-			pathname : obj.pathname,
-			search   : obj.search   || "",
-			hash     : obj.hash     || "",
-			host     : obj.host     || host
+			auth: server ? null : regex.auth.exec( uri ),
+			protocol: obj.protocol || protocol,
+			hostname: obj.hostname || host,
+			port: obj.port ? number.parse( obj.port, 10 ) : "",
+			pathname: obj.pathname,
+			search: obj.search || "",
+			hash: obj.hash || "",
+			host: obj.host || host
 		};
 
 		// 'cause IE is ... IE; required for data.batch()
@@ -680,9 +669,9 @@ var utility = {
 			}
 		}
 
-		parsed.auth  = obj.auth || ( parsed.auth === null ? "" : parsed.auth[1] );
-		parsed.href  = obj.href || ( parsed.protocol + "//" + ( string.isEmpty( parsed.auth ) ? "" : parsed.auth + "@" ) + parsed.host + parsed.pathname + parsed.search + parsed.hash );
-		parsed.path  = obj.path || parsed.pathname + parsed.search;
+		parsed.auth = obj.auth || ( parsed.auth === null ? "" : parsed.auth[ 1 ] );
+		parsed.href = obj.href || ( parsed.protocol + "//" + ( string.isEmpty( parsed.auth ) ? "" : parsed.auth + "@" ) + parsed.host + parsed.pathname + parsed.search + parsed.hash );
+		parsed.path = obj.path || parsed.pathname + parsed.search;
 		parsed.query = utility.queryString( null, parsed.search );
 
 		return parsed;
@@ -699,16 +688,15 @@ var utility = {
 	 *   return a + b;
 	 * }
 	 *
-	 * var g = keigai.util.partial( f, 2 );
+	 * let g = keigai.util.partial( f, 2 );
 	 *
 	 * g( 2 ); // 4
 	 */
-	partial : function () {
-		var args = array.cast( arguments ),
-		    fn   = args.shift();
+	partial: (...args) => {
+		let fn = args.shift();
 
-		return function () {
-			return fn.apply( fn, args.concat( array.cast( arguments ) ) );
+		return (...args2) => {
+			return fn.apply( fn, args.concat( args2 ) );
 		};
 	},
 
@@ -722,7 +710,7 @@ var utility = {
 	 * @example
 	 * keigai.util.prevent( Event );
 	 */
-	prevent : function ( ev ) {
+	prevent: ( ev ) => {
 		if ( typeof ev.preventDefault == "function" ) {
 			ev.preventDefault();
 		}
@@ -740,41 +728,41 @@ var utility = {
 	 * @return {Mixed}          Value or Object of key:value pairs
 	 * @private
 	 */
-	queryString : function ( arg, qstring ) {
-		var obj    = {},
-		    result = qstring !== undefined ? ( qstring.indexOf( "?" ) > -1 ? qstring.replace( /.*\?/, "" ) : null ) : ( server || string.isEmpty( location.search ) ? null : location.search.replace( "?", "" ) );
+	queryString: ( arg, qstring ) => {
+		let obj = {};
+		let result = qstring !== undefined ? ( qstring.indexOf( "?" ) > -1 ? qstring.replace( /.*\?/, "" ) : null ) : ( server || string.isEmpty( location.search ) ? null : location.search.replace( "?", "" ) );
 
 		if ( result !== null && !string.isEmpty( result ) ) {
 			result = result.split( "&" );
-			array.each( result, function ( prop ) {
-				var item = prop.split( "=" );
+			array.each( result, ( prop ) => {
+				let item = prop.split( "=" );
 
-				if ( string.isEmpty( item[0] ) ) {
+				if ( string.isEmpty( item[ 0 ] ) ) {
 					return;
 				}
 
-				if ( item[1] === undefined ) {
-					item[1] = "";
+				if ( item[ 1 ] === undefined ) {
+					item[ 1 ] = "";
 				}
 				else {
-					item[1] = utility.coerce( decodeURIComponent( item[1] ) );
+					item[ 1 ] = utility.coerce( decodeURIComponent( item[ 1 ] ) );
 				}
 
-				if ( obj[item[0]] === undefined ) {
-					obj[item[0]] = item[1];
+				if ( obj[ item[ 0 ] ] === undefined ) {
+					obj[ item[ 0 ] ] = item[ 1 ];
 				}
-				else if ( !( obj[item[0]] instanceof Array ) ) {
-					obj[item[0]] = [obj[item[0]]];
-					obj[item[0]].push( item[1] );
+				else if ( !( obj[ item[ 0 ] ] instanceof Array ) ) {
+					obj[ item[ 0 ] ] = [ obj[ item[ 0 ] ] ];
+					obj[ item[ 0 ] ].push( item[ 1 ] );
 				}
 				else {
-					obj[item[0]].push( item[1] );
+					obj[ item[ 0 ] ].push( item[ 1 ] );
 				}
 			} );
 		}
 
 		if ( arg !== null && arg !== undefined ) {
-			obj = obj[arg];
+			obj = obj[ arg ];
 		}
 
 		return obj;
@@ -787,7 +775,7 @@ var utility = {
 	 * @memberOf utility
 	 * @return {Object} {@link keigai.Deferred}
 	 * @example
-	 * var deferreds = [],
+	 * let deferreds = [],
 	 *     defer1    = keigai.util.defer(),
 	 *     defer2    = keigai.util.defer();
 	 *
@@ -795,9 +783,9 @@ var utility = {
 	 * deferreds.push( defer2 );
 	 *
 	 * // Executes when one deferred is resolved or rejected
-	 * keigai.util.race( deferreds ).then( function ( arg ) ) {
+	 * keigai.util.race( deferreds ).then( ( arg ) ) => {
 	 *   ...
-	 * }, function ( err ) {
+	 * }, ( err ) => {
 	 *   ...
 	 * } );
 	 *
@@ -806,13 +794,12 @@ var utility = {
 	 * defer1.resolve( true );
 	 * defer2.resolve( true );
 	 */
-	race : function () {
-		var defer = deferred.factory(),
-		    args  = array.cast( arguments );
+	race: (...args) => {
+		let defer = deferred.factory();
 
 		// Did we receive an Array? if so it overrides any other arguments
-		if ( args[0] instanceof Array ) {
-			args = args[0];
+		if ( args[ 0 ] instanceof Array ) {
+			args = args[ 0 ];
 		}
 
 		// None, end on next tick
@@ -821,9 +808,9 @@ var utility = {
 		}
 		// Setup and wait
 		else {
-			Promise.race( args ).then( function ( results ) {
+			Promise.race( args ).then( ( results ) => {
 				defer.resolve( results );
-			}, function ( e ) {
+			}, ( e ) => {
 				defer.reject( e );
 			} );
 		}
@@ -839,18 +826,18 @@ var utility = {
 	 * @param  {Function} fn Function to execute on next 'frame'
 	 * @return {Object} {@link keigai.Deferred}
 	 * @example
-	 * keigai.util.render( function () {
+	 * keigai.util.render( () => {
 	 *     return keitai.util.element.html( document.querySelector( "#id" ), "Hello World" )
-	 * } ).then( function ( arg ) {
+	 * } ).then( ( arg ) => {
 	 *     // arg is the return value of your function
-	 * }, function ( e ) {
+	 * }, ( e ) => {
 	 *     // Handle e
 	 * } );
 	 */
-	render : function ( fn ) {
-		var defer = deferred.factory();
+	render: ( fn ) => {
+		let defer = deferred.factory();
 
-		RENDER( function ( arg ) {
+		RENDER( ( arg ) => {
 			try {
 				defer.resolve( fn( arg ) );
 			}
@@ -873,7 +860,7 @@ var utility = {
 	 * @param  {Boolean}  now Executes `fn` and then setup repetition, default is `true`
 	 * @return {String}       Timeout ID
 	 * @example
-	 * keigai.util.repeat( function () {
+	 * keigai.util.repeat( () => {
 	 *   ...
 	 *
 	 *   // Cancelling repetition at some point in the future
@@ -882,32 +869,26 @@ var utility = {
 	 *   }
 	 * }, 1000, "repeating" );
 	 */
-	repeat : function ( fn, ms, id, now ) {
-		ms  = ms || 10;
-		id  = id || utility.uuid( true );
-		now = ( now !== false );
-
+	repeat: ( fn, ms=10, id=utility.uuid( true ), now=true ) => {
 		// Could be valid to return false from initial execution
 		if ( now && fn() === false ) {
 			return;
 		}
 
 		// Creating repeating execution
-		utility.defer( function () {
-			var recursive = function ( fn, ms, id ) {
-				var recursive = this;
-
+		utility.defer( () => {
+			let recursive = ( fn, ms, id ) => {
 				if ( fn() !== false ) {
-					utility.repeating[id] = setTimeout( function () {
+					utility.repeating[ id ] = setTimeout( () => {
 						recursive.call( recursive, fn, ms, id );
 					}, ms );
 				}
 				else {
-					delete utility.repeating[id];
+					delete utility.repeating[ id ];
 				}
 			};
 
-			recursive.call( recursive, fn, ms, id );
+			recursive( fn, ms, id );
 		}, ms, id, true );
 
 		return id;
@@ -923,7 +904,7 @@ var utility = {
 	 * @example
 	 * keigai.util.stop( Event );
 	 */
-	stop : function ( ev ) {
+	stop: ( ev ) => {
 		if ( typeof ev.stopPropagation == "function" ) {
 			ev.stopPropagation();
 		}
@@ -941,9 +922,9 @@ var utility = {
 	 * @param  {Object} ev Event
 	 * @return {Object}    Event target
 	 * @example
-	 * var target = keigai.util.target( Event );
+	 * let target = keigai.util.target( Event );
 	 */
-	target : function ( ev ) {
+	target: ( ev ) => {
 		return ev.target || ev.srcElement;
 	},
 
@@ -955,14 +936,14 @@ var utility = {
 	 * @param  {Boolean} strip [Optional] Strips - from UUID
 	 * @return {String}        UUID
 	 * @example
-	 * var uuid4 = keigai.util.uuid();
+	 * let uuid4 = keigai.util.uuid();
 	 */
-	uuid : function ( strip ) {
-		var s = function () { return ( ( ( 1 + Math.random() ) * 0x10000 ) | 0 ).toString( 16 ).substring( 1 ); },
-		    r = [8, 9, "a", "b"],
-		    o;
-
-		o = ( s() + s() + "-" + s() + "-4" + s().substr( 0, 3 ) + "-" + r[Math.floor( Math.random() * 4 )] + s().substr( 0, 3 ) + "-" + s() + s() + s() );
+	uuid: ( strip ) => {
+		let r = [ 8, 9, "a", "b" ];
+		let s = () => {
+			return ( ( ( 1 + Math.random() ) * 0x10000 ) | 0 ).toString( 16 ).substring( 1 );
+		};
+		let o = ( s() + s() + "-" + s() + "-4" + s().substr( 0, 3 ) + "-" + r[ Math.floor( Math.random() * 4 ) ] + s().substr( 0, 3 ) + "-" + s() + s() + s() );
 
 		if ( strip === true ) {
 			o = o.replace( /-/g, "" );
@@ -980,20 +961,20 @@ var utility = {
 	 * @param  {String} arg  String describing the property to return
 	 * @return {Mixed}       Target or undefined
 	 * @example
-	 * var obj = {a: [{b: true}]};
+	 * let obj = {a: [{b: true}]};
 	 *
 	 * keigai.util.walk( obj, "a[0].b" ); // true
 	 */
-	walk : function ( obj, arg ) {
-		var output = obj;
+	walk: ( obj, arg ) => {
+		let output = obj;
 
-		array.each( arg.replace( /\]$/, "" ).replace( /\]/g, "." ).replace( /\.\./g, "." ).split( /\.|\[/ ), function ( i ) {
-			if ( output[i] === undefined || output[i] === null ) {
+		array.each( arg.replace( /\]$/, "" ).replace( /\]/g, "." ).replace( /\.\./g, "." ).split( /\.|\[/ ), ( i ) => {
+			if ( output[ i ] === undefined || output[ i ] === null ) {
 				output = undefined;
 				return false;
 			}
 
-			output = output[i];
+			output = output[ i ];
 		} );
 
 		return output;
@@ -1006,7 +987,7 @@ var utility = {
 	 * @memberOf utility
 	 * @return {Object} {@link keigai.Deferred}
 	 * @example
-	 * var deferreds = [],
+	 * let deferreds = [],
 	 *     defer1    = keigai.util.defer(),
 	 *     defer2    = keigai.util.defer();
 	 *
@@ -1014,9 +995,9 @@ var utility = {
 	 * deferreds.push( defer2 );
 	 *
 	 * // Executes when both deferreds have resolved or one has rejected
-	 * keigai.util.when( deferreds ).then( function ( args ) ) {
+	 * keigai.util.when( deferreds ).then( ( args ) ) => {
 	 *   ...
-	 * }, function ( err ) {
+	 * }, ( err ) => {
 	 *   ...
 	 * } );
 	 *
@@ -1025,13 +1006,12 @@ var utility = {
 	 * defer1.resolve( true );
 	 * defer2.resolve( true );
 	 */
-	when : function () {
-		var defer = deferred.factory(),
-		    args  = array.cast( arguments );
+	when: (...args) => {
+		let defer = deferred.factory();
 
 		// Did we receive an Array? if so it overrides any other arguments
-		if ( args[0] instanceof Array ) {
-			args = args[0];
+		if ( args[ 0 ] instanceof Array ) {
+			args = args[ 0 ];
 		}
 
 		// None, end on next tick
@@ -1040,9 +1020,9 @@ var utility = {
 		}
 		// Setup and wait
 		else {
-			Promise.all( args ).then( function ( results ) {
+			Promise.all( args ).then( ( results ) => {
 				defer.resolve( results );
-			}, function ( e ) {
+			}, ( e ) => {
 				defer.reject( e );
 			} );
 		}
@@ -1059,15 +1039,15 @@ var utility = {
 	 * @return {Object}       Worker
 	 * @private
 	 */
-	worker : function ( defer ) {
-		var obj = new Worker( WORKER );
+	worker: ( defer ) => {
+		let obj = new Worker( WORKER );
 
-		obj.onerror = function ( err ) {
+		obj.onerror = ( err ) => {
 			defer.reject( err );
 			obj.terminate();
 		};
 
-		obj.onmessage = function ( ev ) {
+		obj.onmessage = ( ev ) => {
 			defer.resolve( ev.data );
 			obj.terminate();
 		};

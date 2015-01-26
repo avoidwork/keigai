@@ -1,7 +1,7 @@
 /**
  * @namespace promise
  */
-var promise = {
+let promise = {
 	/**
 	 * "Unboxed" Promise factory
 	 *
@@ -9,22 +9,22 @@ var promise = {
 	 * @memberOf promise
 	 * @return {Object} {@link Promise}
 	 */
-	factory : function () {
-		var promise, pCatch, pResolve, pReject, pThen;
-		
+	factory: () => {
+		let promise, pCatch, pResolve, pReject, pThen;
+
 		promise = new Promise( function ( resolve, reject ) {
 			pResolve = resolve;
-			pReject  = reject;
+			pReject = reject;
 		} );
 
-		pCatch = function () {
-			return promise["catch"].apply( promise, arguments );
+		pCatch = function (...args) {
+			return promise[ "catch" ].apply( promise, args );
 		};
 
-		pThen = function () {
-			return promise.then.apply( promise, arguments );
+		pThen = function (...args) {
+			return promise.then.apply( promise, args );
 		};
 
-		return {"catch": pCatch, resolve: pResolve, reject: pReject, then: pThen};
+		return { "catch": pCatch, resolve: pResolve, reject: pReject, then: pThen };
 	}
 };
