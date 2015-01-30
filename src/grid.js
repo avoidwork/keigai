@@ -21,14 +21,13 @@ class DataGrid extends Base {
 		let sortOrder;
 
 		if ( options.order && !string.isEmpty( options.order ) ) {
-			sortOrder = string.explode( options.order ).map( function ( i ) {
+			sortOrder = string.explode( options.order ).map( ( i ) => {
 				return i.replace( regex.after_space, "" );
 			} );
 		}
 
 		this.element = element.create( "section", { "class": "grid" }, target );
 		this.fields = fields;
-		this.filter = null;
 		this.filtered = filtered;
 		this.list = null;
 		this.observer = observable.factory();
@@ -121,7 +120,7 @@ class DataGrid extends Base {
 	remove ( record ) {
 		let self = this;
 
-		this.store.del( record ).then( null, function ( e ) {
+		this.store.del( record ).then( null, ( e ) => {
 			utility.error( e );
 			self.dispatch( "error", e );
 		} );
@@ -166,13 +165,8 @@ class DataGrid extends Base {
 	 * grid.teardown();
 	 */
 	teardown () {
-		if ( this.filter !== null ) {
-			this.filter.teardown();
-			this.filter = null;
-		}
-
+		this.observer.unhook( element.find( this.element, "ul.header" )[ 0 ], "click" );
 		this.list.teardown();
-		this.observer.unhook( element.find( this.element, ".header" )[ 0 ], "click" );
 		element.destroy( this.element );
 		this.element = null;
 
@@ -193,7 +187,7 @@ class DataGrid extends Base {
 	update ( key, data ) {
 		let self = this;
 
-		this.store.update( key, data ).then( null, function ( e ) {
+		this.store.update( key, data ).then( null, ( e ) => {
 			utility.error( e );
 			self.dispatch( "error", e );
 		} );
@@ -268,22 +262,16 @@ let grid = {
 			obj.observer.hook( header.parentNode, "click", obj.sort, "sort", obj );
 		}
 
+		if ( obj.filtered === true ) {
+			obj.options.listFiltered = true;
+			obj.options.listFilter = obj.fields.join( "," );
+		}
+
 		// Creating DataList
 		ref.push( list.factory( obj.element, ref[ 0 ], template, obj.options ) );
 
 		// Setting by-reference DataList on DataGrid
 		obj.list = ref[ 1 ];
-
-		if ( obj.filtered === true ) {
-			// Creating DataListFilter
-			ref.push( filter.factory( element.create( "input", {
-				"class": "filter",
-				placeholder: "Filter"
-			}, obj.element, "first" ), ref[ 1 ], obj.fields.join( "," ), debounce || 250 ) );
-
-			// Setting by-reference DataListFilter on DataGrid
-			obj.filter = ref[ 2 ];
-		}
 
 		// Setting up a chain of Events
 		obj.on( "beforeRefresh", ( arg ) => {
@@ -300,15 +288,15 @@ let grid = {
 			}
 		}, "header" );
 
-		obj.list.on( "change", (...args) => {
+		obj.list.on( "change", ( ...args ) => {
 			obj.dispatch.apply( obj, [ "change" ].concat( args ) );
 		}, "change" );
 
-		obj.list.on( "beforeFilter", (...args) => {
+		obj.list.on( "beforeFilter", ( ...args ) => {
 			obj.dispatch.apply( obj, [ "beforeFilter" ].concat( args ) );
 		}, "beforeFilter" );
 
-		obj.list.on( "afterFilter", (...args) => {
+		obj.list.on( "afterFilter", ( ...args ) => {
 			obj.dispatch.apply( obj, [ "afterFilter" ].concat( args ) );
 		}, "afterFilter" );
 

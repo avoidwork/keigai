@@ -55,30 +55,24 @@ let element = {
 
 				if ( result === null || string.isEmpty( result ) ) {
 					result = undefined;
-				}
-				else {
+				} else {
 					result = utility.coerce( result );
 				}
-			}
-			else {
+			} else {
 				obj.setAttributeNS( obj.namespaceURI, key, value );
 			}
-		}
-		else {
+		} else {
 			if ( typeof value == "string" ) {
 				value = string.trim( value );
 			}
 
 			if ( regex.checked_disabled.test( key ) && value === undefined ) {
 				return utility.coerce( obj[ key ] );
-			}
-			else if ( regex.checked_disabled.test( key ) && value !== undefined ) {
+			} else if ( regex.checked_disabled.test( key ) && value !== undefined ) {
 				obj[ key ] = value;
-			}
-			else if ( obj.nodeName === "SELECT" && key === "selected" && value === undefined ) {
+			} else if ( obj.nodeName === "SELECT" && key === "selected" && value === undefined ) {
 				return utility.dom( "#" + obj.id + " option[selected=\"selected\"]" )[ 0 ] || utility.dom( "#" + obj.id + " option" )[ 0 ];
-			}
-			else if ( obj.nodeName === "SELECT" && key === "selected" && value !== undefined ) {
+			} else if ( obj.nodeName === "SELECT" && key === "selected" && value !== undefined ) {
 				target = utility.dom( "#" + obj.id + " option[selected=\"selected\"]" )[ 0 ];
 
 				if ( target !== undefined ) {
@@ -89,20 +83,17 @@ let element = {
 				target = utility.dom( "#" + obj.id + " option[value=\"" + value + "\"]" )[ 0 ];
 				target.selected = true;
 				target.setAttribute( "selected", "selected" );
-			}
-			else if ( value === undefined ) {
+			} else if ( value === undefined ) {
 				result = obj.getAttribute( key );
 
 				if ( result === null || string.isEmpty( result ) ) {
 					result = undefined;
-				}
-				else {
+				} else {
 					result = utility.coerce( result );
 				}
 
 				return result;
-			}
-			else {
+			} else {
 				obj.setAttribute( key, value );
 			}
 		}
@@ -123,11 +114,9 @@ let element = {
 	clear: ( obj ) => {
 		if ( typeof obj.reset == "function" ) {
 			obj.reset();
-		}
-		else if ( obj.value !== undefined ) {
+		} else if ( obj.value !== undefined ) {
 			element.update( obj, { innerHTML: "", value: "" } );
-		}
-		else {
+		} else {
 			element.update( obj, { innerHTML: "" } );
 		}
 
@@ -159,8 +148,7 @@ let element = {
 
 		if ( obj ) {
 			svg = obj.namespaceURI && regex.svg.test( obj.namespaceURI );
-		}
-		else {
+		} else {
 			obj = document.body;
 		}
 
@@ -174,8 +162,7 @@ let element = {
 		else {
 			if ( !svg && !regex.svg.test( type ) ) {
 				fragment = document.createElement( type );
-			}
-			else {
+			} else {
 				fragment = document.createElementNS( "http://www.w3.org/2000/svg", type );
 			}
 
@@ -186,27 +173,21 @@ let element = {
 
 		if ( !pos || pos === "last" ) {
 			obj.appendChild( fragment );
-		}
-		else if ( pos === "first" ) {
+		} else if ( pos === "first" ) {
 			element.prependChild( obj, fragment );
-		}
-		else if ( pos === "after" ) {
+		} else if ( pos === "after" ) {
 			pos = { after: obj };
 			obj = obj.parentNode;
 			obj.insertBefore( fragment, pos.after.nextSibling );
-		}
-		else if ( pos.after ) {
+		} else if ( pos.after ) {
 			obj.insertBefore( fragment, pos.after.nextSibling );
-		}
-		else if ( pos === "before" ) {
+		} else if ( pos === "before" ) {
 			pos = { before: obj };
 			obj = obj.parentNode;
 			obj.insertBefore( fragment, pos.before );
-		}
-		else if ( pos.before ) {
+		} else if ( pos.before ) {
 			obj.insertBefore( fragment, pos.before );
-		}
-		else {
+		} else {
 			obj.appendChild( fragment );
 		}
 
@@ -234,8 +215,7 @@ let element = {
 		if ( value !== undefined ) {
 			obj.style[ key ] = value;
 			return obj;
-		}
-		else {
+		} else {
 			return obj.style[ key ];
 		}
 	},
@@ -267,8 +247,7 @@ let element = {
 			obj.setAttribute( "data-" + key, regex.json_wrap.test( value ) ? json.encode( value ) : value );
 
 			return obj;
-		}
-		else {
+		} else {
 			return utility.coerce( obj.getAttribute( "data-" + key ) );
 		}
 	},
@@ -478,8 +457,7 @@ let element = {
 	html: ( obj, arg ) => {
 		if ( arg === undefined ) {
 			return obj.innerHTML;
-		}
-		else {
+		} else {
 			obj.innerHTML = arg;
 			return obj;
 		}
@@ -507,8 +485,7 @@ let element = {
 			return ( element.find( obj.parentNode, obj.nodeName.toLowerCase() + arg ).filter( ( i ) => {
 				return i.id === obj.id;
 			} ).length === 1 );
-		}
-		else {
+		} else {
 			return new RegExp( arg, "i" ).test( obj.nodeName );
 		}
 	},
@@ -536,15 +513,13 @@ let element = {
 			array.each( arg, ( i ) => {
 				obj.classList.add( i );
 			} );
-		}
-		else {
+		} else {
 			array.each( arg, ( i ) => {
 				if ( i !== "*" ) {
 					obj.classList.remove( i );
-				}
-				else {
+				} else {
 					array.each( obj.classList, ( x ) => {
-						this.remove( x );
+						obj.classList.remove( x );
 					} );
 
 					return false;
@@ -584,8 +559,7 @@ let element = {
 
 			right = document.body.offsetWidth - ( left + width );
 			bottom = document.body.offsetHeight - ( top + height );
-		}
-		else {
+		} else {
 			right = width;
 			bottom = height;
 		}
@@ -622,8 +596,7 @@ let element = {
 	removeAttr: ( obj, key ) => {
 		if ( regex.svg.test( obj.namespaceURI ) ) {
 			obj.removeAttributeNS( obj.namespaceURI, key );
-		}
-		else {
+		} else {
 			if ( obj.nodeName === "SELECT" && key === "selected" ) {
 				array.each( element.find( obj, "option" ), ( i ) => {
 					if ( i.selected === true ) {
@@ -632,8 +605,7 @@ let element = {
 						return false;
 					}
 				} );
-			}
-			else {
+			} else {
 				obj.removeAttribute( key );
 			}
 		}
@@ -708,16 +680,14 @@ let element = {
 
 			if ( i.nodeName === "FORM" ) {
 				utility.merge( registry, json.decode( element.serialize( i ) ) );
-			}
-			else if ( !registry[ id ] ) {
+			} else if ( !registry[ id ] ) {
 				registry[ id ] = element.val( i );
 			}
 		} );
 
 		if ( !string ) {
 			result = registry;
-		}
-		else {
+		} else {
 			result = "";
 
 			utility.iterate( registry, ( v, k ) => {
@@ -810,14 +780,11 @@ let element = {
 		utility.iterate( args, ( v, k ) => {
 			if ( regex.element_update.test( k ) ) {
 				obj[ k ] = v;
-			}
-			else if ( k === "class" ) {
+			} else if ( k === "class" ) {
 				!string.isEmpty( v ) ? element.addClass( obj, v ) : element.removeClass( obj, "*" );
-			}
-			else if ( k.indexOf( "data-" ) === 0 ) {
+			} else if ( k.indexOf( "data-" ) === 0 ) {
 				element.data( obj, k.replace( "data-", "" ), v );
-			}
-			else {
+			} else {
 				element.attr( obj, k, v );
 			}
 		} );
@@ -852,8 +819,7 @@ let element = {
 						return false;
 					}
 				} );
-			}
-			else if ( regex.select.test( obj.type ) ) {
+			} else if ( regex.select.test( obj.type ) ) {
 				output = null;
 				array.each( element.find( obj, "option" ), ( i ) => {
 					if ( i.selected === true ) {
@@ -861,11 +827,9 @@ let element = {
 						return false;
 					}
 				} );
-			}
-			else if ( obj.value ) {
+			} else if ( obj.value ) {
 				output = obj.value;
-			}
-			else {
+			} else {
 				output = element.text( obj );
 			}
 
@@ -875,12 +839,10 @@ let element = {
 				if ( typeof output == "string" ) {
 					output = string.trim( output );
 				}
-			}
-			else {
+			} else {
 				output = "";
 			}
-		}
-		else {
+		} else {
 			value = value.toString();
 
 			if ( regex.radio_checkbox.test( obj.type ) ) {
@@ -893,8 +855,7 @@ let element = {
 						return false;
 					}
 				} );
-			}
-			else if ( regex.select.test( obj.type ) ) {
+			} else if ( regex.select.test( obj.type ) ) {
 				ev = "change";
 
 				array.each( element.find( obj, " option" ), ( i ) => {
@@ -904,8 +865,7 @@ let element = {
 						return false;
 					}
 				} );
-			}
-			else {
+			} else {
 				obj.value !== undefined ? obj.value = value : element.text( obj, value );
 			}
 

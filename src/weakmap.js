@@ -22,7 +22,7 @@ class WeakMapShim {
 	}
 
 	get ( arg ) {
-		return this.elements[ arg ].value;
+		return this.has( arg ) ? this.elements[ arg ].value : undefined;
 	}
 
 	set ( arg, value ) {

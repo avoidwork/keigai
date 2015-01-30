@@ -49,11 +49,9 @@ let array = {
 
 			if ( val < arg ) {
 				min = idx + 1;
-			}
-			else if ( val > arg ) {
+			} else if ( val > arg ) {
 				max = idx - 1;
-			}
-			else {
+			} else {
 				return idx;
 			}
 		}
@@ -77,11 +75,9 @@ let array = {
 
 		if ( !isNaN( obj.length ) ) {
 			o = Array.from( obj );
-		}
-		else if ( key === true ) {
+		} else if ( key === true ) {
 			o = array.keys( obj );
-		}
-		else {
+		} else {
 			utility.iterate( obj, ( i ) => {
 				o.push( i );
 			} );
@@ -281,8 +277,7 @@ let array = {
 					break;
 				}
 			}
-		}
-		else {
+		} else {
 			size = size || 10;
 			offset = 0;
 
@@ -339,8 +334,7 @@ let array = {
 					break;
 				}
 			}
-		}
-		else {
+		} else {
 			size = size || 10;
 			offset = nth - 1;
 
@@ -433,8 +427,7 @@ let array = {
 				obj[ i ] = arg( obj[ i ] );
 				i++;
 			}
-		}
-		else {
+		} else {
 			while ( i <= nth ) {
 				obj[ i ] = arg;
 				i++;
@@ -591,7 +584,7 @@ let array = {
 		result = obj.filter( fn );
 		remove = array.diff( obj, result );
 
-		array.each( remove, function ( i ) {
+		array.each( remove, ( i ) => {
 			array.remove( obj, array.index( obj, i ) );
 		} );
 
@@ -637,8 +630,7 @@ let array = {
 
 		if ( sub && sub !== "" ) {
 			sub = "." + sub;
-		}
-		else {
+		} else {
 			sub = "";
 		}
 
@@ -656,8 +648,7 @@ let array = {
 			if ( i[ 1 ] === "desc" ) {
 				sorts.push( "if ( a" + sub + s + i[ 0 ] + e + " < b" + sub + s + i[ 0 ] + e + " ) return 1;" );
 				sorts.push( "if ( a" + sub + s + i[ 0 ] + e + " > b" + sub + s + i[ 0 ] + e + " ) return -1;" );
-			}
-			else {
+			} else {
 				sorts.push( "if ( a" + sub + s + i[ 0 ] + e + " < b" + sub + s + i[ 0 ] + e + " ) return -1;" );
 				sorts.push( "if ( a" + sub + s + i[ 0 ] + e + " > b" + sub + s + i[ 0 ] + e + " ) return 1;" );
 			}
@@ -696,11 +687,9 @@ let array = {
 
 		if ( arg >= ( n + 1 ) ) {
 			return obj;
-		}
-		else if ( isNaN( arg ) || arg === 1 ) {
+		} else if ( isNaN( arg ) || arg === 1 ) {
 			return obj[ n ];
-		}
-		else {
+		} else {
 			return array.limit( obj, ( n - ( --arg ) ), n );
 		}
 	},
@@ -862,8 +851,7 @@ let array = {
 		array.each( obj, ( i ) => {
 			if ( !isNaN( values[ i ] ) ) {
 				values[ i ]++;
-			}
-			else {
+			} else {
 				values[ i ] = 1;
 			}
 		} );
@@ -964,8 +952,7 @@ let array = {
 			if ( start === -1 ) {
 				return obj;
 			}
-		}
-		else {
+		} else {
 			start = start || 0;
 		}
 
@@ -1023,8 +1010,7 @@ let array = {
 		array.each( obj, ( i ) => {
 			if ( fn( i ) !== false ) {
 				remove.push( i );
-			}
-			else {
+			} else {
 				return false;
 			}
 		} );
@@ -1121,12 +1107,10 @@ let array = {
 
 		if ( arg === 0 ) {
 			result = obj;
-		}
-		else {
+		} else {
 			if ( arg < 0 ) {
 				arg += nth;
-			}
-			else {
+			} else {
 				arg--;
 			}
 
@@ -1182,24 +1166,19 @@ let array = {
 
 		if ( types.a == "number" && types.b == "number" ) {
 			result = a - b;
-		}
-		else {
+		} else {
 			c = a.toString();
 			d = b.toString();
 
 			if ( c < d ) {
 				result = -1;
-			}
-			else if ( c > d ) {
+			} else if ( c > d ) {
 				result = 1;
-			}
-			else if ( types.a == types.b ) {
+			} else if ( types.a == types.b ) {
 				result = 0;
-			}
-			else if ( types.a == "boolean" ) {
+			} else if ( types.a == "boolean" ) {
 				result = -1;
-			}
-			else {
+			} else {
 				result = 1;
 			}
 		}
@@ -1262,8 +1241,7 @@ let array = {
 		// Finding the fold
 		if ( number.diff( total, ( divisor * nth ) ) > nth ) {
 			lower = total - ( low * divisor ) + low - 1;
-		}
-		else if ( total % divisor > 0 && lower * nth >= total ) {
+		} else if ( total % divisor > 0 && lower * nth >= total ) {
 			lower--;
 		}
 
@@ -1415,8 +1393,7 @@ let array = {
 			} );
 
 			return n / nth;
-		}
-		else {
+		} else {
 			return n;
 		}
 	},

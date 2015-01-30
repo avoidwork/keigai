@@ -23,9 +23,7 @@ class Observable {
 	 * @example
 	 * observer.dispatch( "event", ... );
 	 */
-	dispatch (...args) {
-		let ev = args.shift();
-
+	dispatch ( ev, ...args ) {
 		if ( ev && this.listeners[ ev ] ) {
 			utility.iterate( this.listeners[ ev ], ( i ) => {
 				i.handler.apply( i.scope, args );
@@ -47,17 +45,19 @@ class Observable {
 	 * observer.hook( document.querySelector( "a" ), "click" );
 	 */
 	hook ( target, ev ) {
-		let self = this;
-
 		if ( typeof target.addEventListener != "function" ) {
 			throw new Error( label.invalidArguments );
 		}
 
-		this.hooks.set( target, ( arg ) => {
-			self.dispatch( ev, arg );
-		} );
+		let self = this;
+		let obj = this.hooks.get( target ) || {};
 
-		target.addEventListener( ev, this.hooks.get( target ), false );
+		obj[ ev ] = ( arg ) => {
+			self.dispatch( ev, arg );
+		}
+
+		this.hooks.set( target, obj );
+		target.addEventListener( ev, this.hooks.get( target )[ev], false );
 
 		return target;
 	}
@@ -77,8 +77,7 @@ class Observable {
 		if ( this.listeners[ ev ] ) {
 			if ( id ) {
 				delete this.listeners[ ev ][ id ];
-			}
-			else {
+			} else {
 				delete this.listeners[ ev ];
 			}
 		}
@@ -135,7 +134,7 @@ class Observable {
 
 		let self = this;
 
-		return this.on( ev, (...args) => {
+		return this.on( ev, ( ...args ) => {
 			handler.apply( scope, args );
 			self.off( ev, id );
 		}, id, scope );
@@ -153,13 +152,22 @@ class Observable {
 	 * observer.unhook( document.querySelector( "a" ), "click" );
 	 */
 	unhook ( target, ev ) {
-		if ( !string.isEmpty( target.id ) ) {
-			target.removeEventListener( ev, this.hooks.get( target ), false );
-			this.hooks["delete"]( target );
+		let obj = this.hooks.get( target );
+
+		if ( obj ) {
+			target.removeEventListener( ev, obj[ ev ], false );
+			delete obj[ ev ];
+
+			if ( array.keys( obj ).length === 0 ) {
+				this.hooks.delete( target );
+			}
+			else {
+				this.hooks.set( target, obj );
+			}
 		}
 
 		return target;
-	};
+	}
 }
 
 /**

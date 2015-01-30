@@ -14,24 +14,24 @@ class Deferred {
 		this.onFail = [];
 
 		// Setting handlers to execute Arrays of Functions
-		this.promise.then( function ( arg ) {
-			array.each( self.onDone, function ( i ) {
+		this.promise.then( ( arg ) => {
+			array.each( self.onDone, ( i ) => {
 				i( arg );
 			} );
 
-			array.each( self.onAlways, function ( i ) {
+			array.each( self.onAlways, ( i ) => {
 				i( arg );
 			} );
 
 			self.onAlways = [];
 			self.onDone = [];
 			self.onFail = [];
-		}, function ( arg ) {
-			array.each( self.onFail, function ( i ) {
+		}, ( arg ) => {
+			array.each( self.onFail, ( i ) => {
 				i( arg );
 			} );
 
-			array.each( self.onAlways, function ( i ) {
+			array.each( self.onAlways, ( i ) => {
 				i( arg );
 			} );
 

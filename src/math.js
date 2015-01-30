@@ -18,7 +18,7 @@ let math = {
 	 *     p4 = keigai.util.math.bezier( 0, 10, 2000, 10, 0.9 ),
 	 *     p5 = keigai.util.math.bezier( 0, 10, 2000, 10, 1 );
 	 */
-	bezier: (...args) => {
+	bezier: ( ...args ) => {
 		let a = array.cast( args );
 		let t = a.pop();
 		let P = array.chunk( a, 2 );

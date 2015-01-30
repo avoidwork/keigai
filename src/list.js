@@ -257,8 +257,7 @@ class DataList extends Base {
 
 				return "<li data-key=\"" + i.key + "\">" + html + "</li>";
 			};
-		}
-		else {
+		} else {
 			fn = ( i ) => {
 				let obj = json.encode( self.template );
 				let items = array.unique( obj.match( /\{\{[\w\.\-\[\]]+\}\}/g ) );
@@ -334,8 +333,7 @@ class DataList extends Base {
 					range = list.range( self );
 					self.current = array.limit( !filter ? self.records : self.filtered, range[ 0 ], range[ 1 ] );
 				}
-			}
-			else {
+			} else {
 				self.current = !filter ? self.records : self.filtered;
 			}
 
@@ -355,8 +353,7 @@ class DataList extends Base {
 
 				if ( items.length === 0 ) {
 					element.html( el, "<li class=\"empty\">" + self.emptyMsg + "</li>" );
-				}
-				else {
+				} else {
 					if ( self.items.length === 0 ) {
 						element.html( el, items.map( ( i ) => {
 							return i.template;
@@ -367,14 +364,12 @@ class DataList extends Base {
 								self.callback( i );
 							} );
 						}
-					}
-					else {
+					} else {
 						array.each( items, ( i, idx ) => {
 							if ( self.items[ idx ] !== undefined && self.items[ idx ].hash !== i.hash ) {
 								element.data( element.html( el.childNodes[ idx ], i.template.replace( /<li data-key=\"\d+\">|<\/li>/g, "" ) ), "key", i.key );
 								callbacks.push( idx );
-							}
-							else if ( self.items[ idx ] === undefined ) {
+							} else if ( self.items[ idx ] === undefined ) {
 								element.create( i.template, null, el );
 								callbacks.push( idx );
 							}
@@ -407,8 +402,7 @@ class DataList extends Base {
 				// Rendering pagination elements
 				if ( self.pageSize !== null && regex.top_bottom.test( self.pagination ) && !isNaN( self.pageIndex ) && !isNaN( self.pageSize ) ) {
 					self.pages();
-				}
-				else {
+				} else {
 					array.each( utility.$( "#" + el.id + "-pages-top, #" + el.id + "-pages-bottom" ), ( i ) => {
 						element.destroy( i );
 					} );
@@ -424,14 +418,12 @@ class DataList extends Base {
 				utility.error( e );
 				self.dispatch( "error", e );
 			} );
-		}
-		else if ( string.isEmpty( this.order ) ) {
+		} else if ( string.isEmpty( this.order ) ) {
 			this.store.select( this.where ).then( next, ( e ) => {
 				utility.error( e );
 				self.dispatch( "error", e );
 			} );
-		}
-		else {
+		} else {
 			this.store.sort( this.order, create, this.where ).then( next, ( e ) => {
 				utility.error( e );
 				self.dispatch( "error", e );
@@ -499,31 +491,36 @@ class DataList extends Base {
 		destroy = ( destroy === true );
 
 		let self = this;
-		let id = this.element.id;
+		let el = this.element;
+		let id = el.id;
 
 		array.each( this.store.lists, ( i, idx ) => {
 			if ( i.id === self.id ) {
-				array.remove( this, idx );
+				array.remove( self.store.lists, idx );
 
 				return false;
 			}
 		} );
 
-		delete this.observer.hooks[ id ];
-
 		if ( this.listFilter ) {
 			this.listFilter.teardown();
 		}
 
-		if ( destroy ) {
-			element.destroy( this.element );
+		array.each( utility.$( "#" + id + "-pages-top, #" + id + "-pages-bottom" ), ( i ) => {
+			self.observer.unhook( i, "click" );
 
-			array.each( utility.$( "#" + id + "-filter, #" + id + "-pages-top, #" + id + "-pages-bottom" ), ( i ) => {
+			if ( destroy ) {
 				element.destroy( i );
-			} );
+			}
+		} );
 
-			this.element = null;
+		this.observer.unhook( el, "click" );
+
+		if ( destroy ) {
+			element.destroy( el );
 		}
+
+		this.element = null;
 
 		return this;
 	}
@@ -572,7 +569,7 @@ let list = {
 	 */
 	factory: ( target, store, template, options ) => {
 		let ref = [ store ];
-		let obj = new DataList( element.create( "ul", { "class": "list" }, target ), ref[ 0 ], template );
+		let obj = new DataList( element.create( "ul", { "class": "list", id: utility.genId( null, true ) }, target ), ref[ 0 ], template );
 
 		if ( options instanceof Object ) {
 			if ( options.listFiltered && options.listFilter ) {
@@ -583,6 +580,7 @@ let list = {
 				}, target, "first" ), obj, options.listFilter, options.debounce || 250 );
 				delete options.listFilter;
 				delete options.listFiltered;
+				delete options.debounce;
 			}
 
 			utility.merge( obj, options );

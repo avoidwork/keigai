@@ -92,11 +92,9 @@ let cache = {
 
 		if ( property === "permission" ) {
 			item.permission |= value;
-		}
-		else if ( property === "!permission" ) {
+		} else if ( property === "!permission" ) {
 			item.permission &= ~value;
-		}
-		else {
+		} else {
 			item[ property ] = value;
 		}
 

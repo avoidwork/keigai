@@ -54,8 +54,7 @@ let xml = {
 
 			if ( regex.boolean_number_string.test( typeof arg ) ) {
 				x += node( "item", arg );
-			}
-			else if ( typeof arg == "object" ) {
+			} else if ( typeof arg == "object" ) {
 				utility.iterate( arg, ( v, k ) => {
 					x += xml.encode( v, ( typeof v == "object" ), false ).replace( /item|xml/g, isNaN( k ) ? k : "item" );
 				} );

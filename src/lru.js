@@ -109,8 +109,7 @@ class LRU {
 
 		if ( item === undefined ) {
 			item = new LRUItem( value );
-		}
-		else {
+		} else {
 			item.value = value;
 		}
 

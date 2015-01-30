@@ -20,8 +20,7 @@ let string = {
 			result = string.explode( obj, " " ).map( ( i ) => {
 				return i.charAt( 0 ).toUpperCase() + i.slice( 1 );
 			} ).join( " " );
-		}
-		else {
+		} else {
 			result = obj.charAt( 0 ).toUpperCase() + obj.slice( 1 );
 		}
 
@@ -282,8 +281,7 @@ let string = {
 	unhyphenate: ( obj, caps=false ) => {
 		if ( caps !== true ) {
 			return string.explode( obj, "-" ).join( " " );
-		}
-		else {
+		} else {
 			return string.explode( obj, "-" ).map( ( i ) => {
 				return string.capitalize( i );
 			} ).join( " " );

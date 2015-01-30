@@ -59,8 +59,7 @@ class DataStore extends Base {
 
 		if ( !regex.set_del.test( type ) || ( sync && regex.del.test( type ) ) || typeof data != "object" ) {
 			defer.reject( new Error( label.invalidArguments ) );
-		}
-		else {
+		} else {
 			if ( events ) {
 				this.dispatch( "beforeBatch", data );
 			}
@@ -77,15 +76,13 @@ class DataStore extends Base {
 				}
 
 				defer.resolve( this.records );
-			}
-			else {
+			} else {
 				// Batch deletion will create a sparse array, which will be compacted before re-indexing
 				if ( type === "del" ) {
 					array.each( data, ( i ) => {
 						deferreds.push( self.del( i, false, true ) );
 					} );
-				}
-				else {
+				} else {
 					array.each( data, ( i ) => {
 						deferreds.push( self.set( null, i, true ) );
 					} );
@@ -198,8 +195,7 @@ class DataStore extends Base {
 			if ( events ) {
 				this.dispatch( "afterClear" );
 			}
-		}
-		else {
+		} else {
 			this.indexes = { key: {} };
 			this.loaded = false;
 			this.records = [];
@@ -247,16 +243,14 @@ class DataStore extends Base {
 
 		if ( record === undefined ) {
 			defer.reject( new Error( label.invalidArguments ) );
-		}
-		else {
+		} else {
 			if ( this.events ) {
 				self.dispatch( "beforeDelete", record );
 			}
 
 			if ( this.uri === null || this.callback !== null ) {
 				this.delComplete( record, reindex, batch, defer );
-			}
-			else {
+			} else {
 				client.request( this.buildUri( record.key ), "DELETE", null, utility.merge( { withCredentials: this.credentials }, this.headers ) ).then( () => {
 					self.delComplete( record, reindex, batch, defer );
 				}, ( e ) => {
@@ -295,8 +289,7 @@ class DataStore extends Base {
 
 			if ( reindex ) {
 				this.reindex();
-			}
-			else {
+			} else {
 				array.each( record.indexes, ( i ) => {
 					array.remove( self.indexes[ i[ 0 ] ][ i[ 1 ] ], record.index );
 
@@ -317,8 +310,7 @@ class DataStore extends Base {
 			array.each( this.lists, ( i ) => {
 				i.refresh();
 			} );
-		}
-		else {
+		} else {
 			this.records[ record.index ] = null;
 		}
 
@@ -354,8 +346,7 @@ class DataStore extends Base {
 
 				return record;
 			};
-		}
-		else {
+		} else {
 			fn = ( i ) => {
 				let record = {};
 
@@ -394,27 +385,22 @@ class DataStore extends Base {
 
 		if ( type === "undefined" ) {
 			result = this.records;
-		}
-		else if ( type === "string" ) {
+		} else if ( type === "string" ) {
 			if ( record.indexOf( "," ) === -1 ) {
 				result = this.records[ this.indexes.key[ record ] ];
-			}
-			else {
+			} else {
 				result = string.explode( record ).map( ( i ) => {
 					if ( !isNaN( i ) ) {
 						return self.records[ parseInt( i, 10 ) ];
-					}
-					else {
+					} else {
 						return self.records[ self.indexes.key[ i ] ];
 					}
 				} );
 			}
-		}
-		else if ( type === "number" ) {
+		} else if ( type === "number" ) {
 			if ( isNaN( offset ) ) {
 				result = this.records[ parseInt( record, 10 ) ];
-			}
-			else {
+			} else {
 				result = array.limit( this.records, parseInt( record, 10 ), parseInt( offset, 10 ) );
 			}
 		}
@@ -453,20 +439,17 @@ class DataStore extends Base {
 				arg.select( where ).then( ( match ) => {
 					if ( match.length > 2 ) {
 						defer.reject( new Error( label.databaseMoreThanOne ) );
-					}
-					else if ( match.length === 1 ) {
+					} else if ( match.length === 1 ) {
 						results.push( utility.merge( record, match[ 0 ].data ) );
 						defer.resolve( true );
-					}
-					else {
+					} else {
 						defer.resolve( false );
 					}
 				} );
 
 				deferreds.push( defer );
 			};
-		}
-		else if ( join === "left" ) {
+		} else if ( join === "left" ) {
 			fn = ( i ) => {
 				let where = {},
 					record = i.data,
@@ -477,12 +460,10 @@ class DataStore extends Base {
 				arg.select( where ).then( ( match ) => {
 					if ( match.length > 2 ) {
 						defer.reject( new Error( label.databaseMoreThanOne ) );
-					}
-					else if ( match.length === 1 ) {
+					} else if ( match.length === 1 ) {
 						results.push( utility.merge( record, match[ 0 ].data ) );
 						defer.resolve( true );
-					}
-					else {
+					} else {
 						array.each( keys, ( i ) => {
 							if ( record[ i ] === undefined ) {
 								record[ i ] = null;
@@ -496,8 +477,7 @@ class DataStore extends Base {
 
 				deferreds.push( defer );
 			};
-		}
-		else if ( join === "right" ) {
+		} else if ( join === "right" ) {
 			fn = ( i ) => {
 				let where = {},
 					record = i.data,
@@ -508,12 +488,10 @@ class DataStore extends Base {
 				self.select( where ).then( ( match ) => {
 					if ( match.length > 2 ) {
 						defer.reject( new Error( label.databaseMoreThanOne ) );
-					}
-					else if ( match.length === 1 ) {
+					} else if ( match.length === 1 ) {
 						results.push( utility.merge( record, match[ 0 ].data ) );
 						defer.resolve( true );
-					}
-					else {
+					} else {
 						array.each( keys, ( i ) => {
 							if ( record[ i ] === undefined ) {
 								record[ i ] = null;
@@ -555,8 +533,7 @@ class DataStore extends Base {
 			return this.records.map( ( i ) => {
 				return i.key;
 			} );
-		}
-		else {
+		} else {
 			return this.records.map( ( i ) => {
 				return i.data[ arg ];
 			} );
@@ -662,8 +639,7 @@ class DataStore extends Base {
 
 		if ( !( where instanceof Object ) ) {
 			defer.reject( new Error( label.invalidArguments ) );
-		}
-		else {
+		} else {
 			utility.iterate( where, ( v, k ) => {
 				if ( typeof v == "function" ) {
 					this[ k ] = v.toString();
@@ -692,8 +668,7 @@ class DataStore extends Base {
 						defer.reject( e );
 					} );
 				}
-			}
-			else {
+			} else {
 				clauses = array.fromObject( where );
 				sorted = array.flat( clauses ).filter( ( i, idx ) => {
 					return idx % 2 === 0;
@@ -708,8 +683,7 @@ class DataStore extends Base {
 					result = ( this.indexes[ index ][ values ] || [] ).map( ( i ) => {
 						return self.records[ i ];
 					} );
-				}
-				else {
+				} else {
 					if ( clauses.length > 1 ) {
 						array.each( clauses, ( i, idx ) => {
 							let b1 = "( ";
@@ -720,23 +694,18 @@ class DataStore extends Base {
 
 							if ( i[ 1 ] instanceof Function ) {
 								cond += b1 + i[ 1 ].toString() + "( rec.data[\"" + i[ 0 ] + "\"] ) )";
-							}
-							else if ( !isNaN( i[ 1 ] ) ) {
+							} else if ( !isNaN( i[ 1 ] ) ) {
 								cond += b1 + "rec.data[\"" + i[ 0 ] + "\"] === " + i[ 1 ] + " )";
-							}
-							else {
+							} else {
 								cond += b1 + "rec.data[\"" + i[ 0 ] + "\"] === \"" + i[ 1 ] + "\" )";
 							}
 						} );
-					}
-					else {
+					} else {
 						if ( clauses[ 0 ][ 1 ] instanceof Function ) {
 							cond += clauses[ 0 ][ 1 ].toString() + "( rec.data[\"" + clauses[ 0 ][ 0 ] + "\"] )";
-						}
-						else if ( !isNaN( clauses[ 0 ][ 1 ] ) ) {
+						} else if ( !isNaN( clauses[ 0 ][ 1 ] ) ) {
 							cond += "rec.data[\"" + clauses[ 0 ][ 0 ] + "\"] === " + clauses[ 0 ][ 1 ];
-						}
-						else {
+						} else {
 							cond += "rec.data[\"" + clauses[ 0 ][ 0 ] + "\"] === \"" + clauses[ 0 ][ 1 ] + "\"";
 						}
 					}
@@ -798,8 +767,7 @@ class DataStore extends Base {
 			utility.iterate( data, ( v, k ) => {
 				if ( k !== self.key && ogdata[ k ] === undefined ) {
 					ndata.push( { op: "add", path: "/" + k, value: v } );
-				}
-				else if ( json.encode( ogdata[ k ] ) !== json.encode( v ) ) {
+				} else if ( json.encode( ogdata[ k ] ) !== json.encode( v ) ) {
 					ndata.push( { op: "replace", path: "/" + k, value: v } );
 				}
 			} );
@@ -816,12 +784,10 @@ class DataStore extends Base {
 				// Root path, relative to store, i.e. a domain
 				else if ( self.uri !== null && regex.root.test( data ) ) {
 					uri = parsed.protocol + "//" + parsed.host + data;
-				}
-				else {
+				} else {
 					uri = data;
 				}
-			}
-			else {
+			} else {
 				uri = data;
 			}
 
@@ -829,8 +795,7 @@ class DataStore extends Base {
 
 			if ( string.isEmpty( key ) ) {
 				defer.reject( new Error( label.invalidArguments ) );
-			}
-			else {
+			} else {
 				if ( !batch && events ) {
 					self.dispatch( "beforeSet", { key: key, data: data } );
 				}
@@ -842,23 +807,20 @@ class DataStore extends Base {
 					defer.reject( e );
 				} );
 			}
-		}
-		else {
+		} else {
 			if ( !batch && events ) {
 				self.dispatch( "beforeSet", { key: key, data: data } );
 			}
 
 			if ( batch || this.uri === null ) {
 				this.setComplete( record, key, data, batch, overwrite, defer );
-			}
-			else {
+			} else {
 				if ( key !== null ) {
 					uri = this.buildUri( key );
 					method = "PATCH";
 					odata = utility.clone( data, true );
 					data = patch( overwrite, data, this.dump( [ record ] )[ 0 ] );
-				}
-				else {
+				} else {
 					// Dropping query string
 					uri = parsed.protocol + "//" + parsed.host + parsed.pathname;
 				}
@@ -869,8 +831,7 @@ class DataStore extends Base {
 
 					if ( rdefer.xhr.status !== 204 && rdefer.xhr.status < 300 ) {
 						change = key === null ? ( self.source ? utility.walk( arg, self.source ) : arg ) : odata;
-					}
-					else {
+					} else {
 						change = odata;
 					}
 
@@ -890,8 +851,7 @@ class DataStore extends Base {
 							self.dispatch( "failedSet", e );
 							defer.reject( e );
 						} );
-					}
-					else {
+					} else {
 						self.dispatch( "failedSet", e );
 						defer.reject( e );
 					}
@@ -924,8 +884,7 @@ class DataStore extends Base {
 		if ( key === null ) {
 			if ( this.key !== null && data[ this.key ] !== undefined && data[ this.key ] !== null ) {
 				key = data[ this.key ].toString();
-			}
-			else {
+			} else {
 				key = utility.uuid();
 			}
 		}
@@ -1112,8 +1071,7 @@ class DataStore extends Base {
 
 		if ( arg === null ) {
 			this.uri = arg;
-		}
-		else {
+		} else {
 			parsed = utility.parse( arg );
 			this.uri = parsed.protocol + "//" + parsed.host + parsed.path;
 
@@ -1166,11 +1124,9 @@ class DataStore extends Base {
 
 			if ( self.total === 0 ) {
 				defer.resolve( [] );
-			}
-			else if ( !create && self.views[ view ] ) {
+			} else if ( !create && self.views[ view ] ) {
 				defer.resolve( self.views[ view ] );
-			}
-			else if ( webWorker ) {
+			} else if ( webWorker ) {
 				defer.then( ( arg ) => {
 					self.views[ view ] = arg;
 
@@ -1190,8 +1146,7 @@ class DataStore extends Base {
 					self.views[ view ] = array.keySort( records, query, "data" );
 					defer.resolve( self.views[ view ] );
 				}
-			}
-			else {
+			} else {
 				self.views[ view ] = array.keySort( records, query, "data" );
 				defer.resolve( self.views[ view ] );
 			}
@@ -1199,8 +1154,7 @@ class DataStore extends Base {
 
 		if ( !where ) {
 			next( utility.clone( this.records, true ) );
-		}
-		else {
+		} else {
 			this.select( where ).then( next, ( e ) => {
 				defer.reject( e );
 			} );
@@ -1233,8 +1187,7 @@ class DataStore extends Base {
 
 		if ( !regex.number_string_object.test( typeof obj ) || !regex.get_remove_set.test( op ) ) {
 			defer.reject( new Error( label.invalidArguments ) );
-		}
-		else {
+		} else {
 			record = ( regex.number_string.test( typeof obj ) || obj.hasOwnProperty( "data" ) );
 
 			if ( op !== "remove" ) {
@@ -1243,8 +1196,7 @@ class DataStore extends Base {
 				}
 
 				key = record ? obj.key : obj.id;
-			}
-			else if ( op === "remove" && record ) {
+			} else if ( op === "remove" && record ) {
 				key = obj.key || obj;
 			}
 
@@ -1271,11 +1223,9 @@ class DataStore extends Base {
 
 									if ( e ) {
 										defer.reject( e );
-									}
-									else if ( recs.length === 0 ) {
+									} else if ( recs.length === 0 ) {
 										defer.resolve( null );
-									}
-									else {
+									} else {
 										delete recs[ 0 ]._id;
 
 										self.set( key, recs[ 0 ], true ).then( ( rec ) => {
@@ -1285,8 +1235,7 @@ class DataStore extends Base {
 										} );
 									}
 								} );
-							}
-							else {
+							} else {
 								collection.find( {} ).toArray( ( e, recs ) => {
 									let i, nth;
 
@@ -1317,20 +1266,17 @@ class DataStore extends Base {
 									defer.resolve( self.records );
 								} );
 							}
-						}
-						else if ( op === "remove" ) {
+						} else if ( op === "remove" ) {
 							collection.remove( record ? { _id: key } : {}, { safe: true }, ( e, arg ) => {
 								db.close();
 
 								if ( e ) {
 									defer.reject( e );
-								}
-								else {
+								} else {
 									defer.resolve( arg );
 								}
 							} );
-						}
-						else if ( op === "set" ) {
+						} else if ( op === "set" ) {
 							if ( record ) {
 								collection.update( { _id: obj.key }, obj.data, {
 									w: 1,
@@ -1341,13 +1287,11 @@ class DataStore extends Base {
 
 									if ( e ) {
 										defer.reject( e );
-									}
-									else {
+									} else {
 										defer.resolve( arg );
 									}
 								} );
-							}
-							else {
+							} else {
 								// Removing all documents & re-inserting
 								collection.remove( {}, { w: 1, safe: true }, ( e ) => {
 									let deferreds;
@@ -1356,8 +1300,7 @@ class DataStore extends Base {
 										db.close();
 										return defer.reject( e );
 
-									}
-									else {
+									} else {
 										deferreds = [];
 
 										array.each( self.records, ( i ) => {
@@ -1377,8 +1320,7 @@ class DataStore extends Base {
 											}, ( e, arg ) => {
 												if ( e ) {
 													defer2.reject( e );
-												}
-												else {
+												} else {
 													defer2.resolve( arg );
 												}
 											} );
@@ -1394,15 +1336,13 @@ class DataStore extends Base {
 									}
 								} );
 							}
-						}
-						else {
+						} else {
 							db.close();
 							defer.reject( null );
 						}
 					} );
 				} );
-			}
-			else {
+			} else {
 				if ( op === "get" ) {
 					result = session ? sessionStorage.getItem( key ) : localStorage.getItem( key );
 
@@ -1415,13 +1355,11 @@ class DataStore extends Base {
 							}, ( e ) => {
 								defer.reject( e );
 							} );
-						}
-						else {
+						} else {
 							utility.merge( self, result );
 							defer.resolve( self );
 						}
-					}
-					else {
+					} else {
 						defer.resolve( self );
 					}
 
@@ -1431,12 +1369,10 @@ class DataStore extends Base {
 					}, ( e ) => {
 						throw e;
 					} );
-				}
-				else if ( op === "remove" ) {
+				} else if ( op === "remove" ) {
 					session ? sessionStorage.removeItem( key ) : localStorage.removeItem( key );
 					defer.resolve( this );
-				}
-				else if ( op === "set" ) {
+				} else if ( op === "set" ) {
 					data = json.encode( record ? obj.data : {
 						total: this.total,
 						index: this.index,
@@ -1445,8 +1381,7 @@ class DataStore extends Base {
 					} );
 					session ? sessionStorage.setItem( key, data ) : localStorage.setItem( key, data );
 					defer.resolve( this );
-				}
-				else {
+				} else {
 					defer.reject( null );
 				}
 			}
@@ -1498,8 +1433,7 @@ class DataStore extends Base {
 
 			if ( arg instanceof Array ) {
 				data = arg;
-			}
-			else {
+			} else {
 				data = [ arg ];
 			}
 
@@ -1531,16 +1465,14 @@ class DataStore extends Base {
 
 		if ( this.uri === null || string.isEmpty( this.uri ) ) {
 			defer.reject( new Error( label.invalidArguments ) );
-		}
-		else {
+		} else {
 			if ( events ) {
 				this.dispatch( "beforeSync", this.uri );
 			}
 
 			if ( this.callback !== null ) {
 				client.jsonp( this.uri, { callback: this.callback } ).then( success, failure );
-			}
-			else {
+			} else {
 				client.request( this.uri, "GET", null, utility.merge( { withCredentials: this.credentials }, this.headers ) ).then( success, failure );
 			}
 		}
@@ -1604,23 +1536,20 @@ class DataStore extends Base {
 
 		if ( record === undefined ) {
 			defer.reject( new Error( label.invalidArguments ) );
-		}
-		else {
+		} else {
 			if ( versions ) {
 				previous = versions.get( version || versions.first );
 
 				if ( previous === undefined ) {
 					defer.reject( label.datastoreNoPrevVersion );
-				}
-				else {
+				} else {
 					this.set( key, previous ).then( ( arg ) => {
 						defer.resolve( arg );
 					}, ( e ) => {
 						defer.reject( e );
 					} );
 				}
-			}
-			else {
+			} else {
 				defer.reject( label.datastoreNoPrevVersion );
 			}
 		}
@@ -1663,8 +1592,7 @@ class DataStore extends Base {
 
 		if ( record === undefined ) {
 			defer.reject( new Error( label.invalidArguments ) );
-		}
-		else {
+		} else {
 			this.set( key, utility.merge( record.data, data ) ).then( ( arg ) => {
 				defer.resolve( arg );
 			}, ( e ) => {
@@ -1743,8 +1671,7 @@ let store = {
 				result = ( indexes[ index ][ values ] || [] ).map( ( i ) => {
 					return records[ i ];
 				} );
-			}
-			else {
+			} else {
 				if ( clauses.length > 1 ) {
 					array.each( clauses, ( i, idx ) => {
 						let b1 = "( ";
@@ -1755,23 +1682,18 @@ let store = {
 
 						if ( array.contains( functions, i[ 0 ] ) ) {
 							cond += b1 + i[ 1 ] + "( rec.data[\"" + i[ 0 ] + "\"] ) )";
-						}
-						else if ( !isNaN( i[ 1 ] ) ) {
+						} else if ( !isNaN( i[ 1 ] ) ) {
 							cond += b1 + "rec.data[\"" + i[ 0 ] + "\"] === " + i[ 1 ] + " )";
-						}
-						else {
+						} else {
 							cond += b1 + "rec.data[\"" + i[ 0 ] + "\"] === \"" + i[ 1 ] + "\" )";
 						}
 					} );
-				}
-				else {
+				} else {
 					if ( array.contains( functions, clauses[ 0 ][ 0 ] ) ) {
 						cond += clauses[ 0 ][ 1 ] + "( rec.data[\"" + clauses[ 0 ][ 0 ] + "\"] )";
-					}
-					else if ( !isNaN( clauses[ 0 ][ 1 ] ) ) {
+					} else if ( !isNaN( clauses[ 0 ][ 1 ] ) ) {
 						cond += "rec.data[\"" + clauses[ 0 ][ 0 ] + "\"] === " + clauses[ 0 ][ 1 ];
-					}
-					else {
+					} else {
 						cond += "rec.data[\"" + clauses[ 0 ][ 0 ] + "\"] === \"" + clauses[ 0 ][ 1 ] + "\"";
 					}
 				}
@@ -1780,8 +1702,7 @@ let store = {
 
 				result = records.filter( new Function( "rec", cond ) );
 			}
-		}
-		else if ( cmd === "sort" ) {
+		} else if ( cmd === "sort" ) {
 			result = array.keySort( records, ev.data.query, "data" );
 		}
 

@@ -151,11 +151,9 @@ let number = {
 
 		if ( direction === undefined || string.isEmpty( direction ) ) {
 			return number.parse( arg.toFixed( 0 ) );
-		}
-		else if ( regex.down.test( direction ) ) {
+		} else if ( regex.down.test( direction ) ) {
 			return ~~( arg );
-		}
-		else {
+		} else {
 			return Math.ceil( arg );
 		}
 	}

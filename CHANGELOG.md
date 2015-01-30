@@ -3,6 +3,12 @@
 ## 1.1.0
 - Refactored to ES6, utilizing `6to5` to transpile to ES5
 - Creating ES6 build artifact in `/lib`
+- Fixed memory leak in `DataListFilter`
+- Fixed composition of a filtered `DataGrid`
+- Refactored `Observable` hooks to avoid collisions
+- Removed `array.fib()`, & `array.percents()`
+- Refactored `utility.clone()` shallow path to avoid `json{}`
+- Reformatted code
 
 ## 1.0.6
 - Creating `element.addClass()`, & `element.removeClass()` facades of `element.klass()` for a familiar syntax

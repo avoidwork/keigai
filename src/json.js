@@ -15,8 +15,7 @@ let json = {
 	 *
 	 * if ( x ) {
 	 *   ...
-	 * }
-	 * else {
+	 * } else {
 	 *   ... // invalid JSON, with `Error` suppressed by `silent`
 	 * }
 	 */
@@ -46,8 +45,7 @@ let json = {
 	 *
 	 * if ( x ) {
 	 *   ...
-	 * }
-	 * else {
+	 * } else {
 	 *   ... // invalid JSON, with `Error` suppressed by `silent`
 	 * }
 	 */

@@ -12,16 +12,16 @@ let promise = {
 	factory: () => {
 		let promise, pCatch, pResolve, pReject, pThen;
 
-		promise = new Promise( function ( resolve, reject ) {
+		promise = new Promise( ( resolve, reject ) => {
 			pResolve = resolve;
 			pReject = reject;
 		} );
 
-		pCatch = function (...args) {
-			return promise[ "catch" ].apply( promise, args );
+		pCatch = ( ...args ) => {
+			return promise.catch.apply( promise, args );
 		};
 
-		pThen = function (...args) {
+		pThen = ( ...args ) => {
 			return promise.then.apply( promise, args );
 		};
 

@@ -61,12 +61,10 @@ let utility = {
 					if ( isNaN( result.length ) ) {
 						result = [ result ];
 					}
-				}
-				else {
+				} else {
 					result = [];
 				}
-			}
-			else {
+			} else {
 				result = [];
 
 				array.each( string.explode( arg ), ( query ) => {
@@ -74,8 +72,7 @@ let utility = {
 
 					if ( obj instanceof Array ) {
 						result = result.concat( obj );
-					}
-					else if ( obj ) {
+					} else if ( obj ) {
 						result.push( obj );
 					}
 				} );
@@ -174,11 +171,9 @@ let utility = {
 
 		if ( shallow === true ) {
 			return obj !== undefined && obj !== null ? json.decode( json.encode( obj ) ) : obj;
-		}
-		else if ( !obj || regex.primitive.test( typeof obj ) || ( obj instanceof RegExp ) ) {
+		} else if ( !obj || regex.primitive.test( typeof obj ) || ( obj instanceof RegExp ) ) {
 			return obj;
-		}
-		else if ( obj instanceof Array ) {
+		} else if ( obj instanceof Array ) {
 			result = [];
 
 			array.each( obj, ( i, idx ) => {
@@ -186,14 +181,11 @@ let utility = {
 			} );
 
 			return result;
-		}
-		else if ( !server && !client.ie && obj instanceof Document ) {
+		} else if ( !server && !client.ie && obj instanceof Document ) {
 			return xml.decode( xml.encode( obj ) );
-		}
-		else if ( typeof obj.__proto__ != "undefined" ) {
+		} else if ( typeof obj.__proto__ != "undefined" ) {
 			return utility.extend( obj.__proto__, obj );
-		}
-		else if ( obj instanceof Object ) {
+		} else if ( obj instanceof Object ) {
 			// If JSON encoding fails due to recursion, the original Object is returned because it's assumed this is for decoration
 			clone = json.encode( obj, true );
 
@@ -206,14 +198,12 @@ let utility = {
 						clone[ k ] = v;
 					}
 				} );
-			}
-			else {
+			} else {
 				clone = obj;
 			}
 
 			return clone;
-		}
-		else {
+		} else {
 			return obj;
 		}
 	},
@@ -233,29 +223,21 @@ let utility = {
 
 		if ( value === null || value === undefined ) {
 			return undefined;
-		}
-		else if ( value === "true" ) {
+		} else if ( value === "true" ) {
 			return true;
-		}
-		else if ( value === "false" ) {
+		} else if ( value === "false" ) {
 			return false;
-		}
-		else if ( value === "null" ) {
+		} else if ( value === "null" ) {
 			return null;
-		}
-		else if ( value === "undefined" ) {
+		} else if ( value === "undefined" ) {
 			return undefined;
-		}
-		else if ( value === "" ) {
+		} else if ( value === "" ) {
 			return value;
-		}
-		else if ( !isNaN( tmp = Number( value ) ) ) {
+		} else if ( !isNaN( tmp = Number( value ) ) ) {
 			return tmp;
-		}
-		else if ( regex.json_wrap.test( value ) ) {
+		} else if ( regex.json_wrap.test( value ) ) {
 			return json.decode( value, true ) || value;
-		}
-		else {
+		} else {
 			return value;
 		}
 	},
@@ -298,11 +280,10 @@ let utility = {
 	 *
 	 * g( 5 ); // 50
 	 */
-	curry: (...args) => {
-		let fn = args.shift();
+	curry: ( fn, ...args ) => {
 		let cfn = fn.apply( fn, args );
 
-		return (...args) => {
+		return ( ...args ) => {
 			return cfn.apply( cfn, args );
 		};
 	},
@@ -328,8 +309,7 @@ let utility = {
 
 		if ( id !== undefined ) {
 			utility.clearTimers( id );
-		}
-		else {
+		} else {
 			id = utility.uuid( true );
 		}
 
@@ -356,11 +336,9 @@ let utility = {
 			return ( arg ) => {
 				setImmediate( arg );
 			};
-		}
-		else if ( typeof process != "undefined" ) {
+		} else if ( typeof process != "undefined" ) {
 			return process.nextTick;
-		}
-		else {
+		} else {
 			return ( arg ) => {
 				setTimeout( arg, 0 );
 			};
@@ -382,18 +360,14 @@ let utility = {
 		if ( !regex.selector_complex.test( arg ) ) {
 			if ( regex.hash.test( arg ) ) {
 				result = document.getElementById( arg.replace( regex.hash, "" ) ) || undefined;
-			}
-			else if ( regex.klass.test( arg ) ) {
+			} else if ( regex.klass.test( arg ) ) {
 				result = array.cast( document.getElementsByClassName( arg.replace( regex.klass, "" ) ) );
-			}
-			else if ( regex.word.test( arg ) ) {
+			} else if ( regex.word.test( arg ) ) {
 				result = array.cast( document.getElementsByTagName( arg ) );
-			}
-			else {
+			} else {
 				result = array.cast( document.querySelectorAll( arg ) );
 			}
-		}
-		else {
+		} else {
 			result = array.cast( document.querySelectorAll( arg ) );
 		}
 
@@ -487,17 +461,15 @@ let utility = {
 				id = utility.domId( utility.uuid( true ) );
 			}
 			while ( utility.dom( "#" + id ) );
-		}
-		else {
+		} else {
 			id = utility.domId( utility.uuid( true ) );
 		}
 
-		if ( typeof obj == "object" ) {
+		if ( obj && typeof obj == "object" ) {
 			obj.id = id;
 
 			return obj;
-		}
-		else {
+		} else {
 			return id;
 		}
 	},
@@ -543,8 +515,7 @@ let utility = {
 
 				console[ target ]( msg );
 			}
-		}
-		else {
+		} else {
 			return () => {};
 		}
 	}(),
@@ -569,19 +540,15 @@ let utility = {
 		utility.iterate( arg, ( v, k ) => {
 			if ( !array.contains( keys, k ) || ( v instanceof Function ) ) {
 				obj[ k ] = v;
-			}
-			else if ( ( obj[ k ] instanceof Array ) && ( v instanceof Array ) ) {
+			} else if ( ( obj[ k ] instanceof Array ) && ( v instanceof Array ) ) {
 				array.merge( obj[ k ], v );
-			}
-			else if ( v instanceof Function ) {
+			} else if ( v instanceof Function ) {
 				obj[ k ] = v;
-			}
-			else if ( ( obj[ k ] instanceof Object ) && ( v instanceof Object ) ) {
+			} else if ( ( obj[ k ] instanceof Object ) && ( v instanceof Object ) ) {
 				utility.iterate( v, ( x, y ) => {
 					obj[ k ][ y ] = utility.clone( x );
 				} );
-			}
-			else {
+			} else {
 				obj[ k ] = utility.clone( v );
 			}
 		} );
@@ -626,8 +593,7 @@ let utility = {
 			obj.href = uri;
 			host = obj.href.match( regex.host )[ 1 ];
 			protocol = obj.href.match( regex.protocol )[ 1 ];
-		}
-		else {
+		} else {
 			obj = url.parse( uri );
 		}
 
@@ -692,10 +658,8 @@ let utility = {
 	 *
 	 * g( 2 ); // 4
 	 */
-	partial: (...args) => {
-		let fn = args.shift();
-
-		return (...args2) => {
+	partial: ( fn, ...args ) => {
+		return ( ...args2 ) => {
 			return fn.apply( fn, args.concat( args2 ) );
 		};
 	},
@@ -743,19 +707,16 @@ let utility = {
 
 				if ( item[ 1 ] === undefined ) {
 					item[ 1 ] = "";
-				}
-				else {
+				} else {
 					item[ 1 ] = utility.coerce( decodeURIComponent( item[ 1 ] ) );
 				}
 
 				if ( obj[ item[ 0 ] ] === undefined ) {
 					obj[ item[ 0 ] ] = item[ 1 ];
-				}
-				else if ( !( obj[ item[ 0 ] ] instanceof Array ) ) {
+				} else if ( !( obj[ item[ 0 ] ] instanceof Array ) ) {
 					obj[ item[ 0 ] ] = [ obj[ item[ 0 ] ] ];
 					obj[ item[ 0 ] ].push( item[ 1 ] );
-				}
-				else {
+				} else {
 					obj[ item[ 0 ] ].push( item[ 1 ] );
 				}
 			} );
@@ -794,7 +755,7 @@ let utility = {
 	 * defer1.resolve( true );
 	 * defer2.resolve( true );
 	 */
-	race: (...args) => {
+	race: ( ...args ) => {
 		let defer = deferred.factory();
 
 		// Did we receive an Array? if so it overrides any other arguments
@@ -882,8 +843,7 @@ let utility = {
 					utility.repeating[ id ] = setTimeout( () => {
 						recursive.call( recursive, fn, ms, id );
 					}, ms );
-				}
-				else {
+				} else {
 					delete utility.repeating[ id ];
 				}
 			};
@@ -1006,7 +966,7 @@ let utility = {
 	 * defer1.resolve( true );
 	 * defer2.resolve( true );
 	 */
-	when: (...args) => {
+	when: ( ...args ) => {
 		let defer = deferred.factory();
 
 		// Did we receive an Array? if so it overrides any other arguments

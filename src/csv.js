@@ -67,14 +67,11 @@ let csv = {
 				if ( regex.object_type.test( output ) ) {
 					output = "\"" + csv.encode( input, delimiter ) + "\"";
 				}
-			}
-			else if ( input instanceof Object ) {
+			} else if ( input instanceof Object ) {
 				output = "\"" + csv.encode( input, delimiter ) + "\"";
-			}
-			else if ( regex.csv_quote.test( input ) ) {
+			} else if ( regex.csv_quote.test( input ) ) {
 				output = "\"" + input.replace( /"/g, "\"\"" ) + "\"";
-			}
-			else {
+			} else {
 				output = input;
 			}
 
@@ -90,13 +87,11 @@ let csv = {
 				result += obj.map( ( i ) => {
 					return csv.encode( i, delimiter, false );
 				} ).join( "\n" );
-			}
-			else {
+			} else {
 				result += ( prepare( obj, delimiter ) + "\n" );
 			}
 
-		}
-		else {
+		} else {
 			if ( header ) {
 				result = ( array.keys( obj ).join( delimiter ) + "\n" );
 			}

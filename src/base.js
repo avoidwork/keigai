@@ -66,7 +66,7 @@ class Base {
 	 * @example
 	 * obj.dispatch( "event", ... );
 	 */
-	dispatch (...args) {
+	dispatch ( ...args ) {
 		this.observer.dispatch.apply( this.observer, args );
 
 		return this;
@@ -81,7 +81,7 @@ class Base {
 	 * @example
 	 * obj.dispatchEvent( "event", ... );
 	 */
-	dispatchEvent (...args) {
+	dispatchEvent ( ...args ) {
 		this.observer.dispatch.apply( this.observer, args );
 
 		return this;
@@ -96,7 +96,7 @@ class Base {
 	 * @example
 	 * obj.emit( "event", ... );
 	 */
-	emit (...args) {
+	emit ( ...args ) {
 		this.observer.dispatch.apply( this.observer, args );
 
 		return this;
@@ -111,7 +111,7 @@ class Base {
 	 * @example
 	 * obj.hook( document.querySelector( "a" ), "click" );
 	 */
-	hook (...args) {
+	hook ( ...args ) {
 		this.observer.hook.apply( this.observer, args );
 
 		return this;
@@ -130,7 +130,7 @@ class Base {
 	 * } );
 	 */
 	listeners ( ev ) {
-		return ev ? this.observer.listeners[ ev ] : this.listeners;
+		return ev ? this.observer.listeners[ ev ] : this.observer.listeners;
 	}
 
 	/**

@@ -34,13 +34,12 @@ class DataListFilter extends Base {
 	 * filter.set( "firstName, lastName, email" );
 	 */
 	set ( fields ) {
-		let obj = {};
+		let self = this;
 
+		this.filters = {};
 		array.each( string.explode( fields ), ( v ) => {
-			obj[ v ] = "";
+			self.filters[ v ] = "";
 		} );
-
-		this.filters = obj;
 
 		return this;
 	}
@@ -57,6 +56,7 @@ class DataListFilter extends Base {
 	teardown () {
 		this.observer.unhook( this.element, "keyup" );
 		this.observer.unhook( this.element, "input" );
+		this.element = null;
 
 		return this;
 	}
@@ -91,21 +91,19 @@ class DataListFilter extends Base {
 
 					// Shaping valid pattern
 					array.each( queries, ( i, idx ) => {
-						this[ idx ] = "^.*" + string.escape( i ).replace( /(^\*|\*$)/g, "" ).replace( /\*/g, ".*" ) + ".*";
+						queries[ idx ] = "^.*" + string.escape( i ).replace( /(^\*|\*$)/g, "" ).replace( /\*/g, ".*" ) + ".*";
 					} );
 
-					this[ k ] = queries.join( "," );
+					self.filters[ k ] = queries.join( "," );
 				} );
 
 				self.list.filter = self.filters;
-			}
-			else {
+			} else {
 				self.list.filter = null;
 			}
 
 			self.list.pageIndex = 1;
 			self.list.refresh();
-
 			self.list.dispatch( "afterFilter", self.element );
 		}, this.debounce, this.element.id + "Debounce" );
 

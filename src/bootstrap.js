@@ -17,8 +17,8 @@ let bootstrap = () => {
 	if ( !server ) {
 		client.version = client.version();
 
-		// IE8 and older is not supported
 		if ( client.ie ) {
+			// IE8 and older is not supported
 			if ( client.version < 9 ) {
 				throw new Error( label.upgrade );
 			}
@@ -33,10 +33,6 @@ let bootstrap = () => {
 					array.each( classes, ( i ) => {
 						self.push( i );
 					} );
-
-					this.updateClassName = function () {
-						obj.className = this.join( " " );
-					};
 				}
 
 				add ( arg ) {
@@ -61,6 +57,10 @@ let bootstrap = () => {
 					array[ array.contains( this, arg ) ? "remove" : "add" ]( this, arg );
 					this.updateClassName();
 				}
+
+				updateClassName () {
+						this.className = this.join( " " );
+				}
 			}
 
 			if ( defineProperty ) {
@@ -69,11 +69,9 @@ let bootstrap = () => {
 					enumerable: true,
 					configurable: true
 				} );
-			}
-			else if ( Object.prototype.__defineGetter__ ) {
+			} else if ( Object.prototype.__defineGetter__ ) {
 				target.__defineGetter__( "classList", () => { return new ClassList( this ); } );
-			}
-			else {
+			} else {
 				throw new Error( "Could not create classList shim" );
 			}
 
@@ -83,16 +81,13 @@ let bootstrap = () => {
 					enumerable: true,
 					configurable: true
 				} );
-			}
-			else if ( Object.prototype.__defineGetter__ ) {
+			} else if ( Object.prototype.__defineGetter__ ) {
 				target.__defineGetter__( "getElementsByClassName", ( arg ) => { return this.querySelectorAll( "." + arg ); } );
-			}
-			else {
+			} else {
 				throw new Error( "Could not create getElementsByClassName shim" );
 			}
 		}
-	}
-	else {
+	} else {
 		// XHR shim
 		XMLHttpRequest = xhr();
 	}
@@ -101,9 +96,6 @@ let bootstrap = () => {
 	if ( WeakMap === null ) {
 		WeakMap = WeakMapShim;
 	}
-
-	// Caching functions
-	has = Object.prototype.hasOwnProperty;
 
 	// DataStore Worker "script"
 	if ( webWorker ) {

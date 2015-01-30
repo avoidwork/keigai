@@ -282,8 +282,7 @@ let xhr = () => {
 
 			if ( this.readyState < OPENED ) {
 				throw new Error( label.invalidStateNotOpen );
-			}
-			else if ( this._send ) {
+			} else if ( this._send ) {
 				throw new Error( label.invalidStateNotSending );
 			}
 
@@ -298,15 +297,12 @@ let xhr = () => {
 			if ( regex.put_post.test( this._params.method ) ) {
 				if ( data === null ) {
 					this._headers[ "content-length" ] = 0;
-				}
-				else if ( typeof data == "string" ) {
+				} else if ( typeof data == "string" ) {
 					this._headers[ "content-length" ] = Buffer.byteLength( data );
-				}
-				else if ( data instanceof Buffer || typeof data.toString == "function" ) {
+				} else if ( data instanceof Buffer || typeof data.toString == "function" ) {
 					data = data.toString();
 					this._headers[ "content-length" ] = Buffer.byteLength( data );
-				}
-				else {
+				} else {
 					throw new Error( label.invalidArguments );
 				}
 			}
@@ -366,8 +362,7 @@ let xhr = () => {
 		setRequestHeader ( header, value ) {
 			if ( this.readyState !== OPENED ) {
 				throw new Error( label.invalidStateNotUsable );
-			}
-			else if ( this._send ) {
+			} else if ( this._send ) {
 				throw new Error( label.invalidStateNotSending );
 			}
 

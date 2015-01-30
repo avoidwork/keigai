@@ -13,7 +13,7 @@ let localStorage = global.localStorage || undefined;
 let XMLHttpRequest = global.XMLHttpRequest || null;
 let WeakMap = global.WeakMap || null;
 let btoa = global.btoa || undefined;
-let format, http, https, lib, mongodb, url, RENDER, TIME, WORKER;
+let external, format, http, https, lib, mongodb, url, RENDER, TIME, WORKER;
 
 if ( server ) {
 	url = require( "url" );
@@ -33,10 +33,8 @@ if ( server ) {
 	if ( typeof btoa == "undefined" ) {
 		btoa = require( "btoa" );
 	}
-}
-else if ( typeof Buffer == "undefined" ) {
+} else if ( typeof Buffer == "undefined" ) {
 	Buffer = () => {};
 }
 
 let lib = () => {
-	let external, has;

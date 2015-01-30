@@ -64,8 +64,8 @@ let client = {
 	version: () => {
 		let result = 0;
 
-		if ( this.ie ) {
-			result = number.parse( string.trim( navigator.userAgent.replace( /(.*msie|;.*)/gi, "" ) ) || 9, 10 );
+		if ( client.ie ) {
+			result = number.parse( string.trim( navigator.userAgent.replace( /( .*msie|;.*)/gi, "" ) ) || 9, 10  );
 		}
 
 		return result;
@@ -90,18 +90,14 @@ let client = {
 
 		if ( !cache.get( uri, false ) ) {
 			result = undefined;
-		}
-		else {
+		} else {
 			if ( regex.del.test( verb ) ) {
 				bit = 1;
-			}
-			else if ( regex.get_headers.test( verb ) ) {
+			} else if ( regex.get_headers.test( verb ) ) {
 				bit = 4;
-			}
-			else if ( regex.put_post.test( verb ) ) {
+			} else if ( regex.put_post.test( verb ) ) {
 				bit = 2;
-			}
-			else if ( regex.patch.test( verb ) ) {
+			} else if ( regex.patch.test( verb ) ) {
 				bit = 8;
 			}
 
@@ -128,14 +124,11 @@ let client = {
 
 			if ( regex.get_headers.test( verb ) ) {
 				result |= 4;
-			}
-			else if ( regex.put_post.test( verb ) ) {
+			} else if ( regex.put_post.test( verb ) ) {
 				result |= 2;
-			}
-			else if ( regex.patch.test( verb ) ) {
+			} else if ( regex.patch.test( verb ) ) {
 				result |= 8;
-			}
-			else if ( regex.del.test( verb ) ) {
+			} else if ( regex.del.test( verb ) ) {
 				result |= 1;
 			}
 		} );
@@ -189,14 +182,11 @@ let client = {
 
 		if ( regex.no.test( items[ "cache-control" ] ) ) {
 			expires = expires.getTime();
-		}
-		else if ( items[ "cache-control" ] && regex.number_present.test( items[ "cache-control" ] ) ) {
+		} else if ( items[ "cache-control" ] && regex.number_present.test( items[ "cache-control" ] ) ) {
 			expires = expires.setSeconds( expires.getSeconds() + number.parse( regex.number_present.exec( items[ "cache-control" ] )[ 0 ], 10 ) );
-		}
-		else if ( items.expires ) {
+		} else if ( items.expires ) {
 			expires = new Date( items.expires ).getTime();
-		}
-		else {
+		} else {
 			expires = expires.getTime();
 		}
 
@@ -230,24 +220,19 @@ let client = {
 
 		if ( ( regex.json_maybe.test( type ) || string.isEmpty( type ) ) && ( regex.json_wrap.test( xhr.responseText ) && Boolean( obj = json.decode( xhr.responseText, true ) ) ) ) {
 			result = obj;
-		}
-		else if ( type === "text/csv" ) {
+		} else if ( type === "text/csv" ) {
 			result = csv.decode( xhr.responseText );
-		}
-		else if ( type === "text/tsv" ) {
+		} else if ( type === "text/tsv" ) {
 			result = csv.decode( xhr.responseText, "\t" );
-		}
-		else if ( regex.xml.test( type ) ) {
+		} else if ( regex.xml.test( type ) ) {
 			if ( type !== "text/xml" ) {
 				xhr.overrideMimeType( "text/xml" );
 			}
 
 			result = xhr.responseXML;
-		}
-		else if ( type === "text/plain" && regex.is_xml.test( xhr.responseText ) && xml.valid( xhr.responseText ) ) {
+		} else if ( type === "text/plain" && regex.is_xml.test( xhr.responseText ) && xml.valid( xhr.responseText ) ) {
 			result = xml.decode( xhr.responseText );
-		}
-		else {
+		} else {
 			result = xhr.responseText;
 		}
 
@@ -357,7 +342,7 @@ let client = {
 
 		// Wrapping deferred methods on obj
 		array.each( array.keys( Deferred.prototype ), ( i ) => {
-			obj[ i ] = (...args) => {
+			obj[ i ] = ( ...args ) => {
 				return obj.defer[ i ].apply( obj.defer, args );
 			};
 		} );
@@ -410,13 +395,12 @@ let client = {
 
 		// Hooking custom events
 		kxhr.on( "readystatechange", ( ev ) => {
-			switch ( kxhr.xhr.readyState ) {
-				case 1:
-					kxhr.dispatch( "beforeXHR", kxhr.xhr, ev );
-					break;
-				case 4:
-					kxhr.dispatch( "afterXHR", kxhr.xhr, ev );
-					break;
+			let state = kxhr.xhr.readyState;
+
+			if ( state === 1 ) {
+				kxhr.dispatch( "beforeXHR", kxhr.xhr, ev );
+			} else if ( state === 4 ) {
+				kxhr.dispatch( "afterXHR", kxhr.xhr, ev );
 			}
 		} );
 
@@ -540,11 +524,9 @@ let client = {
 
 							if ( type === "head" ) {
 								return kxhr.resolve( o.headers );
-							}
-							else if ( type === "options" ) {
+							} else if ( type === "options" ) {
 								return kxhr.resolve( o.headers );
-							}
-							else if ( type !== "delete" ) {
+							} else if ( type !== "delete" ) {
 								if ( server && regex.priv.test( o.headers[ "cache-control" ] ) ) {
 									shared = false;
 								}
@@ -560,12 +542,10 @@ let client = {
 
 								if ( type === "get" && shared ) {
 									cache.set( uri, "response", ( o.response = utility.clone( r, true ) ) );
-								}
-								else {
+								} else {
 									cache.expire( uri, true );
 								}
-							}
-							else if ( type === "delete" ) {
+							} else if ( type === "delete" ) {
 								cache.expire( uri, true );
 							}
 
@@ -579,8 +559,7 @@ let client = {
 								case 201:
 									if ( ( o.headers.location === undefined || string.isEmpty( o.headers.location ) ) && !string.isUrl( r ) ) {
 										kxhr.resolve( r );
-									}
-									else {
+									} else {
 										redirect = string.trim( o.headers.Location || r );
 										client.request( redirect ).then( ( arg ) => {
 											self.resolve( arg );
@@ -612,8 +591,7 @@ let client = {
 						default:
 							kxhr.reject( new Error( kxhr.xhr.responseText || label.serverError ) );
 					}
-				}
-				else if ( xdr ) {
+				} else if ( xdr ) {
 					r = client.parse( kxhr.xhr, "text/plain" );
 					cache.set( uri, "permission", client.bit( [ "get" ] ) );
 					cache.set( uri, "response", r );
