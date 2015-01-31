@@ -8,6 +8,7 @@ let MAX = 10;
 let VERSIONS = 100;
 let CACHE = 500;
 let EVENTS = [ "readystatechange", "abort", "load", "loadstart", "loadend", "error", "progress", "timeout" ];
+let Buffer = () => {};
 let Promise = global.Promise || undefined;
 let localStorage = global.localStorage || undefined;
 let XMLHttpRequest = global.XMLHttpRequest || null;
@@ -21,6 +22,7 @@ if ( server ) {
 	https = require( "https" );
 	mongodb = require( "mongodb" ).MongoClient;
 	format = require( "util" ).format;
+	Buffer = require( "buffer" ).Buffer;
 
 	if ( typeof Promise == "undefined" ) {
 		Promise = require( "es6-promise" ).Promise;
@@ -33,8 +35,6 @@ if ( server ) {
 	if ( typeof btoa == "undefined" ) {
 		btoa = require( "btoa" );
 	}
-} else if ( typeof Buffer == "undefined" ) {
-	Buffer = () => {};
 }
 
 let lib = () => {

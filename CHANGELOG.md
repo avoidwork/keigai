@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.1.1
+- Fixing a reference error for `Buffer`, due to transpiling & not using a clean env for testing
+
 ## 1.1.0
 - Refactored to ES6, utilizing `6to5` to transpile to ES5
 - Creating ES6 build artifact in `/lib`
