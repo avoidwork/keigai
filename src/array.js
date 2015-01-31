@@ -266,7 +266,7 @@ let array = {
 	 * keigai.util.array.each( [ ... ], function ( ... ) { ... } );
 	 * keigai.util.array.each( [ ... ], function ( ... ) { ... }, true, 100 ); // processing batches of a 100
 	 */
-	each: ( obj, fn, async, size ) => {
+	each: ( obj, fn, async, size=10 ) => {
 		let nth = obj.length;
 		let i, offset;
 
@@ -278,7 +278,6 @@ let array = {
 				}
 			}
 		} else {
-			size = size || 10;
 			offset = 0;
 
 			if ( size > nth ) {

@@ -8,8 +8,8 @@ class Observable {
 	 * @example
 	 * let observer = keigai.util.observer( 50 );
 	 */
-	constructor ( arg ) {
-		this.limit = arg || MAX;
+	constructor ( arg=MAX ) {
+		this.limit = arg;
 		this.listeners = {};
 		this.hooks = new WeakMap();
 	}

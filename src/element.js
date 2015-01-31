@@ -304,7 +304,7 @@ let element = {
 	 * @example
 	 * keigai.util.element.dispatch( document.querySelector( "#something" ), "click" );
 	 */
-	dispatch: ( obj, type, data, bubbles, cancelable ) => {
+	dispatch: ( obj, type, data={}, bubbles=true, cancelable=true ) => {
 		let ev;
 
 		if ( !obj ) {
@@ -318,10 +318,7 @@ let element = {
 			ev = document.createEvent( "CustomEvent" );
 		}
 
-		bubbles = ( bubbles !== false );
-		cancelable = ( cancelable !== false );
-
-		ev.initCustomEvent( type, bubbles, cancelable, data || {} );
+		ev.initCustomEvent( type, bubbles, cancelable, data );
 		obj.dispatchEvent( ev );
 
 		return obj;
@@ -540,8 +537,7 @@ let element = {
 	 * @example
 	 * let pos = keigai.util.element.position( document.querySelector( "#something" ) );
 	 */
-	position: ( obj ) => {
-		obj = obj || document.body;
+	position: ( obj=document.body ) => {
 		let left, top, right, bottom, height, width;
 
 		left = top = 0;

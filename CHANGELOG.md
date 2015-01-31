@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.3
+- Moved more `variables` to `constants`
+- Another pass of default parameter values
+
 ## 1.1.2
 - Specifying default value of parameter for `utility.clone()`
 - Specifying default value of parameter for `array.clone()`

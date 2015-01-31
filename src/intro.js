@@ -1,19 +1,20 @@
 ( global ) => {
-let document = global.document;
-let location = global.location;
-let navigator = global.navigator;
-let server = typeof process != "undefined";
-let webWorker = typeof Blob != "undefined" && typeof Worker != "undefined";
-let MAX = 10;
-let VERSIONS = 100;
-let CACHE = 500;
-let EVENTS = [ "readystatechange", "abort", "load", "loadstart", "loadend", "error", "progress", "timeout" ];
+const document = global.document;
+const location = global.location;
+const navigator = global.navigator;
+const server = typeof process != "undefined";
+const MAX = 10;
+const VERSIONS = 100;
+const CACHE = 500;
+const EVENTS = [ "readystatechange", "abort", "load", "loadstart", "loadend", "error", "progress", "timeout" ];
+
 let Buffer = () => {};
 let Promise = global.Promise || undefined;
 let localStorage = global.localStorage || undefined;
 let XMLHttpRequest = global.XMLHttpRequest || null;
 let WeakMap = global.WeakMap || null;
 let btoa = global.btoa || undefined;
+let webWorker = typeof Blob != "undefined" && typeof Worker != "undefined";
 let external, format, http, https, lib, mongodb, url, RENDER, TIME, WORKER;
 
 if ( server ) {

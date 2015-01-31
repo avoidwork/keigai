@@ -1,16 +1,16 @@
-/**
- * Creates a new Least Recently Used cache
- *
- * @constructor
- * @memberOf keigai
- * @param  {Number} max [Optional] Max size of cache, default is 1000
- * @example
- * let lru = keigai.util.lru( 50 );
- */
 class LRU {
-	constructor ( max ) {
+	/**
+	 * Creates a new Least Recently Used cache
+	 *
+	 * @constructor
+	 * @memberOf keigai
+	 * @param  {Number} max [Optional] Max size of cache, default is 1000
+	 * @example
+	 * let lru = keigai.util.lru( 50 );
+	 */
+	constructor ( max=1000 ) {
 		this.cache = {};
-		this.max = max || 1000;
+		this.max = max;
 		this.first = null;
 		this.last = null;
 		this.length = 0;
