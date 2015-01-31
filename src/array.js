@@ -145,8 +145,8 @@ let array = {
 	 * myArray.length;      // 5
 	 * myArrayClone.length; // 6
 	 */
-	clone: ( obj, shallow ) => {
-		return utility.clone( obj, shallow !== false );
+	clone: ( obj, shallow=true ) => {
+		return utility.clone( obj, shallow );
 	},
 
 	/**

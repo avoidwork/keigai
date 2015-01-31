@@ -166,11 +166,11 @@ let utility = {
 	 *
 	 * y.a; // true
 	 */
-	clone: ( obj, shallow ) => {
+	clone: ( obj, shallow=false ) => {
 		let clone, result;
 
 		if ( shallow === true ) {
-			return obj !== undefined && obj !== null ? json.decode( json.encode( obj ) ) : obj;
+			return obj !== undefined && obj !== null ? JSON.parse( JSON.stringify( obj ) ) : obj;
 		} else if ( !obj || regex.primitive.test( typeof obj ) || ( obj instanceof RegExp ) ) {
 			return obj;
 		} else if ( obj instanceof Array ) {

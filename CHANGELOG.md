@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.2
+- Specifying default value of parameter for `utility.clone()`
+- Specifying default value of parameter for `array.clone()`
+
 ## 1.1.1
 - Fixing a reference error for `Buffer`, due to transpiling & not using a clean env for testing
 
