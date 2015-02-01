@@ -563,7 +563,7 @@ let array = {
 	},
 
 	/**
-	 * Iterates an Array using an Iterator, requires native Generators
+	 * Iterates an Array using an Iterator
 	 *
 	 * @method iterate
 	 * @memberOf array
@@ -583,7 +583,7 @@ let array = {
 	},
 
 	/**
-	 * Creates an Array generator to iterate the indices, requires native Generators
+	 * Creates an Array generator to iterate the indices
 	 * 
 	 * @method iterator
 	 * @memberOf array
@@ -591,21 +591,17 @@ let array = {
 	 * @return {Function}  Generator
 	 */
 	iterator: ( obj ) => {
-		let nth = obj.length;
 		let i = -1;
-		let yields = [];
 
-		yields.push( "return function *fn ( arg ) {" );
-
-		while ( ++i < nth ) {
-			yields.push("yield arg[ " + i + " ];");
+		return {
+			next () {
+				if ( ++i < obj.length ) {
+					return { done: false, value: obj[ i ] };
+				} else {
+					return { done: true };
+				}
+			}
 		}
-
-		yields.pop();
-		yields.push( "return arg[ " + ( nth - 1 ) + " ];" );
-		yields.push( "}" );
-
-		return Function( yields.join( "\n" ) )()( obj );
 	},
 
 	/**
