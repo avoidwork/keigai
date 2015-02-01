@@ -12,5 +12,6 @@
 .gitignore
 .jshintrc
 .travis.yml
+benchmark.js
 docstrap.json
 Gruntfile.js

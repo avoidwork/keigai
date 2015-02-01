@@ -3,6 +3,7 @@
 ## 1.1.4
 - Created `array.iterate()` to iterate an `Array` using an `Iterator`
 - Created `array.iterator()` to return an `Iterator` for an `Array`
+- Added `benchmark.js`
 
 ## 1.1.3
 - Moved more `variables` to `constants`

@@ -165,7 +165,7 @@ let array = {
 	},
 
 	/**
-	 * Creates a new Array of the result of `fn` executed against every index of `obj`
+	 * Facade of `Array.map()`
 	 *
 	 * @method collect
 	 * @memberOf array
@@ -176,13 +176,7 @@ let array = {
 	 * let results = keigai.util.array.collect( [...], function ( ... ) { ... } );
 	 */
 	collect: ( obj, fn ) => {
-		let result = [];
-
-		array.each( obj, ( i ) => {
-			result.push( fn( i ) );
-		} );
-
-		return result;
+		return obj.map( fn );
 	},
 
 	/**
@@ -576,7 +570,10 @@ let array = {
 
 		do {
 			item = itr.next();
-			fn( item.value );
+
+			if ( !item.done ) {
+				fn( item.value );
+			}
 		} while ( !item.done )
 
 		return obj;
