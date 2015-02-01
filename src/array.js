@@ -563,6 +563,52 @@ let array = {
 	},
 
 	/**
+	 * Iterates an Array using an Iterator, requires native Generators
+	 *
+	 * @method iterate
+	 * @memberOf array
+	 * @param  {Array} obj Array to iterate
+	 * @return {Array}     Array to iterate
+	 */
+	iterate: ( obj, fn ) => {
+		let itr = array.iterator( obj );
+		let item;
+
+		do {
+			item = itr.next();
+			fn( item.value );
+		} while ( !item.done )
+
+		return obj;
+	},
+
+	/**
+	 * Creates an Array generator to iterate the indices, requires native Generators
+	 * 
+	 * @method iterator
+	 * @memberOf array
+	 * @param  {Array} obj Array to iterate
+	 * @return {Function}  Generator
+	 */
+	iterator: ( obj ) => {
+		let nth = obj.length;
+		let i = -1;
+		let yields = [];
+
+		yields.push( "return function *fn ( arg ) {" );
+
+		while ( ++i < nth ) {
+			yields.push("yield arg[ " + i + " ];");
+		}
+
+		yields.pop();
+		yields.push( "return arg[ " + ( nth - 1 ) + " ];" );
+		yields.push( "}" );
+
+		return Function( yields.join( "\n" ) )()( obj );
+	},
+
+	/**
 	 * Keeps every element of `obj` for which `fn` evaluates to true
 	 *
 	 * @method keepIf
@@ -601,7 +647,7 @@ let array = {
 	 * keigai.util.array.keys( {abc: true, xyz: false} ); // ["abc", "xyz"]
 	 */
 	keys: ( obj ) => {
-		return Object.keys( obj );
+		return Array.keys( obj );
 	},
 
 	/**

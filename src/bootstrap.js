@@ -9,9 +9,9 @@ let bootstrap = () => {
 	let defineProperty = Object.defineProperty !== undefined;
 	let target;
 
-	Array.from = Array.from || ( arg ) => {
-		return [].slice.call( arg );
-	};
+	// ES6 Array shims
+	Array.from = Array.from || ( arg ) => { return [].slice.call( arg ); };
+	Array.keys = Array.keys || ( arg ) => { return Object.keys( arg ); };
 
 	// Describing the Client
 	if ( !server ) {
