@@ -6,6 +6,7 @@
 - Fixing build process for nodejs 0.12.x, & `6to5` renaming to `babel`
 - Changing all "safe" equality operators to identity operators for speed (spec = less ops)
 - Fixing transpiler based errors by removing `this` references regardless of ensured scope (spec)
+- Fixing prototype of `KXHR` such that `Deferred` methods are decorated
 
 ## 1.1.4
 - Created `array.iterate()` to iterate an `Array` using an `Iterator`

@@ -8,9 +8,40 @@
  */
 class KXMLHttpRequest extends Base {
 	constructor ( xhr ) {
+		let self = this;
+
 		this.observer = observable.factory();
 		this.defer = deferred.factory();
 		this.xhr = xhr;
+
+		// Hooking observer for standard events
+		array.each( EVENTS, function ( i ) {
+			self.hook( self.xhr, i );
+		} );
+	}
+
+	always ( arg ) {
+		return this.defer.always( arg );
+	}
+
+	done ( arg ) {
+		return this.defer.done( arg );
+	}
+
+	fail ( arg ) {
+		return this.defer.fail( arg );
+	}
+
+	reject ( arg ) {
+		return this.defer.reject( arg );
+	}
+
+	resolve ( arg ) {
+		return this.defer.resolve( arg );
+	}
+
+	then ( success, failure ) {
+		return this.defer.then( success, failure );
 	}
 }
 

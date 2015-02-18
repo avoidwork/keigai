@@ -310,6 +310,7 @@ exports["setUri"] = {
 			test.equal(self.store.records[0].key, args[0].key, "Should be a match");
 			test.done();
 		}, function (e) {
+			console.log(e.stack);
 			test.done();
 		});
 	}

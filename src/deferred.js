@@ -68,6 +68,24 @@ class Deferred {
 	}
 
 	/**
+	 * Catches errors from the Promise
+	 *
+	 * @method  catch
+	 * @memberOf keigai.Deferred
+	 * @param  {Function} arg Function to execute
+	 * @return {Object} {@link keigai.Deferred}
+	 * @example
+	 * let deferred = keigai.util.defer();
+	 *
+	 * deferred.catch( function ( err ) {
+	 *   ...
+	 * } );
+	 */
+	catch ( arg ) {
+		return this.promise.catch( arg );
+	}
+
+	/**
 	 * Registers a function to execute after Promise is resolved
 	 *
 	 * @method done
