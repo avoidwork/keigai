@@ -455,7 +455,7 @@ let client = {
 					payload = xml.decode( payload );
 				}
 
-				if ( typeof payload == "string" && regex.is_xml.test( payload ) ) {
+				if ( typeof payload === "string" && regex.is_xml.test( payload ) ) {
 					contentType = "application/xml";
 				}
 
@@ -479,7 +479,7 @@ let client = {
 					headers = {};
 				}
 
-				if ( typeof cached == "object" && cached.headers.hasOwnProperty( "etag" ) ) {
+				if ( typeof cached === "object" && cached.headers.hasOwnProperty( "etag" ) ) {
 					headers.etag = cached.headers.etag;
 				}
 
@@ -500,7 +500,7 @@ let client = {
 				} );
 
 				// Cross Origin Resource Sharing ( CORS )
-				if ( typeof kxhr.xhr.withCredentials == "boolean" && headers !== null && typeof headers.withCredentials == "boolean" ) {
+				if ( typeof kxhr.xhr.withCredentials === "boolean" && headers !== null && typeof headers.withCredentials === "boolean" ) {
 					kxhr.xhr.withCredentials = headers.withCredentials;
 				}
 			}

@@ -62,7 +62,7 @@ let element = {
 				obj.setAttributeNS( obj.namespaceURI, key, value );
 			}
 		} else {
-			if ( typeof value == "string" ) {
+			if ( typeof value === "string" ) {
 				value = string.trim( value );
 			}
 
@@ -112,7 +112,7 @@ let element = {
 	 * keigai.util.element.clear( document.querySelector( "#something" ) );
 	 */
 	clear: ( obj ) => {
-		if ( typeof obj.reset == "function" ) {
+		if ( typeof obj.reset === "function" ) {
 			obj.reset();
 		} else if ( obj.value !== undefined ) {
 			element.update( obj, { innerHTML: "", value: "" } );
@@ -281,7 +281,7 @@ let element = {
 	 * keigai.util.element.disable( document.querySelector( "#something" ) );
 	 */
 	disable: ( obj ) => {
-		if ( typeof obj.disabled == "boolean" && !obj.disabled ) {
+		if ( typeof obj.disabled === "boolean" && !obj.disabled ) {
 			obj.disabled = true;
 		}
 
@@ -335,7 +335,7 @@ let element = {
 	 * keigai.util.element.enable( document.querySelector( "#something" ) );
 	 */
 	enable: ( obj ) => {
-		if ( typeof obj.disabled == "boolean" && obj.disabled ) {
+		if ( typeof obj.disabled === "boolean" && obj.disabled ) {
 			obj.disabled = false;
 		}
 
@@ -832,7 +832,7 @@ let element = {
 			if ( output !== undefined ) {
 				output = utility.coerce( output );
 
-				if ( typeof output == "string" ) {
+				if ( typeof output === "string" ) {
 					output = string.trim( output );
 				}
 			} else {

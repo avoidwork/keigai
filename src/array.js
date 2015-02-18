@@ -406,7 +406,7 @@ let array = {
 	 * myArray[0]; // "aa"
 	 */
 	fill: ( obj, arg, start, offset ) => {
-		let fn = typeof arg == "function";
+		let fn = typeof arg === "function";
 		let l = obj.length;
 		let i = !isNaN( start ) ? start : 0;
 		let nth = !isNaN( offset ) ? i + offset : l - 1;
@@ -1202,7 +1202,7 @@ let array = {
 		let types = { a: typeof a, b: typeof b };
 		let c, d, result;
 
-		if ( types.a == "number" && types.b == "number" ) {
+		if ( types.a === "number" && types.b === "number" ) {
 			result = a - b;
 		} else {
 			c = a.toString();
@@ -1212,9 +1212,9 @@ let array = {
 				result = -1;
 			} else if ( c > d ) {
 				result = 1;
-			} else if ( types.a == types.b ) {
+			} else if ( types.a === types.b ) {
 				result = 0;
-			} else if ( types.a == "boolean" ) {
+			} else if ( types.a === "boolean" ) {
 				result = -1;
 			} else {
 				result = 1;
@@ -1452,12 +1452,12 @@ let array = {
 
 		// Preparing args
 		if ( !( args instanceof Array ) ) {
-			args = typeof args == "object" ? array.cast( args ) : [ args ];
+			args = typeof args === "object" ? array.cast( args ) : [ args ];
 		}
 
 		array.each( args, ( i, idx ) => {
 			if ( !( i instanceof Array ) ) {
-				this[ idx ] = [ i ];
+				args[ idx ] = [ i ];
 			}
 		} );
 

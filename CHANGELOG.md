@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.1.5
+- Fixing IE 9 `classList` shim
+- Updating dependencies
+- Fixing build process for nodejs 0.12.x, & `6to5` renaming to `babel`
+- Changing all "safe" equality operators to identity operators for speed (spec = less ops)
+- Fixing transpiler based errors by removing `this` references regardless of ensured scope (spec)
+
 ## 1.1.4
 - Created `array.iterate()` to iterate an `Array` using an `Iterator`
 - Created `array.iterator()` to return an `Iterator` for an `Array`

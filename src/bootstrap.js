@@ -27,7 +27,7 @@ let bootstrap = () => {
 
 			class ClassList extends Array {
 				constructor ( obj ) {
-					let classes = string.explode( obj.className, " " );
+					let classes = string.explode( obj.className || "", " " );
 					let self = this;
 
 					array.each( classes, ( i ) => {
@@ -63,28 +63,32 @@ let bootstrap = () => {
 				}
 			}
 
-			if ( defineProperty ) {
-				Object.defineProperty( target, "classList", {
-					get: () => { return new ClassList( this ); },
-					enumerable: true,
-					configurable: true
-				} );
-			} else if ( Object.prototype.__defineGetter__ ) {
-				target.__defineGetter__( "classList", () => { return new ClassList( this ); } );
-			} else {
-				throw new Error( "Could not create classList shim" );
+			if ( !"classList" in target ) {
+				if ( defineProperty ) {
+					Object.defineProperty( target, "classList", {
+						get: () => { return new ClassList( this ); },
+						enumerable: true,
+						configurable: true
+					} );
+				} else if ( Object.prototype.__defineGetter__ ) {
+					target.__defineGetter__( "classList", () => { return new ClassList( this ); } );
+				} else {
+					throw new Error( "Could not create classList shim" );
+				}
 			}
 
-			if ( defineProperty ) {
-				Object.defineProperty( Element, "getElementsByClassName", {
-					get: ( arg ) => { return this.querySelectorAll( "." + arg ); },
-					enumerable: true,
-					configurable: true
-				} );
-			} else if ( Object.prototype.__defineGetter__ ) {
-				target.__defineGetter__( "getElementsByClassName", ( arg ) => { return this.querySelectorAll( "." + arg ); } );
-			} else {
-				throw new Error( "Could not create getElementsByClassName shim" );
+			if ( !"getElementsByClassName" in Element ) {
+				if ( defineProperty ) {
+					Object.defineProperty( Element, "getElementsByClassName", {
+						get: ( arg ) => { return this.querySelectorAll( "." + arg ); },
+						enumerable: true,
+						configurable: true
+					} );
+				} else if ( Object.prototype.__defineGetter__ ) {
+					target.__defineGetter__( "getElementsByClassName", ( arg ) => { return this.querySelectorAll( "." + arg ); } );
+				} else {
+					throw new Error( "Could not create getElementsByClassName shim" );
+				}
 			}
 		}
 	} else {

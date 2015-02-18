@@ -194,7 +194,7 @@ let utility = {
 
 				// Decorating Functions that would be lost with JSON encoding/decoding
 				utility.iterate( obj, ( v, k ) => {
-					if ( typeof v == "function" ) {
+					if ( typeof v === "function" ) {
 						clone[ k ] = v;
 					}
 				} );
@@ -452,7 +452,7 @@ let utility = {
 	genId: ( obj, dom=false ) => {
 		let id;
 
-		if ( obj && ( obj.id || ( obj instanceof Array ) || ( typeof obj == "string" || obj instanceof String ) ) ) {
+		if ( obj && ( obj.id || ( obj instanceof Array ) || ( typeof obj === "string" || obj instanceof String ) ) ) {
 			return obj;
 		}
 
@@ -465,7 +465,7 @@ let utility = {
 			id = utility.domId( utility.uuid( true ) );
 		}
 
-		if ( obj && typeof obj == "object" ) {
+		if ( obj && typeof obj === "object" ) {
 			obj.id = id;
 
 			return obj;
@@ -675,7 +675,7 @@ let utility = {
 	 * keigai.util.prevent( Event );
 	 */
 	prevent: ( ev ) => {
-		if ( typeof ev.preventDefault == "function" ) {
+		if ( typeof ev.preventDefault === "function" ) {
 			ev.preventDefault();
 		}
 
@@ -865,7 +865,7 @@ let utility = {
 	 * keigai.util.stop( Event );
 	 */
 	stop: ( ev ) => {
-		if ( typeof ev.stopPropagation == "function" ) {
+		if ( typeof ev.stopPropagation === "function" ) {
 			ev.stopPropagation();
 		}
 

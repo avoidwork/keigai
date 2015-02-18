@@ -641,7 +641,7 @@ class DataStore extends Base {
 			defer.reject( new Error( label.invalidArguments ) );
 		} else {
 			utility.iterate( where, ( v, k ) => {
-				if ( typeof v == "function" ) {
+				if ( typeof v === "function" ) {
 					this[ k ] = v.toString();
 					functions.push( k );
 				}
@@ -775,7 +775,7 @@ class DataStore extends Base {
 			return ndata;
 		}
 
-		if ( typeof data == "string" ) {
+		if ( typeof data === "string" ) {
 			if ( data.indexOf( "//" ) === -1 ) {
 				// Relative path to store, i.e. a child
 				if ( data.charAt( 0 ) !== "/" ) {
@@ -837,7 +837,7 @@ class DataStore extends Base {
 
 					self.setComplete( record, key, change, batch, overwrite, defer );
 				}, ( e ) => {
-					if ( method == "PATCH" ) {
+					if ( method === "PATCH" ) {
 						method = "PUT";
 						data = utility.clone( odata, true );
 
@@ -1063,6 +1063,7 @@ class DataStore extends Base {
 	 */
 	setUri ( arg ) {
 		let defer = deferred.factory();
+		let self = this;
 		let parsed;
 
 		if ( arg !== null && string.isEmpty( arg ) ) {
@@ -1080,8 +1081,8 @@ class DataStore extends Base {
 			}
 
 			this.on( "expire", () => {
-				this.sync();
-			}, "resync", this );
+				self.sync();
+			}, "resync" );
 
 			cache.expire( this.uri );
 
@@ -1632,7 +1633,7 @@ let store = {
 			utility.merge( obj, args );
 		}
 
-		if ( recs !== null && typeof recs == "object" ) {
+		if ( recs !== null && typeof recs === "object" ) {
 			obj.batch( "set", recs );
 		}
 

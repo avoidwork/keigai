@@ -15,7 +15,7 @@ let XMLHttpRequest = global.XMLHttpRequest || null;
 let WeakMap = global.WeakMap || null;
 let btoa = global.btoa || undefined;
 let webWorker = typeof Blob != "undefined" && typeof Worker != "undefined";
-let external, format, http, https, lib, mongodb, url, RENDER, TIME, WORKER;
+let external, format, http, https, mongodb, url, RENDER, TIME, WORKER;
 
 if ( server ) {
 	url = require( "url" );
@@ -25,15 +25,15 @@ if ( server ) {
 	format = require( "util" ).format;
 	Buffer = require( "buffer" ).Buffer;
 
-	if ( typeof Promise == "undefined" ) {
+	if ( typeof Promise === "undefined" ) {
 		Promise = require( "es6-promise" ).Promise;
 	}
 
-	if ( typeof localStorage == "undefined" ) {
+	if ( typeof localStorage === "undefined" ) {
 		localStorage = require( "localStorage" );
 	}
 
-	if ( typeof btoa == "undefined" ) {
+	if ( typeof btoa === "undefined" ) {
 		btoa = require( "btoa" );
 	}
 }

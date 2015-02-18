@@ -219,10 +219,10 @@ class DataList extends Base {
 
 		let self = this;
 		let el = this.element;
-		let template = ( typeof this.template == "object" );
+		let template = ( typeof this.template === "object" );
 		let filter = this.filter !== null;
 		let items = [];
-		let callback = ( typeof this.callback == "function" );
+		let callback = ( typeof this.callback === "function" );
 		let reg = new RegExp();
 		let registry = []; // keeps track of records in the list ( for filtering )
 		let range = [];
@@ -616,7 +616,7 @@ let list = {
 			}
 		}, "pagination" );
 
-		if ( typeof MutationObserver == "function" ) {
+		if ( typeof MutationObserver === "function" ) {
 			obj.mutation = new MutationObserver( ( arg ) => {
 				obj.dispatch( "change", arg );
 			} );

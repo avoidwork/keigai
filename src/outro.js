@@ -51,11 +51,11 @@ return {
 // Node, AMD & window supported
 if ( typeof exports != "undefined" ) {
 	module.exports = lib;
-} else if ( typeof define == "function" ) {
+} else if ( typeof define === "function" ) {
 	define( () => {
 		return lib;
 	} );
 } else {
 	global.keigai = lib;
 }
-}( this );
+}( typeof global != "undefined" ? global : window );

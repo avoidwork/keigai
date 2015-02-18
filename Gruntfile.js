@@ -47,7 +47,7 @@ module.exports = function (grunt) {
 				dest : "lib/<%= pkg.name %>.es6.js"
 			}
 		},
-		"6to5": {
+		babel: {
 			options: {
 				sourceMap: false
 			},
@@ -126,11 +126,11 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-contrib-watch");
 	grunt.loadNpmTasks("grunt-contrib-sass");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
-	grunt.loadNpmTasks("grunt-6to5");
+	grunt.loadNpmTasks("grunt-babel");
 
 	// aliases
 	grunt.registerTask("test", ["nodeunit"]);
-	grunt.registerTask("build", ["concat", "sed", "6to5"]);
+	grunt.registerTask("build", ["concat", "sed", "babel"]);
 	grunt.registerTask("default", ["build", "test", "sass", "uglify"]);
 	grunt.registerTask("package", ["default", "jsdoc"]);
 };

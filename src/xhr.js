@@ -31,7 +31,7 @@ let xhr = () => {
 	let dispatch = ( obj, arg ) => {
 		let fn = "on" + arg;
 
-		if ( typeof obj[ fn ] == "function" ) {
+		if ( typeof obj[ fn ] === "function" ) {
 			obj[ fn ]();
 		}
 
@@ -297,9 +297,9 @@ let xhr = () => {
 			if ( regex.put_post.test( this._params.method ) ) {
 				if ( data === null ) {
 					this._headers[ "content-length" ] = 0;
-				} else if ( typeof data == "string" ) {
+				} else if ( typeof data === "string" ) {
 					this._headers[ "content-length" ] = Buffer.byteLength( data );
-				} else if ( data instanceof Buffer || typeof data.toString == "function" ) {
+				} else if ( data instanceof Buffer || typeof data.toString === "function" ) {
 					data = data.toString();
 					this._headers[ "content-length" ] = Buffer.byteLength( data );
 				} else {
