@@ -17,79 +17,8 @@ let bootstrap = () => {
 	if ( !server ) {
 		client.version = client.version();
 
-		if ( client.ie ) {
-			// IE8 and older is not supported
-			if ( client.version < 9 ) {
-				throw new Error( label.upgrade );
-			}
-
-			target = ( global.HTMLElement || global.Element ).prototype;
-
-			class ClassList extends Array {
-				constructor ( obj ) {
-					let classes = string.explode( obj.className || "", " " );
-					let self = this;
-
-					array.each( classes, ( i ) => {
-						self.push( i );
-					} );
-				}
-
-				add ( arg ) {
-					if ( !array.contains( this, arg ) ) {
-						this.push( arg );
-						this.updateClassName();
-					}
-				}
-
-				contains ( arg ) {
-					return array.contains( this, arg );
-				}
-
-				remove ( arg ) {
-					if ( array.contains( this, arg ) ) {
-						array.remove( this, arg );
-						this.updateClassName();
-					}
-				}
-
-				toggle ( arg ) {
-					array[ array.contains( this, arg ) ? "remove" : "add" ]( this, arg );
-					this.updateClassName();
-				}
-
-				updateClassName () {
-						this.className = this.join( " " );
-				}
-			}
-
-			if ( !"classList" in target ) {
-				if ( defineProperty ) {
-					Object.defineProperty( target, "classList", {
-						get: () => { return new ClassList( this ); },
-						enumerable: true,
-						configurable: true
-					} );
-				} else if ( Object.prototype.__defineGetter__ ) {
-					target.__defineGetter__( "classList", () => { return new ClassList( this ); } );
-				} else {
-					throw new Error( "Could not create classList shim" );
-				}
-			}
-
-			if ( !"getElementsByClassName" in Element ) {
-				if ( defineProperty ) {
-					Object.defineProperty( Element, "getElementsByClassName", {
-						get: ( arg ) => { return this.querySelectorAll( "." + arg ); },
-						enumerable: true,
-						configurable: true
-					} );
-				} else if ( Object.prototype.__defineGetter__ ) {
-					target.__defineGetter__( "getElementsByClassName", ( arg ) => { return this.querySelectorAll( "." + arg ); } );
-				} else {
-					throw new Error( "Could not create getElementsByClassName shim" );
-				}
-			}
+		if ( client.ie && client.version < 10 ) {
+			throw new Error( label.upgrade );
 		}
 	} else {
 		// XHR shim

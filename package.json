@@ -43,8 +43,8 @@
     "grunt-contrib-watch": "~0.6.1",
     "grunt-contrib-sass": "~0.9.2",
     "grunt-contrib-uglify": "~0.7.0",
-    "grunt-jsdoc": "~0.5.8",
-    "ink-docstrap" : "~0.5.2",
+    "grunt-jsdoc": "~0.5.1",
+    "ink-docstrap" : "~0.4.0",
     "tenso": "~1.2.1",
     "precise": "~1.0.1"
   },

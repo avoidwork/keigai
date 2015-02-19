@@ -1,11 +1,14 @@
 var keigai = require("../lib/keigai"),
     clone  = keigai.util.clone,
-	store  = keigai.store,
+    store  = keigai.store,
     tenso  = require( "tenso" ),
     data   = require("./store.json" ),
     server;
 
 server = tenso( {
+	security: {
+		csrf: false
+	},
 	logs: {
 		level: "warn"
 	},

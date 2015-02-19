@@ -1,12 +1,13 @@
 # Change Log
 
 ## 1.1.5
-- Fixing IE 9 `classList` shim
+- Removing support for IE9, as IE11 has significant market share
 - Updating dependencies
 - Fixing build process for nodejs 0.12.x, & `6to5` renaming to `babel`
 - Changing all "safe" equality operators to identity operators for speed (spec = less ops)
 - Fixing transpiler based errors by removing `this` references regardless of ensured scope (spec)
 - Fixing prototype of `KXHR` such that `Deferred` methods are decorated
+- Updating wired `DataStore` tests, such that they're stateless (avoids CSRF juggling)
 
 ## 1.1.4
 - Created `array.iterate()` to iterate an `Array` using an `Iterator`
