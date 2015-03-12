@@ -36,6 +36,22 @@ exports["coerce"] = {
 	}
 };
 
+exports["equal"] = {
+	setUp: function (done) {
+		this.a = {a: true, b: false};
+		this.b = {a: true, b: false};
+		this.c = {a: true, b: true};
+		done();
+	},
+	test: function (test) {
+		test.expect(3);
+		test.equal($.equal(this.a, this.b), true, "Should be `true`");
+		test.equal($.equal(this.a, this.c), false, "Should be `false`");
+		test.equal($.equal(this.b, this.c), false, "Should be `false`");
+		test.done();
+	}
+};
+
 exports["extend"] = {
 	setUp: function (done) {
 		this.obj = {method: function () { void 0; }};
