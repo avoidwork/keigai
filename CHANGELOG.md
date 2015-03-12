@@ -6,6 +6,10 @@
 - Refactoring `client.request()` to utilize `cache` better
 - Fixing `client.headers()` parsing of `Allow` header
 - Fixing `client.allows()` by sending correct parameters to `client.permissions()`, & enabling for all requests
+- Refactored all `array.each()` statements to `array.iterate()`
+- Fixing `array.iterate()` substitution by adding second parameter to arguments
+- Caching array length in `array.iterator()`
+- Removing unneeded assignments in `array.keepIf()`
 
 ## 1.1.5
 - Removing support for IE9, as IE11 has significant market share
