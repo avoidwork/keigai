@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.2.0
+- Created `utility.equal(a, b)` which returns a `Boolean`
+- Caching request headers with response for better garbage collection, updating multiple methods
+- Refactoring `client.request()` to utilize `cache` better
+
 ## 1.1.5
 - Removing support for IE9, as IE11 has significant market share
 - Updating dependencies

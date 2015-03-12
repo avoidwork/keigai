@@ -107,19 +107,20 @@ let client = {
 	 *
 	 * @method allows
 	 * @memberOf client
-	 * @param  {String} uri  URI to query
-	 * @param  {String} verb HTTP verb
-	 * @return {Boolean}     `true` if the verb is allowed, undefined if unknown
+	 * @param  {String} uri     URI to query
+	 * @param  {String} verb    HTTP verb
+	 * @param  {Object} headers [Optional] Request headers
+	 * @return {Boolean}        `true` if the verb is allowed, undefined if unknown
 	 * @private
 	 */
-	allows: ( uri, verb ) => {
+	allows: ( uri, verb, headers ) => {
 		uri = utility.parse( uri ).href;
 		verb = verb.toLowerCase();
 
 		let result = false;
 		let bit = 0;
 
-		if ( !cache.get( uri, false ) ) {
+		if ( !cache.get( uri, false, headers ) ) {
 			result = undefined;
 		} else {
 			if ( regex.del.test( verb ) ) {
@@ -132,7 +133,7 @@ let client = {
 				bit = 8;
 			}
 
-			result = Boolean( client.permissions( uri, verb ).bit & bit );
+			result = Boolean( client.permissions( uri, verb, headers ).bit & bit );
 		}
 
 		return result;
@@ -191,13 +192,14 @@ let client = {
 	 * @return {Object}      Cached URI representation
 	 * @private
 	 */
-	headers: ( xhr, uri, type ) => {
+	headers: ( xhr, uri, type, request_headers ) => {
 		let headers = string.trim( xhr.getAllResponseHeaders() ).split( "\n" );
 		let items = {};
 		let o = {};
 		let allow = null;
 		let expires = new Date();
 		let cors = client.cors( uri );
+		let cachable = true;
 
 		array.each( headers, ( i ) => {
 			let header = i.split( ": " );
@@ -218,19 +220,22 @@ let client = {
 		} else if ( items.expires ) {
 			expires = new Date( items.expires ).getTime();
 		} else {
+			cachable = false;
 			expires = expires.getTime();
 		}
 
+		o.cachable = cachable;
 		o.expires = expires;
 		o.headers = items;
 		o.timestamp = new Date();
 		o.permission = client.bit( allow !== null ? string.explode( allow ) : [ type ] );
 
-		if ( type === "get" ) {
+		if ( type === "get" && cachable ) {
 			cache.set( uri, "expires", o.expires );
 			cache.set( uri, "headers", o.headers );
 			cache.set( uri, "timestamp", o.timestamp );
 			cache.set( uri, "permission", o.permission );
+			cache.set( uri, "request_headers", request_headers );
 		}
 
 		return o;
@@ -275,12 +280,13 @@ let client = {
 	 *
 	 * @method permissions
 	 * @memberOf client
-	 * @param  {String} uri URI to query
-	 * @return {Object}     Contains an Array of available commands, the permission bit and a map
+	 * @param  {String} uri     URI to query
+	 * @param  {Object} headers [Optional] Request headers
+	 * @return {Object}         Contains an Array of available commands, the permission bit and a map
 	 * @private
 	 */
-	permissions: ( uri ) => {
-		let cached = cache.get( uri, false );
+	permissions: ( uri, headers ) => {
+		let cached = cache.get( uri, false, headers );
 		let bit = !cached ? 0 : cached.permission;
 		let result = { allows: [], bit: bit, map: { partial: 8, read: 4, write: 2, "delete": 1, unknown: 0 } };
 
@@ -399,7 +405,7 @@ let client = {
 		let cors = client.cors( uri );
 		let kxhr = client.kxhr( !client.ie || ( !cors || client.version > 9 ) ? new XMLHttpRequest() : new XDomainRequest() );
 		let payload = ( regex.put_post.test( type ) || regex.patch.test( type ) ) && args ? args : null;
-		let cached = type === "get" ? cache.get( uri ) : false;
+		let cached = type === "get" ? cache.get( uri, false, headers ) : false;
 		let contentType = null;
 		let doc = client.doc;
 		let ab = client.ab;
@@ -421,7 +427,7 @@ let client = {
 			}
 		} );
 
-		if ( !cors && !regex.get_headers.test( type ) && client.allows( uri, type ) === false ) {
+		if ( !cors && !regex.get_headers.test( type ) && client.allows( uri, type, headers ) === false ) {
 			kxhr.dispatch( "beforeXHR", kxhr.xhr, null );
 			kxhr.xhr.status = 405;
 			kxhr.reject( new Error( label.methodNotAllowed ) );
@@ -537,7 +543,7 @@ let client = {
 						case 204:
 						case 205:
 						case 206:
-							o = client.headers( kxhr.xhr, uri, type );
+							o = client.headers( kxhr.xhr, uri, type, headers );
 
 							if ( type === "head" ) {
 								return kxhr.resolve( o.headers );
@@ -557,7 +563,7 @@ let client = {
 									}
 								}
 
-								if ( type === "get" && shared ) {
+								if ( type === "get" && shared && o.cachable ) {
 									cache.set( uri, "response", ( o.response = utility.clone( r, true ) ) );
 								} else {
 									cache.expire( uri, true );
@@ -579,6 +585,10 @@ let client = {
 									} else {
 										redirect = string.trim( o.headers.Location || r );
 										client.request( redirect ).then( ( arg ) => {
+											if ( type === "get" && shared && o.cachable ) {
+												cache.set( uri, "response", arg );
+											}
+
 											self.resolve( arg );
 										}, ( e ) => {
 											self.reject( e );

@@ -48,12 +48,12 @@ let cache = {
 	 *
 	 * @method get
 	 * @memberOf cache
-	 * @param  {String}  uri    URI/Identifier for the resource to retrieve from cache
-	 * @param  {Boolean} expire [Optional] If 'false' the URI will not expire
-	 * @param  {Boolean} silent [Optional] If 'true', the event will not fire
-	 * @return {Mixed}          URI Object {headers, response} or False
+	 * @param  {String}  uri     URI/Identifier for the resource to retrieve from cache
+	 * @param  {Boolean} expire  [Optional] If 'false' the URI will not expire
+	 * @param  {Object}  headers [Optional] Request headers
+	 * @return {Mixed}           URI Object {headers, response} or False
 	 */
-	get: ( uri, expire ) => {
+	get: ( uri, expire, headers ) => {
 		uri = utility.parse( uri ).href;
 		let item = cache.lru.get( uri );
 
@@ -61,7 +61,7 @@ let cache = {
 			return false;
 		}
 
-		if ( expire !== false && cache.expired( uri ) ) {
+		if ( ( expire !== false && cache.expired( uri ) ) || !utility.equal( item.request_headers, headers ) ) {
 			cache.expire( uri );
 
 			return false;

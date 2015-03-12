@@ -19,6 +19,7 @@ return {
 		defer: deferred.factory,
 		delay: utility.defer,
 		element: element,
+		equal: utility.equal,
 		extend: utility.extend,
 		genId: utility.genId,
 		iterate: utility.iterate,

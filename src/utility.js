@@ -388,6 +388,20 @@ let utility = {
 	},
 
 	/**
+	 * Equality verification
+	 *
+	 * @method equal
+	 * @memberOf utility
+	 * @param  {Mixed}   a Argument to compare
+	 * @param  {Array}   b Argument to compare
+	 * @return {Boolean}   `true` if equal
+	 * @private
+	 */
+	equal: ( a, b ) => {
+		return json.encode( a, true ) === json.encode( b, true );
+	},
+
+	/**
 	 * Error handling, with history in `error.log`
 	 *
 	 * @method error
