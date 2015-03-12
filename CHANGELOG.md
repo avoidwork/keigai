@@ -4,6 +4,8 @@
 - Created `utility.equal(a, b)` which returns a `Boolean`
 - Caching request headers with response for better garbage collection, updating multiple methods
 - Refactoring `client.request()` to utilize `cache` better
+- Fixing `client.headers()` parsing of `Allow` header
+- Fixing `client.allows()` by sending correct parameters to `client.permissions()`, & enabling for all requests
 
 ## 1.1.5
 - Removing support for IE9, as IE11 has significant market share

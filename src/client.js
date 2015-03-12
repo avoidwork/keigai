@@ -133,7 +133,7 @@ let client = {
 				bit = 8;
 			}
 
-			result = Boolean( client.permissions( uri, verb, headers ).bit & bit );
+			result = Boolean( client.permissions( uri, headers ).bit & bit );
 		}
 
 		return result;
@@ -429,7 +429,7 @@ let client = {
 			}
 		} );
 
-		if ( !cors && !regex.get_headers.test( type ) && client.allows( uri, type, headers ) === false ) {
+		if ( client.allows( uri, type, headers ) === false ) {
 			kxhr.dispatch( "beforeXHR", kxhr.xhr, null );
 			kxhr.xhr.status = 405;
 			kxhr.reject( new Error( label.methodNotAllowed ) );
