@@ -67,7 +67,7 @@ let utility = {
 			} else {
 				result = [];
 
-				array.each( string.explode( arg ), ( query ) => {
+				array.iterate( string.explode( arg ), ( query ) => {
 					let obj = utility.dom( query );
 
 					if ( obj instanceof Array ) {
@@ -176,7 +176,7 @@ let utility = {
 		} else if ( obj instanceof Array ) {
 			result = [];
 
-			array.each( obj, ( i, idx ) => {
+			array.iterate( obj, ( i, idx ) => {
 				result[ idx ] = utility.clone( i );
 			} );
 
@@ -503,7 +503,7 @@ let utility = {
 	 * } );
 	 */
 	iterate: ( obj, fn ) => {
-		array.each( Object.keys( obj ), ( i ) => {
+		array.iterate( Object.keys( obj ), ( i ) => {
 			return fn.call( obj, obj[ i ], i );
 		} );
 
@@ -712,7 +712,7 @@ let utility = {
 
 		if ( result !== null && !string.isEmpty( result ) ) {
 			result = result.split( "&" );
-			array.each( result, ( prop ) => {
+			array.iterate( result, ( prop ) => {
 				let item = prop.split( "=" );
 
 				if ( string.isEmpty( item[ 0 ] ) ) {
@@ -942,7 +942,7 @@ let utility = {
 	walk: ( obj, arg ) => {
 		let output = obj;
 
-		array.each( arg.replace( /\]$/, "" ).replace( /\]/g, "." ).replace( /\.\./g, "." ).split( /\.|\[/ ), ( i ) => {
+		array.iterate( arg.replace( /\]$/, "" ).replace( /\]/g, "." ).replace( /\.\./g, "." ).split( /\.|\[/ ), ( i ) => {
 			if ( output[ i ] === undefined || output[ i ] === null ) {
 				output = undefined;
 				return false;

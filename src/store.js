@@ -79,11 +79,11 @@ class DataStore extends Base {
 			} else {
 				// Batch deletion will create a sparse array, which will be compacted before re-indexing
 				if ( type === "del" ) {
-					array.each( data, ( i ) => {
+					array.iterate( data, ( i ) => {
 						deferreds.push( self.del( i, false, true ) );
 					} );
 				} else {
-					array.each( data, ( i ) => {
+					array.iterate( data, ( i ) => {
 						deferreds.push( self.set( null, i, true ) );
 					} );
 				}
@@ -98,7 +98,7 @@ class DataStore extends Base {
 					}
 
 					// Forcing a clear of views to deal with async nature of workers & staggered loading
-					array.each( self.lists, ( i ) => {
+					array.iterate( self.lists, ( i ) => {
 						i.refresh( true );
 					} );
 
@@ -166,7 +166,7 @@ class DataStore extends Base {
 				this.dispatch( "beforeClear" );
 			}
 
-			array.each( this.lists, ( i ) => {
+			array.iterate( this.lists, ( i ) => {
 				if ( i ) {
 					i.teardown( true );
 				}
@@ -202,7 +202,7 @@ class DataStore extends Base {
 			this.total = 0;
 			this.views = {};
 
-			array.each( this.lists, ( i ) => {
+			array.iterate( this.lists, ( i ) => {
 				if ( i ) {
 					i.refresh();
 				}
@@ -290,7 +290,7 @@ class DataStore extends Base {
 			if ( reindex ) {
 				this.reindex();
 			} else {
-				array.each( record.indexes, ( i ) => {
+				array.iterate( record.indexes, ( i ) => {
 					array.remove( self.indexes[ i[ 0 ] ][ i[ 1 ] ], record.index );
 
 					if ( self.indexes[ i[ 0 ] ][ i[ 1 ] ].length === 0 ) {
@@ -307,7 +307,7 @@ class DataStore extends Base {
 				this.dispatch( "afterDelete", record );
 			}
 
-			array.each( this.lists, ( i ) => {
+			array.iterate( this.lists, ( i ) => {
 				i.refresh();
 			} );
 		} else {
@@ -340,7 +340,7 @@ class DataStore extends Base {
 			fn = ( i ) => {
 				let record = {};
 
-				array.each( fields, ( f ) => {
+				array.iterate( fields, ( f ) => {
 					record[ f ] = f === self.key ? ( isNaN( i.key ) ? i.key : Number( i.key ) ) : utility.clone( i.data[ f ], true );
 				} );
 
@@ -464,7 +464,7 @@ class DataStore extends Base {
 						results.push( utility.merge( record, match[ 0 ].data ) );
 						defer.resolve( true );
 					} else {
-						array.each( keys, ( i ) => {
+						array.iterate( keys, ( i ) => {
 							if ( record[ i ] === undefined ) {
 								record[ i ] = null;
 							}
@@ -492,7 +492,7 @@ class DataStore extends Base {
 						results.push( utility.merge( record, match[ 0 ].data ) );
 						defer.resolve( true );
 					} else {
-						array.each( keys, ( i ) => {
+						array.iterate( keys, ( i ) => {
 							if ( record[ i ] === undefined ) {
 								record[ i ] = null;
 							}
@@ -507,7 +507,7 @@ class DataStore extends Base {
 			};
 		}
 
-		array.each( utility.clone( join === "right" ? arg.records : this.records, true ), fn );
+		array.iterate( utility.clone( join === "right" ? arg.records : this.records, true ), fn );
 
 		utility.when( deferreds ).then( () => {
 			defer.resolve( results );
@@ -572,7 +572,7 @@ class DataStore extends Base {
 		this.indexes = { key: {} };
 
 		if ( this.total > 0 ) {
-			array.each( this.records, ( record ) => {
+			array.iterate( this.records, ( record ) => {
 				if ( record !== undefined ) {
 					tmp[ ++i ] = record;
 					record.index = i;
@@ -685,7 +685,7 @@ class DataStore extends Base {
 					} );
 				} else {
 					if ( clauses.length > 1 ) {
-						array.each( clauses, ( i, idx ) => {
+						array.iterate( clauses, ( i, idx ) => {
 							let b1 = "( ";
 
 							if ( idx > 0 ) {
@@ -757,7 +757,7 @@ class DataStore extends Base {
 			let ndata = [];
 
 			if ( overwrite ) {
-				array.each( array.keys( ogdata ), ( k ) => {
+				array.iterate( array.keys( ogdata ), ( k ) => {
 					if ( k !== self.key && data[ k ] === undefined ) {
 						ndata.push( { op: "remove", path: "/" + k } );
 					}
@@ -948,7 +948,7 @@ class DataStore extends Base {
 				this.dispatch( "afterSet", record );
 			}
 
-			array.each( this.lists, ( i ) => {
+			array.iterate( this.lists, ( i ) => {
 				i.refresh();
 			} );
 		}
@@ -1022,7 +1022,7 @@ class DataStore extends Base {
 
 		arg.indexes = [];
 
-		array.each( this.index, ( i ) => {
+		array.iterate( this.index, ( i ) => {
 			let keys = i.split( delimter );
 			let values = "";
 
@@ -1030,7 +1030,7 @@ class DataStore extends Base {
 				self.indexes[ i ] = {};
 			}
 
-			array.each( keys, ( k, kdx ) => {
+			array.iterate( keys, ( k, kdx ) => {
 				values += ( kdx > 0 ? delimter : "" ) + arg.data[ k ];
 			} );
 
@@ -1304,7 +1304,7 @@ class DataStore extends Base {
 									} else {
 										deferreds = [];
 
-										array.each( self.records, ( i ) => {
+										array.iterate( self.records, ( i ) => {
 											let data = {};
 											let defer2 = deferred.factory();
 
@@ -1500,14 +1500,14 @@ class DataStore extends Base {
 			id = this.id + "DataExpire";
 			utility.clearTimers( id );
 
-			array.each( this.records, ( i ) => {
+			array.iterate( this.records, ( i ) => {
 				let recordUri = uri + "/" + i.key;
 
 				cache.expire( recordUri, true );
 			} );
 		}
 
-		array.each( this.lists, ( i ) => {
+		array.iterate( this.lists, ( i ) => {
 			i.teardown( true );
 		} );
 
@@ -1674,7 +1674,7 @@ let store = {
 				} );
 			} else {
 				if ( clauses.length > 1 ) {
-					array.each( clauses, ( i, idx ) => {
+					array.iterate( clauses, ( i, idx ) => {
 						let b1 = "( ";
 
 						if ( idx > 0 ) {

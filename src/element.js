@@ -356,7 +356,7 @@ let element = {
 	find: ( obj, arg ) => {
 		let result = [];
 
-		array.each( string.explode( arg ), ( i ) => {
+		array.iterate( string.explode( arg ), ( i ) => {
 			result = result.concat( array.cast( obj.querySelectorAll( i ) ) );
 		} );
 
@@ -377,7 +377,7 @@ let element = {
 		let obj = document.createDocumentFragment();
 
 		if ( arg ) {
-			array.each( array.cast( element.create( "div", { innerHTML: arg }, obj ).childNodes ), ( i ) => {
+			array.iterate( array.cast( element.create( "div", { innerHTML: arg }, obj ).childNodes ), ( i ) => {
 				obj.appendChild( i );
 			} );
 
@@ -507,15 +507,15 @@ let element = {
 		arg = string.explode( arg, " " );
 
 		if ( add ) {
-			array.each( arg, ( i ) => {
+			array.iterate( arg, ( i ) => {
 				obj.classList.add( i );
 			} );
 		} else {
-			array.each( arg, ( i ) => {
+			array.iterate( arg, ( i ) => {
 				if ( i !== "*" ) {
 					obj.classList.remove( i );
 				} else {
-					array.each( obj.classList, ( x ) => {
+					array.iterate( obj.classList, ( x ) => {
 						obj.classList.remove( x );
 					} );
 
@@ -594,7 +594,7 @@ let element = {
 			obj.removeAttributeNS( obj.namespaceURI, key );
 		} else {
 			if ( obj.nodeName === "SELECT" && key === "selected" ) {
-				array.each( element.find( obj, "option" ), ( i ) => {
+				array.iterate( element.find( obj, "option" ), ( i ) => {
 					if ( i.selected === true ) {
 						i.selected = false;
 						i.removeAttribute( "selected" );
@@ -671,7 +671,7 @@ let element = {
 
 		children = obj.nodeName === "FORM" ? ( obj.elements ? array.cast( obj.elements ) : obj.find( "button, input, select, textarea" ) ) : [ obj ];
 
-		array.each( children, ( i ) => {
+		array.iterate( children, ( i ) => {
 			let id = i.id || i.name || i.type;
 
 			if ( i.nodeName === "FORM" ) {
@@ -809,7 +809,7 @@ let element = {
 					throw new Error( label.expectedProperty );
 				}
 
-				array.each( utility.dom( "input[name='" + obj.name + "']" ), ( i ) => {
+				array.iterate( utility.dom( "input[name='" + obj.name + "']" ), ( i ) => {
 					if ( i.checked ) {
 						output = i.value;
 						return false;
@@ -817,7 +817,7 @@ let element = {
 				} );
 			} else if ( regex.select.test( obj.type ) ) {
 				output = null;
-				array.each( element.find( obj, "option" ), ( i ) => {
+				array.iterate( element.find( obj, "option" ), ( i ) => {
 					if ( i.selected === true ) {
 						output = i.value;
 						return false;
@@ -844,7 +844,7 @@ let element = {
 			if ( regex.radio_checkbox.test( obj.type ) ) {
 				ev = "click";
 
-				array.each( utility.dom( "input[name='" + obj.name + "']" ), ( i ) => {
+				array.iterate( utility.dom( "input[name='" + obj.name + "']" ), ( i ) => {
 					if ( i.value === value ) {
 						i.checked = true;
 						output = i;
@@ -854,7 +854,7 @@ let element = {
 			} else if ( regex.select.test( obj.type ) ) {
 				ev = "change";
 
-				array.each( element.find( obj, " option" ), ( i ) => {
+				array.iterate( element.find( obj, " option" ), ( i ) => {
 					if ( i.value === value ) {
 						i.selected = true;
 						output = i;
