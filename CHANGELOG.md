@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.2.1
+- Wrapping `WORKER` creation in a `try/catch` for Windows Safari
+
 ## 1.2.0
 - Created `utility.equal(a, b)` which returns a `Boolean`
 - Caching request headers with response for better garbage collection, updating multiple methods
