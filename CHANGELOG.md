@@ -2,6 +2,7 @@
 
 ## 1.2.1
 - Wrapping `WORKER` creation in a `try/catch` for Windows Safari
+- Updating `babel` build step to avoid compaction errors on Windows
 
 ## 1.2.0
 - Created `utility.equal(a, b)` which returns a `Boolean`

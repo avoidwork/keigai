@@ -49,6 +49,7 @@ module.exports = function (grunt) {
 		},
 		babel: {
 			options: {
+				compact: false,
 				sourceMap: false
 			},
 			dist: {
