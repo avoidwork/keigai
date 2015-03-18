@@ -36,7 +36,7 @@ let bootstrap = () => {
 			WORKER = global.URL.createObjectURL(utility.blob("var " + string.fromObject(array, "array") + ", " + string.fromObject(regex, "regex") + ", " + string.fromObject(string, "string") + ", " + string.fromObject(utility, "utility") + "; onmessage = " + store.worker.toString() + ";"));
 		}
 		catch ( e ) {
-			utility.log( e, "error" );
+			webWorker = false;
 		}
 	}
 
