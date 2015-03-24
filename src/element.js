@@ -732,7 +732,7 @@ let element = {
 		let payload = {};
 		let set = false;
 
-		if ( typeof arg != "undefined" ) {
+		if ( typeof arg !== "undefined" ) {
 			set = true;
 			payload[ key ] = arg;
 		}

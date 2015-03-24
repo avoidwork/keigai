@@ -57,7 +57,7 @@ class DataStore extends Base {
 		let defer = deferred.factory();
 		let deferreds = [];
 
-		if ( !regex.set_del.test( type ) || ( sync && regex.del.test( type ) ) || typeof data != "object" ) {
+		if ( !regex.set_del.test( type ) || ( sync && regex.del.test( type ) ) || typeof data !== "object" ) {
 			defer.reject( new Error( label.invalidArguments ) );
 		} else {
 			if ( events ) {
@@ -1182,7 +1182,7 @@ class DataStore extends Base {
 		let self = this;
 		let record = false;
 		let mongo = !string.isEmpty( this.mongodb );
-		let session = ( type === "session" && typeof sessionStorage != "undefined" );
+		let session = ( type === "session" && typeof sessionStorage !== "undefined" );
 		let defer = deferred.factory();
 		let data, key, result;
 
@@ -1424,7 +1424,7 @@ class DataStore extends Base {
 		let success = ( arg ) => {
 			let data;
 
-			if ( typeof arg != "object" ) {
+			if ( typeof arg !== "object" ) {
 				return failure( new Error( label.expectedObject ) );
 			}
 

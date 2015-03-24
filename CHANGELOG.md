@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.2.3
+- Refactoring `util.queryString()` to support `rfc3986` better
+- Exposing `util.queryString()`
+
 ## 1.2.2
 - Another fix for Windows Safari
 

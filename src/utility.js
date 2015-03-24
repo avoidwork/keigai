@@ -183,7 +183,7 @@ let utility = {
 			return result;
 		} else if ( !server && !client.ie && obj instanceof Document ) {
 			return xml.decode( xml.encode( obj ) );
-		} else if ( typeof obj.__proto__ != "undefined" ) {
+		} else if ( typeof obj.__proto__ !== "undefined" ) {
 			return utility.extend( obj.__proto__, obj );
 		} else if ( obj instanceof Object ) {
 			// If JSON encoding fails due to recursion, the original Object is returned because it's assumed this is for decoration
@@ -332,11 +332,11 @@ let utility = {
 	 * @private
 	 */
 	delay: () => {
-		if ( typeof setImmediate != "undefined" ) {
+		if ( typeof setImmediate !== "undefined" ) {
 			return ( arg ) => {
 				setImmediate( arg );
 			};
-		} else if ( typeof process != "undefined" ) {
+		} else if ( typeof process !== "undefined" ) {
 			return process.nextTick;
 		} else {
 			return ( arg ) => {
@@ -522,9 +522,9 @@ let utility = {
 	 * keigai.util.log( "Something bad happened", "warn" );
 	 */
 	log: () => {
-		if ( typeof console != "undefined" ) {
+		if ( typeof console !== "undefined" ) {
 			return ( arg, target="log" ) => {
-				let ts = typeof arg != "object";
+				let ts = typeof arg !== "object";
 				let msg = ts ? "[" + new Date().toLocaleTimeString() + "] " + arg : arg;
 
 				console[ target ]( msg );

@@ -34,6 +34,7 @@ return {
 		parse: utility.parse,
 		partial: utility.partial,
 		prevent: utility.prevent,
+		queryString: utility.queryString(),
 		race: utility.race,
 		render: utility.render,
 		repeat: utility.repeat,
@@ -50,7 +51,7 @@ return {
 }();
 
 // Node, AMD & window supported
-if ( typeof exports != "undefined" ) {
+if ( typeof exports !== "undefined" ) {
 	module.exports = lib;
 } else if ( typeof define === "function" ) {
 	define( () => {
@@ -59,4 +60,4 @@ if ( typeof exports != "undefined" ) {
 } else {
 	global.keigai = lib;
 }
-}( typeof global != "undefined" ? global : window );
+}( typeof global !== "undefined" ? global : window );

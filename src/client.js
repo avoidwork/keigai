@@ -56,7 +56,7 @@ let client = {
 	 * @type {Boolean}
 	 * @private
 	 */
-	ab: typeof ArrayBuffer != "undefined",
+	ab: typeof ArrayBuffer !== "undefined",
 
 	/**
 	 * Blob is available
@@ -65,7 +65,7 @@ let client = {
 	 * @type {Boolean}
 	 * @private
 	 */
-	blob: typeof Blob != "undefined",
+	blob: typeof Blob !== "undefined",
 
 	/**
 	 * Document is available
@@ -74,7 +74,7 @@ let client = {
 	 * @type {Boolean}
 	 * @private
 	 */
-	doc: typeof Document != "undefined",
+	doc: typeof Document !== "undefined",
 
 	/**
 	 * Internet Explorer browser
@@ -83,7 +83,7 @@ let client = {
 	 * @type {Boolean}
 	 * @private
 	 */
-	ie: () => { return !server && regex.ie.test( navigator.userAgent ); }(),
+	ie: !server && regex.ie.test( navigator.userAgent ),
 
 	/**
 	 * Client version

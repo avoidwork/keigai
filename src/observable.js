@@ -45,7 +45,7 @@ class Observable {
 	 * observer.hook( document.querySelector( "a" ), "click" );
 	 */
 	hook ( target, ev ) {
-		if ( typeof target.addEventListener != "function" ) {
+		if ( typeof target.addEventListener !== "function" ) {
 			throw new Error( label.invalidArguments );
 		}
 

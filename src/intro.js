@@ -2,7 +2,7 @@
 const document = global.document;
 const location = global.location;
 const navigator = global.navigator;
-const server = typeof process != "undefined";
+const server = typeof process !== "undefined";
 const MAX = 10;
 const VERSIONS = 100;
 const CACHE = 500;
@@ -14,7 +14,7 @@ let localStorage = global.localStorage || undefined;
 let XMLHttpRequest = global.XMLHttpRequest || null;
 let WeakMap = global.WeakMap || null;
 let btoa = global.btoa || undefined;
-let webWorker = typeof Blob != "undefined" && typeof Worker != "undefined";
+let webWorker = typeof Blob !== "undefined" && typeof Worker !== "undefined";
 let external, format, http, https, mongodb, url, RENDER, TIME, WORKER;
 
 if ( server ) {
