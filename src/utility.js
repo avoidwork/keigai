@@ -12,15 +12,6 @@ let utility = {
 	timer: {},
 
 	/**
-	 * Collection of repeating functions
-	 *
-	 * @memberOf utility
-	 * @type {Object}
-	 * @private
-	 */
-	repeating: {},
-
-	/**
 	 * Creates Elements or Queries the DOM using CSS selectors
 	 *
 	 * @method $
@@ -139,16 +130,9 @@ let utility = {
 	 * keigai.util.clearTimers( 'helloWorld' );
 	 */
 	clearTimers: ( id ) => {
-		// deferred
 		if ( utility.timer[ id ] ) {
 			clearTimeout( utility.timer[ id ] );
 			delete utility.timer[ id ];
-		}
-
-		// repeating
-		if ( utility.repeating[ id ] ) {
-			clearTimeout( utility.repeating[ id ] );
-			delete utility.repeating[ id ];
 		}
 	},
 
@@ -294,31 +278,26 @@ let utility = {
 	 *
 	 * @method defer
 	 * @memberOf utility
-	 * @param  {Function} fn     Function to defer execution of
-	 * @param  {Number}   ms     Milliseconds to defer execution
-	 * @param  {Number}   id     [Optional] ID of the deferred function
-	 * @param  {Boolean}  repeat [Optional] Describes the execution, default is `false`
-	 * @return {String}          ID of the timer
+	 * @param  {Function} fn Function to defer execution of
+	 * @param  {Number}   ms Milliseconds to defer execution
+	 * @param  {Number}   id [Optional] ID of the deferred function
+	 * @return {String}      ID of the timer
 	 * @example
 	 * keigai.util.defer( () => {
 	 *   console.log( 'hello world' );
-	 * }, 1000, 'helloWorld', true );
+	 * }, 1000, 'helloWorld' );
 	 */
-	defer: ( fn, ms=0, id, repeat=false ) => {
-		let op;
-
-		if ( id !== undefined ) {
+	defer: ( fn, ms=0, id=undefined ) => {
+		if ( typeof id === "string" ) {
 			utility.clearTimers( id );
 		} else {
 			id = utility.uuid( true );
 		}
 
-		op = () => {
+		utility.timer[ id ] = setTimeout( () => {
 			utility.clearTimers( id );
 			fn();
-		};
-
-		utility[ repeat ? "repeating" : "timer" ][ id ] = setTimeout( op, ms );
+		}, ms );
 
 		return id;
 	},
@@ -331,7 +310,7 @@ let utility = {
 	 * @return {Function} Delay method
 	 * @private
 	 */
-	delay: () => {
+	delay: (() => {
 		if ( typeof setImmediate !== "undefined" ) {
 			return ( arg ) => {
 				setImmediate( arg );
@@ -343,7 +322,7 @@ let utility = {
 				setTimeout( arg, 0 );
 			};
 		}
-	}(),
+	})(),
 
 	/**
 	 * Queries DOM with fastest method
@@ -521,18 +500,11 @@ let utility = {
 	 * @example
 	 * keigai.util.log( "Something bad happened", "warn" );
 	 */
-	log: () => {
-		if ( typeof console !== "undefined" ) {
-			return ( arg, target="log" ) => {
-				let ts = typeof arg !== "object";
-				let msg = ts ? "[" + new Date().toLocaleTimeString() + "] " + arg : arg;
+	log: ( arg, target="log" ) => {
+		let msg = typeof arg !== "object" ? "[" + new Date().toLocaleTimeString() + "] " + arg : arg;
 
-				console[ target ]( msg );
-			}
-		} else {
-			return () => {};
-		}
-	}(),
+		console[ target ]( msg );
+	},
 
 	/**
 	 * Merges obj with arg
@@ -595,8 +567,7 @@ let utility = {
 	 */
 	parse: ( uri ) => {
 		let obj = {};
-		let parsed = {};
-		let host, protocol;
+		let host, parsed, protocol;
 
 		if ( uri === undefined ) {
 			uri = !server ? location.href : "";
@@ -706,41 +677,34 @@ let utility = {
 	 * @return {Mixed}          Value or Object of key:value pairs
 	 * @private
 	 */
-	queryString: ( arg, qstring ) => {
+	queryString: ( arg, qstring="" ) => {
 		let obj = {};
-		let result = qstring !== undefined ? ( qstring.indexOf( "?" ) > -1 ? qstring.replace( /.*\?/, "" ) : null ) : ( server || string.isEmpty( location.search ) ? null : location.search.replace( "?", "" ) );
+		let result = ( qstring || location.search || "" ).replace( /.*\?/, "" );
 
-		if ( result !== null && !string.isEmpty( result ) ) {
-			result = result.split( "&" );
-			array.iterate( result, ( prop ) => {
-				let item = prop.split( "=" );
+		array.iterate( result.split( "&" ), ( prop ) => {
+			let item = prop.split( "=" );
 
-				if ( string.isEmpty( item[ 0 ] ) ) {
-					return;
-				}
+			if ( string.isEmpty( item[ 0 ] ) ) {
+				return;
+			}
 
-				if ( item[ 1 ] === undefined ) {
-					item[ 1 ] = "";
-				} else {
-					item[ 1 ] = utility.coerce( decodeURIComponent( item[ 1 ] ) );
-				}
+			if ( item[ 1 ] === undefined ) {
+				item[ 1 ] = "";
+			} else {
+				item[ 1 ] = utility.coerce( decodeURIComponent( item[ 1 ] ) );
+			}
 
-				if ( obj[ item[ 0 ] ] === undefined ) {
-					obj[ item[ 0 ] ] = item[ 1 ];
-				} else if ( !( obj[ item[ 0 ] ] instanceof Array ) ) {
-					obj[ item[ 0 ] ] = [ obj[ item[ 0 ] ] ];
-					obj[ item[ 0 ] ].push( item[ 1 ] );
-				} else {
-					obj[ item[ 0 ] ].push( item[ 1 ] );
-				}
-			} );
-		}
+			if ( obj[ item[ 0 ] ] === undefined ) {
+				obj[ item[ 0 ] ] = item[ 1 ];
+			} else if ( !( obj[ item[ 0 ] ] instanceof Array ) ) {
+				obj[ item[ 0 ] ] = [ obj[ item[ 0 ] ] ];
+				obj[ item[ 0 ] ].push( item[ 1 ] );
+			} else {
+				obj[ item[ 0 ] ].push( item[ 1 ] );
+			}
+		} );
 
-		if ( arg !== null && arg !== undefined ) {
-			obj = obj[ arg ];
-		}
-
-		return obj;
+		return typeof arg === "string" ? utility.walk( obj, arg ) : obj;
 	},
 
 	/**
@@ -845,25 +809,20 @@ let utility = {
 	 * }, 1000, "repeating" );
 	 */
 	repeat: ( fn, ms=10, id=utility.uuid( true ), now=true ) => {
+		let recursive;
+
 		// Could be valid to return false from initial execution
 		if ( now && fn() === false ) {
 			return;
 		}
 
-		// Creating repeating execution
-		utility.defer( () => {
-			let recursive = ( fn, ms, id ) => {
-				if ( fn() !== false ) {
-					utility.repeating[ id ] = setTimeout( () => {
-						recursive.call( recursive, fn, ms, id );
-					}, ms );
-				} else {
-					delete utility.repeating[ id ];
-				}
-			};
+		recursive = () => {
+			if ( fn() !== false ) {
+				utility.defer( recursive, ms, id )
+			}
+		};
 
-			recursive( fn, ms, id );
-		}, ms, id, true );
+		utility.defer( recursive, ms, id );
 
 		return id;
 	},

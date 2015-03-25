@@ -1,6 +1,6 @@
 ( global ) => {
 const document = global.document;
-const location = global.location;
+const location = global.location || {};
 const navigator = global.navigator;
 const server = typeof process !== "undefined";
 const MAX = 10;

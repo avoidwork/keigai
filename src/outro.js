@@ -34,7 +34,7 @@ return {
 		parse: utility.parse,
 		partial: utility.partial,
 		prevent: utility.prevent,
-		queryString: utility.queryString(),
+		queryString: utility.queryString,
 		race: utility.race,
 		render: utility.render,
 		repeat: utility.repeat,
