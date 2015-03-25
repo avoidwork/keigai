@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.2.3](https://github.com/avoidwork/keigai/tree/1.2.3) (2015-03-25)
+
+[Full Changelog](https://github.com/avoidwork/keigai/compare/1.2.2...1.2.3)
+
+**Implemented enhancements:**
+
+- `utility.repeat\(\)` is poorly implemented [\#74](https://github.com/avoidwork/keigai/issues/74)
+
 ## [1.2.2](https://github.com/avoidwork/keigai/tree/1.2.2) (2015-03-18)
 
 [Full Changelog](https://github.com/avoidwork/keigai/compare/1.2.1...1.2.2)
