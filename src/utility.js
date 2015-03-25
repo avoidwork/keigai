@@ -675,7 +675,6 @@ let utility = {
 	 * @param  {String} arg     [Optional] Key to find in the querystring
 	 * @param  {String} qstring [Optional] Query string to parse
 	 * @return {Mixed}          Value or Object of key:value pairs
-	 * @private
 	 */
 	queryString: ( arg, qstring="" ) => {
 		let obj = {};
