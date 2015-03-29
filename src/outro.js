@@ -36,6 +36,7 @@ return {
 		prevent: utility.prevent,
 		queryString: utility.queryString,
 		race: utility.race,
+		regex: regex,
 		render: utility.render,
 		repeat: utility.repeat,
 		request: client.request,
