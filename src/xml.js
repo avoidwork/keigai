@@ -23,9 +23,9 @@ let xml = {
 	 * @param  {Mixed} arg Object or Array to cast to XML String
 	 * @return {String}    XML String or undefined
 	 */
-	encode: ( arg, wrap=true, top=true ) => {
+	encode: ( arg, wrap=true, top=true, key="" ) => {
 		try {
-			let x = wrap ? "<xml>" : "";
+			let x = wrap ? "<" + ( key || "xml" ) + ">" : "";
 
 			/**
 			 * Encodes a value as a node
@@ -38,29 +38,32 @@ let xml = {
 			 * @return {String}       Node
 			 */
 			let node = ( name, value ) => {
-				let output = "<n>v</n>";
-
-				output = output.replace( "v", ( regex.cdata.test( value ) ? "<![CDATA[" + value + "]]>" : value ) );
-				return output.replace( /<(\/)?n>/g, "<$1" + name + ">" );
+				return "<n>v</n>".replace( "v", ( regex.cdata.test( value ) ? "<![CDATA[" + value + "]]>" : value ) ).replace( /<(\/)?n>/g, "<$1" + name + ">" );
 			};
 
 			if ( arg !== null && arg.xml ) {
 				arg = arg.xml;
 			}
 
-			if ( arg instanceof Document ) {
+			if ( client.doc && ( arg instanceof Document ) ) {
 				arg = ( new XMLSerializer() ).serializeToString( arg );
 			}
 
 			if ( regex.boolean_number_string.test( typeof arg ) ) {
-				x += node( "item", arg );
-			} else if ( typeof arg === "object" ) {
+				x += node( isNaN( key ) ? key : "item", arg );
+			} else if ( arg === null || arg === undefined ) {
+				x += "null";
+			} else if ( arg instanceof Array ) {
+				array.iterate( arg, ( v ) => {
+					x += xml.encode( v, ( typeof v === "object" ), false, "item" );
+				} );
+			} else if ( arg instanceof Object ) {
 				utility.iterate( arg, ( v, k ) => {
-					x += xml.encode( v, ( typeof v === "object" ), false ).replace( /item|xml/g, isNaN( k ) ? k : "item" );
+					x += xml.encode( v, ( typeof v === "object" ), false, k );
 				} );
 			}
 
-			x += wrap ? "</xml>" : "";
+			x += wrap ? "</" + ( key || "xml" ) + ">" : "";
 
 			if ( top ) {
 				x = "<?xml version=\"1.0\" encoding=\"UTF8\"?>" + x;

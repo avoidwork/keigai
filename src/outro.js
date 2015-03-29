@@ -44,7 +44,8 @@ return {
 		target: utility.target,
 		uuid: utility.uuid,
 		walk: utility.walk,
-		when: utility.when
+		when: utility.when,
+		xml: xml
 	},
 	version: "{{VERSION}}"
 };

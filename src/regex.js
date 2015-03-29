@@ -15,6 +15,7 @@ let regex = {
 	args: /\((.*)\)/,
 	auth: /\/\/(.*)\@/,
 	bool: /^(true|false)?$/,
+	boolean_number_string: /boolean|number|string/,
 	caps: /[A-Z]/,
 	cdata: /\&|<|>|\"|\'|\t|\r|\n|\@|\$/,
 	checked_disabled: /checked|disabled/i,
