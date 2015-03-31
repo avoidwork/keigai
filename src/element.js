@@ -665,7 +665,7 @@ let element = {
 	 * @example
 	 * let userInput = keigai.util.element.serialize( document.querySelector( "form" ) );
 	 */
-	serialize: ( obj, string=true, encode=true ) => {		
+	serialize: ( obj, string=true, encode=true ) => {
 		let registry = {};
 		let children, result;
 
@@ -825,6 +825,8 @@ let element = {
 				} );
 			} else if ( obj.value ) {
 				output = obj.value;
+			} else if ( obj.placeholder ) {
+				output = obj.placeholder === obj.innerText ? undefined : obj.innerText;
 			} else {
 				output = element.text( obj );
 			}
