@@ -214,9 +214,7 @@ class DataList extends Base {
 	 * @example
 	 * list.refresh();
 	 */
-	refresh ( create ) {
-		create = ( create === true );
-
+	refresh ( create=false ) {
 		let self = this;
 		let el = this.element;
 		let template = ( typeof this.template === "object" );
@@ -487,9 +485,7 @@ class DataList extends Base {
 	 * @example
 	 * list.teardown();
 	 */
-	teardown ( destroy ) {
-		destroy = ( destroy === true );
-
+	teardown ( destroy=false ) {
 		let self = this;
 		let el = this.element;
 		let id = el.id;
