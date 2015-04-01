@@ -25,7 +25,7 @@ let json = {
 		}
 		catch ( e ) {
 			if ( silent !== true ) {
-				utility.error( e, [arg, silent], this );
+				utility.error( e, [arg, silent] );
 			}
 
 			return undefined;
@@ -55,7 +55,7 @@ let json = {
 		}
 		catch ( e ) {
 			if ( silent !== true ) {
-				utility.error( e, [arg, silent], this );
+				utility.error( e, [arg, silent] );
 			}
 
 			return undefined;

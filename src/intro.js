@@ -1,4 +1,4 @@
-( global ) => {
+( ( global ) => {
 const document = global.document;
 const location = global.location || {};
 const navigator = global.navigator;
@@ -8,7 +8,7 @@ const VERSIONS = 100;
 const CACHE = 500;
 const EVENTS = [ "readystatechange", "abort", "load", "loadstart", "loadend", "error", "progress", "timeout" ];
 
-let Buffer = () => {};
+let Buffer = function () {};
 let Promise = global.Promise || undefined;
 let localStorage = global.localStorage || undefined;
 let XMLHttpRequest = global.XMLHttpRequest || null;

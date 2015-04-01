@@ -62,4 +62,4 @@ if ( typeof exports !== "undefined" ) {
 } else {
 	global.keigai = lib;
 }
-}( typeof global !== "undefined" ? global : window );
+} )( typeof global !== "undefined" ? global : window );

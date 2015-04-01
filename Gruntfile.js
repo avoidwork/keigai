@@ -58,9 +58,6 @@ module.exports = function (grunt) {
 				dest : "lib/<%= pkg.name %>.es6.js"
 			}
 		},
-		eslint: {
-			target: ["lib/<%= pkg.name %>.es6.js"]
-		},
 		jsdoc : {
 			dist : {
 				src: ["lib/<%= pkg.name %>.js", "README.md"],
@@ -131,10 +128,9 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-contrib-sass");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
 	grunt.loadNpmTasks("grunt-babel");
-	grunt.loadNpmTasks("grunt-eslint");
 
 	// aliases
-	grunt.registerTask("test", [/*"eslint",*/ "nodeunit"]);
+	grunt.registerTask("test", ["nodeunit"]);
 	grunt.registerTask("build", ["concat", "sed", "babel"]);
 	grunt.registerTask("default", ["build", "test", "sass", "uglify"]);
 	grunt.registerTask("package", ["default", "jsdoc"]);
