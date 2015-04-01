@@ -52,7 +52,6 @@ class DataStore extends Base {
 	 * } );
 	 */
 	batch ( type, data, sync=false ) {
-		let self = this;
 		let events = this.events;
 		let defer = deferred.factory();
 		let deferreds = [];
@@ -80,41 +79,41 @@ class DataStore extends Base {
 				// Batch deletion will create a sparse array, which will be compacted before re-indexing
 				if ( type === "del" ) {
 					array.iterate( data, ( i ) => {
-						deferreds.push( self.del( i, false, true ) );
+						deferreds.push( this.del( i, false, true ) );
 					} );
 				} else {
 					array.iterate( data, ( i ) => {
-						deferreds.push( self.set( null, i, true ) );
+						deferreds.push( this.set( null, i, true ) );
 					} );
 				}
 
 				this.loaded = false;
 
 				utility.when( deferreds ).then( ( args ) => {
-					self.loaded = true;
+					this.loaded = true;
 
 					if ( events ) {
-						self.dispatch( "afterBatch", args );
+						this.dispatch( "afterBatch", args );
 					}
 
 					// Forcing a clear of views to deal with async nature of workers & staggered loading
-					array.iterate( self.lists, ( i ) => {
+					array.iterate( this.lists, ( i ) => {
 						i.refresh( true );
 					} );
 
 					if ( type === "del" ) {
-						self.records = array.compact( self.records );
-						self.reindex();
+						this.records = array.compact( this.records );
+						this.reindex();
 					}
 
-					if ( self.autosave ) {
-						self.save();
+					if ( this.autosave ) {
+						this.save();
 					}
 
 					defer.resolve( args );
 				}, ( e ) => {
 					if ( events ) {
-						self.dispatch( "failedBatch", e );
+						this.dispatch( "failedBatch", e );
 					}
 
 					defer.reject( e );
@@ -238,23 +237,22 @@ class DataStore extends Base {
 	del ( record, reindex=true, batch=false ) {
 		record = record.key ? record : this.get( record );
 
-		let self = this;
 		let defer = deferred.factory();
 
 		if ( record === undefined ) {
 			defer.reject( new Error( label.invalidArguments ) );
 		} else {
 			if ( this.events ) {
-				self.dispatch( "beforeDelete", record );
+				this.dispatch( "beforeDelete", record );
 			}
 
 			if ( this.uri === null || this.callback !== null ) {
 				this.delComplete( record, reindex, batch, defer );
 			} else {
 				client.request( this.buildUri( record.key ), "DELETE", null, utility.merge( { withCredentials: this.credentials }, this.headers ) ).then( () => {
-					self.delComplete( record, reindex, batch, defer );
+					this.delComplete( record, reindex, batch, defer );
 				}, ( e ) => {
-					self.dispatch( "failedDelete", e );
+					this.dispatch( "failedDelete", e );
 					defer.reject( e );
 				} );
 			}
@@ -276,11 +274,8 @@ class DataStore extends Base {
 	 * @private
 	 */
 	delComplete ( record, reindex, batch, defer ) {
-		let self = this;
-
 		delete this.indexes.key[ record.key ];
 		delete this.versions[ record.key ];
-
 		this.total--;
 		this.views = {};
 
@@ -291,10 +286,10 @@ class DataStore extends Base {
 				this.reindex();
 			} else {
 				array.iterate( record.indexes, ( i ) => {
-					array.remove( self.indexes[ i[ 0 ] ][ i[ 1 ] ], record.index );
+					array.remove( this.indexes[ i[ 0 ] ][ i[ 1 ] ], record.index );
 
-					if ( self.indexes[ i[ 0 ] ][ i[ 1 ] ].length === 0 ) {
-						delete self.indexes[ i[ 0 ] ][ i[ 1 ] ];
+					if ( this.indexes[ i[ 0 ] ][ i[ 1 ] ].length === 0 ) {
+						delete this.indexes[ i[ 0 ] ][ i[ 1 ] ];
 					}
 				} );
 			}
@@ -331,7 +326,6 @@ class DataStore extends Base {
 	dump ( args, fields ) {
 		args = args || this.records;
 
-		let self = this;
 		let custom = ( fields instanceof Array && fields.length > 0 );
 		let key = this.key !== null;
 		let fn;
@@ -341,7 +335,7 @@ class DataStore extends Base {
 				let record = {};
 
 				array.iterate( fields, ( f ) => {
-					record[ f ] = f === self.key ? ( isNaN( i.key ) ? i.key : Number( i.key ) ) : utility.clone( i.data[ f ], true );
+					record[ f ] = f === this.key ? ( isNaN( i.key ) ? i.key : Number( i.key ) ) : utility.clone( i.data[ f ], true );
 				} );
 
 				return record;
@@ -351,7 +345,7 @@ class DataStore extends Base {
 				let record = {};
 
 				if ( key ) {
-					record[ self.key ] = isNaN( i.key ) ? i.key : Number( i.key );
+					record[ this.key ] = isNaN( i.key ) ? i.key : Number( i.key );
 				}
 
 				utility.iterate( i.data, ( v, k ) => {
@@ -380,7 +374,6 @@ class DataStore extends Base {
 	 */
 	get ( record, offset ) {
 		let type = typeof record;
-		let self = this;
 		let result;
 
 		if ( type === "undefined" ) {
@@ -391,9 +384,9 @@ class DataStore extends Base {
 			} else {
 				result = string.explode( record ).map( ( i ) => {
 					if ( !isNaN( i ) ) {
-						return self.records[ parseInt( i, 10 ) ];
+						return this.records[ parseInt( i, 10 ) ];
 					} else {
-						return self.records[ self.indexes.key[ i ] ];
+						return this.records[ this.indexes.key[ i ] ];
 					}
 				} );
 			}
@@ -420,7 +413,6 @@ class DataStore extends Base {
 	 * let data = store.join( otherStore, "commonField" );
 	 */
 	join ( arg, field, join="inner" ) {
-		let self = this;
 		let defer = deferred.factory();
 		let results = [];
 		let deferreds = [];
@@ -485,7 +477,7 @@ class DataStore extends Base {
 
 				where[ field ] = key ? i.key : record[ field ];
 
-				self.select( where ).then( ( match ) => {
+				this.select( where ).then( ( match ) => {
 					if ( match.length > 2 ) {
 						defer.reject( new Error( label.databaseMoreThanOne ) );
 					} else if ( match.length === 1 ) {
@@ -564,7 +556,6 @@ class DataStore extends Base {
 	 * store.reindex();
 	 */
 	reindex () {
-		let self = this;
 		let i = -1;
 		let tmp = [];
 
@@ -576,8 +567,8 @@ class DataStore extends Base {
 				if ( record !== undefined ) {
 					tmp[ ++i ] = record;
 					record.index = i;
-					self.indexes.key[ record.key ] = i;
-					self.setIndexes( record );
+					this.indexes.key[ record.key ] = i;
+					this.setIndexes( record );
 				}
 			} );
 		}
@@ -632,7 +623,6 @@ class DataStore extends Base {
 	 * } );
 	 */
 	select ( where ) {
-		let self = this;
 		let defer = deferred.factory();
 		let functions = [];
 		let clauses, cond, index, result, sorted, values, worker;
@@ -681,7 +671,7 @@ class DataStore extends Base {
 
 				if ( functions.length === 0 && this.indexes[ index ] ) {
 					result = ( this.indexes[ index ][ values ] || [] ).map( ( i ) => {
-						return self.records[ i ];
+						return this.records[ i ];
 					} );
 				} else {
 					if ( clauses.length > 1 ) {
@@ -745,12 +735,11 @@ class DataStore extends Base {
 	set ( key, data, batch=false, overwrite=false ) {
 		data = utility.clone( data, true );
 
-		let self = this;
 		let events = this.events;
 		let defer = deferred.factory();
 		let record = key !== null ? this.get( key ) || null : data[ this.key ] ? this.get( data[ this.key ] ) || null : null;
 		let method = "POST";
-		let parsed = utility.parse( self.uri || "" );
+		let parsed = utility.parse( this.uri || "" );
 		let uri, odata, rdefer;
 
 		let patch = ( overwrite, data, ogdata ) => {
@@ -758,14 +747,14 @@ class DataStore extends Base {
 
 			if ( overwrite ) {
 				array.iterate( array.keys( ogdata ), ( k ) => {
-					if ( k !== self.key && data[ k ] === undefined ) {
+					if ( k !== this.key && data[ k ] === undefined ) {
 						ndata.push( { op: "remove", path: "/" + k } );
 					}
 				} );
 			}
 
 			utility.iterate( data, ( v, k ) => {
-				if ( k !== self.key && ogdata[ k ] === undefined ) {
+				if ( k !== this.key && ogdata[ k ] === undefined ) {
 					ndata.push( { op: "add", path: "/" + k, value: v } );
 				} else if ( json.encode( ogdata[ k ] ) !== json.encode( v ) ) {
 					ndata.push( { op: "replace", path: "/" + k, value: v } );
@@ -782,7 +771,7 @@ class DataStore extends Base {
 					uri = this.buildUri( data );
 				}
 				// Root path, relative to store, i.e. a domain
-				else if ( self.uri !== null && regex.root.test( data ) ) {
+				else if ( this.uri !== null && regex.root.test( data ) ) {
 					uri = parsed.protocol + "//" + parsed.host + data;
 				} else {
 					uri = data;
@@ -797,19 +786,19 @@ class DataStore extends Base {
 				defer.reject( new Error( label.invalidArguments ) );
 			} else {
 				if ( !batch && events ) {
-					self.dispatch( "beforeSet", { key: key, data: data } );
+					this.dispatch( "beforeSet", { key: key, data: data } );
 				}
 
-				client.request( uri, "GET", null, utility.merge( { withCredentials: self.credentials }, self.headers ) ).then( ( arg ) => {
-					self.setComplete( record, key, self.source ? utility.walk( arg, self.source ) : arg, batch, overwrite, defer );
+				client.request( uri, "GET", null, utility.merge( { withCredentials: this.credentials }, this.headers ) ).then( ( arg ) => {
+					this.setComplete( record, key, this.source ? utility.walk( arg, this.source ) : arg, batch, overwrite, defer );
 				}, ( e ) => {
-					self.dispatch( "failedSet", e );
+					this.dispatch( "failedSet", e );
 					defer.reject( e );
 				} );
 			}
 		} else {
 			if ( !batch && events ) {
-				self.dispatch( "beforeSet", { key: key, data: data } );
+				this.dispatch( "beforeSet", { key: key, data: data } );
 			}
 
 			if ( batch || this.uri === null ) {
@@ -830,12 +819,12 @@ class DataStore extends Base {
 					let change;
 
 					if ( rdefer.xhr.status !== 204 && rdefer.xhr.status < 300 ) {
-						change = key === null ? ( self.source ? utility.walk( arg, self.source ) : arg ) : odata;
+						change = key === null ? ( this.source ? utility.walk( arg, this.source ) : arg ) : odata;
 					} else {
 						change = odata;
 					}
 
-					self.setComplete( record, key, change, batch, overwrite, defer );
+					this.setComplete( record, key, change, batch, overwrite, defer );
 				}, ( e ) => {
 					if ( method === "PATCH" ) {
 						method = "PUT";
@@ -845,14 +834,14 @@ class DataStore extends Base {
 							data[ k ] = v;
 						} );
 
-						client.request( uri, method, data, utility.merge( { withCredentials: self.credentials }, self.headers ) ).then( () => {
-							self.setComplete( record, key, odata, batch, overwrite, defer );
+						client.request( uri, method, data, utility.merge( { withCredentials: this.credentials }, this.headers ) ).then( () => {
+							this.setComplete( record, key, odata, batch, overwrite, defer );
 						}, ( e ) => {
-							self.dispatch( "failedSet", e );
+							this.dispatch( "failedSet", e );
 							defer.reject( e );
 						} );
 					} else {
-						self.dispatch( "failedSet", e );
+						this.dispatch( "failedSet", e );
 						defer.reject( e );
 					}
 				} );
@@ -971,7 +960,6 @@ class DataStore extends Base {
 	setExpires ( arg ) {
 		let id = this.id + "Expire";
 		let expires = arg;
-		let self = this;
 
 		// Expiry cannot be less than a second, and must be a valid scenario for consumption; null will disable repetitive expiration
 		if ( ( arg !== null && this.uri === null ) || ( arg !== null && ( isNaN( arg ) || arg < 1000 ) ) ) {
@@ -991,16 +979,16 @@ class DataStore extends Base {
 		}
 
 		utility.repeat( () => {
-			if ( self.uri === null ) {
-				self.setExpires( null );
+			if ( this.uri === null ) {
+				this.setExpires( null );
 
 				return false;
 			}
 
-			self.dispatch( "beforeExpire" );
-			cache.expire( self.uri );
-			self.dispatch( "expire" );
-			self.dispatch( "afterExpire" );
+			this.dispatch( "beforeExpire" );
+			cache.expire( this.uri );
+			this.dispatch( "expire" );
+			this.dispatch( "afterExpire" );
 		}, expires, id, false );
 	};
 
@@ -1017,7 +1005,6 @@ class DataStore extends Base {
 	 * store.setIndexes( record );
 	 */
 	setIndexes ( arg ) {
-		let self = this;
 		let delimter = "|";
 
 		arg.indexes = [];
@@ -1026,20 +1013,20 @@ class DataStore extends Base {
 			let keys = i.split( delimter );
 			let values = "";
 
-			if ( self.indexes[ i ] === undefined ) {
-				self.indexes[ i ] = {};
+			if ( this.indexes[ i ] === undefined ) {
+				this.indexes[ i ] = {};
 			}
 
 			array.iterate( keys, ( k, kdx ) => {
 				values += ( kdx > 0 ? delimter : "" ) + arg.data[ k ];
 			} );
 
-			if ( self.indexes[ i ][ values ] === undefined ) {
-				self.indexes[ i ][ values ] = [];
+			if ( this.indexes[ i ][ values ] === undefined ) {
+				this.indexes[ i ][ values ] = [];
 			}
 
-			if ( !array.contains( self.indexes[ i ][ values ], arg.index ) ) {
-				self.indexes[ i ][ values ].push( arg.index );
+			if ( !array.contains( this.indexes[ i ][ values ], arg.index ) ) {
+				this.indexes[ i ][ values ].push( arg.index );
 				arg.indexes.push( [ i, values ] );
 			}
 		} );
@@ -1063,7 +1050,6 @@ class DataStore extends Base {
 	 */
 	setUri ( arg ) {
 		let defer = deferred.factory();
-		let self = this;
 		let parsed;
 
 		if ( arg !== null && string.isEmpty( arg ) ) {
@@ -1081,7 +1067,7 @@ class DataStore extends Base {
 			}
 
 			this.on( "expire", () => {
-				self.sync();
+				this.sync();
 			}, "resync" );
 
 			cache.expire( this.uri );
@@ -1115,7 +1101,6 @@ class DataStore extends Base {
 	sort ( query, create, where ) {
 		create = ( create === true || ( where instanceof Object ) );
 
-		let self = this;
 		let view = string.toCamelCase( string.explode( query ).join( " " ) );
 		let defer = deferred.factory();
 
@@ -1123,33 +1108,33 @@ class DataStore extends Base {
 		let next = ( records ) => {
 			let worker;
 
-			if ( self.total === 0 ) {
+			if ( this.total === 0 ) {
 				defer.resolve( [] );
-			} else if ( !create && self.views[ view ] ) {
-				defer.resolve( self.views[ view ] );
+			} else if ( !create && this.views[ view ] ) {
+				defer.resolve( this.views[ view ] );
 			} else if ( webWorker ) {
 				defer.then( ( arg ) => {
-					self.views[ view ] = arg;
+					this.views[ view ] = arg;
 
-					return self.views[ view ];
+					return this.views[ view ];
 				}, ( e ) => {
 					utility.error( e );
 				} );
 
 				try {
 					worker = utility.worker( defer );
-					worker.postMessage( { cmd: "sort", indexes: self.indexes, records: records, query: query } );
+					worker.postMessage( { cmd: "sort", indexes: this.indexes, records: records, query: query } );
 				}
 				catch ( e ) {
 					// Probably IE10, which doesn't have the correct security flag for local loading
 					webWorker = false;
 
-					self.views[ view ] = array.keySort( records, query, "data" );
-					defer.resolve( self.views[ view ] );
+					this.views[ view ] = array.keySort( records, query, "data" );
+					defer.resolve( this.views[ view ] );
 				}
 			} else {
-				self.views[ view ] = array.keySort( records, query, "data" );
-				defer.resolve( self.views[ view ] );
+				this.views[ view ] = array.keySort( records, query, "data" );
+				defer.resolve( this.views[ view ] );
 			}
 		};
 
@@ -1211,7 +1196,7 @@ class DataStore extends Base {
 						return defer.reject( e );
 					}
 
-					db.collection( self.id, ( e, collection ) => {
+					db.collection( this.id, ( e, collection ) => {
 						if ( e ) {
 							db.close();
 							return defer.reject( e );
@@ -1229,7 +1214,7 @@ class DataStore extends Base {
 									} else {
 										delete recs[ 0 ]._id;
 
-										self.set( key, recs[ 0 ], true ).then( ( rec ) => {
+										this.set( key, recs[ 0 ], true ).then( ( rec ) => {
 											defer.resolve( rec );
 										}, ( e ) => {
 											defer.reject( e );
@@ -1249,22 +1234,22 @@ class DataStore extends Base {
 									nth = recs.length;
 
 									if ( nth > 0 ) {
-										self.records = recs.map( ( r ) => {
+										this.records = recs.map( ( r ) => {
 											let rec = { key: r._id, index: ++i, data: {} };
 
-											self.indexes.key[ rec.key ] = rec.index;
+											this.indexes.key[ rec.key ] = rec.index;
 											rec.data = r;
 											delete rec.data._id;
-											self.setIndexes( rec );
+											this.setIndexes( rec );
 
 											return rec;
 										} );
 
-										self.total = nth;
+										this.total = nth;
 									}
 
 									db.close();
-									defer.resolve( self.records );
+									defer.resolve( this.records );
 								} );
 							}
 						} else if ( op === "remove" ) {
@@ -1304,7 +1289,7 @@ class DataStore extends Base {
 									} else {
 										deferreds = [];
 
-										array.iterate( self.records, ( i ) => {
+										array.iterate( this.records, ( i ) => {
 											let data = {};
 											let defer2 = deferred.factory();
 
@@ -1351,7 +1336,7 @@ class DataStore extends Base {
 						result = json.decode( result );
 
 						if ( record ) {
-							self.set( key, result, true ).then( ( rec ) => {
+							this.set( key, result, true ).then( ( rec ) => {
 								defer.resolve( rec );
 							}, ( e ) => {
 								defer.reject( e );
@@ -1366,7 +1351,7 @@ class DataStore extends Base {
 
 					// Decorating loaded state for various code paths
 					defer.then( () => {
-						self.loaded = true;
+						this.loaded = true;
 					}, ( e ) => {
 						throw e;
 					} );
@@ -1408,7 +1393,6 @@ class DataStore extends Base {
 	 * } );
 	 */
 	sync () {
-		let self = this;
 		let events = ( this.events === true );
 		let defer = deferred.factory();
 
@@ -1428,8 +1412,8 @@ class DataStore extends Base {
 				return failure( new Error( label.expectedObject ) );
 			}
 
-			if ( self.source !== null ) {
-				arg = utility.walk( arg, self.source );
+			if ( this.source !== null ) {
+				arg = utility.walk( arg, this.source );
 			}
 
 			if ( arg instanceof Array ) {
@@ -1438,9 +1422,9 @@ class DataStore extends Base {
 				data = [ arg ];
 			}
 
-			self.batch( "set", data, true ).then( ( arg ) => {
+			this.batch( "set", data, true ).then( ( arg ) => {
 				if ( events ) {
-					self.dispatch( "afterSync", arg );
+					this.dispatch( "afterSync", arg );
 				}
 
 				defer.resolve( arg );
@@ -1458,7 +1442,7 @@ class DataStore extends Base {
 		 */
 		let failure = ( e ) => {
 			if ( events ) {
-				self.dispatch( "failedSync", e );
+				this.dispatch( "failedSync", e );
 			}
 
 			defer.reject( e );

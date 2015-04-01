@@ -34,11 +34,9 @@ class DataListFilter extends Base {
 	 * filter.set( "firstName, lastName, email" );
 	 */
 	set ( fields ) {
-		let self = this;
-
 		this.filters = {};
 		array.iterate( string.explode( fields ), ( v ) => {
-			self.filters[ v ] = "";
+			this.filters[ v ] = "";
 		} );
 
 		return this;
@@ -73,15 +71,13 @@ class DataListFilter extends Base {
 	 * filter.update(); // Debounced execution
 	 */
 	update () {
-		let self = this;
-
 		utility.defer( () => {
-			let val = element.val( self.element ).toString();
+			let val = element.val( this.element ).toString();
 
-			self.list.dispatch( "beforeFilter", self.element, val );
+			this.list.dispatch( "beforeFilter", this.element, val );
 
 			if ( !string.isEmpty( val ) ) {
-				utility.iterate( self.filters, ( v, k ) => {
+				utility.iterate( this.filters, ( v, k ) => {
 					let queries = string.explode( val );
 
 					// Ignoring trailing commas
@@ -94,17 +90,17 @@ class DataListFilter extends Base {
 						queries[ idx ] = "^.*" + string.escape( i ).replace( /(^\*|\*$)/g, "" ).replace( /\*/g, ".*" ) + ".*";
 					} );
 
-					self.filters[ k ] = queries.join( "," );
+					this.filters[ k ] = queries.join( "," );
 				} );
 
-				self.list.filter = self.filters;
+				this.list.filter = this.filters;
 			} else {
-				self.list.filter = null;
+				this.list.filter = null;
 			}
 
-			self.list.pageIndex = 1;
-			self.list.refresh();
-			self.list.dispatch( "afterFilter", self.element );
+			this.list.pageIndex = 1;
+			this.list.refresh();
+			this.list.dispatch( "afterFilter", this.element );
 		}, this.debounce, this.element.id + "Debounce" );
 
 		return this;

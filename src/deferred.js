@@ -6,8 +6,6 @@ class Deferred {
 	 * @memberOf keigai
 	 */
 	constructor () {
-		let self = this;
-
 		this.promise = promise.factory();
 		this.onDone = [];
 		this.onAlways = [];
@@ -15,29 +13,29 @@ class Deferred {
 
 		// Setting handlers to execute Arrays of Functions
 		this.promise.then( ( arg ) => {
-			array.iterate( self.onDone, ( i ) => {
+			array.iterate( this.onDone, ( i ) => {
 				i( arg );
 			} );
 
-			array.iterate( self.onAlways, ( i ) => {
+			array.iterate( this.onAlways, ( i ) => {
 				i( arg );
 			} );
 
-			self.onAlways = [];
-			self.onDone = [];
-			self.onFail = [];
+			this.onAlways = [];
+			this.onDone = [];
+			this.onFail = [];
 		}, ( arg ) => {
-			array.iterate( self.onFail, ( i ) => {
+			array.iterate( this.onFail, ( i ) => {
 				i( arg );
 			} );
 
-			array.iterate( self.onAlways, ( i ) => {
+			array.iterate( this.onAlways, ( i ) => {
 				i( arg );
 			} );
 
-			self.onAlways = [];
-			self.onDone = [];
-			self.onFail = [];
+			this.onAlways = [];
+			this.onDone = [];
+			this.onFail = [];
 		} );
 	}
 

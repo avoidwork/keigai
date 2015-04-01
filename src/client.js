@@ -532,7 +532,7 @@ let client = {
 
 			kxhr.on( "load", () => {
 				let self = kxhr;
-				let xdr = client.ie && self.xhr.readyState === undefined;
+				let xdr = client.ie && this.xhr.readyState === undefined;
 				let shared = true;
 				let o, r, t, redirect;
 
@@ -591,9 +591,9 @@ let client = {
 												cache.set( uri, "response", arg );
 											}
 
-											self.resolve( arg );
+											this.resolve( arg );
 										}, ( e ) => {
-											self.reject( e );
+											this.reject( e );
 										} );
 									}
 									break;

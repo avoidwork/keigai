@@ -49,12 +49,11 @@ class Observable {
 			throw new Error( label.invalidArguments );
 		}
 
-		let self = this;
 		let obj = this.hooks.get( target ) || {};
 
 		obj[ ev ] = ( arg ) => {
-			self.dispatch( ev, arg );
-		}
+			this.dispatch( ev, arg );
+		};
 
 		this.hooks.set( target, obj );
 		target.addEventListener( ev, this.hooks.get( target )[ev], false );
@@ -132,11 +131,9 @@ class Observable {
 	once ( ev, handler, id=utility.uuid(), scope ) {
 		scope = scope || this;
 
-		let self = this;
-
 		return this.on( ev, ( ...args ) => {
 			handler.apply( scope, args );
-			self.off( ev, id );
+			this.off( ev, id );
 		}, id, scope );
 	}
 

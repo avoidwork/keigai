@@ -15,23 +15,18 @@ let csv = {
 		let regex = new RegExp( delimiter + "(?=(?:[^\"]|\"(?:[^\"])[^\"]*\")*$)" );
 		let rows = string.trim( arg ).split( "\n" );
 		let keys = rows.shift().split( delimiter );
-		let result = [];
-		let nth = rows.length;
-		let x = keys.length;
-		let i = -1;
-		let n, obj, row;
+		let result;
 
-		while ( ++i < nth ) {
-			obj = {};
-			row = rows[ i ].split( regex );
+		result = rows.map( ( r ) => {
+			let obj = {};
+			let row = r.split( regex );
 
-			n = -1;
-			while ( ++n < x ) {
-				obj[ keys[ n ] ] = utility.coerce( ( row[ n ] || "" ).replace( /^"|"$/g, "" ) );
-			}
+			array.iterate( keys, ( i, idx ) => {
+				obj[ i ] = utility.coerce( ( row[ idx ] || "" ).replace( /^"|"$/g, "" ) );
+			} );
 
-			result.push( obj );
-		}
+			return obj;
+		} );
 
 		return result;
 	},

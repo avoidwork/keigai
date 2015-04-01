@@ -246,7 +246,7 @@ let xhr = () => {
 			};
 
 			utility.iterate( headers, ( v, k ) => {
-				self._headers[ k ] = v;
+				this._headers[ k ] = v;
 			} );
 
 			this.readyState = OPENED;

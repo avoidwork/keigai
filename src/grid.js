@@ -48,11 +48,9 @@ class DataGrid extends Base {
 	 * grid.add( {name: "John Doe", age: 34} );
 	 */
 	add ( record ) {
-		let self = this;
-
 		this.store.set( null, record ).then( null, ( e ) => {
 			utility.error( e );
-			self.dispatch( "error", e );
+			this.dispatch( "error", e );
 		} );
 
 		return this;
@@ -84,13 +82,11 @@ class DataGrid extends Base {
 	 */
 	refresh () {
 		let sort = [];
-		let self = this;
-
 		this.dispatch( "beforeRefresh", this.element );
 
 		if ( this.sortOrder.length > 0 ) {
 			array.iterate( this.sortOrder, ( i ) => {
-				let obj = element.find( self.element, ".header span[data-field='" + i + "']" )[ 0 ];
+				let obj = element.find( this.element, ".header span[data-field='" + i + "']" )[ 0 ];
 
 				sort.push( string.trim( i + " " + ( element.data( obj, "sort" ) || "" ) ) );
 			} );
@@ -101,7 +97,6 @@ class DataGrid extends Base {
 		this.list.where = null;
 		utility.merge( this.list, this.options );
 		this.list.refresh();
-
 		this.dispatch( "afterRefresh", this.element );
 
 		return this;
@@ -118,11 +113,9 @@ class DataGrid extends Base {
 	 * grid.remove( "key" );
 	 */
 	remove ( record ) {
-		let self = this;
-
 		this.store.del( record ).then( null, ( e ) => {
 			utility.error( e );
-			self.dispatch( "error", e );
+			this.dispatch( "error", e );
 		} );
 
 		return this;
@@ -185,11 +178,9 @@ class DataGrid extends Base {
 	 * grid.update( "key", {name: "Jim Smith"} );
 	 */
 	update ( key, data ) {
-		let self = this;
-
 		this.store.update( key, data ).then( null, ( e ) => {
 			utility.error( e );
-			self.dispatch( "error", e );
+			this.dispatch( "error", e );
 		} );
 
 		return this;

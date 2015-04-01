@@ -1,6 +1,17 @@
 module.exports = function (grunt) {
 	grunt.initConfig({
 		pkg : grunt.file.readJSON("package.json"),
+		babel: {
+			options: {
+				compact: false,
+				sourceMap: false
+			},
+			dist: {
+				files: {
+					"lib/<%= pkg.name %>.js": "lib/<%= pkg.name %>.es6.js"
+				}
+			}
+		},
 		concat : {
 			options : {
 				banner : "/**\n" +
@@ -47,16 +58,8 @@ module.exports = function (grunt) {
 				dest : "lib/<%= pkg.name %>.es6.js"
 			}
 		},
-		babel: {
-			options: {
-				compact: false,
-				sourceMap: false
-			},
-			dist: {
-				files: {
-					"lib/<%= pkg.name %>.js": "lib/<%= pkg.name %>.es6.js"
-				}
-			}
+		eslint: {
+			target: ["lib/<%= pkg.name %>.es6.js"]
 		},
 		jsdoc : {
 			dist : {
@@ -128,9 +131,10 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-contrib-sass");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
 	grunt.loadNpmTasks("grunt-babel");
+	grunt.loadNpmTasks("grunt-eslint");
 
 	// aliases
-	grunt.registerTask("test", ["nodeunit"]);
+	grunt.registerTask("test", [/*"eslint",*/ "nodeunit"]);
 	grunt.registerTask("build", ["concat", "sed", "babel"]);
 	grunt.registerTask("default", ["build", "test", "sass", "uglify"]);
 	grunt.registerTask("package", ["default", "jsdoc"]);

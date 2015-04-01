@@ -45,11 +45,9 @@ class DataList extends Base {
 	 * list.add( {name: "John Doe", age: 34} );
 	 */
 	add ( record ) {
-		let self = this;
-
 		this.store.set( null, record ).then( null, ( e ) => {
 			utility.error( e );
-			self.dispatch( "error", e );
+			this.dispatch( "error", e );
 		} );
 
 		return this;
@@ -94,7 +92,6 @@ class DataList extends Base {
 	 * list.pages();
 	 */
 	pages () {
-		let self = this;
 		let obj = this.element;
 		let page = this.pageIndex;
 		let pos = this.pagination;
@@ -108,7 +105,7 @@ class DataList extends Base {
 		// Removing the existing controls
 		array.iterate( utility.dom( "#" + obj.id + "-pages-top, #" + obj.id + "-pages-bottom" ), ( i ) => {
 			if ( i ) {
-				self.observer.unhook( i, "click" );
+				this.observer.unhook( i, "click" );
 				element.destroy( i );
 			}
 		} );
@@ -194,7 +191,7 @@ class DataList extends Base {
 			element.removeClass( el, "hidden" );
 
 			// Pagination listener
-			self.observer.hook( el, "click" );
+			this.observer.hook( el, "click" );
 		} );
 
 		return this;
@@ -215,7 +212,6 @@ class DataList extends Base {
 	 * list.refresh();
 	 */
 	refresh ( create=false ) {
-		let self = this;
 		let el = this.element;
 		let template = ( typeof this.template === "object" );
 		let filter = this.filter !== null;
@@ -231,11 +227,11 @@ class DataList extends Base {
 		// Function to create templates for the html rep
 		if ( !template ) {
 			fn = ( i ) => {
-				let html = self.template;
+				let html = this.template;
 				let items = array.unique( html.match( /\{\{[\w\.\-\[\]]+\}\}/g ) );
 
 				// Replacing record key
-				html = html.replace( "{{" + self.store.key + "}}", i.key );
+				html = html.replace( "{{" + this.store.key + "}}", i.key );
 
 				// Replacing dot notation properties
 				array.iterate( items, ( attr ) => {
@@ -251,17 +247,17 @@ class DataList extends Base {
 				} );
 
 				// Filling in placeholder value
-				html = html.replace( /\{\{.*\}\}/g, self.placeholder );
+				html = html.replace( /\{\{.*\}\}/g, this.placeholder );
 
 				return "<li data-key=\"" + i.key + "\">" + html + "</li>";
 			};
 		} else {
 			fn = ( i ) => {
-				let obj = json.encode( self.template );
+				let obj = json.encode( this.template );
 				let items = array.unique( obj.match( /\{\{[\w\.\-\[\]]+\}\}/g ) );
 
 				// Replacing record key
-				obj = obj.replace( "{{" + self.store.key + "}}", i.key );
+				obj = obj.replace( "{{" + this.store.key + "}}", i.key );
 
 				// Replacing dot notation properties
 				array.iterate( items, ( attr ) => {
@@ -275,7 +271,7 @@ class DataList extends Base {
 				} );
 
 				// Filling in placeholder value
-				obj = json.decode( obj.replace( /\{\{.*\}\}/g, self.placeholder ) );
+				obj = json.decode( obj.replace( /\{\{.*\}\}/g, this.placeholder ) );
 
 				return { li: obj };
 			};
@@ -284,24 +280,24 @@ class DataList extends Base {
 		// Next phase
 		next = ( args ) => {
 			// Creating view of DataStore
-			self.records = args;
-			self.total = self.records.length;
-			self.filtered = [];
+			this.records = args;
+			this.total = this.records.length;
+			this.filtered = [];
 
 			// Resetting 'view' specific arrays
-			self.current = [];
+			this.current = [];
 
 			// Filtering records (if applicable)
 			if ( filter ) {
-				array.iterate( self.records, ( i ) => {
-					utility.iterate( self.filter, ( v, k ) => {
+				array.iterate( this.records, ( i ) => {
+					utility.iterate( this.filter, ( v, k ) => {
 						let key;
 
 						if ( array.contains( registry, i.key ) ) {
 							return false;
 						}
 
-						key = ( k === self.store.key );
+						key = ( k === this.store.key );
 
 						array.iterate( string.explode( v ), ( query ) => {
 							let reg = new RegExp( query, "i" );
@@ -309,7 +305,7 @@ class DataList extends Base {
 
 							if ( ( key && reg.test( i.key ) ) || reg.test( value ) ) {
 								registry.push( i.key );
-								self.filtered.push( i );
+								this.filtered.push( i );
 
 								return false;
 							}
@@ -319,24 +315,24 @@ class DataList extends Base {
 			}
 
 			// Pagination
-			if ( self.pageSize !== null && !isNaN( self.pageIndex ) && !isNaN( self.pageSize ) ) {
+			if ( this.pageSize !== null && !isNaN( this.pageIndex ) && !isNaN( this.pageSize ) ) {
 				ceiling = list.pages( self );
 
 				// Passed the end, so putting you on the end
-				if ( ceiling > 0 && self.pageIndex > ceiling ) {
-					return self.page( ceiling );
+				if ( ceiling > 0 && this.pageIndex > ceiling ) {
+					return this.page( ceiling );
 				}
 				// Paginating the items
-				else if ( self.total > 0 ) {
+				else if ( this.total > 0 ) {
 					range = list.range( self );
-					self.current = array.limit( !filter ? self.records : self.filtered, range[ 0 ], range[ 1 ] );
+					this.current = array.limit( !filter ? this.records : this.filtered, range[ 0 ], range[ 1 ] );
 				}
 			} else {
-				self.current = !filter ? self.records : self.filtered;
+				this.current = !filter ? this.records : this.filtered;
 			}
 
 			// Processing records & generating templates
-			array.iterate( self.current, ( i ) => {
+			array.iterate( this.current, ( i ) => {
 				let html = fn( i );
 				let hash = btoa( html );
 
@@ -350,32 +346,32 @@ class DataList extends Base {
 				let i, nth;
 
 				if ( items.length === 0 ) {
-					element.html( el, "<li class=\"empty\">" + self.emptyMsg + "</li>" );
+					element.html( el, "<li class=\"empty\">" + this.emptyMsg + "</li>" );
 				} else {
-					if ( self.items.length === 0 ) {
+					if ( this.items.length === 0 ) {
 						element.html( el, items.map( ( i ) => {
 							return i.template;
 						} ).join( "" ) );
 
 						if ( callback ) {
 							array.iterate( array.cast( el.childNodes ), ( i ) => {
-								self.callback( i );
+								this.callback( i );
 							} );
 						}
 					} else {
 						array.iterate( items, ( i, idx ) => {
-							if ( self.items[ idx ] !== undefined && self.items[ idx ].hash !== i.hash ) {
+							if ( this.items[ idx ] !== undefined && this.items[ idx ].hash !== i.hash ) {
 								element.data( element.html( el.childNodes[ idx ], i.template.replace( /<li data-key=\"\d+\">|<\/li>/g, "" ) ), "key", i.key );
 								callbacks.push( idx );
-							} else if ( self.items[ idx ] === undefined ) {
+							} else if ( this.items[ idx ] === undefined ) {
 								element.create( i.template, null, el );
 								callbacks.push( idx );
 							}
 						} );
 
-						if ( items.length < self.items.length ) {
+						if ( items.length < this.items.length ) {
 							i = items.length - 1;
-							nth = self.items.length;
+							nth = this.items.length;
 
 							while ( ++i < nth ) {
 								destroy.push( i );
@@ -388,25 +384,25 @@ class DataList extends Base {
 
 						if ( callback ) {
 							array.iterate( callbacks, ( i ) => {
-								self.callback( el.childNodes[ i ] );
+								this.callback( el.childNodes[ i ] );
 							} );
 						}
 					}
 				}
 
 				// Updating reference for next change
-				self.items = items;
+				this.items = items;
 
 				// Rendering pagination elements
-				if ( self.pageSize !== null && regex.top_bottom.test( self.pagination ) && !isNaN( self.pageIndex ) && !isNaN( self.pageSize ) ) {
-					self.pages();
+				if ( this.pageSize !== null && regex.top_bottom.test( this.pagination ) && !isNaN( this.pageIndex ) && !isNaN( this.pageSize ) ) {
+					this.pages();
 				} else {
 					array.iterate( utility.$( "#" + el.id + "-pages-top, #" + el.id + "-pages-bottom" ), ( i ) => {
 						element.destroy( i );
 					} );
 				}
 
-				self.dispatch( "afterRefresh", el );
+				this.dispatch( "afterRefresh", el );
 			} );
 		};
 
@@ -414,17 +410,17 @@ class DataList extends Base {
 		if ( this.where === null ) {
 			string.isEmpty( this.order ) ? next( this.store.get() ) : this.store.sort( this.order, create ).then( next, ( e ) => {
 				utility.error( e );
-				self.dispatch( "error", e );
+				this.dispatch( "error", e );
 			} );
 		} else if ( string.isEmpty( this.order ) ) {
 			this.store.select( this.where ).then( next, ( e ) => {
 				utility.error( e );
-				self.dispatch( "error", e );
+				this.dispatch( "error", e );
 			} );
 		} else {
 			this.store.sort( this.order, create, this.where ).then( next, ( e ) => {
 				utility.error( e );
-				self.dispatch( "error", e );
+				this.dispatch( "error", e );
 			} );
 		}
 
@@ -449,11 +445,9 @@ class DataList extends Base {
 	 * } );
 	 */
 	remove ( record ) {
-		let self = this;
-
 		this.store.del( record ).then( null, ( e ) => {
 			utility.error( e );
-			self.dispatch( "error", e );
+			this.dispatch( "error", e );
 		} );
 
 		return this;
@@ -486,13 +480,12 @@ class DataList extends Base {
 	 * list.teardown();
 	 */
 	teardown ( destroy=false ) {
-		let self = this;
 		let el = this.element;
 		let id = el.id;
 
 		array.iterate( this.store.lists, ( i, idx ) => {
-			if ( i.id === self.id ) {
-				array.remove( self.store.lists, idx );
+			if ( i.id === this.id ) {
+				array.remove( this.store.lists, idx );
 
 				return false;
 			}
@@ -503,7 +496,7 @@ class DataList extends Base {
 		}
 
 		array.iterate( utility.$( "#" + id + "-pages-top, #" + id + "-pages-bottom" ), ( i ) => {
-			self.observer.unhook( i, "click" );
+			this.observer.unhook( i, "click" );
 
 			if ( destroy ) {
 				element.destroy( i );
@@ -533,11 +526,9 @@ class DataList extends Base {
 	 * list.update( "key", {name: "Jim Smith"} );
 	 */
 	update ( key, data ) {
-		let self = this;
-
 		this.store.update( key, data ).then( null, ( e ) => {
 			utility.error( e );
-			self.dispatch( "error", e );
+			this.dispatch( "error", e );
 		} );
 
 		return this;
