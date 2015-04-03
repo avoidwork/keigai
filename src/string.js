@@ -50,7 +50,7 @@ let string = {
 	 * @param  {String} arg String to split on
 	 * @return {Array}      Array of the exploded String
 	 * @example
-	 * keigai.util.array.iterate( keigai.util.string.explode( "abc, def" ), ( i ) => {
+	 * keigai.util.array.each( keigai.util.string.explode( "abc, def" ), ( i ) => {
 	 *   ...
 	 * } );
 	 */
@@ -182,7 +182,7 @@ let string = {
 		let s = string.trim( obj ).replace( /\.|_|-|\@|\[|\]|\(|\)|\#|\$|\%|\^|\&|\*|\s+/g, " " ).toLowerCase().split( regex.space_hyphen );
 		let r = [];
 
-		array.iterate( s, ( i, idx ) => {
+		array.each( s, ( i, idx ) => {
 			r.push( idx === 0 ? i : string.capitalize( i ) );
 		} );
 

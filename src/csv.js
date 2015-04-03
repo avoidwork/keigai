@@ -21,7 +21,7 @@ let csv = {
 			let obj = {};
 			let row = r.split( regex );
 
-			array.iterate( keys, ( i, idx ) => {
+			array.each( keys, ( i, idx ) => {
 				obj[ i ] = utility.coerce( ( row[ idx ] || "" ).replace( /^"|"$/g, "" ) );
 			} );
 

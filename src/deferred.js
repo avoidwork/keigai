@@ -13,11 +13,11 @@ class Deferred {
 
 		// Setting handlers to execute Arrays of Functions
 		this.promise.then( ( arg ) => {
-			array.iterate( this.onDone, ( i ) => {
+			array.each( this.onDone, ( i ) => {
 				i( arg );
 			} );
 
-			array.iterate( this.onAlways, ( i ) => {
+			array.each( this.onAlways, ( i ) => {
 				i( arg );
 			} );
 
@@ -25,11 +25,11 @@ class Deferred {
 			this.onDone = [];
 			this.onFail = [];
 		}, ( arg ) => {
-			array.iterate( this.onFail, ( i ) => {
+			array.each( this.onFail, ( i ) => {
 				i( arg );
 			} );
 
-			array.iterate( this.onAlways, ( i ) => {
+			array.each( this.onAlways, ( i ) => {
 				i( arg );
 			} );
 

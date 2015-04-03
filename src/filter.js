@@ -35,7 +35,7 @@ class DataListFilter extends Base {
 	 */
 	set ( fields ) {
 		this.filters = {};
-		array.iterate( string.explode( fields ), ( v ) => {
+		array.each( string.explode( fields ), ( v ) => {
 			this.filters[ v ] = "";
 		} );
 
@@ -86,7 +86,7 @@ class DataListFilter extends Base {
 					} );
 
 					// Shaping valid pattern
-					array.iterate( queries, ( i, idx ) => {
+					array.each( queries, ( i, idx ) => {
 						queries[ idx ] = "^.*" + string.escape( i ).replace( /(^\*|\*$)/g, "" ).replace( /\*/g, ".*" ) + ".*";
 					} );
 

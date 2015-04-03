@@ -15,7 +15,7 @@ class KXMLHttpRequest extends Base {
 		this.xhr = xhr;
 
 		// Hooking observer for standard events
-		array.iterate( EVENTS, function ( i ) {
+		array.each( EVENTS, function ( i ) {
 			self.hook( self.xhr, i );
 		} );
 	}
@@ -151,7 +151,7 @@ let client = {
 	bit: ( args ) => {
 		let result = 0;
 
-		array.iterate( args, ( verb ) => {
+		array.each( args, ( verb ) => {
 			verb = verb.toLowerCase();
 
 			if ( regex.get_headers.test( verb ) ) {
@@ -201,7 +201,7 @@ let client = {
 		let cors = client.cors( uri );
 		let cachable = true;
 
-		array.iterate( headers, ( i ) => {
+		array.each( headers, ( i ) => {
 			let header = i.split( ": " );
 
 			items[ header[ 0 ].toLowerCase() ] = string.trim( header[ 1 ] );

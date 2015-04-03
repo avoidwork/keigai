@@ -39,7 +39,7 @@ let xml = {
 		} else if ( arg === null || arg === undefined ) {
 			x += "null";
 		} else if ( arg instanceof Array ) {
-			array.iterate( arg, ( v ) => {
+			array.each( arg, ( v ) => {
 				x += xml.encode( v, ( typeof v === "object" ), false, "item" );
 			} );
 		} else if ( arg instanceof Object ) {

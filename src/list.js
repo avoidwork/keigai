@@ -103,7 +103,7 @@ class DataList extends Base {
 		let diff;
 
 		// Removing the existing controls
-		array.iterate( utility.dom( "#" + obj.id + "-pages-top, #" + obj.id + "-pages-bottom" ), ( i ) => {
+		array.each( utility.dom( "#" + obj.id + "-pages-top, #" + obj.id + "-pages-bottom" ), ( i ) => {
 			if ( i ) {
 				this.observer.unhook( i, "click" );
 				element.destroy( i );
@@ -135,7 +135,7 @@ class DataList extends Base {
 			--end;
 		}
 
-		array.iterate( string.explode( pos ), ( i ) => {
+		array.each( string.explode( pos ), ( i ) => {
 			let current = false;
 			let more = page > 1;
 			let next = ( page + 1 ) <= total;
@@ -234,7 +234,7 @@ class DataList extends Base {
 				html = html.replace( "{{" + this.store.key + "}}", i.key );
 
 				// Replacing dot notation properties
-				array.iterate( items, ( attr ) => {
+				array.each( items, ( attr ) => {
 					let key = attr.replace( /\{\{|\}\}/g, "" ),
 						value = utility.walk( i.data, key );
 
@@ -260,7 +260,7 @@ class DataList extends Base {
 				obj = obj.replace( "{{" + this.store.key + "}}", i.key );
 
 				// Replacing dot notation properties
-				array.iterate( items, ( attr ) => {
+				array.each( items, ( attr ) => {
 					let key = attr.replace( /\{\{|\}\}/g, "" );
 					let value = utility.walk( i.data, key ) || "";
 
@@ -289,7 +289,7 @@ class DataList extends Base {
 
 			// Filtering records (if applicable)
 			if ( filter ) {
-				array.iterate( this.records, ( i ) => {
+				array.each( this.records, ( i ) => {
 					utility.iterate( this.filter, ( v, k ) => {
 						let key;
 
@@ -299,7 +299,7 @@ class DataList extends Base {
 
 						key = ( k === this.store.key );
 
-						array.iterate( string.explode( v ), ( query ) => {
+						array.each( string.explode( v ), ( query ) => {
 							let reg = new RegExp( query, "i" );
 							let value = !key ? utility.walk( i.data, k ) : "";
 
@@ -332,7 +332,7 @@ class DataList extends Base {
 			}
 
 			// Processing records & generating templates
-			array.iterate( this.current, ( i ) => {
+			array.each( this.current, ( i ) => {
 				let html = fn( i );
 				let hash = btoa( html );
 
@@ -354,12 +354,12 @@ class DataList extends Base {
 						} ).join( "" ) );
 
 						if ( callback ) {
-							array.iterate( array.cast( el.childNodes ), ( i ) => {
+							array.each( array.cast( el.childNodes ), ( i ) => {
 								this.callback( i );
 							} );
 						}
 					} else {
-						array.iterate( items, ( i, idx ) => {
+						array.each( items, ( i, idx ) => {
 							if ( this.items[ idx ] !== undefined && this.items[ idx ].hash !== i.hash ) {
 								element.data( element.html( el.childNodes[ idx ], i.template.replace( /<li data-key=\"\d+\">|<\/li>/g, "" ) ), "key", i.key );
 								callbacks.push( idx );
@@ -377,13 +377,13 @@ class DataList extends Base {
 								destroy.push( i );
 							}
 
-							array.iterate( destroy.reverse(), ( i ) => {
+							array.each( destroy.reverse(), ( i ) => {
 								element.destroy( el.childNodes[ i ] );
 							} );
 						}
 
 						if ( callback ) {
-							array.iterate( callbacks, ( i ) => {
+							array.each( callbacks, ( i ) => {
 								this.callback( el.childNodes[ i ] );
 							} );
 						}
@@ -397,7 +397,7 @@ class DataList extends Base {
 				if ( this.pageSize !== null && regex.top_bottom.test( this.pagination ) && !isNaN( this.pageIndex ) && !isNaN( this.pageSize ) ) {
 					this.pages();
 				} else {
-					array.iterate( utility.$( "#" + el.id + "-pages-top, #" + el.id + "-pages-bottom" ), ( i ) => {
+					array.each( utility.$( "#" + el.id + "-pages-top, #" + el.id + "-pages-bottom" ), ( i ) => {
 						element.destroy( i );
 					} );
 				}
@@ -483,7 +483,7 @@ class DataList extends Base {
 		let el = this.element;
 		let id = el.id;
 
-		array.iterate( this.store.lists, ( i, idx ) => {
+		array.each( this.store.lists, ( i, idx ) => {
 			if ( i.id === this.id ) {
 				array.remove( this.store.lists, idx );
 
@@ -495,7 +495,7 @@ class DataList extends Base {
 			this.listFilter.teardown();
 		}
 
-		array.iterate( utility.$( "#" + id + "-pages-top, #" + id + "-pages-bottom" ), ( i ) => {
+		array.each( utility.$( "#" + id + "-pages-top, #" + id + "-pages-bottom" ), ( i ) => {
 			this.observer.unhook( i, "click" );
 
 			if ( destroy ) {

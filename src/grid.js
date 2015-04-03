@@ -85,7 +85,7 @@ class DataGrid extends Base {
 		this.dispatch( "beforeRefresh", this.element );
 
 		if ( this.sortOrder.length > 0 ) {
-			array.iterate( this.sortOrder, ( i ) => {
+			array.each( this.sortOrder, ( i ) => {
 				let obj = element.find( this.element, ".header span[data-field='" + i + "']" )[ 0 ];
 
 				sort.push( string.trim( i + " " + ( element.data( obj, "sort" ) || "" ) ) );
@@ -225,7 +225,7 @@ let grid = {
 		let sort = obj.options.order ? string.explode( obj.options.order ) : [];
 
 		// Creating DataList template based on fields
-		array.iterate( obj.fields, ( i ) => {
+		array.each( obj.fields, ( i ) => {
 			let trimmed = i.replace( /.*\./g, "" );
 			let el = element.create( "span", {
 				innerHTML: string.capitalize( string.unCamelCase( string.unhyphenate( trimmed, true ) ).replace( /_|-/g, " " ), true ),

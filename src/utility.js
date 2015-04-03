@@ -58,7 +58,7 @@ let utility = {
 			} else {
 				result = [];
 
-				array.iterate( string.explode( arg ), ( query ) => {
+				array.each( string.explode( arg ), ( query ) => {
 					let obj = utility.dom( query );
 
 					if ( obj instanceof Array ) {
@@ -160,7 +160,7 @@ let utility = {
 		} else if ( obj instanceof Array ) {
 			result = [];
 
-			array.iterate( obj, ( i, idx ) => {
+			array.each( obj, ( i, idx ) => {
 				result[ idx ] = utility.clone( i );
 			} );
 
@@ -482,7 +482,7 @@ let utility = {
 	 * } );
 	 */
 	iterate: ( obj, fn ) => {
-		array.iterate( Object.keys( obj ), ( i ) => {
+		array.each( Object.keys( obj ), ( i ) => {
 			return fn.call( obj, obj[ i ], i );
 		} );
 
@@ -680,7 +680,7 @@ let utility = {
 		let obj = {};
 		let result = ( qstring || location.search || "" ).replace( /.*\?/, "" );
 
-		array.iterate( result.split( "&" ), ( prop ) => {
+		array.each( result.split( "&" ), ( prop ) => {
 			let item = prop.split( "=" );
 
 			if ( string.isEmpty( item[ 0 ] ) ) {
@@ -900,7 +900,7 @@ let utility = {
 	walk: ( obj, arg ) => {
 		let output = obj;
 
-		array.iterate( arg.replace( /\]$/, "" ).replace( /\]/g, "." ).replace( /\.\./g, "." ).split( /\.|\[/ ), ( i ) => {
+		array.each( arg.replace( /\]$/, "" ).replace( /\]/g, "." ).replace( /\.\./g, "." ).split( /\.|\[/ ), ( i ) => {
 			if ( output[ i ] === undefined || output[ i ] === null ) {
 				output = undefined;
 				return false;

@@ -228,19 +228,19 @@ let array = {
 	 * keigai.util.array.diff( ["a"], ["a", "b"] ); // ["b"]
 	 */
 	diff: ( obj1, obj2 ) => {
-		let result = [];
+		let result;
 
-		array.iterate( obj1, ( i ) => {
+		result = obj1.filter( ( i ) => {
 			if ( !array.contains( obj2, i ) ) {
-				array.add( result, i );
+				return true;
 			}
 		} );
 
-		array.iterate( obj2, ( i ) => {
+		result = result.concat( obj2.filter( ( i ) => {
 			if ( !array.contains( obj1, i ) ) {
-				array.add( result, i );
+				return true;
 			}
-		} );
+		} ) );
 
 		return result;
 	},
@@ -626,7 +626,7 @@ let array = {
 		result = obj.filter( fn );
 		remove = array.diff( obj, result );
 
-		array.iterate( remove, ( i ) => {
+		array.each( remove, ( i ) => {
 			array.remove( obj, array.index( obj, i ) );
 		} );
 
@@ -676,7 +676,7 @@ let array = {
 			sub = "";
 		}
 
-		array.iterate( queries, ( i ) => {
+		array.each( queries, ( i ) => {
 			let s = ".";
 			let e = "";
 
@@ -829,7 +829,7 @@ let array = {
 	 * a[3]; // "d"
 	 */
 	merge: ( obj1, obj2 ) => {
-		array.iterate( obj2, ( i ) => {
+		array.each( obj2, ( i ) => {
 			array.add( obj1, i );
 		} );
 
@@ -890,7 +890,7 @@ let array = {
 		let nth, result;
 
 		// Counting values
-		array.iterate( obj, ( i ) => {
+		array.each( obj, ( i ) => {
 			if ( !isNaN( values[ i ] ) ) {
 				values[ i ]++;
 			} else {
@@ -946,7 +946,7 @@ let array = {
 	rassoc: ( obj, arg ) => {
 		let result;
 
-		array.iterate( obj, ( i, idx ) => {
+		array.each( obj, ( i, idx ) => {
 			if ( i[ 1 ] === arg ) {
 				result = utility.clone( obj[ idx ], true );
 
@@ -1024,7 +1024,7 @@ let array = {
 	removeIf: ( obj, fn ) => {
 		let remove = obj.filter( fn );
 
-		array.iterate( remove, ( i ) => {
+		array.each( remove, ( i ) => {
 			array.remove( obj, array.index( obj, i ) );
 		} );
 
@@ -1049,7 +1049,7 @@ let array = {
 	removeWhile: ( obj, fn ) => {
 		let remove = [];
 
-		array.iterate( obj, ( i ) => {
+		array.each( obj, ( i ) => {
 			if ( fn( i ) !== false ) {
 				remove.push( i );
 			} else {
@@ -1057,7 +1057,7 @@ let array = {
 			}
 		} );
 
-		array.iterate( remove, ( i ) => {
+		array.each( remove, ( i ) => {
 			array.remove( obj, array.index( obj, i ) );
 		} );
 
@@ -1081,7 +1081,7 @@ let array = {
 	 */
 	replace: ( obj1, obj2 ) => {
 		array.remove( obj1, 0, obj1.length );
-		array.iterate( obj2, ( i ) => {
+		array.each( obj2, ( i ) => {
 			obj1.push( i );
 		} );
 
@@ -1122,7 +1122,7 @@ let array = {
 	rindex: ( obj, arg ) => {
 		let result = -1;
 
-		array.iterate( obj, ( i, idx ) => {
+		array.each( obj, ( i, idx ) => {
 			if ( i === arg ) {
 				result = idx;
 			}
@@ -1405,7 +1405,7 @@ let array = {
 	unique: ( obj ) => {
 		let result = [];
 
-		array.iterate( obj, ( i ) => {
+		array.each( obj, ( i ) => {
 			array.add( result, i );
 		} );
 
@@ -1430,7 +1430,7 @@ let array = {
 		if ( nth > 0 ) {
 			mean = array.mean( obj );
 
-			array.iterate( obj, ( i ) => {
+			array.each( obj, ( i ) => {
 				n += math.sqr( i - mean );
 			} );
 
@@ -1459,16 +1459,16 @@ let array = {
 			args = typeof args === "object" ? array.cast( args ) : [ args ];
 		}
 
-		array.iterate( args, ( i, idx ) => {
+		array.each( args, ( i, idx ) => {
 			if ( !( i instanceof Array ) ) {
 				args[ idx ] = [ i ];
 			}
 		} );
 
 		// Building result Array
-		array.iterate( obj, ( i, idx ) => {
+		array.each( obj, ( i, idx ) => {
 			result[ idx ] = [ i ];
-			array.iterate( args, ( x ) => {
+			array.each( args, ( x ) => {
 				result[ idx ].push( x[ idx ] || null );
 			} );
 		} );
