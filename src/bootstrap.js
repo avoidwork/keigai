@@ -50,4 +50,8 @@ let bootstrap = () => {
 			fn( offset );
 		}, 16, offset );
 	};
+
+	if ( !server ) {
+		utility.banner();
+	}
 }

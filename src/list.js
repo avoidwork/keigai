@@ -10,6 +10,8 @@ class DataList extends Base {
 	 *     list  = keigai.list( document.querySelector("#list"), store, "{{name}}", {order: "name"} );
 	 */
 	constructor ( element, store, template ) {
+		super();
+
 		this.callback = null;
 		this.current = [];
 		this.element = element;

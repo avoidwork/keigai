@@ -8,15 +8,15 @@
  */
 class KXMLHttpRequest extends Base {
 	constructor ( xhr ) {
-		let self = this;
+		super();
 
 		this.observer = observable.factory();
 		this.defer = deferred.factory();
 		this.xhr = xhr;
 
 		// Hooking observer for standard events
-		array.each( EVENTS, function ( i ) {
-			self.hook( self.xhr, i );
+		array.each( EVENTS, ( i ) => {
+			this.hook( this.xhr, i );
 		} );
 	}
 

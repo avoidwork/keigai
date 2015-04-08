@@ -1,4 +1,16 @@
+var figlet = require("figlet");
+
+function graffiti (arg) {
+	return figlet.textSync(arg, {
+		font: 'Graffiti',
+		horizontalLayout: 'default',
+		verticalLayout: 'default'
+	})
+}
+
 module.exports = function (grunt) {
+	var banner = graffiti("keigai " + grunt.file.readJSON("package.json").version);
+
 	grunt.initConfig({
 		pkg : grunt.file.readJSON("package.json"),
 		babel: {
@@ -83,6 +95,11 @@ module.exports = function (grunt) {
 			}
 		},
 		sed : {
+			banner : {
+				pattern : "{{BANNER}}",
+				replacement : JSON.stringify(banner.split("\n")),
+				path : ["<%= concat.dist.dest %>"]
+			},
 			version : {
 				pattern : "{{VERSION}}",
 				replacement : "<%= pkg.version %>",
@@ -91,10 +108,7 @@ module.exports = function (grunt) {
 		},
 		uglify: {
 			options: {
-				banner : "/*\n" +
-				" <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>\n" +
-				" @version <%= pkg.version %>\n" +
-				" */",
+				banner: '/*\n' + banner + '\n\n<%= grunt.template.today("yyyy") %> <%= pkg.author.name %> <<%= pkg.author.email %>>\n*/\n',
 				sourceMap: true,
 				sourceMapIncludeSources: true,
 				mangle: {

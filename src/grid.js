@@ -18,6 +18,8 @@ class DataGrid extends Base {
 	 *     grid    = keigai.grid( document.querySelector( "#grid" ), store, fields, fields, options, true );
 	 */
 	constructor ( target, store, fields, sortable=[], options={}, filtered=false ) {
+		super();
+
 		let sortOrder;
 
 		if ( options.order && !string.isEmpty( options.order ) ) {

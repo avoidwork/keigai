@@ -10,6 +10,7 @@ return {
 	util: {
 		$: utility.$,
 		array: array,
+		banner: utility.banner,
 		base: utility.base,
 		clearTimers: utility.clearTimers,
 		clone: utility.clone,

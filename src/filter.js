@@ -14,6 +14,8 @@ class DataListFilter extends Base {
 	 *     filter = keigai.filter( document.querySelector( "input.filter" ), list, "field" );
 	 */
 	constructor ( element, list, debounce ) {
+		super();
+
 		this.debounce = debounce;
 		this.element = element;
 		this.filters = {};

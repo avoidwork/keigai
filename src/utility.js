@@ -74,6 +74,19 @@ let utility = {
 	},
 
 	/**
+	 * Writes the banner to the console
+	 *
+	 * @method banner
+	 * @memberOf utility
+	 * @return {Undefined} undefined
+	 * @example
+	 * keigai.util.banner();
+	 */
+	banner: () => {
+		console.log( {{BANNER}}.join( "\n" ) );
+	},
+
+	/**
 	 * Creates an instance of Base
 	 *
 	 * @method base

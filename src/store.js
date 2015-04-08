@@ -9,6 +9,8 @@ class DataStore extends Base {
 	 * let store = keigai.store();
 	 */
 	constructor () {
+		super();
+
 		this.autosave = false;
 		this.callback = null;
 		this.credentials = null;

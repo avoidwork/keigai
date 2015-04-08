@@ -127,6 +127,8 @@ let xhr = () => {
 		 * @return {Object} XMLHttpRequest instance
 		 */
 		constructor () {
+			super();
+
 			this.onabort = null;
 			this.onerror = null;
 			this.onload = null;
