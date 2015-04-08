@@ -231,8 +231,6 @@ let xhr = () => {
 		 * @return {Object}           XMLHttpRequest instance
 		 */
 		open ( method, url, async, user, password ) {
-			let self = this;
-
 			if ( async !== true ) {
 				throw new Error( label.invalidStateNoSync );
 			}
@@ -279,7 +277,6 @@ let xhr = () => {
 		 * @return {Object}     XMLHttpRequest instance
 		 */
 		send ( data=null ) {
-			let self = this;
 			let options, parsed, request, obj;
 
 			if ( this.readyState < OPENED ) {
@@ -338,9 +335,9 @@ let xhr = () => {
 			obj = parsed.protocol === "http:" ? http : https;
 
 			request = obj.request( options, ( arg ) => {
-				success( self, arg );
+				success( this, arg );
 			} ).on( "error", ( e ) => {
-				failure( self, e );
+				failure( this, e );
 			} );
 
 			data === null ? request.setSocketKeepAlive( true ) : request.write( data, "utf8" );

@@ -318,7 +318,7 @@ class DataList extends Base {
 
 			// Pagination
 			if ( this.pageSize !== null && !isNaN( this.pageIndex ) && !isNaN( this.pageSize ) ) {
-				ceiling = list.pages( self );
+				ceiling = list.pages( this );
 
 				// Passed the end, so putting you on the end
 				if ( ceiling > 0 && this.pageIndex > ceiling ) {
@@ -326,7 +326,7 @@ class DataList extends Base {
 				}
 				// Paginating the items
 				else if ( this.total > 0 ) {
-					range = list.range( self );
+					range = list.range( this );
 					this.current = array.limit( !filter ? this.records : this.filtered, range[ 0 ], range[ 1 ] );
 				}
 			} else {
