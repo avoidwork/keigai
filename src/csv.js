@@ -71,7 +71,7 @@ let csv = {
 			}
 
 			return output;
-		}
+		};
 
 		if ( obj instanceof Array ) {
 			if ( obj[ 0 ] instanceof Object ) {

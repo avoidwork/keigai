@@ -40,7 +40,7 @@ let element = {
 	 * @method attr
 	 * @memberOf element
 	 * @param  {Object} obj   Element
-	 * @param  {String} name  Attribute name
+	 * @param  {String} key   Attribute name
 	 * @param  {Mixed}  value Attribute value
 	 * @return {Object}       Element
 	 * @example
@@ -58,6 +58,8 @@ let element = {
 				} else {
 					result = utility.coerce( result );
 				}
+
+				return result;
 			} else {
 				obj.setAttributeNS( obj.namespaceURI, key, value );
 			}

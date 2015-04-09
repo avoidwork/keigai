@@ -53,9 +53,10 @@ let number = {
 		let a = arg.replace( regex.number_format_2, "" ).split( "" ).reverse();
 		let p = Math.floor( a.length / every );
 		let i = 1;
-		let n, b;
+		let b = -1;
+		let n;
 
-		for ( b = 0; b < p; b++ ) {
+		while ( ++b < p ) {
 			n = i === 1 ? every: ( every * i ) + ( i === 2 ? 1: ( i - 1 ) );
 			a.splice( n, 0, delimiter );
 			i++;
@@ -84,7 +85,7 @@ let number = {
 	 * } );
 	 */
 	half: ( a, b ) => {
-		return b ? ( ( a / b ) === 0.5 ): ( a / 2 );
+		return b ? ( a / b ) === 0.5 : a / 2;
 	},
 
 	/**
@@ -118,7 +119,7 @@ let number = {
 	 * keigai.util.number.parse( n );
 	 */
 	parse: ( arg, base ) => {
-		return ( base === undefined ) ? parseFloat( arg ) : parseInt( arg, base );
+		return base === undefined ? parseFloat( arg ) : parseInt( arg, base );
 	},
 
 	/**

@@ -578,7 +578,7 @@ let array = {
 			else {
 				next = false;
 			}
-		} while ( next !== false )
+		} while ( next !== false );
 
 		return obj;
 	},

@@ -226,20 +226,3 @@ class Base {
 		return this;
 	}
 }
-
-/**
- * @namespace base
- * @private
- */
-let base = {
-	/**
-	 * Base factory
-	 *
-	 * @memberOf base
-	 * @method factory
-	 * @return {Object} {@link keigai.Base}
-	 */
-	factory: () => {
-		return new Base();
-	}
-};

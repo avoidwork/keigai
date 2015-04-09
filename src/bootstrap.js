@@ -64,4 +64,4 @@ let bootstrap = () => {
 	if ( !server ) {
 		utility.banner();
 	}
-}
+};

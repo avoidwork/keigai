@@ -5,7 +5,7 @@ class DataListFilter extends Base {
 	 * @constructor
 	 * @memberOf keigai
 	 * @extends {keigai.Base}
-	 * @param  {Object} obj      Element to receive the filter
+	 * @param  {Object} element  Element to receive the filter
 	 * @param  {Object} list     {@link keigai.DataList}
 	 * @param  {Number} debounce [Optional] Milliseconds to debounce
 	 * @example

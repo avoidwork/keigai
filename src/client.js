@@ -186,10 +186,11 @@ let client = {
 	 *
 	 * @method headers
 	 * @memberOf client
-	 * @param  {Object} xhr  XMLHttpRequest Object
-	 * @param  {String} uri  URI to request
-	 * @param  {String} type Type of request
-	 * @return {Object}      Cached URI representation
+	 * @param  {Object} xhr             XMLHttpRequest Object
+	 * @param  {String} uri             URI to request
+	 * @param  {String} type            Type of request
+	 * @param  {Object} request_headers Request headers
+	 * @return {Object}                 Cached URI representation
 	 * @private
 	 */
 	headers: ( xhr, uri, type, request_headers ) => {

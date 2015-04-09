@@ -402,7 +402,7 @@ let utility = {
 	 * @param  {Array}   args    Array of arguments from the callstack
 	 * @param  {Mixed}   scope   Entity that was "this"
 	 * @param  {Boolean} warning [Optional] Will display as console warning if true
-	 * @return {Undefined}       undefined
+	 * @return {Object}          Error descriptor
 	 * @private
 	 */
 	error: ( e, args, scope, warning ) => {
@@ -418,7 +418,7 @@ let utility = {
 
 		utility.log( o.stack || o.message, warning !== true ? "error" : "warn" );
 
-		return undefined;
+		return o;
 	},
 
 	/**

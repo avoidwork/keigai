@@ -25,6 +25,7 @@ let xhr = () => {
 	 *
 	 * @method dispatch
 	 * @memberOf xhr
+	 * @param  {Object} obj In
 	 * @param  {String} arg Event to dispatch
 	 * @return {Object}     XMLHttpRequest instance
 	 */
@@ -67,6 +68,7 @@ let xhr = () => {
 	 *
 	 * @method success
 	 * @memberOf xhr
+	 * @param  {Object} obj {@link keigai.XMLHttpRequest}
 	 * @param  {Object} res HTTP(S) Response Object
 	 * @return {Undefined}  undefined
 	 */
@@ -104,8 +106,9 @@ let xhr = () => {
 	 *
 	 * @method failure
 	 * @memberOf xhr
-	 * @param  {Object} e Error
-	 * @return {Undefined} undefined
+	 * @param  {Object} obj {@link keigai.XMLHttpRequest}
+	 * @param  {Object} e   Error
+	 * @return {Undefined}  undefined
 	 */
 	let failure = ( obj, e ) => {
 		obj.status = ERR_REFUSED.test( e.message ) ? 503 : 500;
