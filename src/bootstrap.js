@@ -6,12 +6,18 @@
  * @return {Undefined} undefined
  */
 let bootstrap = () => {
-	let defineProperty = Object.defineProperty !== undefined;
-	let target;
-
 	// ES6 Array shims
-	Array.from = Array.from || ( arg ) => { return [].slice.call( arg ); };
-	Array.keys = Array.keys || ( arg ) => { return Object.keys( arg ); };
+	if ( Array.from === undefined ) {
+		Array.from = ( arg ) => {
+			return [].slice.call( arg );
+		};
+	}
+
+	if ( Array.keys === undefined ) {
+		Array.keys = ( arg ) => {
+			return Object.keys( arg );
+		};
+	}
 
 	// Describing the Client
 	if ( !server ) {
@@ -43,13 +49,17 @@ let bootstrap = () => {
 	TIME = new Date().getTime();
 
 	// Setting up `utility.render()`
-	RENDER = global.requestAnimationFrame || ( fn ) => {
-		let offset = new Date().getTime() - TIME;
+	if ( global.requestAnimationFrame !== undefined ) {
+		RENDER = global.requestAnimationFrame
+	} else {
+		RENDER = ( fn ) => {
+			let offset = new Date().getTime() - TIME;
 
-		utility.defer( () => {
-			fn( offset );
-		}, 16, offset );
-	};
+			utility.defer( () => {
+				fn( offset );
+			}, 16, offset );
+		};
+	}
 
 	if ( !server ) {
 		utility.banner();

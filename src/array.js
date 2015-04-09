@@ -1176,7 +1176,7 @@ let array = {
 	 * keigai.util.array.series( 0, 5 );     // [0, 1, 2, 3, 4]
 	 * keigai.util.array.series( 0, 25, 5 ); // [0, 5, 10, 15, 20]
 	 */
-	series: ( start=0, end, offset=1 ) => {
+	series: ( start=0, end=undefined, offset=1 ) => {
 		end = end || start;
 
 		let result = [];

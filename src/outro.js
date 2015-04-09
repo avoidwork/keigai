@@ -51,7 +51,7 @@ return {
 	},
 	version: "{{VERSION}}"
 };
-}();
+} )();
 
 // Node, AMD & window supported
 if ( typeof exports !== "undefined" ) {

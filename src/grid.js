@@ -260,6 +260,10 @@ let grid = {
 			obj.options.listFilter = obj.fields.join( "," );
 		}
 
+		if ( debounce !== undefined ) {
+			obj.options.debounce = debounce;
+		}
+
 		// Creating DataList
 		ref.push( list.factory( obj.element, ref[ 0 ], template, obj.options ) );
 

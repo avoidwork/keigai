@@ -399,7 +399,7 @@ let client = {
 	 *   // Handle `err`
 	 * } );
 	 */
-	request: ( uri, type="GET", args, headers ) => {
+	request: ( uri, type="GET", args=undefined, headers=undefined ) => {
 		uri = utility.parse( uri ).href;
 		type = type.toLowerCase();
 		headers = headers instanceof Object ? headers : null;

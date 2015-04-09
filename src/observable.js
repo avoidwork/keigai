@@ -99,7 +99,7 @@ class Observable {
 	 *   ...
 	 * }, "myHook" );
 	 */
-	on ( ev, handler, id=utility.uuid(), scope ) {
+	on ( ev, handler, id=utility.uuid(), scope=undefined ) {
 		if ( !this.listeners[ ev ] ) {
 			this.listeners[ ev ] = {};
 		}
@@ -128,7 +128,7 @@ class Observable {
 	 *   ...
 	 * } );
 	 */
-	once ( ev, handler, id=utility.uuid(), scope ) {
+	once ( ev, handler, id=utility.uuid(), scope=undefined ) {
 		scope = scope || this;
 
 		return this.on( ev, ( ...args ) => {

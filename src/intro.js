@@ -15,14 +15,13 @@ let XMLHttpRequest = global.XMLHttpRequest || null;
 let WeakMap = global.WeakMap || null;
 let btoa = global.btoa || undefined;
 let webWorker = typeof Blob !== "undefined" && typeof Worker !== "undefined";
-let external, format, http, https, mongodb, url, RENDER, TIME, WORKER;
+let external, http, https, mongodb, url, RENDER, TIME, WORKER;
 
 if ( server ) {
 	url = require( "url" );
 	http = require( "http" );
 	https = require( "https" );
 	mongodb = require( "mongodb" ).MongoClient;
-	format = require( "util" ).format;
 	Buffer = require( "buffer" ).Buffer;
 
 	if ( typeof Promise === "undefined" ) {
@@ -38,4 +37,4 @@ if ( server ) {
 	}
 }
 
-let lib = () => {
+let lib = ( () => {
