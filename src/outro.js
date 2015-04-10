@@ -30,6 +30,7 @@ return {
 		lru: lru.factory,
 		math: math,
 		merge: utility.merge,
+		next: utility.delay,
 		number: number,
 		observer: observable.factory,
 		parse: utility.parse,

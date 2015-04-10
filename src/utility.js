@@ -321,7 +321,10 @@ let utility = {
 	 * @method delay
 	 * @memberOf promise
 	 * @return {Function} Delay method
-	 * @private
+	 * @example
+	 * keigai.util.next( () => {
+	 *   console.log( 'On the next tick' );
+	 * } );
 	 */
 	delay: (() => {
 		if ( typeof setImmediate !== "undefined" ) {
