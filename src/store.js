@@ -25,6 +25,7 @@ class DataStore extends Base {
 		this.loaded = false;
 		this.mongodb = "";
 		this.observer = observable.factory();
+		this.patch = false;
 		this.records = [];
 		this.source = null;
 		this.total = 0;
@@ -54,9 +55,11 @@ class DataStore extends Base {
 	 * } );
 	 */
 	batch ( type, data, sync=false ) {
+		let self = this;
 		let events = this.events;
 		let defer = deferred.factory();
 		let deferreds = [];
+		let patch = [];
 
 		if ( !regex.set_del.test( type ) || ( sync && regex.del.test( type ) ) || typeof data !== "object" ) {
 			defer.reject( new Error( label.invalidArguments ) );
@@ -78,14 +81,18 @@ class DataStore extends Base {
 
 				defer.resolve( this.records );
 			} else {
-				// Batch deletion will create a sparse array, which will be compacted before re-indexing
-				if ( type === "del" ) {
-					array.each( data, ( i ) => {
-						deferreds.push( this.del( i, false, true ) );
-					} );
+				if ( this.patch ) {
+					patch.push( this[ type ]( i, false, true, true ) );
+					deferreds.push( client.request( this.uri, "PATCH", patch, utility.merge( { withCredentials: this.credentials }, this.headers ) ).then( function () {
+						/* reconcile data store */
+						return self.records;
+					}, function ( e ) {
+						throw e;
+					} ) );
 				} else {
+					// Batch deletion will create a sparse array, which will be compacted before re-indexing
 					array.each( data, ( i ) => {
-						deferreds.push( this.set( null, i, true ) );
+						deferreds.push( this[ type ]( i, false, true, true ) );
 					} );
 				}
 
@@ -236,10 +243,16 @@ class DataStore extends Base {
 	 *   console.warn( "Failed to delete " + key + ": " + err.message );
 	 * } );
 	 */
-	del ( record, reindex=true, batch=false ) {
+	del ( record, reindex=true, batch=false, jsonpatch=false ) {
 		record = record.key ? record : this.get( record );
 
-		let defer = deferred.factory();
+		let defer;
+
+		if ( jsonpatch ) {
+			return { op: "remove", path: "/" + record.key };
+		}
+
+		defer = deferred.factory();
 
 		if ( record === undefined ) {
 			defer.reject( new Error( label.invalidArguments ) );
@@ -734,7 +747,7 @@ class DataStore extends Base {
 	 * // Updating a record
 	 * store.set( "key", {...} );
 	 */
-	set ( key, data, batch=false, overwrite=false ) {
+	set ( key, data, batch=false, overwrite=false, jsonpatch=false ) {
 		data = utility.clone( data, true );
 
 		let events = this.events;
@@ -764,6 +777,10 @@ class DataStore extends Base {
 			} );
 
 			return ndata;
+		};
+
+		if ( jsonpatch ) {
+			return patch( overwrite, data, this.dump( [ record ] )[ 0 ] );
 		}
 
 		if ( typeof data === "string" ) {
