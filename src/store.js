@@ -690,7 +690,7 @@ class DataStore extends Base {
 				}
 			} else {
 				clauses = array.fromObject( where );
-				sorted = array.flat( clauses ).filter( ( i, idx ) => {
+				sorted = array.flat( clauses.map( function ( i ) { return i.toString(); } ) ).filter( ( i, idx ) => {
 					return idx % 2 === 0;
 				} ).sort( array.sort );
 				index = sorted.join( "|" );

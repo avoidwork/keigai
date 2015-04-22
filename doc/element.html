@@ -1102,7 +1102,8 @@ An id is generated if not specified with args.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">keigai.util.element.create( &quot;div&quot;, {innerHTML: &quot;Hello World!&quot;}, document.querySelector( &quot;#something&quot; ) );keigai.util.element.create( &quot;&amp;lt;div&amp;gt;Hello World!&amp;lt;&#x2F;div&amp;gt;&quot; );</pre>
+    <pre class="sunlight-highlight-javascript">keigai.util.element.create( &quot;div&quot;, {innerHTML: &quot;Hello World!&quot;}, document.querySelector( &quot;#something&quot; ) );
+keigai.util.element.create( &quot;&amp;lt;div&amp;gt;Hello World!&amp;lt;&#x2F;div&amp;gt;&quot; );</pre>
 
 
     
@@ -1292,7 +1293,8 @@ An id is generated if not specified with args.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">keigai.util.element.css( document.querySelector( &quot;#something&quot; ), &quot;font-weight&quot;, &quot;bold&quot; );keigai.util.element.css( document.querySelector( &quot;#something&quot; ), &quot;font-weight&quot; ); &#x2F;&#x2F; &quot;bold&quot;</pre>
+    <pre class="sunlight-highlight-javascript">keigai.util.element.css( document.querySelector( &quot;#something&quot; ), &quot;font-weight&quot;, &quot;bold&quot; );
+keigai.util.element.css( document.querySelector( &quot;#something&quot; ), &quot;font-weight&quot; ); &#x2F;&#x2F; &quot;bold&quot;</pre>
 
 
     
@@ -1482,7 +1484,17 @@ An id is generated if not specified with args.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">&#x2F;&#x2F; Settingkeigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot;, &quot;abc-1234&quot; );&#x2F;&#x2F; Gettingkeigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot; ); &#x2F;&#x2F; &quot;abc-1234&quot;&#x2F;&#x2F; Unsettingkeigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot;, null );&#x2F;&#x2F; Setting a `null` value can be done by using a Stringkeigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot;, &quot;null&quot; );</pre>
+    <pre class="sunlight-highlight-javascript">&#x2F;&#x2F; Setting
+keigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot;, &quot;abc-1234&quot; );
+
+&#x2F;&#x2F; Getting
+keigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot; ); &#x2F;&#x2F; &quot;abc-1234&quot;
+
+&#x2F;&#x2F; Unsetting
+keigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot;, null );
+
+&#x2F;&#x2F; Setting a `null` value can be done by using a String
+keigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot;, &quot;null&quot; );</pre>
 
 
     
@@ -2629,7 +2641,9 @@ An id is generated if not specified with args.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.has( document.querySelector( &quot;#something&quot; ), &quot;p&quot; ) ) {  ...}</pre>
+    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.has( document.querySelector( &quot;#something&quot; ), &quot;p&quot; ) ) {
+  ...
+}</pre>
 
 
     
@@ -2796,7 +2810,9 @@ An id is generated if not specified with args.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.hasClass( document.querySelector( &quot;#something&quot; ), &quot;someClass&quot; ) ) {  ...}</pre>
+    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.hasClass( document.querySelector( &quot;#something&quot; ), &quot;someClass&quot; ) ) {
+  ...
+}</pre>
 
 
     
@@ -2940,7 +2956,9 @@ An id is generated if not specified with args.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.hidden( document.querySelector( &quot;#something&quot; ) ) ) {  ...}</pre>
+    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.hidden( document.querySelector( &quot;#something&quot; ) ) ) {
+  ...
+}</pre>
 
 
     
@@ -3107,7 +3125,8 @@ An id is generated if not specified with args.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">keigai.util.element.html( document.querySelector( &quot;#something&quot; ), &quot;Hello World!&quot; );keigai.util.element.html( document.querySelector( &quot;#something&quot; ) ); &#x2F;&#x2F; &quot;Hello World!&quot;</pre>
+    <pre class="sunlight-highlight-javascript">keigai.util.element.html( document.querySelector( &quot;#something&quot; ), &quot;Hello World!&quot; );
+keigai.util.element.html( document.querySelector( &quot;#something&quot; ) ); &#x2F;&#x2F; &quot;Hello World!&quot;</pre>
 
 
     
@@ -3274,7 +3293,13 @@ An id is generated if not specified with args.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.is( document.querySelector( &quot;#something&quot; ), &quot;div&quot; ) ) {  ...}if ( keigai.util.element.is( document.querySelector( &quot;#something&quot; ), &quot;:first-child&quot; ) ) {  ...}</pre>
+    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.is( document.querySelector( &quot;#something&quot; ), &quot;div&quot; ) ) {
+  ...
+}
+
+if ( keigai.util.element.is( document.querySelector( &quot;#something&quot; ), &quot;:first-child&quot; ) ) {
+  ...
+}</pre>
 
 
     
@@ -3464,7 +3489,11 @@ An id is generated if not specified with args.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">&#x2F;&#x2F; Adding a classkeigai.util.element.klass( document.querySelector( &quot;#something&quot; ), &quot;newClass&quot; );&#x2F;&#x2F; Removing a classkeigai.util.element.klass( document.querySelector( &quot;#something&quot; ), &quot;newClass&quot;, false );</pre>
+    <pre class="sunlight-highlight-javascript">&#x2F;&#x2F; Adding a class
+keigai.util.element.klass( document.querySelector( &quot;#something&quot; ), &quot;newClass&quot; );
+
+&#x2F;&#x2F; Removing a class
+keigai.util.element.klass( document.querySelector( &quot;#something&quot; ), &quot;newClass&quot;, false );</pre>
 
 
     
@@ -4322,7 +4351,9 @@ An id is generated if not specified with args.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">keigai.util.element.scrollTo( document.querySelector( &quot;#something&quot; ) ).then( () =&gt; {  ...} );</pre>
+    <pre class="sunlight-highlight-javascript">keigai.util.element.scrollTo( document.querySelector( &quot;#something&quot; ) ).then( () =&gt; {
+  ...
+} );</pre>
 
 
     
@@ -4823,7 +4854,10 @@ An id is generated if not specified with args.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">let obj  = document.querySelector( &quot;#something&quot; ),    text = keigai.util.element.text( obj );keigai.util.element.text( obj, text + &quot;, and some more text&quot; );</pre>
+    <pre class="sunlight-highlight-javascript">let obj  = document.querySelector( &quot;#something&quot; ),
+    text = keigai.util.element.text( obj );
+
+keigai.util.element.text( obj, text + &quot;, and some more text&quot; );</pre>
 
 
     
@@ -4990,7 +5024,11 @@ An id is generated if not specified with args.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">let obj = document.querySelector( &quot;#something&quot; );obj.addEventListener( &quot;click&quot;, ( ev ) =&gt; {  keigai.util.element.toggleClass( obj, &quot;active&quot; );}, false );</pre>
+    <pre class="sunlight-highlight-javascript">let obj = document.querySelector( &quot;#something&quot; );
+
+obj.addEventListener( &quot;click&quot;, ( ev ) =&gt; {
+  keigai.util.element.toggleClass( obj, &quot;active&quot; );
+}, false );</pre>
 
 
     
@@ -5356,7 +5394,7 @@ An id is generated if not specified with args.</p>
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on 2015-04-10T13:14:49-04:00 using the <a
+		on 2015-04-22T07:22:39-04:00 using the <a
 			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
