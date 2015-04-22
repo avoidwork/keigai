@@ -82,7 +82,16 @@ class DataStore extends Base {
 				defer.resolve( this.records );
 			} else {
 				if ( this.patch ) {
-					patch.push( this[ type ]( i, false, true, true ) );
+					if ( type === "del" ) {
+						array.each( data, ( i ) => {
+							patch.push( this.del( i, false, true ) );
+						} );
+					} else {
+						array.each( data, ( i ) => {
+							patch.push( this.set( i[ this.key ] || null, i, true, false, true ) );
+						} );
+					}
+
 					deferreds.push( client.request( this.uri, "PATCH", patch, utility.merge( { withCredentials: this.credentials }, this.headers ) ).then( function () {
 						/* reconcile data store */
 						return self.records;
@@ -91,9 +100,15 @@ class DataStore extends Base {
 					} ) );
 				} else {
 					// Batch deletion will create a sparse array, which will be compacted before re-indexing
-					array.each( data, ( i ) => {
-						deferreds.push( this[ type ]( i, false, true, true ) );
-					} );
+					if ( type === "del" ) {
+						array.each( data, ( i ) => {
+							deferreds.push( this.del( i, false, true ) );
+						} );
+					} else {
+						array.each( data, ( i ) => {
+							deferreds.push( this.set( i[ this.key ] || null, i, true ) );
+						} );
+					}
 				}
 
 				this.loaded = false;
