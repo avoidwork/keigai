@@ -93,7 +93,14 @@ class DataStore extends Base {
 					}
 
 					deferreds.push( client.request( this.uri, "PATCH", patch, utility.merge( { withCredentials: this.credentials }, this.headers ) ).then( function () {
-						/* reconcile data store */
+						if ( type === "del" ) {
+							array.each( data, ( i ) => {
+								self.delComplete( i.key ? i : self.get( i ), false, true );
+							} );
+						} else {
+
+						}
+
 						return self.records;
 					}, function ( e ) {
 						throw e;
@@ -339,7 +346,7 @@ class DataStore extends Base {
 			this.records[ record.index ] = null;
 		}
 
-		return defer.resolve( record.key );
+		return defer !== undefined ? defer.resolve( record.key ) : record.key;
 	}
 
 	/**
@@ -976,7 +983,9 @@ class DataStore extends Base {
 			} );
 		}
 
-		defer.resolve( record );
+		if ( defer !== undefined ) {
+			defer.resolve( record );
+		}
 
 		return this;
 	};
