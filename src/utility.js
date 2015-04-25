@@ -101,7 +101,7 @@ let utility = {
 			utility.merge( obj, arg );
 		}
 
-		obj.observer = observable.factory();
+		obj.observer = observable();
 
 		return obj;
 	},
@@ -749,7 +749,7 @@ let utility = {
 	 * defer2.resolve( true );
 	 */
 	race: ( ...args ) => {
-		let defer = deferred.factory();
+		let defer = deferred();
 
 		// Did we receive an Array? if so it overrides any other arguments
 		if ( args[ 0 ] instanceof Array ) {
@@ -789,7 +789,7 @@ let utility = {
 	 * } );
 	 */
 	render: ( fn ) => {
-		let defer = deferred.factory();
+		let defer = deferred();
 
 		RENDER( ( arg ) => {
 			try {
@@ -955,7 +955,7 @@ let utility = {
 	 * defer2.resolve( true );
 	 */
 	when: ( ...args ) => {
-		let defer = deferred.factory();
+		let defer = deferred();
 
 		// Did we receive an Array? if so it overrides any other arguments
 		if ( args[ 0 ] instanceof Array ) {

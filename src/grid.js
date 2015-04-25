@@ -32,7 +32,7 @@ class DataGrid extends Base {
 		this.fields = fields;
 		this.filtered = filtered;
 		this.list = null;
-		this.observer = observable.factory();
+		this.observer = observable();
 		this.options = options;
 		this.store = store;
 		this.sortable = sortable;
@@ -190,113 +190,106 @@ class DataGrid extends Base {
 }
 
 /**
- * @namespace grid
+ * DataGrid factory
+ *
+ * @method factory
+ * @memberOf grid
+ * @fires keigai.DataGrid#change Fires when the DOM changes
+ * @param  {Object}  target      Element to receive DataGrid
+ * @param  {Object}  store       DataStore
+ * @param  {Array}   fields      Array of fields to display
+ * @param  {Array}   sortable    [Optional] Array of sortable columns/fields
+ * @param  {Object}  options     [Optional] DataList options
+ * @param  {Boolean} filtered    [Optional] Create an input to filter the data grid
+ * @param  {Number}  debounce    [Optional] DataListFilter input debounce, default is 250
+ * @return {Object} {@link keigai.DataGrid}
+ * @example
+ * let fields  = ["name", "age"],
+ *     options = {pageSize: 5, order: "age desc, name"},
+ *     store   = keigai.store(),
+ *     grid    = keigai.grid( document.querySelector( "#grid" ), store, fields, fields, options, true );
+ *
+ * store.setUri( "data.json" ).then( null, function ( e ) {
+ *   ...
+ * } );
  */
-let grid = {
-	/**
-	 * DataGrid factory
-	 *
-	 * @method factory
-	 * @memberOf grid
-	 * @fires keigai.DataGrid#change Fires when the DOM changes
-	 * @param  {Object}  target      Element to receive DataGrid
-	 * @param  {Object}  store       DataStore
-	 * @param  {Array}   fields      Array of fields to display
-	 * @param  {Array}   sortable    [Optional] Array of sortable columns/fields
-	 * @param  {Object}  options     [Optional] DataList options
-	 * @param  {Boolean} filtered    [Optional] Create an input to filter the data grid
-	 * @param  {Number}  debounce    [Optional] DataListFilter input debounce, default is 250
-	 * @return {Object} {@link keigai.DataGrid}
-	 * @example
-	 * let fields  = ["name", "age"],
-	 *     options = {pageSize: 5, order: "age desc, name"},
-	 *     store   = keigai.store(),
-	 *     grid    = keigai.grid( document.querySelector( "#grid" ), store, fields, fields, options, true );
-	 *
-	 * store.setUri( "data.json" ).then( null, function ( e ) {
-	 *   ...
-	 * } );
-	 */
-	factory: ( target, store, fields, sortable, options, filtered, debounce ) => {
-		let ref = [ store ];
-		let obj = new DataGrid( target, ref[ 0 ], fields, sortable, options, filtered );
-		let template = "";
-		let header = element.create( "li", {}, element.create( "ul", { "class": "header" }, obj.element ) );
-		let width = ( 100 / obj.fields.length ) + "%";
-		let css = "display:inline-block;width:" + width;
-		let sort = obj.options.order ? string.explode( obj.options.order ) : [];
+let grid = function ( target, store, fields, sortable, options, filtered, debounce=250 ) {
+	let ref = [ store ];
+	let obj = new DataGrid( target, ref[ 0 ], fields, sortable, options, filtered );
+	let template = "";
+	let header = element.create( "li", {}, element.create( "ul", { "class": "header" }, obj.element ) );
+	let width = ( 100 / obj.fields.length ) + "%";
+	let css = "display:inline-block;width:" + width;
+	let sort = obj.options.order ? string.explode( obj.options.order ) : [];
 
-		// Creating DataList template based on fields
-		array.each( obj.fields, ( i ) => {
-			let trimmed = i.replace( /.*\./g, "" );
-			let el = element.create( "span", {
-				innerHTML: string.capitalize( string.unCamelCase( string.unhyphenate( trimmed, true ) ).replace( /_|-/g, " " ), true ),
-				style: css,
-				"data-field": i
-			}, header );
+	// Creating DataList template based on fields
+	array.each( obj.fields, ( i ) => {
+		let trimmed = i.replace( /.*\./g, "" );
+		let el = element.create( "span", {
+			innerHTML: string.capitalize( string.unCamelCase( string.unhyphenate( trimmed, true ) ).replace( /_|-/g, " " ), true ),
+			style: css,
+			"data-field": i
+		}, header );
 
-			// Adding CSS class if "column" is sortable
-			if ( array.contains( obj.sortable, i ) ) {
-				element.addClass( el, "sortable" );
+		// Adding CSS class if "column" is sortable
+		if ( array.contains( obj.sortable, i ) ) {
+			element.addClass( el, "sortable" );
 
-				// Applying default sort, if specified
-				if ( sort.filter( ( x ) => {
-						return ( x.indexOf( i ) === 0 );
-					} ).length > 0 ) {
-					element.data( el, "sort", array.contains( sort, i + " desc" ) ? "desc" : "asc" );
-				}
+			// Applying default sort, if specified
+			if ( sort.filter( ( x ) => {
+					return ( x.indexOf( i ) === 0 );
+				} ).length > 0 ) {
+				element.data( el, "sort", array.contains( sort, i + " desc" ) ? "desc" : "asc" );
 			}
-
-			template += "<span class=\"" + i + "\" data-field=\"" + i + "\" style=\"" + css + "\">{{" + i + "}}</span>";
-		} );
-
-		// Setting click handler on sortable "columns"
-		if ( obj.sortable.length > 0 ) {
-			obj.observer.hook( header.parentNode, "click", obj.sort, "sort", obj );
 		}
 
-		if ( obj.filtered === true ) {
-			obj.options.listFiltered = true;
-			obj.options.listFilter = obj.fields.join( "," );
-		}
+		template += "<span class=\"" + i + "\" data-field=\"" + i + "\" style=\"" + css + "\">{{" + i + "}}</span>";
+	} );
 
-		if ( debounce !== undefined ) {
-			obj.options.debounce = debounce;
-		}
-
-		// Creating DataList
-		ref.push( list.factory( obj.element, ref[ 0 ], template, obj.options ) );
-
-		// Setting by-reference DataList on DataGrid
-		obj.list = ref[ 1 ];
-
-		// Setting up a chain of Events
-		obj.on( "beforeRefresh", ( arg ) => {
-			element.dispatch( arg, "beforeRefresh" );
-		}, "bubble" );
-
-		obj.on( "afterRefresh", ( arg ) => {
-			element.dispatch( arg, "afterRefresh" );
-		}, "bubble" );
-
-		obj.on( "click", ( e ) => {
-			if ( element.hasClass( e.currentTarget, "header" ) ) {
-				obj.sort( e );
-			}
-		}, "header" );
-
-		obj.list.on( "change", ( ...args ) => {
-			obj.dispatch.apply( obj, [ "change" ].concat( args ) );
-		}, "change" );
-
-		obj.list.on( "beforeFilter", ( ...args ) => {
-			obj.dispatch.apply( obj, [ "beforeFilter" ].concat( args ) );
-		}, "beforeFilter" );
-
-		obj.list.on( "afterFilter", ( ...args ) => {
-			obj.dispatch.apply( obj, [ "afterFilter" ].concat( args ) );
-		}, "afterFilter" );
-
-		return obj;
+	// Setting click handler on sortable "columns"
+	if ( obj.sortable.length > 0 ) {
+		obj.observer.hook( header.parentNode, "click", obj.sort, "sort", obj );
 	}
+
+	if ( obj.filtered === true ) {
+		obj.options.listFiltered = true;
+		obj.options.listFilter = obj.fields.join( "," );
+	}
+
+	obj.options.debounce = debounce;
+
+	// Creating DataList
+	ref.push( list.factory( obj.element, ref[ 0 ], template, obj.options ) );
+
+	// Setting by-reference DataList on DataGrid
+	obj.list = ref[ 1 ];
+
+	// Setting up a chain of Events
+	obj.on( "beforeRefresh", ( arg ) => {
+		element.dispatch( arg, "beforeRefresh" );
+	}, "bubble" );
+
+	obj.on( "afterRefresh", ( arg ) => {
+		element.dispatch( arg, "afterRefresh" );
+	}, "bubble" );
+
+	obj.on( "click", ( e ) => {
+		if ( element.hasClass( e.currentTarget, "header" ) ) {
+			obj.sort( e );
+		}
+	}, "header" );
+
+	obj.list.on( "change", ( ...args ) => {
+		obj.dispatch.apply( obj, [ "change" ].concat( args ) );
+	}, "change" );
+
+	obj.list.on( "beforeFilter", ( ...args ) => {
+		obj.dispatch.apply( obj, [ "beforeFilter" ].concat( args ) );
+	}, "beforeFilter" );
+
+	obj.list.on( "afterFilter", ( ...args ) => {
+		obj.dispatch.apply( obj, [ "afterFilter" ].concat( args ) );
+	}, "afterFilter" );
+
+	return obj;
 };

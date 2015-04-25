@@ -145,7 +145,7 @@ let xhr = () => {
 			this.responseXML = null;
 			this.status = UNSENT;
 			this.statusText = "";
-			this.observer = observable.factory();
+			this.observer = observable();
 
 			// Psuedo private for prototype chain
 			this._error = false;

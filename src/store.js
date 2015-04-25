@@ -24,7 +24,7 @@ class DataStore extends Base {
 		this.key = null;
 		this.loaded = false;
 		this.mongodb = "";
-		this.observer = observable.factory();
+		this.observer = observable();
 		this.patch = false;
 		this.records = [];
 		this.source = null;
@@ -57,7 +57,7 @@ class DataStore extends Base {
 	batch ( type, data, sync=false ) {
 		let self = this;
 		let events = this.events;
-		let defer = deferred.factory();
+		let defer = deferred();
 		let deferreds = [];
 		let patch = [];
 
@@ -274,7 +274,7 @@ class DataStore extends Base {
 			return { op: "remove", path: "/" + record.key };
 		}
 
-		defer = deferred.factory();
+		defer = deferred();
 
 		if ( record === undefined ) {
 			defer.reject( new Error( label.invalidArguments ) );
@@ -450,7 +450,7 @@ class DataStore extends Base {
 	 * let data = store.join( otherStore, "commonField" );
 	 */
 	join ( arg, field, join="inner" ) {
-		let defer = deferred.factory();
+		let defer = deferred();
 		let results = [];
 		let deferreds = [];
 		let key = field === this.key;
@@ -461,7 +461,7 @@ class DataStore extends Base {
 			fn = ( i ) => {
 				let where = {},
 					record = i.data,
-					defer = deferred.factory();
+					defer = deferred();
 
 				where[ field ] = key ? i.key : record[ field ];
 
@@ -482,7 +482,7 @@ class DataStore extends Base {
 			fn = ( i ) => {
 				let where = {},
 					record = i.data,
-					defer = deferred.factory();
+					defer = deferred();
 
 				where[ field ] = key ? i.key : record[ field ];
 
@@ -510,7 +510,7 @@ class DataStore extends Base {
 			fn = ( i ) => {
 				let where = {},
 					record = i.data,
-					defer = deferred.factory();
+					defer = deferred();
 
 				where[ field ] = key ? i.key : record[ field ];
 
@@ -660,7 +660,7 @@ class DataStore extends Base {
 	 * } );
 	 */
 	select ( where ) {
-		let defer = deferred.factory();
+		let defer = deferred();
 		let functions = [];
 		let clauses, cond, index, result, sorted, values, worker;
 
@@ -773,7 +773,7 @@ class DataStore extends Base {
 		data = utility.clone( data, true );
 
 		let events = this.events;
-		let defer = deferred.factory();
+		let defer = deferred();
 		let record = key !== null ? this.get( key ) || null : data[ this.key ] ? this.get( data[ this.key ] ) || null : null;
 		let method = "POST";
 		let parsed = utility.parse( this.uri || "" );
@@ -1092,7 +1092,7 @@ class DataStore extends Base {
 	 * } );
 	 */
 	setUri ( arg ) {
-		let defer = deferred.factory();
+		let defer = deferred();
 		let parsed;
 
 		if ( arg !== null && string.isEmpty( arg ) ) {
@@ -1145,7 +1145,7 @@ class DataStore extends Base {
 		create = ( create === true || ( where instanceof Object ) );
 
 		let view = string.toCamelCase( string.explode( query ).join( " " ) );
-		let defer = deferred.factory();
+		let defer = deferred();
 
 		// Next phase
 		let next = ( records ) => {
@@ -1211,7 +1211,7 @@ class DataStore extends Base {
 		let record = false;
 		let mongo = !string.isEmpty( this.mongodb );
 		let session = ( type === "session" && typeof sessionStorage !== "undefined" );
-		let defer = deferred.factory();
+		let defer = deferred();
 		let data, key, result;
 
 		if ( !regex.number_string_object.test( typeof obj ) || !regex.get_remove_set.test( op ) ) {
@@ -1334,7 +1334,7 @@ class DataStore extends Base {
 
 										array.each( this.records, ( i ) => {
 											let data = {};
-											let defer2 = deferred.factory();
+											let defer2 = deferred();
 
 											deferreds.push( defer2 );
 
@@ -1437,7 +1437,7 @@ class DataStore extends Base {
 	 */
 	sync () {
 		let events = ( this.events === true );
-		let defer = deferred.factory();
+		let defer = deferred();
 
 		/**
 		 * Resolves public deferred
@@ -1558,7 +1558,7 @@ class DataStore extends Base {
 	 */
 	undo ( key, version ) {
 		let record = this.get( key );
-		let defer = deferred.factory();
+		let defer = deferred();
 		let versions = this.versions[ record.key ];
 		let previous;
 
@@ -1616,7 +1616,7 @@ class DataStore extends Base {
 	 */
 	update ( key, data ) {
 		let record = this.get( key );
-		let defer = deferred.factory();
+		let defer = deferred();
 
 		if ( record === undefined ) {
 			defer.reject( new Error( label.invalidArguments ) );

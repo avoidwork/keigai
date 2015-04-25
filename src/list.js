@@ -22,7 +22,7 @@ class DataList extends Base {
 		this.items = [];
 		this.listFilter = null;
 		this.mutation = null;
-		this.observer = observable.factory();
+		this.observer = observable();
 		this.pageIndex = 1;
 		this.pageSize = null;
 		this.pageRange = 5;
@@ -562,11 +562,11 @@ let list = {
 
 		if ( options instanceof Object ) {
 			if ( options.listFiltered && options.listFilter ) {
-				obj.listFilter = filter.factory( element.create( "input", {
+				obj.listFilter = filter( element.create( "input", {
 					"id": obj.element.id + "-filter",
 					"class": "filter",
 					placeholder: "Filter"
-				}, target, "first" ), obj, options.listFilter, options.debounce || 250 );
+				}, target, "first" ), obj, options.listFilter, options.debounce );
 				delete options.listFilter;
 				delete options.listFiltered;
 				delete options.debounce;
@@ -606,7 +606,7 @@ let list = {
 		}, "pagination" );
 
 		if ( typeof MutationObserver === "function" ) {
-			obj.mutation = new MutationObserver( ( arg ) => {
+			obj.mutation = new MutationObserver( function ( arg ) {
 				obj.dispatch( "change", arg );
 			} );
 

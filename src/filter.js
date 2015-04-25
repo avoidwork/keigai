@@ -20,7 +20,7 @@ class DataListFilter extends Base {
 		this.element = element;
 		this.filters = {};
 		this.list = list;
-		this.observer = observable.factory();
+		this.observer = observable();
 	}
 
 	/**
@@ -110,37 +110,32 @@ class DataListFilter extends Base {
 }
 
 /**
- * @namespace filter
+ * DataListFilter factory
+ *
+ * @method factory
+ * @memberOf filter
+ * @param  {Object} target   Element to receive the filter
+ * @param  {Object} list     {@link keigai.DataList}
+ * @param  {String} filters  Comma delimited string of fields to filter by
+ * @param  {Number} debounce [Optional] Milliseconds to debounce, default is `250`
+ * @return {Object} {@link keigai.DataListFilter}
+ * @example
+ * let store  = keigai.store( [...] ),
+ *     list   = keigai.list( document.querySelector( "#list" ), store, "{{field}}" ),
+ *     filter = keigai.filter( document.querySelector( "input.filter" ), list, "field" );
  */
-let filter = {
-	/**
-	 * DataListFilter factory
-	 *
-	 * @method factory
-	 * @memberOf filter
-	 * @param  {Object} target   Element to receive the filter
-	 * @param  {Object} list     {@link keigai.DataList}
-	 * @param  {String} filters  Comma delimited string of fields to filter by
-	 * @param  {Number} debounce [Optional] Milliseconds to debounce, default is `250`
-	 * @return {Object} {@link keigai.DataListFilter}
-	 * @example
-	 * let store  = keigai.store( [...] ),
-	 *     list   = keigai.list( document.querySelector( "#list" ), store, "{{field}}" ),
-	 *     filter = keigai.filter( document.querySelector( "input.filter" ), list, "field" );
-	 */
-	factory: ( target, list, filters, debounce=250 ) => {
-		let ref = [ list ];
-		let obj = new DataListFilter( target, ref[ 0 ], debounce ).set( filters );
+let filter = function ( target, list, filters, debounce=250 ) {
+	let ref = [ list ];
+	let obj = new DataListFilter( target, ref[ 0 ], debounce ).set( filters );
 
-		// Decorating `target` with the appropriate input `type`
-		element.attr( target, "type", "text" );
+	// Decorating `target` with the appropriate input `type`
+	element.attr( target, "type", "text" );
 
-		// Setting up a chain of Events
-		obj.observer.hook( obj.element, "keyup" );
-		obj.observer.hook( obj.element, "input" );
-		obj.on( "keyup", obj.update, "keyup" );
-		obj.on( "input", obj.update, "input" );
+	// Setting up a chain of Events
+	obj.observer.hook( obj.element, "keyup" );
+	obj.observer.hook( obj.element, "input" );
+	obj.on( "keyup", obj.update, "keyup" );
+	obj.on( "input", obj.update, "input" );
 
-		return obj;
-	}
+	return obj;
 };

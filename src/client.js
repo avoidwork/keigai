@@ -10,8 +10,8 @@ class KXMLHttpRequest extends Base {
 	constructor ( xhr ) {
 		super();
 
-		this.observer = observable.factory();
-		this.defer = deferred.factory();
+		this.observer = observable();
+		this.defer = deferred();
 		this.xhr = xhr;
 
 		// Hooking observer for standard events
@@ -329,7 +329,7 @@ let client = {
 	 * } );
 	 */
 	jsonp: ( uri, args ) => {
-		let defer = deferred.factory();
+		let defer = deferred();
 		let callback = "callback";
 		let cbid, s;
 

@@ -183,26 +183,21 @@ class Deferred {
 }
 
 /**
- * @namespace deferred
+ * Deferred factory
+ *
+ * @method factory
+ * @memberOf deferred
+ * @return {Object} {@link keigai.Deferred}
+ * @example
+ * let deferred = keigai.util.defer();
+ *
+ * deferred.then( function ( ... ) { ... }, function ( err ) { ... } )
+ * deferred.always( function ( ... ) { ... } );
+ *
+ * ...
+ *
+ * deferred.resolve( true );
  */
-let deferred = {
-	/**
-	 * Deferred factory
-	 *
-	 * @method factory
-	 * @memberOf deferred
-	 * @return {Object} {@link keigai.Deferred}
-	 * @example
-	 * let deferred = keigai.util.defer();
-	 *
-	 * deferred.then( function ( ... ) { ... }, function ( err ) { ... } )
-	 * deferred.always( function ( ... ) { ... } );
-	 *
-	 * ...
-	 *
-	 * deferred.resolve( true );
-	 */
-	factory: () => {
-		return new Deferred();
-	}
+let deferred = function () {
+	return new Deferred();
 };

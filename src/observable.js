@@ -168,19 +168,14 @@ class Observable {
 }
 
 /**
- * @namespace observable
+ * Observable factory
+ *
+ * @method factory
+ * @memberOf observable
+ * @return {Object} {@link keigai.Observable}
+ * @example
+ * let observer = keigai.util.observer( 50 );
  */
-let observable = {
-	/**
-	 * Observable factory
-	 *
-	 * @method factory
-	 * @memberOf observable
-	 * @return {Object} {@link keigai.Observable}
-	 * @example
-	 * let observer = keigai.util.observer( 50 );
-	 */
-	factory: ( arg ) => {
-		return new Observable( arg );
-	}
+let observable = function ( arg ) {
+	return new Observable( arg );
 };

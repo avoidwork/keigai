@@ -3,9 +3,9 @@ bootstrap();
 
 // Interface
 return {
-	filter: filter.factory,
+	filter: filter,
 	list: list.factory,
-	grid: grid.factory,
+	grid: grid,
 	store: store.factory,
 	util: {
 		$: utility.$,
@@ -17,7 +17,7 @@ return {
 		coerce: utility.coerce,
 		curry: utility.curry,
 		csv: csv,
-		defer: deferred.factory,
+		defer: deferred,
 		delay: utility.defer,
 		element: element,
 		equal: utility.equal,
@@ -32,7 +32,7 @@ return {
 		merge: utility.merge,
 		next: utility.delay,
 		number: number,
-		observer: observable.factory,
+		observer: observable,
 		parse: utility.parse,
 		partial: utility.partial,
 		prevent: utility.prevent,
