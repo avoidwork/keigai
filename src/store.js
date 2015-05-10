@@ -84,11 +84,11 @@ class DataStore extends Base {
 				if ( this.patch ) {
 					if ( type === "del" ) {
 						array.each( data, ( i ) => {
-							patch.push( this.del( i, false, true ) );
+							patch = patch.concat( this.del( i, false, true ) );
 						} );
 					} else {
 						array.each( data, ( i ) => {
-							patch.push( this.set( i[ this.key ] || null, i, true, false, true ) );
+							patch = patch.concat( this.set( i[ this.key ] || null, i, true, false, true ) );
 						} );
 					}
 
@@ -98,7 +98,12 @@ class DataStore extends Base {
 								self.delComplete( i.key ? i : self.get( i ), false, true );
 							} );
 						} else {
+							array.each( data, ( i ) => {
+								var record = i.key ? i : self.get( i );
 
+								// @todo apply the difference
+								self.setComplete( record, record.key, true, false );
+							} );
 						}
 
 						return self.records;
@@ -247,6 +252,38 @@ class DataStore extends Base {
 	}
 
 	/**
+	 * Creates a JSONPatch Array of operations
+	 *
+	 * @method createPatch
+	 * @memberOf keigai.DataStore
+	 * @param {Boolean} overwrite Overwrite the record
+	 * @param {Object}  data      New data shape
+	 * @param {Object}  ogdata    Original data shape
+	 * @returns {Array}           JSONPatch operations
+	 */
+	createPatch ( overwrite, data, ogdata ) {
+		let ndata = [];
+
+		if ( overwrite ) {
+			array.each( array.keys( ogdata ), ( k ) => {
+				if ( k !== this.key && data[ k ] === undefined ) {
+					ndata.push( { op: "remove", path: "/" + k } );
+				}
+			} );
+		}
+
+		utility.iterate( data, ( v, k ) => {
+			if ( k !== this.key && ogdata[ k ] === undefined ) {
+				ndata.push( { op: "add", path: "/" + k, value: v } );
+			} else if ( json.encode( ogdata[ k ] ) !== json.encode( v ) ) {
+				ndata.push( { op: "replace", path: "/" + k, value: v } );
+			}
+		} );
+
+		return ndata;
+	}
+
+	/**
 	 * Deletes a record based on key or index
 	 *
 	 * @method del
@@ -268,10 +305,13 @@ class DataStore extends Base {
 	del ( record, reindex=true, batch=false, jsonpatch=false ) {
 		record = record.key ? record : this.get( record );
 
-		let defer;
+		let defer, dupe;
 
 		if ( jsonpatch ) {
-			return { op: "remove", path: "/" + record.key };
+			dupe = utility.clone( this.index.keys, true );
+			delete dupe[ record.key ];
+
+			return this.createPatch( true, dupe, this.indexes.keys );
 		}
 
 		defer = deferred();
@@ -780,30 +820,8 @@ class DataStore extends Base {
 		let parsed = utility.parse( this.uri || "" );
 		let uri, odata, rdefer;
 
-		let patch = ( overwrite, data, ogdata ) => {
-			let ndata = [];
-
-			if ( overwrite ) {
-				array.each( array.keys( ogdata ), ( k ) => {
-					if ( k !== this.key && data[ k ] === undefined ) {
-						ndata.push( { op: "remove", path: "/" + k } );
-					}
-				} );
-			}
-
-			utility.iterate( data, ( v, k ) => {
-				if ( k !== this.key && ogdata[ k ] === undefined ) {
-					ndata.push( { op: "add", path: "/" + k, value: v } );
-				} else if ( json.encode( ogdata[ k ] ) !== json.encode( v ) ) {
-					ndata.push( { op: "replace", path: "/" + k, value: v } );
-				}
-			} );
-
-			return ndata;
-		};
-
 		if ( jsonpatch ) {
-			return patch( overwrite, data, this.dump( [ record ] )[ 0 ] );
+			return this.createPatch( overwrite, data, this.dump( [ record ] )[ 0 ] );
 		}
 
 		if ( typeof data === "string" ) {
@@ -1116,9 +1134,9 @@ class DataStore extends Base {
 
 			cache.expire( this.uri );
 
-			this.sync().then( ( arg ) => {
+			this.sync().then( function ( arg ) {
 				defer.resolve( arg );
-			}, ( e ) => {
+			}, function ( e ) {
 				defer.reject( e );
 			} );
 		}
@@ -1465,6 +1483,8 @@ class DataStore extends Base {
 			} else {
 				data = [ arg ];
 			}
+
+			this.patch = true;
 
 			this.batch( "set", data, true ).then( ( arg ) => {
 				if ( events ) {
