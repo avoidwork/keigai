@@ -11,17 +11,17 @@ let csv = {
 	 * @param  {String} delimiter [Optional] Delimiter to split columns on, default is ","
 	 * @return {Array}            Array of Objects
 	 */
-	decode: ( arg, delimiter="," ) => {
+	decode: function ( arg, delimiter="," ) {
 		let regex = new RegExp( delimiter + "(?=(?:[^\"]|\"(?:[^\"])[^\"]*\")*$)" );
 		let rows = string.trim( arg ).split( "\n" );
 		let keys = rows.shift().split( delimiter );
 		let result;
 
-		result = rows.map( ( r ) => {
+		result = rows.map( function ( r ) {
 			let obj = {};
 			let row = r.split( regex );
 
-			array.each( keys, ( i, idx ) => {
+			array.each( keys, function ( i, idx ) {
 				obj[ i ] = utility.coerce( ( row[ idx ] || "" ).replace( /^"|"$/g, "" ) );
 			} );
 
@@ -48,7 +48,7 @@ let csv = {
 	 *  value
 	 *  value2"
 	 */
-	encode: ( arg, delimiter=",", header=true ) => {
+	encode: function ( arg, delimiter=",", header=true ) {
 		let obj = json.decode( arg, true ) || arg;
 		let result = "";
 
@@ -79,7 +79,7 @@ let csv = {
 					result = ( array.keys( obj[ 0 ] ).join( delimiter ) + "\n" );
 				}
 
-				result += obj.map( ( i ) => {
+				result += obj.map( function ( i ) {
 					return csv.encode( i, delimiter, false );
 				} ).join( "\n" );
 			} else {

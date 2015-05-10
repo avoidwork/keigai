@@ -25,7 +25,7 @@ class Observable {
 	 */
 	dispatch ( ev, ...args ) {
 		if ( ev && this.listeners[ ev ] ) {
-			utility.iterate( this.listeners[ ev ], ( i ) => {
+			utility.iterate( this.listeners[ ev ], function ( i ) {
 				i.handler.apply( i.scope, args );
 			} );
 		}
@@ -56,7 +56,7 @@ class Observable {
 		};
 
 		this.hooks.set( target, obj );
-		target.addEventListener( ev, this.hooks.get( target )[ev], false );
+		target.addEventListener( ev, this.hooks.get( target )[ ev ], false );
 
 		return target;
 	}

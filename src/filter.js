@@ -83,7 +83,7 @@ class DataListFilter extends Base {
 					let queries = string.explode( val );
 
 					// Ignoring trailing commas
-					queries = queries.filter( ( i ) => {
+					queries = queries.filter( function ( i ) {
 						return !string.isEmpty( i );
 					} );
 

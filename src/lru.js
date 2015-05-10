@@ -164,7 +164,7 @@ let lru = {
 	 * @example
 	 * let lru = keigai.util.lru( 50 );
 	 */
-	factory: ( max ) => {
+	factory: function ( max ) {
 		return new LRU( max );
 	}
 };

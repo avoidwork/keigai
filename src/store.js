@@ -168,7 +168,7 @@ class DataStore extends Base {
 	buildUri ( key ) {
 		let parsed = utility.parse( this.uri );
 
-		return parsed.protocol + "//" + parsed.host + parsed.pathname + ( regex.endslash.test( parsed.pathname ) ? "" : "/" ) + key;
+		return parsed.protocol + "//" + parsed.host + parsed.pathname.replace( regex.endslash, "" ) + "/" + key;
 	}
 
 	/**
@@ -653,10 +653,11 @@ class DataStore extends Base {
 	 * @example
 	 * let adults;
 	 *
-	 * store.select( {age: ( i ) { return i >= 21; } } ).then( function ( records ) => {
+	 * store.select( {age: function ( i ) { return i >= 21; } } ).then( function ( records ) {
 	 *   adults = records;
 	 * }, ( err ) => {
-	 *   ...
+	 *   adults = [];
+	 *   console.error( err.stack || err.message || err );
 	 * } );
 	 */
 	select ( where ) {
@@ -1653,7 +1654,7 @@ let store = {
 	 *   // Handle `e`
 	 * } );
 	 */
-	factory: ( recs, args ) => {
+	factory: function ( recs, args ) {
 		let obj = new DataStore();
 
 		if ( args instanceof Object ) {
@@ -1676,7 +1677,7 @@ let store = {
 	 * @return {Undefined} undefined
 	 * @private
 	 */
-	worker: ( ev ) => {
+	worker: function ( ev ) {
 		let cmd = ev.data.cmd;
 		let records = ev.data.records;
 		let clauses, cond, functions, indexes, index, result, sorted, where, values;

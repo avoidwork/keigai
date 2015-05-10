@@ -236,7 +236,7 @@ class DataList extends Base {
 				html = html.replace( "{{" + this.store.key + "}}", i.key );
 
 				// Replacing dot notation properties
-				array.each( items, ( attr ) => {
+				array.each( items, function ( attr ) {
 					let key = attr.replace( /\{\{|\}\}/g, "" ),
 						value = utility.walk( i.data, key );
 
@@ -262,7 +262,7 @@ class DataList extends Base {
 				obj = obj.replace( "{{" + this.store.key + "}}", i.key );
 
 				// Replacing dot notation properties
-				array.each( items, ( attr ) => {
+				array.each( items, function ( attr ) {
 					let key = attr.replace( /\{\{|\}\}/g, "" );
 					let value = utility.walk( i.data, key ) || "";
 
@@ -334,7 +334,7 @@ class DataList extends Base {
 			}
 
 			// Processing records & generating templates
-			array.each( this.current, ( i ) => {
+			array.each( this.current, function ( i ) {
 				let html = fn( i );
 				let hash = btoa( html );
 
@@ -351,7 +351,7 @@ class DataList extends Base {
 					element.html( el, "<li class=\"empty\">" + this.emptyMsg + "</li>" );
 				} else {
 					if ( this.items.length === 0 ) {
-						element.html( el, items.map( ( i ) => {
+						element.html( el, items.map( function ( i ) {
 							return i.template;
 						} ).join( "" ) );
 
@@ -379,7 +379,7 @@ class DataList extends Base {
 								destroy.push( i );
 							}
 
-							array.each( destroy.reverse(), ( i ) => {
+							array.each( destroy.reverse(), function ( i ) {
 								element.destroy( el.childNodes[ i ] );
 							} );
 						}
@@ -399,7 +399,7 @@ class DataList extends Base {
 				if ( this.pageSize !== null && regex.top_bottom.test( this.pagination ) && !isNaN( this.pageIndex ) && !isNaN( this.pageSize ) ) {
 					this.pages();
 				} else {
-					array.each( utility.$( "#" + el.id + "-pages-top, #" + el.id + "-pages-bottom" ), ( i ) => {
+					array.each( utility.$( "#" + el.id + "-pages-top, #" + el.id + "-pages-bottom" ), function ( i ) {
 						element.destroy( i );
 					} );
 				}
@@ -438,7 +438,7 @@ class DataList extends Base {
 	 * @return {Object} {@link keigai.DataList}
 	 * @example
 	 * // Adding a click handler to 'trash' Elements
-	 * keigai.util.array.cast( document.querySelectorAll( ".list .trash" ) ).forEach( ( i ) => {
+	 * keigai.util.array.cast( document.querySelectorAll( ".list .trash" ) ).forEach( function ( i ) {
 	 *   i.addEventListener( "click", ( ev ) => {
 	 *     let key = keigai.util.element.data( keigai.util.target( ev ).parentNode, "key" );
 	 *
@@ -556,7 +556,7 @@ let list = {
 	 * let store = keigai.store( [...] ),
 	 *     list  = keigai.list( document.querySelector("#list"), store, "{{name}}", {order: "name"} );
 	 */
-	factory: ( target, store, template, options ) => {
+	factory: function ( target, store, template, options ) {
 		let ref = [ store ];
 		let obj = new DataList( element.create( "ul", { "class": "list", id: utility.genId( null, true ) }, target ), ref[ 0 ], template );
 
@@ -578,19 +578,19 @@ let list = {
 		obj.store.lists.push( obj );
 
 		// Setting up a chain of Events
-		obj.on( "beforeRefresh", ( arg ) => {
+		obj.on( "beforeRefresh", function ( arg ) {
 			element.dispatch( arg, "beforeRefresh" );
 		}, "bubble" );
 
-		obj.on( "afterRefresh", ( arg ) => {
+		obj.on( "afterRefresh", function ( arg ) {
 			element.dispatch( arg, "afterRefresh" );
 		}, "bubble" );
 
-		obj.on( "change", ( arg ) => {
+		obj.on( "change", function ( arg ) {
 			element.dispatch( obj.element, "change", arg );
 		}, "change" );
 
-		obj.on( "click", ( e ) => {
+		obj.on( "click", function ( e ) {
 			let target = utility.target( e );
 			let page;
 
@@ -605,7 +605,7 @@ let list = {
 			}
 		}, "pagination" );
 
-		if ( typeof MutationObserver === "function" ) {
+		if ( mutation ) {
 			obj.mutation = new MutationObserver( function ( arg ) {
 				obj.dispatch( "change", arg );
 			} );
@@ -629,7 +629,7 @@ let list = {
 	 * @return {Number} Total pages
 	 * @private
 	 */
-	pages: ( obj ) => {
+	pages: function ( obj ) {
 		if ( isNaN( obj.pageSize ) ) {
 			throw new Error( label.invalidArguments );
 		}
@@ -645,7 +645,7 @@ let list = {
 	 * @return {Array}  Array of start & end numbers
 	 * @private
 	 */
-	range: ( obj ) => {
+	range: function ( obj ) {
 		let start = ( obj.pageIndex * obj.pageSize ) - obj.pageSize;
 		let end = obj.pageSize;
 

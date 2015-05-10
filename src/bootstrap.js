@@ -5,16 +5,16 @@
  * @private
  * @return {Undefined} undefined
  */
-let bootstrap = () => {
+let bootstrap = function () {
 	// ES6 Array shims
 	if ( Array.from === undefined ) {
-		Array.from = ( arg ) => {
+		Array.from = function ( arg ) {
 			return [].slice.call( arg );
 		};
 	}
 
 	if ( Array.keys === undefined ) {
-		Array.keys = ( arg ) => {
+		Array.keys = function ( arg ) {
 			return Object.keys( arg );
 		};
 	}
@@ -39,7 +39,7 @@ let bootstrap = () => {
 	// DataStore Worker "script"
 	if ( webWorker ) {
 		try {
-			WORKER = global.URL.createObjectURL(utility.blob("var " + string.fromObject(array, "array") + ", " + string.fromObject(regex, "regex") + ", " + string.fromObject(string, "string") + ", " + string.fromObject(utility, "utility") + "; onmessage = " + store.worker.toString() + ";"));
+			WORKER = global.URL.createObjectURL( utility.blob( "var " + string.fromObject( array, "array" ) + ", " + string.fromObject( regex, "regex" ) + ", " + string.fromObject( string, "string" ) + ", " + string.fromObject( utility, "utility" ) + "; onmessage = " + store.worker.toString() + ";" ) );
 		}
 		catch ( e ) {
 			webWorker = false;
@@ -52,10 +52,10 @@ let bootstrap = () => {
 	if ( global.requestAnimationFrame !== undefined ) {
 		RENDER = global.requestAnimationFrame
 	} else {
-		RENDER = ( fn ) => {
+		RENDER = function ( fn ) {
 			let offset = new Date().getTime() - TIME;
 
-			utility.defer( () => {
+			utility.defer( function () {
 				fn( offset );
 			}, 16, offset );
 		};

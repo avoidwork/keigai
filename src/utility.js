@@ -22,16 +22,16 @@ let utility = {
 	 * let $ = keigai.util.$;
 	 *
 	 * // Looking for Elements
-	 * $( ".someClass" ).forEach( ( i ) => {
+	 * $( ".someClass" ).forEach( function ( i ) {
 	 *   ...
 	 * } );
 	 *
 	 * // Creating an H1 Element
-	 * $( "&lt;h1&gt;" ).forEach( ( i ) => {
+	 * $( "&lt;h1&gt;" ).forEach( function ( i ) {
 	 *   ...
 	 * } );
 	 */
-	$: ( arg ) => {
+	$: function ( arg ) {
 		let result;
 
 		// Nothing
@@ -82,7 +82,7 @@ let utility = {
 	 * @example
 	 * keigai.util.banner();
 	 */
-	banner: () => {
+	banner: function () {
 		console.log( {{BANNER}}.join( "\n" ) );
 	},
 
@@ -94,7 +94,7 @@ let utility = {
 	 * @param  {Object} arg [Optional] Decorative Object
 	 * @return {Object}     Instance of Base
 	 */
-	base: ( arg ) => {
+	base: function ( arg ) {
 		let obj = new Base();
 
 		if ( arg instanceof Object ) {
@@ -115,7 +115,7 @@ let utility = {
 	 * @return {Object}     Blob
 	 * @private
 	 */
-	blob: ( arg ) => {
+	blob: function ( arg ) {
 		let obj;
 
 		try {
@@ -142,7 +142,7 @@ let utility = {
 	 * @example
 	 * keigai.util.clearTimers( 'helloWorld' );
 	 */
-	clearTimers: ( id ) => {
+	clearTimers: function ( id ) {
 		if ( utility.timer[ id ] ) {
 			clearTimeout( utility.timer[ id ] );
 			delete utility.timer[ id ];
@@ -163,7 +163,7 @@ let utility = {
 	 *
 	 * y.a; // true
 	 */
-	clone: ( obj, shallow=false ) => {
+	clone: function ( obj, shallow=false ) {
 		let clone, result;
 
 		if ( shallow === true ) {
@@ -173,7 +173,7 @@ let utility = {
 		} else if ( obj instanceof Array ) {
 			result = [];
 
-			array.each( obj, ( i, idx ) => {
+			array.each( obj, function ( i, idx ) {
 				result[ idx ] = utility.clone( i );
 			} );
 
@@ -190,7 +190,7 @@ let utility = {
 				clone = json.decode( clone );
 
 				// Decorating Functions that would be lost with JSON encoding/decoding
-				utility.iterate( obj, ( v, k ) => {
+				utility.iterate( obj, function ( v, k ) {
 					if ( typeof v === "function" ) {
 						clone[ k ] = v;
 					}
@@ -215,7 +215,7 @@ let utility = {
 	 * @example
 	 * keigai.util.coerce( "1" ); // 1
 	 */
-	coerce: ( value ) => {
+	coerce: function ( value ) {
 		let tmp;
 
 		if ( value === null || value === undefined ) {
@@ -252,7 +252,7 @@ let utility = {
 	 * @return {Boolean}          true
 	 * @private
 	 */
-	compile: ( reg, pattern, modifiers ) => {
+	compile: function ( reg, pattern, modifiers ) {
 		reg.compile( pattern, modifiers );
 
 		return true;
@@ -268,7 +268,7 @@ let utility = {
 	 * @return {Function} Curried Function
 	 * @example
 	 * function f ( a, b ) {
-	 *   return ( n ) => {
+	 *   return function ( n ) {
 	 *     return ( a + b ) * n;
 	 *   };
 	 * }
@@ -277,11 +277,11 @@ let utility = {
 	 *
 	 * g( 5 ); // 50
 	 */
-	curry: ( fn, ...args ) => {
-		let cfn = fn.apply( fn, args );
+	curry: function ( fn, ...x ) {
+		let cfn = fn.apply( fn, x );
 
-		return ( ...args ) => {
-			return cfn.apply( cfn, args );
+		return function ( ...y ) {
+			return cfn.apply( cfn, y );
 		};
 	},
 
@@ -300,14 +300,14 @@ let utility = {
 	 *   console.log( 'hello world' );
 	 * }, 1000, 'helloWorld' );
 	 */
-	defer: ( fn, ms=0, id=undefined ) => {
+	defer: function ( fn, ms=0, id=undefined ) {
 		if ( typeof id === "string" ) {
 			utility.clearTimers( id );
 		} else {
 			id = utility.uuid( true );
 		}
 
-		utility.timer[ id ] = setTimeout( () => {
+		utility.timer[ id ] = setTimeout( function () {
 			utility.clearTimers( id );
 			fn();
 		}, ms );
@@ -322,23 +322,23 @@ let utility = {
 	 * @memberOf promise
 	 * @return {Function} Delay method
 	 * @example
-	 * keigai.util.next( () => {
+	 * keigai.util.next( function () {
 	 *   console.log( 'On the next tick' );
 	 * } );
 	 */
-	delay: (() => {
+	delay: ( function () {
 		if ( typeof setImmediate !== "undefined" ) {
-			return ( arg ) => {
+			return function ( arg ) {
 				setImmediate( arg );
 			};
 		} else if ( typeof process !== "undefined" ) {
 			return process.nextTick;
 		} else {
-			return ( arg ) => {
+			return function ( arg ) {
 				setTimeout( arg, 0 );
 			};
 		}
-	})(),
+	} )(),
 
 	/**
 	 * Queries DOM with fastest method
@@ -349,7 +349,7 @@ let utility = {
 	 * @return {Mixed}      undefined, Element, or Array of Elements
 	 * @private
 	 */
-	dom: ( arg ) => {
+	dom: function ( arg ) {
 		let result;
 
 		if ( !regex.selector_complex.test( arg ) ) {
@@ -378,7 +378,7 @@ let utility = {
 	 * @return {String} DOM friendly ID
 	 * @private
 	 */
-	domId: ( arg ) => {
+	domId: function ( arg ) {
 		return "a" + arg.replace( /-/g, "" ).slice( 1 );
 	},
 
@@ -392,7 +392,7 @@ let utility = {
 	 * @return {Boolean}   `true` if equal
 	 * @private
 	 */
-	equal: ( a, b ) => {
+	equal: function ( a, b ) {
 		return json.encode( a, true ) === json.encode( b, true );
 	},
 
@@ -408,7 +408,7 @@ let utility = {
 	 * @return {Object}          Error descriptor
 	 * @private
 	 */
-	error: ( e, args, scope, warning ) => {
+	error: function ( e, args, scope, warning ) {
 		let o = {
 			"arguments": args ? array.cast( args ) : [],
 			message: e.message || e,
@@ -435,7 +435,7 @@ let utility = {
 	 * @example
 	 * let extendObj = keigai.util.extend( someObj, {newProperty: value} );
 	 */
-	extend: ( obj, arg ) => {
+	extend: function ( obj, arg ) {
 		let o = Object.create( obj );
 
 		if ( arg instanceof Object ) {
@@ -458,7 +458,7 @@ let utility = {
 	 * @example
 	 * let id = keigai.util.genId();
 	 */
-	genId: ( obj, dom=false ) => {
+	genId: function ( obj, dom=false ) {
 		let id;
 
 		if ( obj && ( obj.id || ( obj instanceof Array ) || ( typeof obj === "string" || obj instanceof String ) ) ) {
@@ -497,8 +497,8 @@ let utility = {
 	 *   ...
 	 * } );
 	 */
-	iterate: ( obj, fn ) => {
-		array.each( Object.keys( obj ), ( i ) => {
+	iterate: function ( obj, fn ) {
+		array.each( Object.keys( obj ), function ( i ) {
 			return fn.call( obj, obj[ i ], i );
 		} );
 
@@ -516,7 +516,7 @@ let utility = {
 	 * @example
 	 * keigai.util.log( "Something bad happened", "warn" );
 	 */
-	log: ( arg, target="log" ) => {
+	log: function ( arg, target="log" ) {
 		let msg = typeof arg !== "object" ? "[" + new Date().toLocaleTimeString() + "] " + arg : arg;
 
 		console[ target ]( msg );
@@ -536,10 +536,10 @@ let utility = {
 	 * keigai.util.merge( obj, {b: false} )
 	 * console.log(obj); // {a: true, b: false}
 	 */
-	merge: ( obj, arg ) => {
+	merge: function ( obj, arg ) {
 		let keys = array.keys( obj );
 
-		utility.iterate( arg, ( v, k ) => {
+		utility.iterate( arg, function ( v, k ) {
 			if ( !array.contains( keys, k ) || ( v instanceof Function ) ) {
 				obj[ k ] = v;
 			} else if ( ( obj[ k ] instanceof Array ) && ( v instanceof Array ) ) {
@@ -547,7 +547,7 @@ let utility = {
 			} else if ( v instanceof Function ) {
 				obj[ k ] = v;
 			} else if ( ( obj[ k ] instanceof Object ) && ( v instanceof Object ) ) {
-				utility.iterate( v, ( x, y ) => {
+				utility.iterate( v, function ( x, y ) {
 					obj[ k ][ y ] = utility.clone( x );
 				} );
 			} else {
@@ -581,7 +581,7 @@ let utility = {
 	 *   search   : "",
 	 * }
 	 */
-	parse: ( uri ) => {
+	parse: function ( uri ) {
 		let obj = {};
 		let host, parsed, protocol;
 
@@ -599,7 +599,7 @@ let utility = {
 		}
 
 		if ( server ) {
-			utility.iterate( obj, ( v, k ) => {
+			utility.iterate( obj, function ( v, k ) {
 				if ( v === null ) {
 					obj[ k ] = undefined;
 				}
@@ -659,8 +659,8 @@ let utility = {
 	 *
 	 * g( 2 ); // 4
 	 */
-	partial: ( fn, ...args ) => {
-		return ( ...args2 ) => {
+	partial: function ( fn, ...args ) {
+		return function ( ...args2 ) {
 			return fn.apply( fn, args.concat( args2 ) );
 		};
 	},
@@ -675,7 +675,7 @@ let utility = {
 	 * @example
 	 * keigai.util.prevent( Event );
 	 */
-	prevent: ( ev ) => {
+	prevent: function ( ev ) {
 		if ( typeof ev.preventDefault === "function" ) {
 			ev.preventDefault();
 		}
@@ -692,11 +692,11 @@ let utility = {
 	 * @param  {String} qstring [Optional] Query string to parse
 	 * @return {Mixed}          Value or Object of key:value pairs
 	 */
-	queryString: ( arg, qstring="" ) => {
+	queryString: function ( arg, qstring="" ) {
 		let obj = {};
 		let result = ( qstring || location.search || "" ).replace( /.*\?/, "" );
 
-		array.each( result.split( "&" ), ( prop ) => {
+		array.each( result.split( "&" ), function ( prop ) {
 			let item = prop.split( "=" );
 
 			if ( string.isEmpty( item[ 0 ] ) ) {
@@ -737,9 +737,9 @@ let utility = {
 	 * deferreds.push( defer2 );
 	 *
 	 * // Executes when one deferred is resolved or rejected
-	 * keigai.util.race( deferreds ).then( ( arg ) ) => {
+	 * keigai.util.race( deferreds ).then( function ( arg ) ) {
 	 *   ...
-	 * }, ( err ) => {
+	 * }, function ( err ) {
 	 *   ...
 	 * } );
 	 *
@@ -748,7 +748,7 @@ let utility = {
 	 * defer1.resolve( true );
 	 * defer2.resolve( true );
 	 */
-	race: ( ...args ) => {
+	race: function ( ...args ) {
 		let defer = deferred();
 
 		// Did we receive an Array? if so it overrides any other arguments
@@ -762,9 +762,9 @@ let utility = {
 		}
 		// Setup and wait
 		else {
-			Promise.race( args ).then( ( results ) => {
+			Promise.race( args ).then( function ( results ) {
 				defer.resolve( results );
-			}, ( e ) => {
+			}, function ( e ) {
 				defer.reject( e );
 			} );
 		}
@@ -780,18 +780,18 @@ let utility = {
 	 * @param  {Function} fn Function to execute on next 'frame'
 	 * @return {Object} {@link keigai.Deferred}
 	 * @example
-	 * keigai.util.render( () => {
+	 * keigai.util.render( function () {
 	 *     return keitai.util.element.html( document.querySelector( "#id" ), "Hello World" )
-	 * } ).then( ( arg ) => {
+	 * } ).then( function ( arg ) {
 	 *     // arg is the return value of your function
-	 * }, ( e ) => {
+	 * }, function ( e ) {
 	 *     // Handle e
 	 * } );
 	 */
-	render: ( fn ) => {
+	render: function ( fn ) {
 		let defer = deferred();
 
-		RENDER( ( arg ) => {
+		RENDER( function ( arg ) {
 			try {
 				defer.resolve( fn( arg ) );
 			}
@@ -814,7 +814,7 @@ let utility = {
 	 * @param  {Boolean}  now Executes `fn` and then setup repetition, default is `true`
 	 * @return {String}       Timeout ID
 	 * @example
-	 * keigai.util.repeat( () => {
+	 * keigai.util.repeat( function () {
 	 *   ...
 	 *
 	 *   // Cancelling repetition at some point in the future
@@ -823,7 +823,7 @@ let utility = {
 	 *   }
 	 * }, 1000, "repeating" );
 	 */
-	repeat: ( fn, ms=10, id=utility.uuid( true ), now=true ) => {
+	repeat: function ( fn, ms=10, id=utility.uuid( true ), now=true ) {
 		let recursive;
 
 		// Could be valid to return false from initial execution
@@ -831,7 +831,7 @@ let utility = {
 			return;
 		}
 
-		recursive = () => {
+		recursive = function () {
 			if ( fn() !== false ) {
 				utility.defer( recursive, ms, id )
 			}
@@ -852,7 +852,7 @@ let utility = {
 	 * @example
 	 * keigai.util.stop( Event );
 	 */
-	stop: ( ev ) => {
+	stop: function ( ev ) {
 		if ( typeof ev.stopPropagation === "function" ) {
 			ev.stopPropagation();
 		}
@@ -872,7 +872,7 @@ let utility = {
 	 * @example
 	 * let target = keigai.util.target( Event );
 	 */
-	target: ( ev ) => {
+	target: function ( ev ) {
 		return ev.target || ev.srcElement;
 	},
 
@@ -886,11 +886,12 @@ let utility = {
 	 * @example
 	 * let uuid4 = keigai.util.uuid();
 	 */
-	uuid: ( strip ) => {
-		let r = [ 8, 9, "a", "b" ];
-		let s = () => {
+	uuid: function ( strip ) {
+		function s () {
 			return ( ( ( 1 + Math.random() ) * 0x10000 ) | 0 ).toString( 16 ).substring( 1 );
-		};
+		}
+
+		let r = [ 8, 9, "a", "b" ];
 		let o = ( s() + s() + "-" + s() + "-4" + s().substr( 0, 3 ) + "-" + r[ Math.floor( Math.random() * 4 ) ] + s().substr( 0, 3 ) + "-" + s() + s() + s() );
 
 		if ( strip === true ) {
@@ -913,10 +914,10 @@ let utility = {
 	 *
 	 * keigai.util.walk( obj, "a[0].b" ); // true
 	 */
-	walk: ( obj, arg ) => {
+	walk: function ( obj, arg ) {
 		let output = obj;
 
-		array.each( arg.replace( /\]$/, "" ).replace( /\]/g, "." ).replace( /\.\./g, "." ).split( /\.|\[/ ), ( i ) => {
+		array.each( arg.replace( /\]$/, "" ).replace( /\]/g, "." ).replace( /\.\./g, "." ).split( /\.|\[/ ), function ( i ) {
 			if ( output[ i ] === undefined || output[ i ] === null ) {
 				output = undefined;
 				return false;
@@ -943,9 +944,9 @@ let utility = {
 	 * deferreds.push( defer2 );
 	 *
 	 * // Executes when both deferreds have resolved or one has rejected
-	 * keigai.util.when( deferreds ).then( ( args ) ) => {
+	 * keigai.util.when( deferreds ).then( function ( args ) {
 	 *   ...
-	 * }, ( err ) => {
+	 * }, function ( err ) {
 	 *   ...
 	 * } );
 	 *
@@ -954,7 +955,7 @@ let utility = {
 	 * defer1.resolve( true );
 	 * defer2.resolve( true );
 	 */
-	when: ( ...args ) => {
+	when: function ( ...args ) {
 		let defer = deferred();
 
 		// Did we receive an Array? if so it overrides any other arguments
@@ -968,9 +969,9 @@ let utility = {
 		}
 		// Setup and wait
 		else {
-			Promise.all( args ).then( ( results ) => {
+			Promise.all( args ).then( function ( results ) {
 				defer.resolve( results );
-			}, ( e ) => {
+			}, function ( e ) {
 				defer.reject( e );
 			} );
 		}
@@ -987,15 +988,15 @@ let utility = {
 	 * @return {Object}       Worker
 	 * @private
 	 */
-	worker: ( defer ) => {
+	worker: function ( defer ) {
 		let obj = new Worker( WORKER );
 
-		obj.onerror = ( err ) => {
+		obj.onerror = function ( err ) {
 			defer.reject( err );
 			obj.terminate();
 		};
 
-		obj.onmessage = ( ev ) => {
+		obj.onmessage = function ( ev ) {
 			defer.resolve( ev.data );
 			obj.terminate();
 		};

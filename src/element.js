@@ -13,7 +13,7 @@ let element = {
 	 * @example
 	 * keigai.util.element.addClass( document.querySelector( "#target" ), "newClass" );
 	 */
-	addClass: ( obj, arg ) => {
+	addClass: function ( obj, arg ) {
 		element.klass( obj, arg, true );
 	},
 
@@ -28,7 +28,7 @@ let element = {
 	 * @example
 	 * keigai.util.element.appendTo( document.querySelector( "#target" ), document.querySelector( "#something" ) );
 	 */
-	appendTo: ( obj, child ) => {
+	appendTo: function ( obj, child ) {
 		obj.appendChild( child );
 
 		return obj;
@@ -46,7 +46,7 @@ let element = {
 	 * @example
 	 * keigai.util.element.attr( document.querySelector( "select" ), "selected", "option 1" );
 	 */
-	attr: ( obj, key, value ) => {
+	attr: function ( obj, key, value ) {
 		let target, result;
 
 		if ( regex.svg.test( obj.namespaceURI ) ) {
@@ -113,7 +113,7 @@ let element = {
 	 * @example
 	 * keigai.util.element.clear( document.querySelector( "#something" ) );
 	 */
-	clear: ( obj ) => {
+	clear: function ( obj ) {
 		if ( typeof obj.reset === "function" ) {
 			obj.reset();
 		} else if ( obj.value !== undefined ) {
@@ -140,7 +140,7 @@ let element = {
 	 * keigai.util.element.create( "div", {innerHTML: "Hello World!"}, document.querySelector( "#something" ) );
 	 * keigai.util.element.create( "&lt;div&gt;Hello World!&lt;/div&gt;" );
 	 */
-	create: ( type, args, obj, pos ) => {
+	create: function ( type, args, obj, pos ) {
 		let svg = false;
 		let frag = false;
 		let fragment, result;
@@ -209,7 +209,7 @@ let element = {
 	 * keigai.util.element.css( document.querySelector( "#something" ), "font-weight", "bold" );
 	 * keigai.util.element.css( document.querySelector( "#something" ), "font-weight" ); // "bold"
 	 */
-	css: ( obj, key, value ) => {
+	css: function ( obj, key, value ) {
 		if ( !regex.caps.test( key ) ) {
 			key = string.toCamelCase( key );
 		}
@@ -244,7 +244,7 @@ let element = {
 	 * // Setting a `null` value can be done by using a String
 	 * keigai.util.element.data( document.querySelector( "#something" ), "id", "null" );
 	 */
-	data: ( obj, key, value ) => {
+	data: function ( obj, key, value ) {
 		if ( value !== undefined ) {
 			obj.setAttribute( "data-" + key, regex.json_wrap.test( value ) ? json.encode( value ) : value );
 
@@ -264,7 +264,7 @@ let element = {
 	 * @example
 	 * keigai.util.element.destroy( document.querySelector( "#something" ) );
 	 */
-	destroy: ( obj ) => {
+	destroy: function ( obj ) {
 		if ( obj.parentNode !== null ) {
 			obj.parentNode.removeChild( obj );
 		}
@@ -282,7 +282,7 @@ let element = {
 	 * @example
 	 * keigai.util.element.disable( document.querySelector( "#something" ) );
 	 */
-	disable: ( obj ) => {
+	disable: function ( obj ) {
 		if ( typeof obj.disabled === "boolean" && !obj.disabled ) {
 			obj.disabled = true;
 		}
@@ -306,7 +306,7 @@ let element = {
 	 * @example
 	 * keigai.util.element.dispatch( document.querySelector( "#something" ), "click" );
 	 */
-	dispatch: ( obj, type, data={}, bubbles=true, cancelable=true ) => {
+	dispatch: function ( obj, type, data={}, bubbles=true, cancelable=true ) {
 		let ev;
 
 		if ( !obj ) {
@@ -336,7 +336,7 @@ let element = {
 	 * @example
 	 * keigai.util.element.enable( document.querySelector( "#something" ) );
 	 */
-	enable: ( obj ) => {
+	enable: function ( obj ) {
 		if ( typeof obj.disabled === "boolean" && obj.disabled ) {
 			obj.disabled = false;
 		}
@@ -355,10 +355,10 @@ let element = {
 	 * @example
 	 * keigai.util.element.find( document.querySelector( "#something" ), "p" );
 	 */
-	find: ( obj, arg ) => {
+	find: function ( obj, arg ) {
 		let result = [];
 
-		array.each( string.explode( arg ), ( i ) => {
+		array.each( string.explode( arg ), function ( i ) {
 			result = result.concat( array.cast( obj.querySelectorAll( i ) ) );
 		} );
 
@@ -375,11 +375,11 @@ let element = {
 	 * @example
 	 * let frag = keigai.util.element.frag( "Hello World!" );
 	 */
-	frag: ( arg ) => {
+	frag: function ( arg ) {
 		let obj = document.createDocumentFragment();
 
 		if ( arg ) {
-			array.each( array.cast( element.create( "div", { innerHTML: arg }, obj ).childNodes ), ( i ) => {
+			array.each( array.cast( element.create( "div", { innerHTML: arg }, obj ).childNodes ), function ( i ) {
 				obj.appendChild( i );
 			} );
 
@@ -402,7 +402,7 @@ let element = {
 	 *   ...
 	 * }
 	 */
-	has: ( obj, arg ) => {
+	has: function ( obj, arg ) {
 		let result = element.find( obj, arg );
 
 		return ( !isNaN( result.length ) && result.length > 0 );
@@ -421,7 +421,7 @@ let element = {
 	 *   ...
 	 * }
 	 */
-	hasClass: ( obj, arg ) => {
+	hasClass: function ( obj, arg ) {
 		return obj.classList.contains( arg );
 	},
 
@@ -437,7 +437,7 @@ let element = {
 	 *   ...
 	 * }
 	 */
-	hidden: ( obj ) => {
+	hidden: function ( obj ) {
 		return obj.style.display === "none" || obj.hidden === true;
 	},
 
@@ -453,7 +453,7 @@ let element = {
 	 * keigai.util.element.html( document.querySelector( "#something" ), "Hello World!" );
 	 * keigai.util.element.html( document.querySelector( "#something" ) ); // "Hello World!"
 	 */
-	html: ( obj, arg ) => {
+	html: function ( obj, arg ) {
 		if ( arg === undefined ) {
 			return obj.innerHTML;
 		} else {
@@ -479,9 +479,9 @@ let element = {
 	 *   ...
 	 * }
 	 */
-	is: ( obj, arg ) => {
+	is: function ( obj, arg ) {
 		if ( regex.selector_is.test( arg ) ) {
-			return ( element.find( obj.parentNode, obj.nodeName.toLowerCase() + arg ).filter( ( i ) => {
+			return ( element.find( obj.parentNode, obj.nodeName.toLowerCase() + arg ).filter( function ( i ) {
 				return i.id === obj.id;
 			} ).length === 1 );
 		} else {
@@ -505,19 +505,19 @@ let element = {
 	 * // Removing a class
 	 * keigai.util.element.klass( document.querySelector( "#something" ), "newClass", false );
 	 */
-	klass: ( obj, arg, add=true ) => {
+	klass: function ( obj, arg, add=true ) {
 		arg = string.explode( arg, " " );
 
 		if ( add ) {
-			array.each( arg, ( i ) => {
+			array.each( arg, function ( i ) {
 				obj.classList.add( i );
 			} );
 		} else {
-			array.each( arg, ( i ) => {
+			array.each( arg, function ( i ) {
 				if ( i !== "*" ) {
 					obj.classList.remove( i );
 				} else {
-					array.each( obj.classList, ( x ) => {
+					array.each( obj.classList, function ( x ) {
 						obj.classList.remove( x );
 					} );
 
@@ -539,7 +539,7 @@ let element = {
 	 * @example
 	 * let pos = keigai.util.element.position( document.querySelector( "#something" ) );
 	 */
-	position: ( obj=document.body ) => {
+	position: function ( obj=document.body ) {
 		let left, top, right, bottom, height, width;
 
 		left = top = 0;
@@ -576,7 +576,7 @@ let element = {
 	 * @example
 	 * keigai.util.element.prependChild( document.querySelector( "#target" ), document.querySelector( "#something" ) );
 	 */
-	prependChild: ( obj, child ) => {
+	prependChild: function ( obj, child ) {
 		return obj.childNodes.length === 0 ? obj.appendChild( child ) : obj.insertBefore( child, obj.childNodes[ 0 ] );
 	},
 
@@ -591,21 +591,20 @@ let element = {
 	 * @example
 	 * keigai.util.element.removeAttr( document.querySelector( "a" ), "href" );
 	 */
-	removeAttr: ( obj, key ) => {
+	removeAttr: function ( obj, key ) {
 		if ( regex.svg.test( obj.namespaceURI ) ) {
 			obj.removeAttributeNS( obj.namespaceURI, key );
+		} else if ( obj.nodeName === "SELECT" && key === "selected" ) {
+			array.each( element.find( obj, "option" ), function ( i ) {
+				if ( i.selected === true ) {
+					i.selected = false;
+					i.removeAttribute( "selected" );
+
+					return false;
+				}
+			} );
 		} else {
-			if ( obj.nodeName === "SELECT" && key === "selected" ) {
-				array.each( element.find( obj, "option" ), ( i ) => {
-					if ( i.selected === true ) {
-						i.selected = false;
-						i.removeAttribute( "selected" );
-						return false;
-					}
-				} );
-			} else {
-				obj.removeAttribute( key );
-			}
+			obj.removeAttribute( key );
 		}
 
 		return obj;
@@ -622,7 +621,7 @@ let element = {
 	 * @example
 	 * keigai.util.element.removeClass( document.querySelector( "#target" ), "existingClass" );
 	 */
-	removeClass: ( obj, arg ) => {
+	removeClass: function ( obj, arg ) {
 		element.klass( obj, arg, false );
 	},
 
@@ -641,7 +640,7 @@ let element = {
 	 *   ...
 	 * } );
 	 */
-	scrollTo: ( obj, ms, offsetTop, offsetLeft ) => {
+	scrollTo: function ( obj, ms, offsetTop, offsetLeft ) {
 		let pos = array.remove( element.position( obj ), 2, 3 );
 
 		if ( !isNaN( offsetTop ) ) {
@@ -667,13 +666,13 @@ let element = {
 	 * @example
 	 * let userInput = keigai.util.element.serialize( document.querySelector( "form" ) );
 	 */
-	serialize: ( obj, string=true, encode=true ) => {
+	serialize: function ( obj, string=true, encode=true ) {
 		let registry = {};
 		let children, result;
 
 		children = obj.nodeName === "FORM" ? ( obj.elements ? array.cast( obj.elements ) : obj.find( "button, input, select, textarea" ) ) : [ obj ];
 
-		array.each( children, ( i ) => {
+		array.each( children, function ( i ) {
 			let id = i.id || i.name || i.type;
 
 			if ( i.nodeName === "FORM" ) {
@@ -688,7 +687,7 @@ let element = {
 		} else {
 			result = "";
 
-			utility.iterate( registry, ( v, k ) => {
+			utility.iterate( registry, function ( v, k ) {
 				encode ? result += "&" + encodeURIComponent( k ) + "=" + encodeURIComponent( v ) : result += "&" + k + "=" + v;
 			} );
 
@@ -708,7 +707,7 @@ let element = {
 	 * @example
 	 * let size = keigai.util.element.size( document.querySelector( "#something" ) );
 	 */
-	size: ( obj ) => {
+	size: function ( obj ) {
 		return [
 			obj.offsetWidth + number.parse( obj.style.paddingLeft || 0 ) + number.parse( obj.style.paddingRight || 0 ) + number.parse( obj.style.borderLeft || 0 ) + number.parse( obj.style.borderRight || 0 ),
 			obj.offsetHeight + number.parse( obj.style.paddingTop || 0 ) + number.parse( obj.style.paddingBottom || 0 ) + number.parse( obj.style.borderTop || 0 ) + number.parse( obj.style.borderBottom || 0 )
@@ -729,7 +728,7 @@ let element = {
 	 *
 	 * keigai.util.element.text( obj, text + ", and some more text" );
 	 */
-	text: ( obj, arg ) => {
+	text: function ( obj, arg ) {
 		let key = obj.textContent ? "textContent" : "innerText";
 		let payload = {};
 		let set = false;
@@ -753,11 +752,9 @@ let element = {
 	 * @example
 	 * let obj = document.querySelector( "#something" );
 	 *
-	 * obj.addEventListener( "click", ( ev ) => {
-	 *   keigai.util.element.toggleClass( obj, "active" );
-	 * }, false );
+	 * keigai.util.element.toggleClass( obj, "someClass" );
 	 */
-	toggleClass: ( obj, arg ) => {
+	toggleClass: function ( obj, arg ) {
 		obj.classList.toggle( arg );
 
 		return obj;
@@ -774,8 +771,8 @@ let element = {
 	 * @example
 	 * keigai.util.element.update( document.querySelector( "#something" ), {innerHTML: "Hello World!", "class": "new"} );
 	 */
-	update: ( obj, args ) => {
-		utility.iterate( args, ( v, k ) => {
+	update: function ( obj, args ) {
+		utility.iterate( args, function ( v, k ) {
 			if ( regex.element_update.test( k ) ) {
 				obj[ k ] = v;
 			} else if ( k === "class" ) {
@@ -801,7 +798,7 @@ let element = {
 	 * @example
 	 * keigai.util.element.val( document.querySelector( "input[type='text']" ), "new value" );
 	 */
-	val: ( obj, value ) => {
+	val: function ( obj, value ) {
 		let ev = "input";
 		let output;
 
@@ -811,7 +808,7 @@ let element = {
 					throw new Error( label.expectedProperty );
 				}
 
-				array.each( utility.dom( "input[name='" + obj.name + "']" ), ( i ) => {
+				array.each( utility.dom( "input[name='" + obj.name + "']" ), function ( i ) {
 					if ( i.checked ) {
 						output = i.value;
 						return false;
@@ -819,7 +816,7 @@ let element = {
 				} );
 			} else if ( regex.select.test( obj.type ) ) {
 				output = null;
-				array.each( element.find( obj, "option" ), ( i ) => {
+				array.each( element.find( obj, "option" ), function ( i ) {
 					if ( i.selected === true ) {
 						output = i.value;
 						return false;
@@ -848,7 +845,7 @@ let element = {
 			if ( regex.radio_checkbox.test( obj.type ) ) {
 				ev = "click";
 
-				array.each( utility.dom( "input[name='" + obj.name + "']" ), ( i ) => {
+				array.each( utility.dom( "input[name='" + obj.name + "']" ), function ( i ) {
 					if ( i.value === value ) {
 						i.checked = true;
 						output = i;
@@ -858,7 +855,7 @@ let element = {
 			} else if ( regex.select.test( obj.type ) ) {
 				ev = "change";
 
-				array.each( element.find( obj, " option" ), ( i ) => {
+				array.each( element.find( obj, " option" ), function ( i ) {
 					if ( i.value === value ) {
 						i.selected = true;
 						output = i;

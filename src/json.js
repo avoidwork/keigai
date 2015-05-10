@@ -19,7 +19,7 @@ let json = {
 	 *   ... // invalid JSON, with `Error` suppressed by `silent`
 	 * }
 	 */
-	decode: ( arg, silent ) => {
+	decode: function ( arg, silent ) {
 		try {
 			return JSON.parse( arg );
 		}
@@ -49,7 +49,7 @@ let json = {
 	 *   ... // invalid JSON, with `Error` suppressed by `silent`
 	 * }
 	 */
-	encode: ( arg, silent ) => {
+	encode: function ( arg, silent ) {
 		try {
 			return JSON.stringify( arg );
 		}

@@ -1,8 +1,9 @@
-( ( global ) => {
+( function ( global ) {
 const document = global.document;
 const location = global.location || {};
 const navigator = global.navigator;
 const server = typeof process !== "undefined";
+const mutation = typeof MutationObserver === "function";
 const MAX = 10;
 const VERSIONS = 100;
 const CACHE = 500;
@@ -37,4 +38,4 @@ if ( server ) {
 	}
 }
 
-let lib = ( () => {
+let lib = ( function () {

@@ -12,7 +12,7 @@ let number = {
 	 * @example
 	 * keigai.util.number.diff( -3, 8 ); // 11
 	 */
-	diff: ( num1, num2 ) => {
+	diff: function ( num1, num2 ) {
 		return Math.abs( num1 - num2 );
 	},
 
@@ -30,7 +30,7 @@ let number = {
 	 *   ...
 	 * }
 	 */
-	even: ( arg ) => {
+	even: function ( arg ) {
 		return arg % 2 === 0;
 	},
 
@@ -46,7 +46,7 @@ let number = {
 	 * @example
 	 * keigai.util.number.format( 1000 ); // "1,000"
 	 */
-	format: ( arg, delimiter=",", every=3 ) => {
+	format: function ( arg, delimiter=",", every=3 ) {
 		arg = arg.toString();
 
 		let d = arg.indexOf( "." ) > -1 ? "." + arg.replace( regex.number_format_1, "" ) : "";
@@ -84,7 +84,7 @@ let number = {
 	 *   ...
 	 * } );
 	 */
-	half: ( a, b ) => {
+	half: function ( a, b ) {
 		return b ? ( a / b ) === 0.5 : a / 2;
 	},
 
@@ -102,7 +102,7 @@ let number = {
 	 *   ...
 	 * }
 	 */
-	odd: ( arg ) => {
+	odd: function ( arg ) {
 		return !number.even( arg );
 	},
 
@@ -118,7 +118,7 @@ let number = {
 	 * // Unsure if `n` is an int or a float
 	 * keigai.util.number.parse( n );
 	 */
-	parse: ( arg, base ) => {
+	parse: function ( arg, base ) {
 		return base === undefined ? parseFloat( arg ) : parseInt( arg, base );
 	},
 
@@ -132,7 +132,7 @@ let number = {
 	 * @example
 	 * let n = keigai.util.math.random( 10 );
 	 */
-	random: ( arg=100 ) => {
+	random: function ( arg=100 ) {
 		return Math.floor( Math.random() * ( arg + 1 ) );
 	},
 
@@ -147,7 +147,7 @@ let number = {
 	 * @example
 	 * keigai.util.math.round( n, "down" );
 	 */
-	round: ( arg, direction ) => {
+	round: function ( arg, direction ) {
 		arg = number.parse( arg );
 
 		if ( direction === undefined || string.isEmpty( direction ) ) {

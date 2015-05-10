@@ -18,7 +18,7 @@ let math = {
 	 *     p4 = keigai.util.math.bezier( 0, 10, 2000, 10, 0.9 ),
 	 *     p5 = keigai.util.math.bezier( 0, 10, 2000, 10, 1 );
 	 */
-	bezier: ( ...args ) => {
+	bezier: function ( ...args ) {
 		let a = array.cast( args );
 		let t = a.pop();
 		let P = array.chunk( a, 2 );
@@ -70,7 +70,7 @@ let math = {
 	 * @example
 	 * let dist = keigai.util.math.dist( [4, 40], [-10, 12] );
 	 */
-	dist: ( a, b ) => {
+	dist: function ( a, b ) {
 		return Math.sqrt( math.sqr( b[ 0 ] - a[ 0 ] ) + math.sqr( b[ 1 ] - a[ 1 ] ) );
 	},
 
@@ -84,7 +84,7 @@ let math = {
 	 * @example
 	 * let sqr = keigai.util.math.sqr( 23 );
 	 */
-	sqr: ( n ) => {
+	sqr: function ( n ) {
 		return n * n;
 	}
 };

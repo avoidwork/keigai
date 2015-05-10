@@ -58,7 +58,7 @@ return {
 if ( typeof exports !== "undefined" ) {
 	module.exports = lib;
 } else if ( typeof define === "function" ) {
-	define( () => {
+	define( function () {
 		return lib;
 	} );
 } else {

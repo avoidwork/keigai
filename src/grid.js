@@ -23,7 +23,7 @@ class DataGrid extends Base {
 		let sortOrder;
 
 		if ( options.order && !string.isEmpty( options.order ) ) {
-			sortOrder = string.explode( options.order ).map( ( i ) => {
+			sortOrder = string.explode( options.order ).map( function ( i ) {
 				return i.replace( regex.after_space, "" );
 			} );
 		}
@@ -223,7 +223,7 @@ let grid = function ( target, store, fields, sortable, options, filtered, deboun
 	let sort = obj.options.order ? string.explode( obj.options.order ) : [];
 
 	// Creating DataList template based on fields
-	array.each( obj.fields, ( i ) => {
+	array.each( obj.fields, function ( i ) {
 		let trimmed = i.replace( /.*\./g, "" );
 		let el = element.create( "span", {
 			innerHTML: string.capitalize( string.unCamelCase( string.unhyphenate( trimmed, true ) ).replace( /_|-/g, " " ), true ),
@@ -236,9 +236,7 @@ let grid = function ( target, store, fields, sortable, options, filtered, deboun
 			element.addClass( el, "sortable" );
 
 			// Applying default sort, if specified
-			if ( sort.filter( ( x ) => {
-					return ( x.indexOf( i ) === 0 );
-				} ).length > 0 ) {
+			if ( sort.filter( function ( x ) { return ( x.indexOf( i ) === 0 ); } ).length > 0 ) {
 				element.data( el, "sort", array.contains( sort, i + " desc" ) ? "desc" : "asc" );
 			}
 		}
@@ -265,29 +263,29 @@ let grid = function ( target, store, fields, sortable, options, filtered, deboun
 	obj.list = ref[ 1 ];
 
 	// Setting up a chain of Events
-	obj.on( "beforeRefresh", ( arg ) => {
+	obj.on( "beforeRefresh", function ( arg ) {
 		element.dispatch( arg, "beforeRefresh" );
 	}, "bubble" );
 
-	obj.on( "afterRefresh", ( arg ) => {
+	obj.on( "afterRefresh", function ( arg ) {
 		element.dispatch( arg, "afterRefresh" );
 	}, "bubble" );
 
-	obj.on( "click", ( e ) => {
+	obj.on( "click", function ( e ) {
 		if ( element.hasClass( e.currentTarget, "header" ) ) {
 			obj.sort( e );
 		}
 	}, "header" );
 
-	obj.list.on( "change", ( ...args ) => {
+	obj.list.on( "change", function ( ...args ) {
 		obj.dispatch.apply( obj, [ "change" ].concat( args ) );
 	}, "change" );
 
-	obj.list.on( "beforeFilter", ( ...args ) => {
+	obj.list.on( "beforeFilter", function ( ...args ) {
 		obj.dispatch.apply( obj, [ "beforeFilter" ].concat( args ) );
 	}, "beforeFilter" );
 
-	obj.list.on( "afterFilter", ( ...args ) => {
+	obj.list.on( "afterFilter", function ( ...args ) {
 		obj.dispatch.apply( obj, [ "afterFilter" ].concat( args ) );
 	}, "afterFilter" );
 

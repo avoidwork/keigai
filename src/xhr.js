@@ -5,7 +5,7 @@
  * @private
  * @return {Object} XMLHttpRequest instance
  */
-let xhr = () => {
+let xhr = function () {
 	const UNSENT = 0;
 	const OPENED = 1;
 	const HEADERS_RECEIVED = 2;
@@ -29,7 +29,7 @@ let xhr = () => {
 	 * @param  {String} arg Event to dispatch
 	 * @return {Object}     XMLHttpRequest instance
 	 */
-	let dispatch = ( obj, arg ) => {
+	let dispatch = function ( obj, arg ) {
 		let fn = "on" + arg;
 
 		if ( typeof obj[ fn ] === "function" ) {
@@ -49,7 +49,7 @@ let xhr = () => {
 	 * @param  {String} arg New readyState
 	 * @return {Object}     XMLHttpRequest instance
 	 */
-	let state = ( obj, arg ) => {
+	let state = function ( obj, arg ) {
 		if ( obj.readyState !== arg ) {
 			obj.readyState = arg;
 			dispatch( obj, "readystatechange" );
@@ -72,7 +72,7 @@ let xhr = () => {
 	 * @param  {Object} res HTTP(S) Response Object
 	 * @return {Undefined}  undefined
 	 */
-	let success = ( obj, res ) => {
+	let success = function ( obj, res ) {
 		state( obj, HEADERS_RECEIVED );
 		obj.status = res.statusCode;
 		obj._resheaders = res.headers;
@@ -81,7 +81,7 @@ let xhr = () => {
 			obj._resheaders[ "set-cookie" ] = obj._resheaders[ "set-cookie" ].join( ";" );
 		}
 
-		res.on( "data", ( arg ) => {
+		res.on( "data", function ( arg ) {
 			res.setEncoding( "utf8" );
 
 			if ( obj._send ) {
@@ -93,7 +93,7 @@ let xhr = () => {
 			}
 		} );
 
-		res.on( "end", () => {
+		res.on( "end", function () {
 			if ( obj._send ) {
 				state( obj, DONE );
 				obj._send = false;
@@ -110,7 +110,7 @@ let xhr = () => {
 	 * @param  {Object} e   Error
 	 * @return {Undefined}  undefined
 	 */
-	let failure = ( obj, e ) => {
+	let failure = function ( obj, e ) {
 		obj.status = ERR_REFUSED.test( e.message ) ? 503 : 500;
 		obj.statusText = "";
 		obj.responseText = e.message;
@@ -198,7 +198,7 @@ let xhr = () => {
 				throw new Error( label.invalidStateNoHeaders );
 			}
 
-			utility.iterate( this._resheaders, ( v, k ) => {
+			utility.iterate( this._resheaders, function ( v, k ) {
 				result += k + ": " + v + "\n";
 			} );
 

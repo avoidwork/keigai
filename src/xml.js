@@ -11,7 +11,7 @@ let xml = {
 	 * @param  {String} arg XML String
 	 * @return {Object}     XML Object or undefined
 	 */
-	decode: ( arg ) => {
+	decode: function ( arg ) {
 		return new DOMParser().parseFromString( arg, "text/xml" );
 	},
 
@@ -23,7 +23,7 @@ let xml = {
 	 * @param  {Mixed} arg Object or Array to cast to XML String
 	 * @return {String}    XML String or undefined
 	 */
-	encode: ( arg, wrap=true, top=true, key="" ) => {
+	encode: function ( arg, wrap=true, top=true, key="" ) {
 		let x = wrap ? "<" + ( key || "xml" ) + ">" : "";
 
 		if ( arg !== null && arg.xml ) {
@@ -39,11 +39,11 @@ let xml = {
 		} else if ( arg === null || arg === undefined ) {
 			x += "null";
 		} else if ( arg instanceof Array ) {
-			array.each( arg, ( v ) => {
+			array.each( arg, function ( v ) {
 				x += xml.encode( v, ( typeof v === "object" ), false, "item" );
 			} );
 		} else if ( arg instanceof Object ) {
-			utility.iterate( arg, ( v, k ) => {
+			utility.iterate( arg, function ( v, k ) {
 				x += xml.encode( v, ( typeof v === "object" ), false, k );
 			} );
 		}
@@ -66,7 +66,7 @@ let xml = {
 	 * @param  {String} value Node value
 	 * @return {String}       Node
 	 */
-	node: ( name, value ) => {
+	node: function ( name, value ) {
 		return "<n>v</n>".replace( "v", ( regex.cdata.test( value ) ? "<![CDATA[" + value + "]]>" : value ) ).replace( /<(\/)?n>/g, "<$1" + name + ">" );
 	},
 
@@ -78,7 +78,7 @@ let xml = {
 	 * @param  {String} arg String to validate
 	 * @return {Boolean}    `true` if valid XML
 	 */
-	valid: ( arg ) => {
+	valid: function ( arg ) {
 		return ( xml.decode( arg ).getElementsByTagName( "parsererror" ).length === 0 );
 	}
 };

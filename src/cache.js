@@ -19,7 +19,7 @@ let cache = {
 	 * @param  {String} uri URI of the local representation
 	 * @return {Boolean} `true` if successful
 	 */
-	expire: ( uri ) => {
+	expire: function ( uri ) {
 		if ( cache.lru.cache[ uri ] ) {
 			cache.lru.remove( uri );
 
@@ -37,7 +37,7 @@ let cache = {
 	 * @param  {Object} uri Cached URI object
 	 * @return {Boolean}    True if the URI has expired
 	 */
-	expired: ( uri ) => {
+	expired: function ( uri ) {
 		let item = cache.lru.cache[ uri ];
 
 		return item && item.value.expires < new Date().getTime();
@@ -53,7 +53,7 @@ let cache = {
 	 * @param  {Object}  headers [Optional] Request headers
 	 * @return {Mixed}           URI Object {headers, response} or False
 	 */
-	get: ( uri, expire, headers ) => {
+	get: function ( uri, expire, headers ) {
 		uri = utility.parse( uri ).href;
 		let item = cache.lru.get( uri );
 
@@ -80,7 +80,7 @@ let cache = {
 	 * @param  {Mixed} value     Value to set
 	 * @return {Mixed}           URI Object {headers, response} or undefined
 	 */
-	set: ( uri, property, value ) => {
+	set: function ( uri, property, value ) {
 		uri = utility.parse( uri ).href;
 		let item = cache.lru.get( uri );
 

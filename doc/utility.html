@@ -40,19 +40,7 @@
 						</li>
 						
 						<li>
-							<a href="deferred.html">deferred</a>
-						</li>
-						
-						<li>
 							<a href="element.html">element</a>
-						</li>
-						
-						<li>
-							<a href="filter.html">filter</a>
-						</li>
-						
-						<li>
-							<a href="grid.html">grid</a>
 						</li>
 						
 						<li>
@@ -73,10 +61,6 @@
 						
 						<li>
 							<a href="number.html">number</a>
-						</li>
-						
-						<li>
-							<a href="observable.html">observable</a>
 						</li>
 						
 						<li>
@@ -364,17 +348,7 @@
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">let $ = keigai.util.$;
-
-&#x2F;&#x2F; Looking for Elements
-$( &quot;.someClass&quot; ).forEach( ( i ) =&gt; {
-  ...
-} );
-
-&#x2F;&#x2F; Creating an H1 Element
-$( &quot;&amp;lt;h1&amp;gt;&quot; ).forEach( ( i ) =&gt; {
-  ...
-} );</pre>
+    <pre class="sunlight-highlight-javascript">let $ = keigai.util.$;&#x2F;&#x2F; Looking for Elements$( &quot;.someClass&quot; ).forEach( function ( i ) {  ...} );&#x2F;&#x2F; Creating an H1 Element$( &quot;&amp;lt;h1&amp;gt;&quot; ).forEach( function ( i ) {  ...} );</pre>
 
 
     
@@ -918,10 +892,7 @@ $( &quot;&amp;lt;h1&amp;gt;&quot; ).forEach( ( i ) =&gt; {
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">let x = {a: true, b: false},
-    y = keigai.util.clone( x, true );
-
-y.a; &#x2F;&#x2F; true</pre>
+    <pre class="sunlight-highlight-javascript">let x = {a: true, b: false},    y = keigai.util.clone( x, true );y.a; &#x2F;&#x2F; true</pre>
 
 
     
@@ -1161,15 +1132,7 @@ y.a; &#x2F;&#x2F; true</pre>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">function f ( a, b ) {
-  return ( n ) =&gt; {
-    return ( a + b ) * n;
-  };
-}
-
-let g = keigai.util.curry( f, 2, 8 );
-
-g( 5 ); &#x2F;&#x2F; 50</pre>
+    <pre class="sunlight-highlight-javascript">function f ( a, b ) {  return function ( n ) {    return ( a + b ) * n;  };}let g = keigai.util.curry( f, 2, 8 );g( 5 ); &#x2F;&#x2F; 50</pre>
 
 
     
@@ -1360,9 +1323,7 @@ Timing may vary under &quot;heavy load&quot; relative to the CPU &amp; client Ja
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">keigai.util.defer( () =&gt; {
-  console.log( &#x27;hello world&#x27; );
-}, 1000, &#x27;helloWorld&#x27; );</pre>
+    <pre class="sunlight-highlight-javascript">keigai.util.defer( () =&gt; {  console.log( &#x27;hello world&#x27; );}, 1000, &#x27;helloWorld&#x27; );</pre>
 
 
     
@@ -1864,9 +1825,7 @@ Returning <code>false</code> halts iteration.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">keigai.util.iterate( {...}, ( value, key ) =&gt; {
-  ...
-} );</pre>
+    <pre class="sunlight-highlight-javascript">keigai.util.iterate( {...}, ( value, key ) =&gt; {  ...} );</pre>
 
 
     
@@ -2200,10 +2159,7 @@ Returning <code>false</code> halts iteration.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">let obj = {a: true};
-
-keigai.util.merge( obj, {b: false} )
-console.log(obj); &#x2F;&#x2F; {a: true, b: false}</pre>
+    <pre class="sunlight-highlight-javascript">let obj = {a: true};keigai.util.merge( obj, {b: false} )console.log(obj); &#x2F;&#x2F; {a: true, b: false}</pre>
 
 
     
@@ -2347,20 +2303,7 @@ console.log(obj); &#x2F;&#x2F; {a: true, b: false}</pre>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">let parsed = keigai.util.parse( location.href );
-
-parsed;
-{
-  auth     : &quot;&quot;,
-  hash     : &quot;&quot;,
-  host     : &quot;&quot;,
-  hostname : &quot;&quot;,
-  query    : {},
-  pathname : &quot;&quot;,
-  port     : n,
-  protocol : &quot;&quot;,
-  search   : &quot;&quot;,
-}</pre>
+    <pre class="sunlight-highlight-javascript">let parsed = keigai.util.parse( location.href );parsed;{  auth     : &quot;&quot;,  hash     : &quot;&quot;,  host     : &quot;&quot;,  hostname : &quot;&quot;,  query    : {},  pathname : &quot;&quot;,  port     : n,  protocol : &quot;&quot;,  search   : &quot;&quot;,}</pre>
 
 
     
@@ -2455,13 +2398,7 @@ parsed;
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">function f ( a, b ) {
-  return a + b;
-}
-
-let g = keigai.util.partial( f, 2 );
-
-g( 2 ); &#x2F;&#x2F; 4</pre>
+    <pre class="sunlight-highlight-javascript">function f ( a, b ) {  return a + b;}let g = keigai.util.partial( f, 2 );g( 2 ); &#x2F;&#x2F; 4</pre>
 
 
     
@@ -2861,24 +2798,7 @@ g( 2 ); &#x2F;&#x2F; 4</pre>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">let deferreds = [],
-    defer1    = keigai.util.defer(),
-    defer2    = keigai.util.defer();
-
-deferreds.push( defer1 );
-deferreds.push( defer2 );
-
-&#x2F;&#x2F; Executes when one deferred is resolved or rejected
-keigai.util.race( deferreds ).then( ( arg ) ) =&gt; {
-  ...
-}, ( err ) =&gt; {
-  ...
-} );
-
-...
-
-defer1.resolve( true );
-defer2.resolve( true );</pre>
+    <pre class="sunlight-highlight-javascript">let deferreds = [],    defer1    = keigai.util.defer(),    defer2    = keigai.util.defer();deferreds.push( defer1 );deferreds.push( defer2 );&#x2F;&#x2F; Executes when one deferred is resolved or rejectedkeigai.util.race( deferreds ).then( function ( arg ) ) {  ...}, function ( err ) {  ...} );...defer1.resolve( true );defer2.resolve( true );</pre>
 
 
     
@@ -3022,13 +2942,7 @@ defer2.resolve( true );</pre>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">keigai.util.render( () =&gt; {
-    return keitai.util.element.html( document.querySelector( &quot;#id&quot; ), &quot;Hello World&quot; )
-} ).then( ( arg ) =&gt; {
-    &#x2F;&#x2F; arg is the return value of your function
-}, ( e ) =&gt; {
-    &#x2F;&#x2F; Handle e
-} );</pre>
+    <pre class="sunlight-highlight-javascript">keigai.util.render( function () {    return keitai.util.element.html( document.querySelector( &quot;#id&quot; ), &quot;Hello World&quot; )} ).then( function ( arg ) {    &#x2F;&#x2F; arg is the return value of your function}, function ( e ) {    &#x2F;&#x2F; Handle e} );</pre>
 
 
     
@@ -3241,14 +3155,7 @@ defer2.resolve( true );</pre>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">keigai.util.repeat( () =&gt; {
-  ...
-
-  &#x2F;&#x2F; Cancelling repetition at some point in the future
-  if ( someCondition ) {
-    return false;
-  }
-}, 1000, &quot;repeating&quot; );</pre>
+    <pre class="sunlight-highlight-javascript">keigai.util.repeat( function () {  ...  &#x2F;&#x2F; Cancelling repetition at some point in the future  if ( someCondition ) {    return false;  }}, 1000, &quot;repeating&quot; );</pre>
 
 
     
@@ -3847,9 +3754,7 @@ defer2.resolve( true );</pre>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">let obj = {a: [{b: true}]};
-
-keigai.util.walk( obj, &quot;a[0].b&quot; ); &#x2F;&#x2F; true</pre>
+    <pre class="sunlight-highlight-javascript">let obj = {a: [{b: true}]};keigai.util.walk( obj, &quot;a[0].b&quot; ); &#x2F;&#x2F; true</pre>
 
 
     
@@ -3944,24 +3849,7 @@ keigai.util.walk( obj, &quot;a[0].b&quot; ); &#x2F;&#x2F; true</pre>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">let deferreds = [],
-    defer1    = keigai.util.defer(),
-    defer2    = keigai.util.defer();
-
-deferreds.push( defer1 );
-deferreds.push( defer2 );
-
-&#x2F;&#x2F; Executes when both deferreds have resolved or one has rejected
-keigai.util.when( deferreds ).then( ( args ) ) =&gt; {
-  ...
-}, ( err ) =&gt; {
-  ...
-} );
-
-...
-
-defer1.resolve( true );
-defer2.resolve( true );</pre>
+    <pre class="sunlight-highlight-javascript">let deferreds = [],    defer1    = keigai.util.defer(),    defer2    = keigai.util.defer();deferreds.push( defer1 );deferreds.push( defer2 );&#x2F;&#x2F; Executes when both deferreds have resolved or one has rejectedkeigai.util.when( deferreds ).then( function ( args ) {  ...}, function ( err ) {  ...} );...defer1.resolve( true );defer2.resolve( true );</pre>
 
 
     
@@ -3993,7 +3881,7 @@ defer2.resolve( true );</pre>
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on 2015-04-22T07:39:18-04:00 using the <a
+		on 2015-05-10T11:29:15-04:00 using the <a
 			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>

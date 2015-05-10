@@ -40,19 +40,7 @@
 						</li>
 						
 						<li>
-							<a href="deferred.html">deferred</a>
-						</li>
-						
-						<li>
 							<a href="element.html">element</a>
-						</li>
-						
-						<li>
-							<a href="filter.html">filter</a>
-						</li>
-						
-						<li>
-							<a href="grid.html">grid</a>
 						</li>
 						
 						<li>
@@ -73,10 +61,6 @@
 						
 						<li>
 							<a href="number.html">number</a>
-						</li>
-						
-						<li>
-							<a href="observable.html">observable</a>
 						</li>
 						
 						<li>
@@ -1102,8 +1086,7 @@ An id is generated if not specified with args.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">keigai.util.element.create( &quot;div&quot;, {innerHTML: &quot;Hello World!&quot;}, document.querySelector( &quot;#something&quot; ) );
-keigai.util.element.create( &quot;&amp;lt;div&amp;gt;Hello World!&amp;lt;&#x2F;div&amp;gt;&quot; );</pre>
+    <pre class="sunlight-highlight-javascript">keigai.util.element.create( &quot;div&quot;, {innerHTML: &quot;Hello World!&quot;}, document.querySelector( &quot;#something&quot; ) );keigai.util.element.create( &quot;&amp;lt;div&amp;gt;Hello World!&amp;lt;&#x2F;div&amp;gt;&quot; );</pre>
 
 
     
@@ -1293,8 +1276,7 @@ keigai.util.element.create( &quot;&amp;lt;div&amp;gt;Hello World!&amp;lt;&#x2F;d
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">keigai.util.element.css( document.querySelector( &quot;#something&quot; ), &quot;font-weight&quot;, &quot;bold&quot; );
-keigai.util.element.css( document.querySelector( &quot;#something&quot; ), &quot;font-weight&quot; ); &#x2F;&#x2F; &quot;bold&quot;</pre>
+    <pre class="sunlight-highlight-javascript">keigai.util.element.css( document.querySelector( &quot;#something&quot; ), &quot;font-weight&quot;, &quot;bold&quot; );keigai.util.element.css( document.querySelector( &quot;#something&quot; ), &quot;font-weight&quot; ); &#x2F;&#x2F; &quot;bold&quot;</pre>
 
 
     
@@ -1484,17 +1466,7 @@ keigai.util.element.css( document.querySelector( &quot;#something&quot; ), &quot
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">&#x2F;&#x2F; Setting
-keigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot;, &quot;abc-1234&quot; );
-
-&#x2F;&#x2F; Getting
-keigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot; ); &#x2F;&#x2F; &quot;abc-1234&quot;
-
-&#x2F;&#x2F; Unsetting
-keigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot;, null );
-
-&#x2F;&#x2F; Setting a `null` value can be done by using a String
-keigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot;, &quot;null&quot; );</pre>
+    <pre class="sunlight-highlight-javascript">&#x2F;&#x2F; Settingkeigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot;, &quot;abc-1234&quot; );&#x2F;&#x2F; Gettingkeigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot; ); &#x2F;&#x2F; &quot;abc-1234&quot;&#x2F;&#x2F; Unsettingkeigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot;, null );&#x2F;&#x2F; Setting a `null` value can be done by using a Stringkeigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quot;id&quot;, &quot;null&quot; );</pre>
 
 
     
@@ -2641,9 +2613,7 @@ keigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quo
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.has( document.querySelector( &quot;#something&quot; ), &quot;p&quot; ) ) {
-  ...
-}</pre>
+    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.has( document.querySelector( &quot;#something&quot; ), &quot;p&quot; ) ) {  ...}</pre>
 
 
     
@@ -2810,9 +2780,7 @@ keigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quo
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.hasClass( document.querySelector( &quot;#something&quot; ), &quot;someClass&quot; ) ) {
-  ...
-}</pre>
+    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.hasClass( document.querySelector( &quot;#something&quot; ), &quot;someClass&quot; ) ) {  ...}</pre>
 
 
     
@@ -2956,9 +2924,7 @@ keigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quo
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.hidden( document.querySelector( &quot;#something&quot; ) ) ) {
-  ...
-}</pre>
+    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.hidden( document.querySelector( &quot;#something&quot; ) ) ) {  ...}</pre>
 
 
     
@@ -3125,8 +3091,7 @@ keigai.util.element.data( document.querySelector( &quot;#something&quot; ), &quo
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">keigai.util.element.html( document.querySelector( &quot;#something&quot; ), &quot;Hello World!&quot; );
-keigai.util.element.html( document.querySelector( &quot;#something&quot; ) ); &#x2F;&#x2F; &quot;Hello World!&quot;</pre>
+    <pre class="sunlight-highlight-javascript">keigai.util.element.html( document.querySelector( &quot;#something&quot; ), &quot;Hello World!&quot; );keigai.util.element.html( document.querySelector( &quot;#something&quot; ) ); &#x2F;&#x2F; &quot;Hello World!&quot;</pre>
 
 
     
@@ -3293,13 +3258,7 @@ keigai.util.element.html( document.querySelector( &quot;#something&quot; ) ); &#
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.is( document.querySelector( &quot;#something&quot; ), &quot;div&quot; ) ) {
-  ...
-}
-
-if ( keigai.util.element.is( document.querySelector( &quot;#something&quot; ), &quot;:first-child&quot; ) ) {
-  ...
-}</pre>
+    <pre class="sunlight-highlight-javascript">if ( keigai.util.element.is( document.querySelector( &quot;#something&quot; ), &quot;div&quot; ) ) {  ...}if ( keigai.util.element.is( document.querySelector( &quot;#something&quot; ), &quot;:first-child&quot; ) ) {  ...}</pre>
 
 
     
@@ -3489,11 +3448,7 @@ if ( keigai.util.element.is( document.querySelector( &quot;#something&quot; ), &
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">&#x2F;&#x2F; Adding a class
-keigai.util.element.klass( document.querySelector( &quot;#something&quot; ), &quot;newClass&quot; );
-
-&#x2F;&#x2F; Removing a class
-keigai.util.element.klass( document.querySelector( &quot;#something&quot; ), &quot;newClass&quot;, false );</pre>
+    <pre class="sunlight-highlight-javascript">&#x2F;&#x2F; Adding a classkeigai.util.element.klass( document.querySelector( &quot;#something&quot; ), &quot;newClass&quot; );&#x2F;&#x2F; Removing a classkeigai.util.element.klass( document.querySelector( &quot;#something&quot; ), &quot;newClass&quot;, false );</pre>
 
 
     
@@ -4351,9 +4306,7 @@ keigai.util.element.klass( document.querySelector( &quot;#something&quot; ), &qu
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">keigai.util.element.scrollTo( document.querySelector( &quot;#something&quot; ) ).then( () =&gt; {
-  ...
-} );</pre>
+    <pre class="sunlight-highlight-javascript">keigai.util.element.scrollTo( document.querySelector( &quot;#something&quot; ) ).then( () =&gt; {  ...} );</pre>
 
 
     
@@ -4854,10 +4807,7 @@ keigai.util.element.klass( document.querySelector( &quot;#something&quot; ), &qu
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">let obj  = document.querySelector( &quot;#something&quot; ),
-    text = keigai.util.element.text( obj );
-
-keigai.util.element.text( obj, text + &quot;, and some more text&quot; );</pre>
+    <pre class="sunlight-highlight-javascript">let obj  = document.querySelector( &quot;#something&quot; ),    text = keigai.util.element.text( obj );keigai.util.element.text( obj, text + &quot;, and some more text&quot; );</pre>
 
 
     
@@ -5024,11 +4974,7 @@ keigai.util.element.text( obj, text + &quot;, and some more text&quot; );</pre>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">let obj = document.querySelector( &quot;#something&quot; );
-
-obj.addEventListener( &quot;click&quot;, ( ev ) =&gt; {
-  keigai.util.element.toggleClass( obj, &quot;active&quot; );
-}, false );</pre>
+    <pre class="sunlight-highlight-javascript">let obj = document.querySelector( &quot;#something&quot; );keigai.util.element.toggleClass( obj, &quot;someClass&quot; );</pre>
 
 
     
@@ -5394,7 +5340,7 @@ obj.addEventListener( &quot;click&quot;, ( ev ) =&gt; {
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on 2015-04-22T07:39:17-04:00 using the <a
+		on 2015-05-10T11:29:14-04:00 using the <a
 			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>

@@ -9,19 +9,19 @@ let promise = {
 	 * @memberOf promise
 	 * @return {Object} {@link Promise}
 	 */
-	factory: () => {
+	factory: function () {
 		let promise, pCatch, pResolve, pReject, pThen;
 
-		promise = new Promise( ( resolve, reject ) => {
+		promise = new Promise( function ( resolve, reject ) {
 			pResolve = resolve;
 			pReject = reject;
 		} );
 
-		pCatch = ( ...args ) => {
+		pCatch = function ( ...args ) {
 			return promise.catch.apply( promise, args );
 		};
 
-		pThen = ( ...args ) => {
+		pThen = function ( ...args ) {
 			return promise.then.apply( promise, args );
 		};
 
