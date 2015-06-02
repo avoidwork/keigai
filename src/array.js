@@ -640,7 +640,7 @@ let array = {
 	 * keigai.util.array.keys( {abc: true, xyz: false} ); // ["abc", "xyz"]
 	 */
 	keys: function ( obj ) {
-		return Array.keys( obj );
+		return Object.keys( obj );
 	},
 
 	/**

@@ -13,12 +13,6 @@ let bootstrap = function () {
 		};
 	}
 
-	if ( Array.keys === undefined ) {
-		Array.keys = function ( arg ) {
-			return Object.keys( arg );
-		};
-	}
-
 	// Describing the Client
 	if ( !server ) {
 		client.version = client.version();
