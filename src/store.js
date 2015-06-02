@@ -25,7 +25,6 @@ class DataStore extends Base {
 		this.loaded = false;
 		this.mongodb = "";
 		this.observer = observable();
-		this.patch = false;
 		this.records = [];
 		this.source = null;
 		this.total = 0;
@@ -81,41 +80,15 @@ class DataStore extends Base {
 
 				defer.resolve( this.records );
 			} else {
-				if ( this.patch ) {
-					if ( type === "del" ) {
-						array.each( data, ( i ) => {
-							patch.push( this.del( i, false, true ) );
-						} );
-					} else {
-						array.each( data, ( i ) => {
-							patch.push( this.set( i[ this.key ] || null, i, true, false, true ) );
-						} );
-					}
-
-					deferreds.push( client.request( this.uri, "PATCH", patch, utility.merge( { withCredentials: this.credentials }, this.headers ) ).then( function () {
-						if ( type === "del" ) {
-							array.each( data, ( i ) => {
-								self.delComplete( i.key ? i : self.get( i ), false, true );
-							} );
-						} else {
-
-						}
-
-						return self.records;
-					}, function ( e ) {
-						throw e;
-					} ) );
+				// Batch deletion will create a sparse array, which will be compacted before re-indexing
+				if ( type === "del" ) {
+					array.each( data, ( i ) => {
+						deferreds.push( this.del( i, false, true ) );
+					} );
 				} else {
-					// Batch deletion will create a sparse array, which will be compacted before re-indexing
-					if ( type === "del" ) {
-						array.each( data, ( i ) => {
-							deferreds.push( this.del( i, false, true ) );
-						} );
-					} else {
-						array.each( data, ( i ) => {
-							deferreds.push( this.set( i[ this.key ] || null, i, true ) );
-						} );
-					}
+					array.each( data, ( i ) => {
+						deferreds.push( this.set( i[ this.key ] || null, i, true ) );
+					} );
 				}
 
 				this.loaded = false;
@@ -265,16 +238,10 @@ class DataStore extends Base {
 	 *   console.warn( "Failed to delete " + key + ": " + err.message );
 	 * } );
 	 */
-	del ( record, reindex=true, batch=false, jsonpatch=false ) {
+	del ( record, reindex=true, batch=false ) {
 		record = record.key ? record : this.get( record );
 
-		let defer;
-
-		if ( jsonpatch ) {
-			return { op: "remove", path: "/" + record.key };
-		}
-
-		defer = deferred();
+		let defer = deferred();
 
 		if ( record === undefined ) {
 			defer.reject( new Error( label.invalidArguments ) );
@@ -770,7 +737,7 @@ class DataStore extends Base {
 	 * // Updating a record
 	 * store.set( "key", {...} );
 	 */
-	set ( key, data, batch=false, overwrite=false, jsonpatch=false ) {
+	set ( key, data, batch=false, overwrite=false ) {
 		data = utility.clone( data, true );
 
 		let events = this.events;
@@ -801,10 +768,6 @@ class DataStore extends Base {
 
 			return ndata;
 		};
-
-		if ( jsonpatch ) {
-			return patch( overwrite, data, this.dump( [ record ] )[ 0 ] );
-		}
 
 		if ( typeof data === "string" ) {
 			if ( data.indexOf( "//" ) === -1 ) {

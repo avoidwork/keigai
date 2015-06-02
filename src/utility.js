@@ -537,7 +537,7 @@ let utility = {
 	 * console.log(obj); // {a: true, b: false}
 	 */
 	merge: function ( obj, arg ) {
-		let keys = array.keys( obj );
+		let keys = ( obj instanceof Array ) ? array.keys( obj ) : [];
 
 		utility.iterate( arg, function ( v, k ) {
 			if ( !array.contains( keys, k ) || ( v instanceof Function ) ) {
