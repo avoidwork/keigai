@@ -537,23 +537,21 @@ let utility = {
 	 * console.log(obj); // {a: true, b: false}
 	 */
 	merge: function ( obj, arg ) {
-		let keys = Object.keys( obj );
-
-		utility.iterate( arg, function ( v, k ) {
-			if ( !array.contains( keys, k ) || ( v instanceof Function ) ) {
-				obj[ k ] = v;
-			} else if ( ( obj[ k ] instanceof Array ) && ( v instanceof Array ) ) {
-				array.merge( obj[ k ], v );
-			} else if ( v instanceof Function ) {
-				obj[ k ] = v;
-			} else if ( ( obj[ k ] instanceof Object ) && ( v instanceof Object ) ) {
-				utility.iterate( v, function ( x, y ) {
-					obj[ k ][ y ] = utility.clone( x );
-				} );
-			} else {
-				obj[ k ] = utility.clone( v );
-			}
-		} );
+		if ((obj instanceof Object) && (arg instanceof Object)) {
+			Object.keys(arg).forEach(function (i) {
+				if ((obj[i] instanceof Object) && (arg[i] instanceof Object)) {
+					obj[i] = utility.merge(obj[i], arg[i]);
+				} else if ((obj[i] instanceof Array) && (arg[i] instanceof Array)) {
+					obj[i] = obj[i].concat(d[i]);
+				} else {
+					obj[i] = arg[i];
+				}
+			});
+		} else if ((obj instanceof Array) && (arg instanceof Array)) {
+			obj = obj.concat(arg);
+		} else {
+			obj = arg;
+		}
 
 		return obj;
 	},
