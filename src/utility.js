@@ -581,12 +581,17 @@ let utility = {
 	 */
 	parse: function ( uri ) {
 		let obj = {};
-		let host, parsed, protocol;
+		let host, idxAscii, idxQ, parsed, protocol;
 
-		if ( uri === undefined ) {
+		if ( uri === undefined || uri === null ) {
 			uri = !server ? location.href : "";
-		} else if (!regex.question.test( uri ) && regex.trick.test( uri ) ) {
-			uri = uri.replace( "%3F", "?" );
+		} else {
+			idxAscii = uri.indexOf( "%3F" );
+			idxQ = uri.indexOf( "?" );
+
+			if ( ( idxQ === -1 && idxAscii > -1 ) || ( idxAscii < idxQ ) ) {
+				uri = uri.replace( "%3F", "?" );
+			}
 		}
 
 		if ( !server ) {
