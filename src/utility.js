@@ -692,10 +692,24 @@ let utility = {
 	 */
 	queryString: function ( arg, qstring="" ) {
 		let obj = {};
-		let result = ( qstring || location.search || "" ).replace( /.*\?/, "" );
+		let aresult = ( qstring || location.search || "" ).split( "?" );
+		let result;
+
+		if ( aresult.length > 1 ) {
+			aresult.shift();
+		}
+
+		result = aresult.join( "?" );
 
 		array.each( result.split( "&" ), function ( prop ) {
-			let item = prop.split( "=" );
+			let aitem = prop.split( "=" );
+			let item;
+
+			if ( aitem.length > 2 ) {
+				item = [ aitem.shift(), aitem.join( "=" ) ];
+			} else {
+				item = aitem;
+			}
 
 			if ( string.isEmpty( item[ 0 ] ) ) {
 				return;
