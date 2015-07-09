@@ -585,6 +585,8 @@ let utility = {
 
 		if ( uri === undefined ) {
 			uri = !server ? location.href : "";
+		} else if (!regex.question.test( uri ) && regex.trick.test( uri ) ) {
+			uri = uri.replace( "%3F", "?" );
 		}
 
 		if ( !server ) {
@@ -702,7 +704,7 @@ let utility = {
 		result = aresult.join( "?" );
 
 		array.each( result.split( "&" ), function ( prop ) {
-			let aitem = prop.split( "=" );
+			let aitem = prop.replace( /\+/g, " " ).split( "=" );
 			let item;
 
 			if ( aitem.length > 2 ) {
